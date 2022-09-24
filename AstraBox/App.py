@@ -1,12 +1,23 @@
+import os
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
+from AstraBox.Storage import Storage
 
 class App:
     def __init__(self, root):
         root.title("ASTRA Box")
         root.minsize(800, 450)
+
+
+        abspath = os.path.abspath('data')
+        if not os.path.exists(abspath):
+            os.mkdir(abspath)
+        self.base_folder = abspath
+        
+        store = Storage()
+        store.open(abspath)
 
         # first paned window
         w1 = tk.PanedWindow( background='#C0DCF3')  

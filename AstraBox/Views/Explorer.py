@@ -2,9 +2,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 class Explorer(ttk.Frame):
-    def __init__(self, master, title = None, show_mode = None) -> None:
+    def __init__(self, master, title = None, show_mode = None, model_store = None) -> None:
         super().__init__(master)      
         self.on_select = None
+        self.model_store = model_store
         #self.storage = store
         lab = ttk.Label(self, text=title)
         lab.grid(row=0, column=0, sticky=tk.W)
@@ -14,7 +15,7 @@ class Explorer(ttk.Frame):
         self.tree.column('#1', width=40, stretch=tk.NO)
         
         
-        #self.update_tree()
+        self.update_tree()
 
         ysb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         #xsb = ttk.Scrollbar(frame, orient=tk.HORIZONTAL, command=self.tree.xview)
@@ -28,3 +29,17 @@ class Explorer(ttk.Frame):
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)        
+
+    def update_tree(self):
+        if self.model_store:
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            self.nodes = {}
+            self.make_tree_nodes()
+
+    def make_tree_nodes(self):
+        for key in self.model_store.data.keys():
+            model = self.model_store.data[key]
+            status = 'ok'
+            #self.nodes[uuid] = 
+            self.tree.insert('', tk.END, text=key, values=(status,),tags=('model',))  

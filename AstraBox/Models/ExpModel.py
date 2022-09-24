@@ -1,8 +1,7 @@
 import os
 import json
 import pathlib 
-#from AstraBox.Models.BaseModel.BaseModel import BaseModel
-import BaseModel
+from AstraBox.Models.BaseModel import BaseModel
 
 class ExpModel(BaseModel):
 

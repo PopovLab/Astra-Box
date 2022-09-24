@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
+from AstraBox.Storage import Storage
 
 class RackFrame(ttk.Frame):
     def __init__(self, master) -> None:
@@ -16,7 +17,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.exp_explorer = Explorer(self, title='Experiments')
+        self.exp_explorer = Explorer(self, title='Experiments', model_store=Storage().exp_store)
         #self.spectrum_explorer.on_select = self.explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))        
         self.exp_explorer = Explorer(self, title='Equlibtium')
