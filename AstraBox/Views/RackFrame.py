@@ -19,8 +19,21 @@ class RackFrame(ttk.Frame):
 
         self.exp_explorer = Explorer(self, title='Experiments', model_store=Storage().exp_store)
         #self.spectrum_explorer.on_select = self.explorer_select
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))        
-        self.exp_explorer = Explorer(self, title='Equlibtium')
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))   
+             
+        self.exp_explorer = Explorer(self, title='Equlibrium', model_store=Storage().equ_store)
+        #self.spectrum_explorer.on_select = self.explorer_select
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+
+        ttk.Separator(self, orient='horizontal').pack(fill='x')
+
+        self.exp_explorer = Explorer(self, title='Subroutine', model_store=Storage().sbr_store)
+        #self.spectrum_explorer.on_select = self.explorer_select
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+
+        ttk.Separator(self, orient='horizontal').pack(fill='x')
+
+        self.exp_explorer = Explorer(self, title='Ray Tracing Configurations')
         #self.spectrum_explorer.on_select = self.explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
