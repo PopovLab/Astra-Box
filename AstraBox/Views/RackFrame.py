@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
 from AstraBox.Storage import Storage
+from AstraBox.Controller import Controller
 
 class RackFrame(ttk.Frame):
     def __init__(self, master) -> None:
@@ -33,9 +34,9 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.exp_explorer = Explorer(self, title='Ray Tracing Configurations')
-        self.exp_explorer.on_select = self.on_explorer_select
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+        self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', model_store=Storage().rt_store)
+        self.rt_explorer.on_select = self.on_explorer_select
+        self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
@@ -44,9 +45,12 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-    def on_explorer_select(self, explorer):
+    def on_explorer_select(self, explorer, model):
+        print(model)
         if self.active_exlorer:
             if self.active_exlorer is not explorer:
                 self.active_exlorer.selection_clear()
 
         self.active_exlorer = explorer
+
+        Controller().show_model(model)

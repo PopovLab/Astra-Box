@@ -35,10 +35,11 @@ class Explorer(ttk.Frame):
         self.tree.selection_set(())
 
     def update_tree(self):
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+        self.nodes = {}
+        self.tree.insert('', tk.END, text='New ',  tags=('action',))          
         if self.model_store:
-            for i in self.tree.get_children():
-                self.tree.delete(i)
-            self.nodes = {}
             self.make_tree_nodes()
 
     def make_tree_nodes(self):
@@ -46,7 +47,7 @@ class Explorer(ttk.Frame):
             model = self.model_store.data[key]
             status = 'ok'
             #self.nodes[uuid] = 
-            self.tree.insert('', tk.END, text=key, values=(status,), tags=('model',))  
+            self.tree.insert('', tk.END, text=key, values=(status,), tags=('model'))  
 
     def select_node(self, event):
         print('Explorer select_node ')
@@ -55,7 +56,13 @@ class Explorer(ttk.Frame):
         if len(sel_id)>0:
             selected_item = self.tree.item(sel_id)
             tag = selected_item["tags"][0]            
+
             print(selected_item)
             print(tag)
-            if self.on_select:
-                self.on_select(self)
+            if tag == 'action':
+                print('new')
+                model = self.model_store.create_model()
+                self.on_select(self, model)
+            elif self.on_select:
+                model = self.model_store.data[selected_item['text']]                           
+                self.on_select(self, model)

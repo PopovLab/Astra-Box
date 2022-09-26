@@ -6,4 +6,12 @@ class ContentFrame(ttk.Frame):
         super().__init__(master)        
         self.content = None
         self.columnconfigure(0, weight=1)        
-        self.rowconfigure(1, weight=1)        
+        self.rowconfigure(0, weight=1)        
+
+    def set_content(self, content):
+        #self.label.config(text = content.title)
+        if self.content:
+            self.content.destroy()
+       
+        self.content = content
+        self.content.grid(row=0, column=0, padx=20, sticky=tk.N + tk.S + tk.E + tk.W)     

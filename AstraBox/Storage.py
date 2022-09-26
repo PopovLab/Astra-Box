@@ -1,8 +1,11 @@
+import math
 import os
 import shelve
+from sre_constants import NOT_LITERAL
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
+from AstraBox.Models.RTModel import RTModel
 
 class ModelStore:
     def __init__(self, name) -> None:
@@ -12,6 +15,17 @@ class ModelStore:
 
     def close(self):
         self.data.close()
+    
+    def create_model(self):
+        match self.name:
+            case 'rt':
+                print(f'create {self.name} model')
+                model = RTModel('new model')
+            case _:
+                print("Это другое")
+                model = None
+
+        return model
 
 class Storage:
     def __new__(cls):
@@ -29,6 +43,7 @@ class Storage:
         self.exp_store = ModelStore('exp')
         self.equ_store = ModelStore('equ')
         self.sbr_store = ModelStore('sbr')
+        self.rt_store = ModelStore('rt')
 
         path = os.path.join(folder, 'exp')
         if os.path.exists(path):
@@ -56,3 +71,5 @@ class Storage:
     def close(self):
         self.exp_store.close()
         self.equ_store.close()
+        self.sbr_store.close()
+        self.rt_store.close()        

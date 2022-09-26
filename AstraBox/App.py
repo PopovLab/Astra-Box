@@ -4,6 +4,7 @@ import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 from AstraBox.Storage import Storage
+from AstraBox.Controller import Controller
 
 class App:
     def __init__(self, root):
@@ -32,6 +33,8 @@ class App:
 
         self.main_layout = ContentFrame(w1)
         w1.add(self.main_layout)
+
+        Controller().set_views(rack_frame, self.main_layout)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.root = root

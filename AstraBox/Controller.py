@@ -1,0 +1,28 @@
+from AstraBox.Views.EmptyView import EmptyView
+from AstraBox.Views.RTModelView import RTModelView
+
+class Controller:
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Controller, cls).__new__(cls)
+        return cls.instance
+        
+    def __init__(self) -> None:
+        print('Controller.init')
+        #self.data = None
+
+    def set_views(self, rack_frame, content_frame) ->None:
+        self.rack_frame = rack_frame
+        self.content_frame = content_frame
+
+
+    def show_model(self, model):
+        print(model)
+        print(f'show {model.name}')
+        match model.model_name:
+            case 'RTModel':
+                model_view = RTModelView(self.content_frame, model)       
+            case _:
+                print('create Emptyview')
+                model_view = EmptyView(self.content_frame, model)  
+        self.content_frame.set_content(model_view)
