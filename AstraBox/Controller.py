@@ -1,5 +1,7 @@
 from AstraBox.Views.EmptyView import EmptyView
 from AstraBox.Views.RTModelView import RTModelView
+from AstraBox.Views.TextView import TextView
+
 
 class Controller:
     def __new__(cls):
@@ -21,7 +23,11 @@ class Controller:
         print(f'show {model.name}')
         match model.model_name:
             case 'RTModel':
-                model_view = RTModelView(self.content_frame, model)       
+                model_view = RTModelView(self.content_frame, model)     
+            case 'ExpModel':
+                model_view = TextView(self.content_frame, model)                     
+            case 'EquModel':
+                model_view = TextView(self.content_frame, model)     
             case _:
                 print('create Emptyview')
                 model_view = EmptyView(self.content_frame, model)  

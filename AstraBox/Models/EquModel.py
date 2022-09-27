@@ -2,6 +2,7 @@ import os
 import json
 import pathlib 
 from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Storage import Storage
 
 class EquModel(BaseModel):
 
@@ -13,3 +14,11 @@ class EquModel(BaseModel):
     @property
     def model_name(self):
         return 'EquModel'   
+
+    def get_text(self):
+        path = os.path.join(Storage().data_folder, 'equ', self.name)
+        print(path)
+        with open(path) as f:
+            lines = f.readlines()
+
+        return lines        

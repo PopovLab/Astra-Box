@@ -2,6 +2,7 @@ import os
 import json
 import pathlib 
 from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Storage import Storage
 
 class ExpModel(BaseModel):
 
@@ -12,4 +13,13 @@ class ExpModel(BaseModel):
 
     @property
     def model_name(self):
-        return 'ExpModel'   
+        return 'ExpModel'
+
+    def get_text(self):
+        path = os.path.join(Storage().data_folder, 'exp', self.name)
+        print(path)
+        with open(path) as f:
+            lines = f.readlines()
+
+        return lines
+        
