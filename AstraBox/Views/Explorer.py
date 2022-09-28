@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import AstraBox.Models.ModelFactory as ModelFactory
 
 class Explorer(ttk.Frame):
     def __init__(self, master, title = None, show_mode = None, model_store = None) -> None:
@@ -61,7 +62,7 @@ class Explorer(ttk.Frame):
             print(tag)
             if tag == 'action':
                 print('new')
-                model = self.model_store.create_model()
+                model = ModelFactory.create_model(self.model_store.name, 'new model')
                 self.on_select(self, model)
             elif self.on_select:
                 model = self.model_store.data[selected_item['text']]                           

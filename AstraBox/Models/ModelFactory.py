@@ -3,7 +3,7 @@ from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 
-def create_model(self, model_type, model_name):
+def create_model(model_type, model_name):
     match model_type:
         case 'exp':
             print(f'create rt - {model_name}')
