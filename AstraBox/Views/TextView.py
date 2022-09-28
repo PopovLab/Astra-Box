@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter.scrolledtext import ScrolledText
 from AstraBox.Views.HeaderPanel import HeaderPanel
 
 class TextView(ttk.Frame):
@@ -11,7 +12,7 @@ class TextView(ttk.Frame):
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text = tk.Text(self, bg = "light cyan", wrap="none")
+        self.text = ScrolledText(self, bg = "light cyan", wrap="none")
         self.text.grid(row=1, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.text.insert(tk.END, model.get_text())
 
