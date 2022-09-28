@@ -19,7 +19,7 @@ class ExpModel(BaseModel):
         path = os.path.join(Storage().data_folder, 'exp', self.name)
         print(path)
         with open(path) as f:
-            lines = f.readlines()
+            lines = f.read()
 
         return lines
         

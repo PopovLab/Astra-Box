@@ -28,6 +28,8 @@ class Controller:
                 model_view = TextView(self.content_frame, model)                     
             case 'EquModel':
                 model_view = TextView(self.content_frame, model)     
+            case 'SbrModel':
+                model_view = TextView(self.content_frame, model)                   
             case _:
                 print('create Emptyview')
                 model_view = EmptyView(self.content_frame, model)  

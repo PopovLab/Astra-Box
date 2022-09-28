@@ -13,7 +13,7 @@ class TextView(ttk.Frame):
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.text = tk.Text(self, bg = "light cyan", wrap="none")
         self.text.grid(row=1, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text.insert(tk.END, title)
+        self.text.insert(tk.END, model.get_text())
 
 
         self.columnconfigure(0, weight=1)        

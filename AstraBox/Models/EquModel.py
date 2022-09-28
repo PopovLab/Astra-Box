@@ -19,6 +19,6 @@ class EquModel(BaseModel):
         path = os.path.join(Storage().data_folder, 'equ', self.name)
         print(path)
         with open(path) as f:
-            lines = f.readlines()
+            lines = f.read()
 
         return lines        

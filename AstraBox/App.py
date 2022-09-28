@@ -1,3 +1,4 @@
+import imp
 import os
 import tkinter as tk
 import tkinter.messagebox as messagebox
@@ -5,7 +6,7 @@ from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
-
+import AstraBox.Models.ModelFactory as ModelFactory
 class App:
     def __init__(self, root):
         root.title("ASTRA Box")
@@ -19,7 +20,7 @@ class App:
         
         store = Storage()
         store.open(abspath)
-
+        self.scan_folders()
         # first paned window
         w1 = tk.PanedWindow( background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
@@ -46,3 +47,26 @@ class App:
             #Storage().close()
             self.root.destroy()
             
+
+    def scan_folders(self):
+        store = Storage()
+        path = os.path.join(store.data_folder, 'exp')
+        if os.path.exists(path):
+            filenames = next(os.walk(path), (None, None, []))[2]
+            for f in filenames:
+                if not f in store.exp_store.data:
+                    store.exp_store.data[f] = ModelFactory.create_model('exp',f)
+
+        path = os.path.join(store.data_folder, 'equ')
+        if os.path.exists(path):
+            filenames = next(os.walk(path), (None, None, []))[2]
+            for f in filenames:
+                if not f in store.equ_store.data:
+                    store.equ_store.data[f] = ModelFactory.create_model('equ',f)     
+
+        path = os.path.join(store.data_folder, 'sbr')
+        if os.path.exists(path):
+            filenames = next(os.walk(path), (None, None, []))[2]
+            for f in filenames:
+                if not f in store.sbr_store.data:
+                    store.sbr_store.data[f] = ModelFactory.create_model('sbr',f)           
