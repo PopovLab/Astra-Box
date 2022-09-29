@@ -15,7 +15,8 @@ class RTModelView(ttk.Frame):
         #self.label = ttk.Label(self,  text='ImpedModelView')
         #self.label.place(relx=0.5, rely=0.46, anchor=tk.CENTER)
         #self.label.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(0, weight=1)        
+        self.columnconfigure(0, weight=0)        
+        self.columnconfigure(1, weight=1)         
         #self.rowconfigure(0, weight=1)            
         #self.InitUI(model)
 
