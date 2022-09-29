@@ -280,7 +280,41 @@ def default_rt_setting():
                     'description' : "+-1, Bpol direction in right coord{drho,dteta,dfi}"
                 },
             },
-
+            'grill parameters':{
+                   "Zplus": { 
+                    'title' : 'Zplus',
+                    'value' : 11, 
+                    'type'  : 'float',
+                    'unit'  : 'cm',
+                    'description' : "upper grill corner in centimeters"
+                }, 
+                   "Zminus": { 
+                    'title' : 'Zminus',
+                    'value' : -11, 
+                    'type': 'float',
+                    'unit'  : 'cm',                    
+                    'description' : "lower grill corner in centimeters"
+                }, 
+                   "ntet": { 
+                    'title' : 'ntet',
+                    'value' : 21, 
+                    'type': 'int',
+                    'description' : "theta grid number"
+                },
+                   "nnz": { 
+                    'title' : 'nnz',
+                    'value' : 51, 
+                    'type': 'int',
+                    'description' : "iN_phi grid number"
+                },                
+                   "total_power": { 
+                    'title' : 'total power',
+                    'value' : 1, 
+                    'type': 'float',
+                    'unit'  : '%',                    
+                    'description' : "total power in positive spectrum"
+                }, 
+            }
         }
 
     
