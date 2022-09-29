@@ -231,33 +231,54 @@ def default_rt_setting():
 
     
             "Options" :{
-                'Xwkb/Np':{
-                    'value': 'Automatic',
-                    'type': 'enum',
-                    'value_items' : ['Manual', 'Automatic'],
-                    'title' : 'Xwkb/Np',
-                    'description': 'type int (0-Manual, 1-Automatic)'
-                },
-                "Xwkb":{
-                    'value': 123.0,
-                    'type': 'float',
-                    'unit': 'cm',
-                    'title' : 'Xwkb',
-                    'description':"Xwkb <= Xwkbmax"
-                },
-                'Np':{
-                    'value': 5,
+                   "ipri": { 
+                    'title' : 'ipri',
+                    'value' : 2, 
                     'type': 'int',
-                    'title' : 'Np',
-                    'description':"Np<=Npmax"
+                    'description' : "printing output monitoring: 0,1,2,3,4']"
                 },
-                'optimization level':{
-                    'value': 'OptLevel 1',
-                    'type': 'enum',
-                    'value_items' : ['No optimization', 'OptLevel 0', 'OptLevel 1'],
-                    'title' : 'Optimization Level',
-                    'description': 'type int (OptLevel 0 - adjust only MPD, do not vary Xwkb, OptLevel 1 - adjust only MPD, and check Xwkb)'
-                },                
+                   "iw": { 
+                    'title' : 'iw',
+                    'value' : 1, 
+                    'type': 'int',
+                    'description' : "initial mode (slow=1, fast=-1)"
+                },
+                   "ismth": { 
+                    'title' : 'ismth',
+                    'value' : 1, 
+                    'type': 'int',
+                    'description' : "if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)"
+                },
+                   "ismthalf": { 
+                    'title' : 'ismthalf',
+                    'value' : 0, 
+                    'type': 'int',
+                    'description' : "if=0, no smoothing in D_alpha(vperp)"
+                },
+                   "ismthout": { 
+                    'title' : 'ismthout',
+                    'value' : 1, 
+                    'type': 'int',
+                    'description' : "if=0, no smoothing in output profiles"
+                },
+                   "inew": { 
+                    'title' : 'inew',
+                    'value' : 0, 
+                    'type': 'int',
+                    'description' : "inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill"
+                },
+                   "itor": { 
+                    'title' : 'itor',
+                    'value' : 1, 
+                    'type': 'int',
+                    'description' : "+-1, Btor direction in right coord{drho,dteta,dfi}"
+                },
+                   "ipol": { 
+                    'title' : 'ipol',
+                    'value' : 1, 
+                    'type': 'int',
+                    'description' : "+-1, Bpol direction in right coord{drho,dteta,dfi}"
+                },
             },
 
         }
