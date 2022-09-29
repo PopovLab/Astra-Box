@@ -13,11 +13,6 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ttk.Radiobutton(self, text="First button", variable=self.v, value="imped", width=25, command= None,
-                            style = 'Toolbutton').pack(expand=0, fill=tk.X)
-
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
-
         self.exp_explorer = Explorer(self, title='Experiments', model_store=Storage().exp_store)
         self.exp_explorer.on_select = self.on_explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))   
@@ -44,6 +39,10 @@ class RackFrame(ttk.Frame):
                             style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
+
+        self.race_explorer = Explorer(self, title='Race history', model_store=Storage().race_store)
+        self.race_explorer.on_select = self.on_explorer_select
+        self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20)) 
 
     def on_explorer_select(self, explorer, model):
         print(model)

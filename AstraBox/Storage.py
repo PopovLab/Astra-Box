@@ -33,6 +33,7 @@ class Storage:
         self.equ_store = ModelStore('equ')
         self.sbr_store = ModelStore('sbr')
         self.rt_store = ModelStore('rt')
+        self.race_store = ModelStore('race')        
 
     def close(self):
         self.exp_store.close()
