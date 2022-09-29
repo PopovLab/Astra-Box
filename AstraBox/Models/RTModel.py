@@ -100,7 +100,134 @@ def default_rt_setting():
                     'description' : "V_perp  greed number"
                 },
             },
-    
+            'Numerical parameters':{
+                "nr": { 
+                    'title' : 'nr',
+                    'value' : 30, 
+                    'type': 'int',
+                    'description' : "radial grid number  <= 505"
+                },
+               "hmin1": { 
+                    'title' : 'hmin1',
+                    'value' : 1.e-6, 
+                    'type': 'float',
+                    'description' : "rel.(hr) min. step in the Fast comp. mode, <1.d0"
+                },            
+               "rrange": { 
+                    'title' : 'rrange',
+                    'value' : 1.e-4, 
+                    'type': 'float',
+                    'description' : "rel.(hr) size of a 'turning' point region, <1.d0"
+                },            
+               "eps": { 
+                    'title' : 'eps',
+                    'value' : 1.e-6, 
+                    'type': 'float',
+                    'description' : "accuracy"
+                },            
+               "hdrob": { 
+                    'title' : 'hdrob',
+                    'value' : 1.5, 
+                    'type': 'float',
+                    'description' : "h4 correction"
+                },            
+               "cleft": { 
+                    'title' : 'cleft',
+                    'value' : 0.7, 
+                    'type': 'float',
+                    'description' : "left Vz plato border shift (<1)"
+                },            
+               "cright": { 
+                    'title' : 'cright',
+                    'value' : 1.5, 
+                    'type': 'float',
+                    'description' : "right Vz plato border shift (>1)"
+                },            
+               "cdel": { 
+                    'title' : 'cdel',
+                    'value' : 0.25, 
+                    'type': 'float',
+                    'description' : "(left part)/(Vz plato size)"
+                },            
+               "rbord": { 
+                    'title' : 'rbord',
+                    'value' : 0.999, 
+                    'type': 'float',
+                    'description' : "(relative radius of reflection, <1."
+                },            
+               "pchm": { 
+                    'title' : 'pchm',
+                    'value' : 0.2, 
+                    'type': 'float',
+                    'description' : "threshold between 'strong' and weak' absorption, <1."
+                },
+               "pabs": { 
+                    'title' : 'pabs',
+                    'value' : 1.e-2, 
+                    'type': 'float',
+                    'description' : "part of remaining power interp. as absorption"
+                },
+               "pgiter": { 
+                    'title' : 'pgiter',
+                    'value' : 1.e-4, 
+                    'type': 'float',
+                    'description' : "relative accuracy to stop iterations"
+                },
+                "ni1": { 
+                    'title' : 'ni1',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "grid number in the left part of Vz plato"
+                },
+                "ni2": { 
+                    'title' : 'ni2',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "grid number in the right part of Vz plato"
+                },
+                "niterat": { 
+                    'title' : 'niterat',
+                    'value' : 99, 
+                    'type': 'int',
+                    'description' : "maximal number of iterations"
+                },                
+                "nmaxm(1)": { 
+                    'title' : 'nmaxm(1)',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "permitted reflections at 0 iteration"
+                },                
+                "nmaxm(2)": { 
+                    'title' : 'nmaxm(2)',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "permitted reflections at 2 iteration"
+                },                
+                "nmaxm(3)": { 
+                    'title' : 'nmaxm(3)',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "permitted reflections at 3 iteration"
+                },                
+                "nmaxm(4)": { 
+                    'title' : 'nmaxm(4)',
+                    'value' : 20, 
+                    'type': 'int',
+                    'description' : "permitted reflections at 4 iteration"
+                },                
+                "maxstep2": { 
+                    'title' : 'maxstep2',
+                    'value' : 1000, 
+                    'type': 'int',
+                    'description' : "maximal steps' number in Fast comp. mode"
+                },                
+                "maxstep4": { 
+                    'title' : 'maxstep4',
+                    'value' : 1000, 
+                    'type': 'int',
+                    'description' : "maximal steps' number in Slow comp. mode"
+                },                                                
+            },
 
     
             "Options" :{
