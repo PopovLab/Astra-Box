@@ -10,7 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 class App:
     def __init__(self, root):
         root.title("ASTRA Box")
-        root.minsize(800, 450)
+        root.minsize(1000, 550)
 
 
         abspath = os.path.abspath('data')
