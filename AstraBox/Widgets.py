@@ -48,9 +48,9 @@ class StringBox(ttk.Frame):
         super().__init__(master)
         self.item = item
         print(item)
-        label = ttk.Label(self, text="item['title']", width=20)
+        label = ttk.Label(self, text=item['title'], width=20)
         label.grid(row=0, column=0, sticky=tk.W, pady=8, padx=8)
-        self.string_var = tk.StringVar(self, value="item['value']")
+        self.string_var = tk.StringVar(self, value=item['value'])
 
  
         self.entry = tk.Entry(self, width=20, textvariable= self.string_var, validate="focusout", validatecommand=self.callback)
