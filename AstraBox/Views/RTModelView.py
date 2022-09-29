@@ -35,7 +35,8 @@ class RTModelView(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         #self.notebook.pack(side="top", expand=1, fill="both", pady=6, padx=6)
         self.notebook.grid(row=4, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
+        
+        ROW_MAX = 5 
         for key, value in self.model.setting.items():
             if 'value' in value:
                 continue
@@ -43,4 +44,4 @@ class RTModelView(ttk.Frame):
             self.notebook.add(frame, text=key, underline=0, sticky=tk.NE + tk.SW)
             for row, (_, item) in enumerate(value.items()):
                 wg = Widgets.create_widget(frame, item)
-                wg.grid(row=row, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+                wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
