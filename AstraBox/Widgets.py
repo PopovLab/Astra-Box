@@ -48,8 +48,8 @@ class StringBox(ttk.Frame):
         super().__init__(master)
         self.item = item
         print(item)
-        label = ttk.Label(self, text=item['title'], width=20)
-        label.grid(row=0, column=0, sticky=tk.W, pady=8, padx=8)
+        label = ttk.Label(self, text=item['title'], width=10)
+        label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
         self.string_var = tk.StringVar(self, value=item['value'])
 
  
