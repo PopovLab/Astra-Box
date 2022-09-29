@@ -67,6 +67,42 @@ def default_rt_setting():
                     'description' : "Ni3/Ni1, relative density of ions 3"
                 },
             },
+            'Parameters for alphas calculations':{
+                "itend0": { 
+                    'title' : 'itend0',
+                    'value' : 0, 
+                    'type': 'int',
+                    'description' : "if = 0, no alphas"
+                },
+               "energy": { 
+                    'title' : 'energy',
+                    'value' : 30.0, 
+                    'type': 'float',
+                    'unit' : 'MeV',
+                    'description' : "max. perp. energy of alphas (MeV)"
+                },
+               "factor": { 
+                    'title' : 'factor',
+                    'value' : 10.0, 
+                    'type': 'float',
+                    'description' : "factor in alpha source"
+                },
+               "dra": { 
+                    'title' : 'dra',
+                    'value' : 0.3, 
+                    'type': 'float',
+                    'description' : "relative alpha source broadening (dr/a)"
+                },
+                "kv": { 
+                    'title' : 'kv',
+                    'value' : 30, 
+                    'type': 'int',
+                    'description' : "V_perp  greed number"
+                },
+            },
+    
+
+    
             "Options" :{
                 'Xwkb/Np':{
                     'value': 'Automatic',
