@@ -36,7 +36,7 @@ class RTModelView(ttk.Frame):
         #self.notebook.pack(side="top", expand=1, fill="both", pady=6, padx=6)
         self.notebook.grid(row=4, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
-        ROW_MAX = 5 
+        ROW_MAX = 7 
         for key, value in self.model.setting.items():
             if 'value' in value:
                 continue
