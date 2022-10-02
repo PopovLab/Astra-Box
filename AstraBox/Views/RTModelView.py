@@ -51,11 +51,12 @@ class RTModelView(ttk.Frame):
                 wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def save_model(self):
+        if self.var_name.get() == 'new model':
+            tk.messagebox.showwarning(title=None, message='Please, change model name')
+            return        
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
-        if self.model.name == 'new model':
-            tk.messagebox.showwarning(title=None, message='Please, change model name')
-            return
+
         if self.model.name in Storage().rt_store.data:
             tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
             return
