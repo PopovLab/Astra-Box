@@ -35,7 +35,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ttk.Radiobutton(self, text="Calculation button", variable=self.v, value="imped", width=25, command= None,
+        ttk.Radiobutton(self, text="Calculation button", variable=self.v, value="imped", width=25, command= self.show_calc_view,
                             style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
@@ -53,3 +53,6 @@ class RackFrame(ttk.Frame):
         self.active_exlorer = explorer
 
         Controller().show_model(model)
+
+    def show_calc_view(self):
+        Controller().show_calc_view()

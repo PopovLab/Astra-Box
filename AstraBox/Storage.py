@@ -14,6 +14,9 @@ class ModelStore:
 
     def close(self):
         self.data.close()
+
+    def get_keys_list(self):
+        return list(self.data.keys())
     
 
 
