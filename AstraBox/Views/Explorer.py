@@ -7,6 +7,7 @@ class Explorer(ttk.Frame):
         super().__init__(master)      
         self.on_select = None
         self.model_store = model_store
+        self.model_store.on_update_data = self.update_tree
         lab = ttk.Label(self, text=title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}

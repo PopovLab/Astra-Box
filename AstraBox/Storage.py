@@ -10,6 +10,7 @@ class ModelStore:
         self.name = name
         filename = os.path.join(Storage().data_folder, f'{name}_db')
         self.data = shelve.open(filename)
+        self.on_update_data = None
 
     def close(self):
         self.data.close()

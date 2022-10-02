@@ -2,13 +2,17 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
+from AstraBox.Storage import Storage
 
 class RTModelView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"RT Configuration View {model.name}"
-        self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        if model.name == 'new model':
+            self.header_content = { "title": title, "buttons":[('Save', self.save_model)]}
+        else:    
+            self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -45,3 +49,15 @@ class RTModelView(ttk.Frame):
             for row, (_, item) in enumerate(value.items()):
                 wg = Widgets.create_widget(frame, item)
                 wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    def save_model(self):
+        self.model.name = self.var_name.get()
+        self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
+        if self.model.name == 'new model':
+            tk.messagebox.showwarning(title=None, message='Please, change model name')
+            return
+        if self.model.name in Storage().rt_store.data:
+            tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
+            return
+        Storage().rt_store.data[self.model.name] = self.model
+        Storage().rt_store.on_update_data()
