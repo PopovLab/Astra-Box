@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Storage import Storage
+from AstraBox.Views.LogConsole import LogConsole
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -35,6 +36,17 @@ class CalculationView(ttk.Frame):
         self.equ_combo.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
         self.rt_combo = ComboBox(self, 'RT configuration', Storage().rt_store.get_keys_list())
         self.rt_combo.grid(row=1, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
+        self.log_console = LogConsole(runframe)
+        self.log_console.grid(row=1, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
+        runframe.columnconfigure(0, weight=1)
+        runframe.rowconfigure(1, weight=1)
+        self.first_init = True
+        #self.bind('<Visibility>', self.visibilityChanged)
+        runframe.grid(row=2, column=0, columnspan=5,  sticky=tk.N + tk.S + tk.E + tk.W)
+        self.rowconfigure(2, weight=1)
+
 
     def start(self):
         pass
