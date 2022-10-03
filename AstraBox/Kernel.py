@@ -104,6 +104,7 @@ class Worker:
         if shell:
             self.proc = await asyncio.create_subprocess_shell(
                 cmd,
+                bufsize=0,
                 #universal_newlines= True,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
@@ -162,7 +163,7 @@ class AstraWorker(Worker):
         
         self.set_model_status('run')
         self.run_cmd = 'start wsl /home/tmp8/astra6.sh'
-        self.run_cmd = 'start wsl ls'
+        #self.run_cmd = 'start wsl ls'
         print(self.run_cmd)
         #if not os.path.exists(self.run_cmd):
         #    self.logger.error(f"Can't find: {self.run_cmd}")
@@ -170,8 +171,8 @@ class AstraWorker(Worker):
 
         #asyncio.run(test_logger(logger))
         #self.stdinput = b"1\n1\n1\n1\n1\n"
-        #asyncio.run(self.run(self.run_cmd, shell=True))        
-        subprocess.call(self.run_cmd, shell=True)
+        asyncio.run(self.run(self.run_cmd, shell=True))        
+        #subprocess.call(self.run_cmd, shell=True)
         self.logger.info('finish')
         if self.model.status == 'run':
             if self.error_flag:
