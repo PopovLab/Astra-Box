@@ -5,12 +5,10 @@ import os
 import logging
 import subprocess
 import asyncio
-import Utils
-from Models import ImpedModel
 
 proc = NULL
 
-current_working_directory = None
+current_working_directory = ''
 
 async def run(cmd, logger, stdinput = None):
     global proc
@@ -146,3 +144,26 @@ class Worker:
         self.proc.terminate()
         self.logger.info(f'Termitate')
         self.set_model_status('term')
+
+
+class AstraWorker(Worker):
+
+    def start(self):
+        #if self.test_folder(): return
+        #self.initialization()
+        
+        self.set_model_status('run')
+        self.run_cmd = os.path.join(current_working_directory,'bin/imped.exe')
+        if not os.path.exists(self.run_cmd):
+            self.logger.error(f"Can't find: {self.run_cmd}")
+            return
+
+        #asyncio.run(test_logger(logger))
+        self.stdinput = b"1\n1\n1\n1\n1\n"
+        asyncio.run(self.run(self.run_cmd))        
+        self.logger.info('finish')
+        if self.model.status == 'run':
+            if self.error_flag:
+                self.set_model_status('error')        
+            else:
+                self.set_model_status('calculated')          

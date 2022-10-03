@@ -15,3 +15,5 @@ class RaceModel(BaseModel):
     def model_name(self):
         return 'RaceModel'   
 
+    def get_work_folder(self):
+        return "data\\test_work_folder"

@@ -3,6 +3,8 @@ import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Storage import Storage
 from AstraBox.Views.LogConsole import LogConsole
+from AstraBox.Models.RaceModel import RaceModel
+import AstraBox.Kernel as Kernel
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -49,7 +51,22 @@ class CalculationView(ttk.Frame):
 
 
     def start(self):
-        pass
+        #if self.grill_model == None:
+        #    return
+        #if self.imped_model == None:
+        #    return
+
+        race_model = RaceModel() #self.grill_model, self.imped_model)
+        #self.controller.save_model(spectrum)
+        self.worker = Kernel.AstraWorker(race_model)
+        #self.worker.controller = self.controller
+        self.log_console.set_logger(self.worker.logger)
+        self.worker.on_progress = self.on_progress
+        self.on_progress(0)
+        self.worker.start()
 
     def terminate(self):
+        pass
+
+    def on_progress(self, pos):
         pass
