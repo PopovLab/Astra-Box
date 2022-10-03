@@ -162,7 +162,7 @@ class AstraWorker(Worker):
         #self.initialization()
         
         self.set_model_status('run')
-        self.run_cmd = 'start wsl /home/tmp8/astra6.sh'
+        self.run_cmd = 'start wsl /home/tmp8/astra6.sh readme showdata'
         #self.run_cmd = 'start wsl ls'
         print(self.run_cmd)
         #if not os.path.exists(self.run_cmd):
