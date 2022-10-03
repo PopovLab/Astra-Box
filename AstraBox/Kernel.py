@@ -35,7 +35,7 @@ async def run(cmd, logger, stdinput = None):
     await proc.wait()
 
 
-async def run_shel(cmd, logger):
+async def run_shell(cmd, logger):
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -96,17 +96,25 @@ class Worker:
         if self.controller:
             self.controller.update_model_status(self.model)
 
-    async def run(self, cmd):
+    async def run(self, cmd, shell = False):
         self.error_flag = False
         self.logger.log(logging.INFO, f"run_cmd: {self.run_cmd}")
-        os.chdir(self.work_folder)
+        #os.chdir(self.work_folder)
         self.logger.log(logging.INFO, f"CWD: {os.getcwd()}")
-        self.proc = await asyncio.create_subprocess_exec(
-            cmd,
-            #universal_newlines= True,
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE)
+        if shell:
+            self.proc = await asyncio.create_subprocess_shell(
+                cmd,
+                #universal_newlines= True,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE)
+        else:                        
+            self.proc = await asyncio.create_subprocess_exec(
+                cmd,
+                #universal_newlines= True,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE)
 
         if self.stdinput !=None:
             self.proc.stdin.write(self.stdinput)    
@@ -153,14 +161,17 @@ class AstraWorker(Worker):
         #self.initialization()
         
         self.set_model_status('run')
-        self.run_cmd = os.path.join(current_working_directory,'bin/imped.exe')
-        if not os.path.exists(self.run_cmd):
-            self.logger.error(f"Can't find: {self.run_cmd}")
-            return
+        self.run_cmd = 'start wsl /home/tmp8/astra6.sh'
+        self.run_cmd = 'start wsl ls'
+        print(self.run_cmd)
+        #if not os.path.exists(self.run_cmd):
+        #    self.logger.error(f"Can't find: {self.run_cmd}")
+        #    return
 
         #asyncio.run(test_logger(logger))
-        self.stdinput = b"1\n1\n1\n1\n1\n"
-        asyncio.run(self.run(self.run_cmd))        
+        #self.stdinput = b"1\n1\n1\n1\n1\n"
+        #asyncio.run(self.run(self.run_cmd, shell=True))        
+        subprocess.call(self.run_cmd, shell=True)
         self.logger.info('finish')
         if self.model.status == 'run':
             if self.error_flag:
