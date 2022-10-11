@@ -3,9 +3,10 @@ import tkinter.ttk as ttk
 import AstraBox.Models.ModelFactory as ModelFactory
 
 class Explorer(ttk.Frame):
-    def __init__(self, master, title = None, show_mode = None, model_store = None) -> None:
+    def __init__(self, master, title = None, new_button = False, model_store = None) -> None:
         super().__init__(master)      
         self.on_select = None
+        self.new_button = new_button
         self.model_store = model_store
         self.model_store.on_update_data = self.update_tree
         lab = ttk.Label(self, text=title)
@@ -40,7 +41,8 @@ class Explorer(ttk.Frame):
         for i in self.tree.get_children():
             self.tree.delete(i)
         self.nodes = {}
-        self.tree.insert('', tk.END, text='New ',  tags=('action',))          
+        if self.new_button:
+            self.tree.insert('', tk.END, text='New ',  tags=('action',))          
         if self.model_store:
             self.make_tree_nodes()
 
