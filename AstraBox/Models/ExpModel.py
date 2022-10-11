@@ -23,3 +23,5 @@ class ExpModel(BaseModel):
 
         return lines
         
+    def get_dest_path(self):
+        return os.path.join('exp', self.name)

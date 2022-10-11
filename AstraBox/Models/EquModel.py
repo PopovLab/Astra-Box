@@ -22,3 +22,6 @@ class EquModel(BaseModel):
             lines = f.read()
 
         return lines        
+
+    def get_dest_path(self):
+        return os.path.join('equ', self.name)        

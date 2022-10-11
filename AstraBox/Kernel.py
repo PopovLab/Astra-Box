@@ -5,6 +5,7 @@ import os
 import logging
 import subprocess
 import asyncio
+import shutil
 
 proc = NULL
 
@@ -84,6 +85,7 @@ class Worker:
     controller = None
 
     def __init__(self, model) -> None:
+        self.error_flag = False
         self.stdinput = None
         self.model = model
         self.work_folder = self.model.get_work_folder()
@@ -98,7 +100,7 @@ class Worker:
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
-        self.logger.log(logging.INFO, f"run_cmd: {self.run_cmd}")
+        self.logger.log(logging.INFO, f"run_cmd: {cmd}")
         #os.chdir(self.work_folder)
         self.logger.log(logging.INFO, f"CWD: {os.getcwd()}")
         if shell:
@@ -154,24 +156,51 @@ class Worker:
         self.logger.info(f'Termitate')
         self.set_model_status('term')
 
+def copy_file_to_folder(src, dst):
+    try:
+        shutil.copy(src, dst)
+        print(f" copy {src} to {dst}")
+ 
+    except shutil.SameFileError:
+        print("Source and destination represents the same file.")
+ 
+    except IsADirectoryError:
+        print("Destination is a directory.")
+ 
+    except PermissionError:
+        print("Permission denied.")
+ 
+    except:
+        print(f"Error occurred while copying file: {src} to {dst}")
+
 
 class AstraWorker(Worker):
+    def __init__(self, model, astra_profile) -> None:
+        super().__init__(model)
+        self.astra_profile = astra_profile
 
     def start(self):
         #if self.test_folder(): return
         #self.initialization()
-        
+        self.logger.info(f'start {self.model.name}')
+        zip_file = self.model.prepare_run_data()
+        self.logger.info(f'copy : {zip_file}')
+        self.logger.info(f'to: {self.astra_profile["dest"]}')
+        self.logger.info(f'astra: {self.astra_profile["profile"]}')
+        copy_file_to_folder(zip_file, self.astra_profile["dest"])
+        self.unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
+        print(self.unpack_cmd)
+        asyncio.run(self.run(self.unpack_cmd, shell=True))
         self.set_model_status('run')
-        self.run_cmd = 'start wsl /home/tmp8/astra6.sh readme showdata'
+        astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+        run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         #self.run_cmd = 'start wsl ls'
-        print(self.run_cmd)
+        print(run_cmd)
         #if not os.path.exists(self.run_cmd):
         #    self.logger.error(f"Can't find: {self.run_cmd}")
         #    return
 
-        #asyncio.run(test_logger(logger))
-        #self.stdinput = b"1\n1\n1\n1\n1\n"
-        asyncio.run(self.run(self.run_cmd, shell=True))        
+        asyncio.run(self.run(run_cmd, shell=True))        
         #subprocess.call(self.run_cmd, shell=True)
         self.logger.info('finish')
         if self.model.status == 'run':

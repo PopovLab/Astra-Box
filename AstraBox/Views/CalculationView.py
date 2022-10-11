@@ -5,6 +5,7 @@ from AstraBox.Storage import Storage
 from AstraBox.Views.LogConsole import LogConsole
 from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.Kernel as Kernel
+import AstraBox.Models.AstraProfiles
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -27,7 +28,7 @@ class CalculationView(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
         self.header_content =  { "title": "Calculation", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate), ('Test', None)]}
-        
+        self.astra_profiles = AstraBox.Models.AstraProfiles.default()
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(4, weight=1)        
@@ -38,6 +39,8 @@ class CalculationView(ttk.Frame):
         self.equ_combo.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
         self.rt_combo = ComboBox(self, 'RT configuration', Storage().rt_store.get_keys_list())
         self.rt_combo.grid(row=1, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.astra_combo = ComboBox(self, 'Astra profiles', list(self.astra_profiles.keys()))
+        self.astra_combo.grid(row=1, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
         self.log_console = LogConsole(runframe)
@@ -55,10 +58,13 @@ class CalculationView(ttk.Frame):
         #    return
         #if self.imped_model == None:
         #    return
-
-        race_model = RaceModel() #self.grill_model, self.imped_model)
+        exp = self.exp_combo.selected_value
+        equ = self.equ_combo.selected_value
+        rt = self.rt_combo.selected_value
+        race_model = RaceModel(exp_name= exp,equ_name= equ,rt_name= rt ) 
         #self.controller.save_model(spectrum)
-        self.worker = Kernel.AstraWorker(race_model)
+        astra_profile = self.astra_profiles[self.astra_combo.selected_value]
+        self.worker = Kernel.AstraWorker(race_model, astra_profile)
         #self.worker.controller = self.controller
         self.log_console.set_logger(self.worker.logger)
         self.worker.on_progress = self.on_progress

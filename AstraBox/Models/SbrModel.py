@@ -22,3 +22,6 @@ class SbrModel(BaseModel):
             lines = f.read()
 
         return lines
+
+    def get_dest_path(self):
+        return os.path.join('sbr', self.name)

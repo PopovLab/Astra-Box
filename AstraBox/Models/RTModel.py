@@ -334,3 +334,10 @@ class RTModel(BaseModel):
         if not 'setting' in self.data:
             self.data['setting'] = default_rt_setting()
         return self.data['setting']
+
+    
+    def get_text(self):
+        return 'test ray_tracing data'
+
+    def get_dest_path(self):
+        return os.path.join('lhcd', 'ray_tracing.dat')
