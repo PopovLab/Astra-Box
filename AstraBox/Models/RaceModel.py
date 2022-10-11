@@ -24,6 +24,7 @@ class RaceModel(BaseModel):
         self.exp_model = Storage().exp_store.data[exp_name]
         self.equ_model = Storage().equ_store.data[equ_name]
         self.rt_model = Storage().rt_store.data[rt_name]
+        self.race_zip_file = None
 
     @property
     def model_name(self):

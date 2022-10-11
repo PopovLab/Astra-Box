@@ -156,6 +156,24 @@ class Worker:
         self.logger.info(f'Termitate')
         self.set_model_status('term')
 
+def copy_file(src, dst):
+    try:
+        shutil.copyfile(src, dst)
+        print(f" copy {src} to {dst}")
+ 
+    except shutil.SameFileError:
+        print("Source and destination represents the same file.")
+ 
+    except IsADirectoryError:
+        print("Destination is a directory.")
+ 
+    except PermissionError:
+        print("Permission denied.")
+ 
+    except:
+        print(f"Error occurred while copying file: {src} to {dst}")
+
+
 def copy_file_to_folder(src, dst):
     try:
         shutil.copy(src, dst)
@@ -188,13 +206,14 @@ class AstraWorker(Worker):
         self.logger.info(f'to: {self.astra_profile["dest"]}')
         self.logger.info(f'astra: {self.astra_profile["profile"]}')
         copy_file_to_folder(zip_file, self.astra_profile["dest"])
-        self.unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
-        print(self.unpack_cmd)
-        asyncio.run(self.run(self.unpack_cmd, shell=True))
+        unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
+        print(unpack_cmd)
+        asyncio.run(self.run(unpack_cmd, shell=True))
         self.set_model_status('run')
         astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
         run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         #self.run_cmd = 'start wsl ls'
+
         print(run_cmd)
         #if not os.path.exists(self.run_cmd):
         #    self.logger.error(f"Can't find: {self.run_cmd}")
@@ -208,3 +227,10 @@ class AstraWorker(Worker):
                 self.set_model_status('error')        
             else:
                 self.set_model_status('calculated')          
+        self.logger.info('pack data')
+        pack_cmd = f'wsl --cd {self.astra_profile["home"]} ./pack.sh {self.astra_profile["profile"]}'
+        asyncio.run(self.run(pack_cmd, shell=True))
+
+        race_zip_file = f'Data/races/race_{self.model.name}.zip'
+        copy_file(self.astra_profile["dest"] + '/race_data.zip', race_zip_file )
+        self.model.race_zip_file = race_zip_file

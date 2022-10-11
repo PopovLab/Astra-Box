@@ -61,7 +61,7 @@ class CalculationView(ttk.Frame):
         exp = self.exp_combo.selected_value
         equ = self.equ_combo.selected_value
         rt = self.rt_combo.selected_value
-        race_model = RaceModel(exp_name= exp,equ_name= equ,rt_name= rt ) 
+        race_model = RaceModel(exp_name= exp, equ_name= equ, rt_name= rt ) 
         #self.controller.save_model(spectrum)
         astra_profile = self.astra_profiles[self.astra_combo.selected_value]
         self.worker = Kernel.AstraWorker(race_model, astra_profile)
@@ -70,6 +70,8 @@ class CalculationView(ttk.Frame):
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
         self.worker.start()
+        Storage().race_store.data[race_model.name] = race_model
+        Storage().race_store.on_update_data()
 
     def terminate(self):
         pass
