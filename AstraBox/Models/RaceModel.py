@@ -5,6 +5,7 @@ import zipfile
 import datetime
 from AstraBox.Models.BaseModel import BaseModel
 from AstraBox.Storage import Storage
+import AstraBox.Models.RadialData as RadialData
 
 class RaceHelper:
     def __init__(self, exp_model, equ_model, rt_model) -> None:
@@ -64,3 +65,19 @@ class RaceModel(BaseModel):
                 self.pack_model_to_zip(zip, item)
         
         return zip_file
+
+
+    def get_radial_data_list(self):
+
+        tmp = 'dat/'
+        #print(tmp)
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            list = [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+        num = len(list)
+        print(num)
+        return list        
+
+    def read_radial_data(self,f):
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(f) as file:
+                return RadialData.read_radial_data(file)        

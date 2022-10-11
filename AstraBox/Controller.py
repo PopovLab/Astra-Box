@@ -1,6 +1,7 @@
 from AstraBox.Views.EmptyView import EmptyView
 from AstraBox.Views.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
+from AstraBox.Views.RaceView import RaceView
 from AstraBox.Views.CalculationView import CalculationView
 
 class Controller:
@@ -30,6 +31,8 @@ class Controller:
                 model_view = TextView(self.content_frame, model)     
             case 'SbrModel':
                 model_view = TextView(self.content_frame, model)                   
+            case 'RaceModel':
+                model_view = RaceView(self.content_frame, model)                 
             case _:
                 print('create Emptyview')
                 model_view = EmptyView(self.content_frame, model)  
