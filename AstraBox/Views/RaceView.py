@@ -14,6 +14,7 @@ class RaceView(ttk.Frame):
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"Race data View {model.name}"
+        print(title)
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
@@ -28,10 +29,10 @@ class RaceView(ttk.Frame):
 
         self.radial_data_list = model.get_radial_data_list()
 
-        self.index_var = tk.IntVar(name = 'index', value=1)
-        self.index_var.trace_add('write', lambda var, indx, mode: self.update_var())
+        self.index_var = tk.IntVar(master = self, value=0)
+        self.index_var.trace_add('write', self.update_var)
 
-        self.slider = tk.Scale( self, variable = self.index_var, orient = tk.HORIZONTAL, from_=1, to=len(self.radial_data_list), resolution=1, length = 250 )
+        self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.radial_data_list)-1, resolution=1, length = 250 )
         self.slider.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
         #self.time_var = tk.StringVar(value='xxx') 
         #self.label = tk.Label(master=self, textvariable = self.time_var)
@@ -44,14 +45,16 @@ class RaceView(ttk.Frame):
 
     def get_profiles(self, index):
         file = self.radial_data_list[index]
-        print(file)
+        print(f'{file} {index}')
         return self.model.read_radial_data(file)
 
-    def update_var(self):
+    def update_var(self, var, indx, mode):
         profiles = self.get_profiles(self.index_var.get())
         self.plot.update(profiles)
         
-
+    def destroy(self):
+        print("RaceView destroy")
+        super().destroy()   
 
 class SimplePlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
