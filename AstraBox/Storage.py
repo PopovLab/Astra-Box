@@ -18,7 +18,10 @@ class ModelStore:
     def get_keys_list(self):
         return list(self.data.keys())
     
-
+    def delete_model(self, key):
+        del self.data[key]
+        if self.on_update_data:
+            self.on_update_data()
 
 class Storage:
     def __new__(cls):

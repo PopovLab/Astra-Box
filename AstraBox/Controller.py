@@ -18,6 +18,9 @@ class Controller:
         self.rack_frame = rack_frame
         self.content_frame = content_frame
 
+    def show_empty_view(self):
+        model_view = EmptyView(self.content_frame)  
+        self.content_frame.set_content(model_view)
 
     def show_model(self, model):
         print(model)

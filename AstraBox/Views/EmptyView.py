@@ -3,10 +3,13 @@ import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
 
 class EmptyView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model=None) -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
-        title = f"Empty Model View {model.name}"
+        if model:
+            title = f"Empty Model View {model.name}"
+        else:
+            title = "Empty View"
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)

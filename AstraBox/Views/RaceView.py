@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
-
+import AstraBox.Models.ModelFactory as ModelFactory
 
 class RaceView(ttk.Frame):
  
@@ -15,7 +15,7 @@ class RaceView(ttk.Frame):
         #self.title = 'ImpedModelView'
         title = f"Race data View {model.name}"
         print(title)
-        self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', self.delete_model)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -29,19 +29,19 @@ class RaceView(ttk.Frame):
 
         self.radial_data_list = model.get_radial_data_list()
 
-        self.index_var = tk.IntVar(master = self, value=0)
-        self.index_var.trace_add('write', self.update_var)
+        if len(self.radial_data_list)>0: 
+            self.index_var = tk.IntVar(master = self, value=0)
+            self.index_var.trace_add('write', self.update_var)
 
-        self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.radial_data_list)-1, resolution=1, length = 250 )
-        self.slider.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-        #self.time_var = tk.StringVar(value='xxx') 
-        #self.label = tk.Label(master=self, textvariable = self.time_var)
-        #self.label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
-        
-        profiles = self.get_profiles(1)
-        self.plot = SimplePlot(self, profiles)
-        self.plot.grid(row=4, column=0, sticky=tk.W, pady=4, padx=8)
+            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.radial_data_list)-1, resolution=1, length = 250 )
+            self.slider.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+ 
+            profiles = self.get_profiles(0)
+            self.plot = SimplePlot(self, profiles)
+            self.plot.grid(row=4, column=0, sticky=tk.W, pady=4, padx=8)
 
+    def delete_model(self):
+        ModelFactory.delete_model(self.model)
 
     def get_profiles(self, index):
         file = self.radial_data_list[index]
