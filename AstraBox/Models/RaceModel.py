@@ -70,12 +70,13 @@ class RaceModel(BaseModel):
     def get_radial_data_list(self):
 
         tmp = 'dat/'
-        #print(tmp)
+        print(self.race_zip_file)
         with zipfile.ZipFile(self.race_zip_file) as zip:
-            list = [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+            list = [ z.filename for z in zip.filelist if (z.filename.startswith(tmp) and len(z.filename)>4 )]
         num = len(list)
         print(num)
-        return list        
+        list.sort()  
+        return list
 
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
