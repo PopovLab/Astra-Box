@@ -20,8 +20,12 @@ class ExpModel(BaseModel):
         print(path)
         with open(path) as f:
             lines = f.read()
-
         return lines
-        
+
+    def save_text(self, text):
+        path = os.path.join(Storage().data_folder, 'exp', self.name)
+        with open(path, mode='w') as f:
+            f.write(text)
+
     def get_dest_path(self):
         return os.path.join('exp', self.name)

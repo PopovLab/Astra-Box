@@ -8,16 +8,21 @@ class TextView(ttk.Frame):
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"Text View {model.name}"
-        self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text = ScrolledText(self, bg = "light cyan", wrap="none")
-        self.text.grid(row=1, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text.insert(tk.END, model.get_text())
+        self.text_box = ScrolledText(self, bg = "light cyan", wrap="none")
+        self.text_box.grid(row=1, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.text_box.insert(tk.END, model.get_text())
 
 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)            
         self.rowconfigure(1, weight=1)            
         #self.InitUI(model)
+
+    def save(self):
+        input = self.text_box.get("1.0",tk.END)
+        self.model.save_text(input)
+        print(input)

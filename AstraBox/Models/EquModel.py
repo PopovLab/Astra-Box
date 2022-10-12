@@ -23,5 +23,10 @@ class EquModel(BaseModel):
 
         return lines        
 
+    def save_text(self, text):
+        path = os.path.join(Storage().data_folder, 'equ', self.name)
+        with open(path, mode='w') as f:
+            f.write(text)
+
     def get_dest_path(self):
         return os.path.join('equ', self.name)        
