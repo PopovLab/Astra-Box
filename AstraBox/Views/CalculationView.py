@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
@@ -61,7 +62,8 @@ class CalculationView(ttk.Frame):
         exp = self.exp_combo.selected_value
         equ = self.equ_combo.selected_value
         rt = self.rt_combo.selected_value
-        race_model = RaceModel(exp_name= exp, equ_name= equ, rt_name= rt ) 
+        name =  datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        race_model = RaceModel(name= name, exp_name= exp, equ_name= equ, rt_name= rt ) 
         #self.controller.save_model(spectrum)
         astra_profile = self.astra_profiles[self.astra_combo.selected_value]
         self.worker = Kernel.AstraWorker(race_model, astra_profile)
