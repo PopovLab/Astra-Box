@@ -15,7 +15,7 @@ class RackFrame(ttk.Frame):
 
         self.exp_explorer = Explorer(self, title='Experiments', model_store=Storage().exp_store)
         self.exp_explorer.on_select = self.on_explorer_select
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))   
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))   
              
         self.exp_explorer = Explorer(self, title='Equlibrium', model_store=Storage().equ_store)
         self.exp_explorer.on_select = self.on_explorer_select
@@ -35,7 +35,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ttk.Radiobutton(self, text="Calculation button", variable=self.v, value="imped", width=25, command= self.show_calc_view,
+        ttk.Radiobutton(self, text="Run ASTRA", variable=self.v, value="imped", width=25, command= self.show_calc_view,
                             style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')

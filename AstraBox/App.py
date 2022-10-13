@@ -1,6 +1,7 @@
 import imp
 import os
 import tkinter as tk
+import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
@@ -12,6 +13,14 @@ class App:
         root.title("ASTRA Box")
         root.minsize(1000, 550)
 
+
+
+        style = ttk.Style()
+        # стиль для кнопок
+        style.configure('Toolbutton', foreground='maroon', 
+                                backgound = 'red',
+                                padding=12,  #{'padx': 5, 'pady': 10},
+                                font=('Helvetica', 12))
 
         abspath = os.path.abspath('data')
         if not os.path.exists(abspath):
