@@ -5,6 +5,24 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 
+
+class OptionsBox(tk.Frame):
+    def __init__(self, master, options) -> None:
+        super().__init__(master)
+        self.options = options
+        for key, value in options.items():
+            var = tk.DoubleVar(master= self, name = key, value=value)
+            label = tk.Label(master=self, text=key)
+            label.pack(side = tk.LEFT, ipadx=10)		
+            entry = tk.Entry(self, width=10, textvariable= var)
+            entry.pack(side = tk.LEFT)
+
+    def update(self):
+        for key in self.options.keys():
+            var = tk.DoubleVar(master= self, name = key)
+            self.options[key] = var.get()
+
+
 class SpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Spectrum View')        
@@ -14,12 +32,16 @@ class SpectrumView(tk.LabelFrame):
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
+        self.options_box = OptionsBox(self, self.model.setting['options'])
+        self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        btn.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
 
+
     def generate(self):
+        self.options_box.update()
         self.model.generate()
         self.spectrum_plot = SpectrumPlot(self,self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
