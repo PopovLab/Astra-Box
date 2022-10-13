@@ -1,8 +1,10 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
 from AstraBox.Storage import Storage
+from AstraBox.Views.SpectrumView import SpectrumView
 
 class RTModelView(ttk.Frame):
     def __init__(self, master, model) -> None:
@@ -49,6 +51,9 @@ class RTModelView(ttk.Frame):
             for row, (_, item) in enumerate(value.items()):
                 wg = Widgets.create_widget(frame, item)
                 wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        self.spectrum_view = SpectrumView(self, SpectrumModel())
+        self.spectrum_view.grid(row=5, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def save_model(self):
         if self.var_name.get() == 'new model':
