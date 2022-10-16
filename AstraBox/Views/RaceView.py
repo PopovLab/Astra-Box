@@ -74,7 +74,10 @@ class TrajectoryView(ttk.Frame):
         i1 = self.index_1.get()
         i2 = i1 + self.index_2.get()
         
-        rays, time_stamp = self.model.get_rays(self.trajectory_list[index])
+        if not index in self.rays_cache:
+            print(f'{index} not in cache')
+            self.rays_cache[index] = self.model.get_rays(self.trajectory_list[index])
+        rays, time_stamp = self.rays_cache[index]
         if i2>len(rays):
             i2 = len(rays)
         self.plot.update(rays[i1:i2], time_stamp)
