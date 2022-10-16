@@ -50,25 +50,44 @@ class TrajectoryView(ttk.Frame):
             self.index_var = tk.IntVar(master = self, value=0)
             self.index_var.trace_add('write', self.update_var)
 
-            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.trajectory_list)-1, resolution=1, length = 250 )
-            self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-            rays, _  = model.get_rays(self.trajectory_list[0])
-            self.plot = TrajectoryPlot(self, rays)
-            self.plot.grid(row=1, column=0, sticky=tk.W, pady=4, padx=8)
+            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.trajectory_list)-1, resolution=1)
+            self.slider.grid(row=0, column=0, columnspan=2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+           
+            rays, time_stamp  = model.get_rays(self.trajectory_list[0])
+            self.index_1 = tk.IntVar(master = self, value=0)
+            self.index_1.trace_add('write', self.update_var)
+            self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, from_=0, to=len(rays)-1, resolution=1 )
+            self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+            self.index_2 = tk.IntVar(master = self, value=len(rays)-1)
+            self.index_2.trace_add('write', self.update_var)
+            self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL, from_=0, to=len(rays)-1, resolution=1 )
+            self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+            self.plot = TrajectoryPlot(self, rays, time_stamp)
+            self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=4, padx=8)
+            self.columnconfigure(0, weight=1)
+            self.columnconfigure(1, weight=1)
 
     def update_var(self, var, indx, mode):
         index = self.index_var.get()
-        rays, _ = self.model.get_rays(self.trajectory_list[index])
-        self.plot.update(rays)
+        i1 = self.index_1.get()
+        i2 = i1 + self.index_2.get()
+        
+        rays, time_stamp = self.model.get_rays(self.trajectory_list[index])
+        if i2>len(rays):
+            i2 = len(rays)
+        self.plot.update(rays[i1:i2], time_stamp)
         pass
 
 
 class TrajectoryPlot(ttk.Frame):
-    def __init__(self, master, rays) -> None:
+    def __init__(self, master, rays, time_stamp) -> None:
         super().__init__(master)  
         self.fig = plt.figure(figsize=(6,6))
-        #plt.title('Rays title')
+        #self.fig.title(time_stamp)
         self.ax = self.fig.add_subplot(111)
+        self.ax.set_title(time_stamp)
         self.ax.axis('equal')
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
@@ -82,8 +101,10 @@ class TrajectoryPlot(ttk.Frame):
         #tb = VerticalNavigationToolbar2Tk(canvas, frame)
         #canvas.get_tk_widget().grid(row=2, column=0)
 
-    def update(self, rays):
+    def update(self, rays, time_stamp):
         self.ax.clear()
+        self.ax.set_title(time_stamp)
+        print(len(rays))
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
         self.canvas.draw()

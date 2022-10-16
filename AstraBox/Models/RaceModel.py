@@ -67,12 +67,10 @@ class RaceModel(BaseModel):
             self.pack_model_to_zip(zip, self.rt_model)
             for key, item in Storage().sbr_store.data.items():
                 self.pack_model_to_zip(zip, item)
-        
         return zip_file
 
 
     def get_radial_data_list(self):
-
         tmp = 'dat/'
         print(self.race_zip_file)
         with zipfile.ZipFile(self.race_zip_file) as zip:
@@ -97,6 +95,7 @@ class RaceModel(BaseModel):
 
 
     def get_rays(self, f):
+        time_stamp = '0' + f[13:20]
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 header = file.readline().decode("utf-8").replace('=', '_').split()
@@ -115,4 +114,4 @@ class RaceModel(BaseModel):
                         rays.append(ray)
                     for index, (p, item) in enumerate(ray.items()):
                         item.append(float_try(row[index]))
-        return rays, N_traj        
+        return rays, time_stamp        
