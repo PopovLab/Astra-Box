@@ -115,3 +115,19 @@ class RaceModel(BaseModel):
                     for index, (p, item) in enumerate(ray.items()):
                         item.append(float_try(row[index]))
         return rays, time_stamp        
+
+
+    def read_plasma_bound(self):
+        Icms_path = 'lhcd/out/lcms.dat'
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(Icms_path) as file:
+                header = file.readline().split()
+                #print(header)
+                lines = file.readlines()
+
+                table = [line.split() for line in lines]
+                table = list(filter(None, table))
+
+                R = [float(row[0]) for row in table]
+                Z = [float(row[1]) for row in table]
+        return R, Z

@@ -47,6 +47,7 @@ class TrajectoryView(ttk.Frame):
         self.trajectory_list = model.get_trajectory_list()
         self.rays_cache = {}
         if len(self.trajectory_list)>0: 
+            plasma_bound = model.read_plasma_bound()
             self.index_var = tk.IntVar(master = self, value=0)
             self.index_var.trace_add('write', self.update_var)
 
@@ -64,7 +65,7 @@ class TrajectoryView(ttk.Frame):
             self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL, from_=0, to=len(rays)-1, resolution=1 )
             self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-            self.plot = TrajectoryPlot(self, rays, time_stamp)
+            self.plot = TrajectoryPlot(self, rays, time_stamp, plasma_bound)
             self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
@@ -85,13 +86,15 @@ class TrajectoryView(ttk.Frame):
 
 
 class TrajectoryPlot(ttk.Frame):
-    def __init__(self, master, rays, time_stamp) -> None:
+    def __init__(self, master, rays, time_stamp, plasma_bound) -> None:
         super().__init__(master)  
+        self.R, self.Z = plasma_bound
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title(time_stamp)
         self.ax.axis('equal')
+        self.ax.plot(self.R, self.Z)
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
 
@@ -107,7 +110,7 @@ class TrajectoryPlot(ttk.Frame):
     def update(self, rays, time_stamp):
         self.ax.clear()
         self.ax.set_title(time_stamp)
-        print(len(rays))
+        self.ax.plot(self.R, self.Z)
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
         self.canvas.draw()
