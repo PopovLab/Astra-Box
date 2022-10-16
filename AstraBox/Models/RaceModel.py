@@ -36,7 +36,7 @@ class RaceModel(BaseModel):
         return 'RaceModel'   
 
     def get_work_folder(self):
-        return "data\\test_work_folder"
+        return "data\\races"
 
     def prepare_model_data(self, model):
         file_name = model.get_dest_path()        
