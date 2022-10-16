@@ -14,7 +14,11 @@ class RaceHelper:
         self.rt_model = rt_model
         #self.race_model = RaceModel('race_model')
 
-
+def float_try(str):
+    try:
+        return float(str)
+    except ValueError:
+        return 0.0
 
 class RaceModel(BaseModel):
 
@@ -82,3 +86,33 @@ class RaceModel(BaseModel):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
+
+
+    def get_trajectory_list(self):
+        tmp = 'lhcd/out/traj.'
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+        list.sort()  
+        return list            
+
+
+    def get_rays(self, f):
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(f) as file:
+                header = file.readline().decode("utf-8").replace('=', '_').split()
+
+                lines = file.readlines()
+                table = [line.decode("utf-8").split() for line in lines]
+                table = list(filter(None, table))
+
+                rays = []
+                N_traj = 0
+
+                for row in table:
+                    if N_traj != int(row[12]):
+                        N_traj = int(row[12])
+                        ray = dict([ (h, []) for h in header ])
+                        rays.append(ray)
+                    for index, (p, item) in enumerate(ray.items()):
+                        item.append(float_try(row[index]))
+        return rays, N_traj        

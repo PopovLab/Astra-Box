@@ -12,7 +12,6 @@ class RaceView(ttk.Frame):
  
     def __init__(self, master, model) -> None:
         super().__init__(master)        
-        #self.title = 'ImpedModelView'
         title = f"Race data View {model.name}"
         print(title)
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', self.delete_model)]}
@@ -22,11 +21,86 @@ class RaceView(ttk.Frame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
 
-        #self.InitUI(model)
-
         self.label = ttk.Label(self,  text=f'zip file:{model.race_zip_file}')
         self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
 
+        self.notebook = ttk.Notebook(self)
+        self.notebook.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        radial_data_view = RadialDataView(self.notebook, model= model)
+        self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
+        
+        trajectory_view = TrajectoryView(self.notebook, model= model)
+        self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
+
+    def delete_model(self):
+        ModelFactory.delete_model(self.model)
+        
+    def destroy(self):
+        print("RaceView destroy")
+        super().destroy()   
+
+class TrajectoryView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        self.model = model
+        self.trajectory_list = model.get_trajectory_list()
+        self.rays_cache = {}
+        if len(self.trajectory_list)>0: 
+            self.index_var = tk.IntVar(master = self, value=0)
+            self.index_var.trace_add('write', self.update_var)
+
+            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.trajectory_list)-1, resolution=1, length = 250 )
+            self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+            rays, _  = model.get_rays(self.trajectory_list[0])
+            self.plot = TrajectoryPlot(self, rays)
+            self.plot.grid(row=1, column=0, sticky=tk.W, pady=4, padx=8)
+
+    def update_var(self, var, indx, mode):
+        index = self.index_var.get()
+        rays, _ = self.model.get_rays(self.trajectory_list[index])
+        self.plot.update(rays)
+        pass
+
+
+class TrajectoryPlot(ttk.Frame):
+    def __init__(self, master, rays) -> None:
+        super().__init__(master)  
+        self.fig = plt.figure(figsize=(6,6))
+        #plt.title('Rays title')
+        self.ax = self.fig.add_subplot(111)
+        self.ax.axis('equal')
+        for ray in rays:
+            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
+
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(row=1, column=0)
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=0, sticky=tk.W)
+        toobar = NavigationToolbar2Tk(self.canvas, frame)
+        #tb = VerticalNavigationToolbar2Tk(canvas, frame)
+        #canvas.get_tk_widget().grid(row=2, column=0)
+
+    def update(self, rays):
+        self.ax.clear()
+        for ray in rays:
+            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
+        self.canvas.draw()
+
+    def destroy(self):
+        print("SimplePlot destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()   
+
+
+
+
+class RadialDataView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        self.model = model
         self.radial_data_list = model.get_radial_data_list()
 
         if len(self.radial_data_list)>0: 
@@ -34,14 +108,11 @@ class RaceView(ttk.Frame):
             self.index_var.trace_add('write', self.update_var)
 
             self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.radial_data_list)-1, resolution=1, length = 250 )
-            self.slider.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
  
             profiles = self.get_profiles(0)
             self.plot = SimplePlot(self, profiles)
-            self.plot.grid(row=4, column=0, sticky=tk.W, pady=4, padx=8)
-
-    def delete_model(self):
-        ModelFactory.delete_model(self.model)
+            self.plot.grid(row=1, column=0, sticky=tk.W, pady=4, padx=8)
 
     def get_profiles(self, index):
         file = self.radial_data_list[index]
@@ -51,10 +122,7 @@ class RaceView(ttk.Frame):
     def update_var(self, var, indx, mode):
         profiles = self.get_profiles(self.index_var.get())
         self.plot.update(profiles)
-        
-    def destroy(self):
-        print("RaceView destroy")
-        super().destroy()   
+
 
 class SimplePlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
@@ -79,7 +147,7 @@ class SimplePlot(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=1, column=0)
+        self.canvas.get_tk_widget().grid(row=1, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
         frame = ttk.Frame(self)
         frame.grid(row=0, column=0, sticky=tk.W)
         toobar = NavigationToolbar2Tk(self.canvas, frame)

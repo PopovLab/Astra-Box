@@ -2,6 +2,7 @@ import os
 import json
 import pathlib 
 from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.SpectrumModel import SpectrumModel
 
 def default_rt_setting():
         return {
@@ -337,7 +338,32 @@ class RTModel(BaseModel):
 
     
     def get_text(self):
-        return 'test ray_tracing data'
+        #return 'test ray_tracing data'
+        return self.prepare_dat_file()
 
     def get_dest_path(self):
         return os.path.join('lhcd', 'ray_tracing.dat')
+
+    def prepare_dat_file(self):
+        lines = []
+        def item_to_line(item):
+            name = item['title']
+            vs = str(item['value'])
+            v2 = item['description']
+            return '  ' + vs + ' '*(9-len(vs)) + "  ! " + name + ' '*(15-len(name)) + v2 + '\n'
+
+        for section_name, items in self.setting.items():
+            if 'value' in items:
+                continue
+            if section_name == "spectrum":
+                print('prepare: '+ section_name)      
+                #lines += prepare_spectrum()
+            else:
+                #print('section: '+ section_name)  
+                #print(items)
+                lines.append("!"*15 + " "+ section_name + " "+ "!"*(60-len(section_name)) + "\n")
+                lines += [ item_to_line(item) for name, item in items.items() if name !='total_power']
+                
+        spect = SpectrumModel(self.setting)
+        lines += spect.get_text()   
+        return ''.join(lines)        

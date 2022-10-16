@@ -38,7 +38,7 @@ class SpectrumView(tk.LabelFrame):
         btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-
+        self.generate()
 
     def generate(self):
         self.options_box.update()
@@ -63,7 +63,7 @@ class SpectrumPlot(ttk.Frame):
         #canvas.get_tk_widget().grid(row=2, column=0)
 
     def destroy(self):
-        print("SimplePlot destroy")
+        print("SpectrumPlot destroy")
         if self.fig:
             plt.close(self.fig)
         super().destroy()       

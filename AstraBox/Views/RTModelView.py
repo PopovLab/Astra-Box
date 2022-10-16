@@ -46,13 +46,15 @@ class RTModelView(ttk.Frame):
         for key, value in self.model.setting.items():
             if 'value' in value:
                 continue
+            if key == 'spectrum':
+                continue            
             frame = ttk.Frame(self.notebook)  
             self.notebook.add(frame, text=key, underline=0, sticky=tk.NE + tk.SW)
             for row, (_, item) in enumerate(value.items()):
                 wg = Widgets.create_widget(frame, item)
                 wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.spectrum_view = SpectrumView(self, SpectrumModel())
+        self.spectrum_view = SpectrumView(self, SpectrumModel(self.model.setting))
         self.spectrum_view.grid(row=5, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def save_model(self):
@@ -62,8 +64,8 @@ class RTModelView(ttk.Frame):
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
 
-        if self.model.name in Storage().rt_store.data:
-            tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
-            return
+        #if self.model.name in Storage().rt_store.data:
+        #    tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
+        #    return
         Storage().rt_store.data[self.model.name] = self.model
         Storage().rt_store.on_update_data()
