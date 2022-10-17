@@ -1,3 +1,4 @@
+from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -8,6 +9,21 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
 
+class InfoPanel(tk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)
+        info = {
+            'Exp:': model.data['ExpModel']['name'],
+            'Equ:': model.data['EquModel']['name'],
+            'Ray tracing:': model.data['RTModel']['name']
+            }
+        for key, value in info.items():
+            var = tk.StringVar(master= self, value=value)
+            label = tk.Label(master=self, text=key)
+            label.pack(side = tk.LEFT, ipadx=10)		
+            entry = tk.Entry(self, width=15, textvariable= var, state='disabled')
+            entry.pack(side = tk.LEFT)
+
 class RaceView(ttk.Frame):
  
     def __init__(self, master, model) -> None:
@@ -16,16 +32,19 @@ class RaceView(ttk.Frame):
         print(title)
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', self.delete_model)]}
         self.model = model
+        self.model.load_model_data()
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
+        self.label = ttk.Label(self,  text=f'name: {model.name}')
+        self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
-        self.label = ttk.Label(self,  text=f'zip file:{model.race_zip_file}')
-        self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+        ip = InfoPanel(self, model)
+        ip.grid(row=2, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         radial_data_view = RadialDataView(self.notebook, model= model)
         self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)

@@ -7,6 +7,7 @@ from AstraBox.Views.LogConsole import LogConsole
 from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
+from AstraBox.Widgets import StringBox
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -34,14 +35,19 @@ class CalculationView(ttk.Frame):
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(4, weight=1)        
         #self.rowconfigure(0, weight=1)    
+
+        self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
+        self.rn_wdg = StringBox(self, self.race_name)
+        self.rn_wdg.grid(row=1, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
         self.exp_combo = ComboBox(self, 'Experiments', Storage().exp_store.get_keys_list())
-        self.exp_combo.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.exp_combo.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.equ_combo = ComboBox(self, 'Equlibrium', Storage().equ_store.get_keys_list())
-        self.equ_combo.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
+        self.equ_combo.grid(row=2, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
         self.rt_combo = ComboBox(self, 'RT configuration', Storage().rt_store.get_keys_list())
-        self.rt_combo.grid(row=1, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.rt_combo.grid(row=2, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.astra_combo = ComboBox(self, 'Astra profiles', list(self.astra_profiles.keys()))
-        self.astra_combo.grid(row=1, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.astra_combo.grid(row=2, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
         self.log_console = LogConsole(runframe)
@@ -50,8 +56,8 @@ class CalculationView(ttk.Frame):
         runframe.rowconfigure(1, weight=1)
         self.first_init = True
         #self.bind('<Visibility>', self.visibilityChanged)
-        runframe.grid(row=2, column=0, columnspan=5,  sticky=tk.N + tk.S + tk.E + tk.W)
-        self.rowconfigure(2, weight=1)
+        runframe.grid(row=3, column=0, columnspan=5,  sticky=tk.N + tk.S + tk.E + tk.W)
+        self.rowconfigure(3, weight=1)
 
 
     def start(self):
@@ -62,8 +68,8 @@ class CalculationView(ttk.Frame):
         exp = self.exp_combo.selected_value
         equ = self.equ_combo.selected_value
         rt = self.rt_combo.selected_value
-        name =  datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        race_model = RaceModel(name= name, exp_name= exp, equ_name= equ, rt_name= rt ) 
+        #name =  datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        race_model = RaceModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
         #self.controller.save_model(spectrum)
         astra_profile = self.astra_profiles[self.astra_combo.selected_value]
         self.worker = Kernel.AstraWorker(race_model, astra_profile)

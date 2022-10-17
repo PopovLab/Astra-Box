@@ -1,5 +1,6 @@
 import os
 import json
+import encodings
 import pathlib 
 import zipfile
 import datetime
@@ -29,6 +30,9 @@ class RaceModel(BaseModel):
         self.exp_model = Storage().exp_store.data[exp_name]
         self.equ_model = Storage().equ_store.data[equ_name]
         self.rt_model = Storage().rt_store.data[rt_name]
+        self.data['ExpModel'] = self.exp_model.data
+        self.data['EquModel'] = self.equ_model.data
+        self.data['RTModel'] = self.rt_model.data
         self.race_zip_file = None
 
     @property
@@ -59,6 +63,19 @@ class RaceModel(BaseModel):
         dt_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         return f'{prefix}_{dt_string}.zip'
 
+    def load_model_data(self):
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open( 'race_model.json' , "r" ) as json_file:
+                self.data = json.load(json_file)
+
+    def get_models_dict(self):
+        return {
+            'RaceModel' : self.data,
+            "exp_model" : self.exp_model.data,
+            "equ_model" : self.equ_model.data,
+            "rt_model" : self.rt_model.data,
+        }
+
     def prepare_run_data(self):
         zip_file = 'Data/races/race_data.zip'
         with zipfile.ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
@@ -67,6 +84,10 @@ class RaceModel(BaseModel):
             self.pack_model_to_zip(zip, self.rt_model)
             for key, item in Storage().sbr_store.data.items():
                 self.pack_model_to_zip(zip, item)
+            with zip.open( 'race_model.json' , "w" ) as json_file:
+                json_writer = encodings.utf_8.StreamWriter(json_file)
+                # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
+                json.dump(self.data, json_writer, ensure_ascii=False, indent=2)
         return zip_file
 
 
