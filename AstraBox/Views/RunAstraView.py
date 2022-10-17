@@ -26,10 +26,10 @@ class ComboBox(ttk.Frame):
         self.combo.grid(row=1, column=0)
 
 
-class CalculationView(ttk.Frame):
+class RunAstraView(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.header_content =  { "title": "Calculation", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate), ('Test', None)]}
+        self.header_content =  { "title": "Run ASTRA", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate), ('Test', None)]}
         self.astra_profiles = AstraBox.Models.AstraProfiles.default()
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)

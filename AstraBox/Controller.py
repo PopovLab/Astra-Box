@@ -2,7 +2,7 @@ from AstraBox.Views.EmptyView import EmptyView
 from AstraBox.Views.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
 from AstraBox.Views.RaceView import RaceView
-from AstraBox.Views.CalculationView import CalculationView
+from AstraBox.Views.RunAstraView import RunAstraView
 
 class Controller:
     def __new__(cls):
@@ -43,5 +43,5 @@ class Controller:
 
     def show_calc_view(self):
         print('show_calc_view')
-        calc_view = CalculationView(self.content_frame)  
+        calc_view = RunAstraView(self.content_frame)  
         self.content_frame.set_content(calc_view)
