@@ -10,13 +10,13 @@ from AstraBox.Storage import Storage
 def create_model(model_type, model_name):
     match model_type:
         case 'exp':
-            print(f'create rt - {model_name}')
+            print(f'create exp - {model_name}')
             model = ExpModel(model_name)        
         case 'equ':
-            print(f'create rt - {model_name}')
+            print(f'create equ - {model_name}')
             model = EquModel(model_name)        
         case 'sbr':
-            print(f'create rt - {model_name}')
+            print(f'create sbr - {model_name}')
             model = SbrModel(model_name)        
         case 'rt':
             print(f'create rt - {model_name}')
