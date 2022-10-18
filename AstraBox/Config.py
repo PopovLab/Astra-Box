@@ -3,11 +3,11 @@ import json
 import re 
 
 __instance = {
-        'CWD' : 'data'
+        'current_workspace_dir' : 'data'
     }
 
 
-def get_cfg():
+def get():
     global __instance
     abspath = os.path.join(os.path.abspath('data'), 'config.json')
     if os.path.exists(abspath):
@@ -15,17 +15,17 @@ def get_cfg():
             __instance = json.load(json_file)
     return __instance
 
-def save_cfg():
+def save():
     global __instance
     abspath = os.path.join(os.path.abspath('data'), 'config.json')
     with open( abspath , "w" ) as json_file:
         json.dump( __instance , json_file, indent = 2 )
 
-def get_CWD():
-    return get_cfg()['CWD']
+def get_current_workspace_dir():
+    return get()['current_workspace_dir']
 
-def set_CWD(path):
+def set_current_workspace_dir(path):
     global __instance
-    print(f'set CWD: {path}')
-    __instance['CWD'] = path
-    save_cfg()
+    print(f'set workspace: {path}')
+    __instance['current_workspace_dir'] = path
+    save()

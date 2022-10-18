@@ -56,7 +56,7 @@ class Storage:
     def open(self, folder) ->None:
         print(folder)
         self.tk_root.title(f"ASTRA Box in {folder}")
-        Config.set_CWD(folder)
+        Config.set_current_workspace_dir(folder)
         self.data_folder = folder
 
         self.exp_store.open(folder)

@@ -11,7 +11,7 @@ class RackFrame(ttk.Frame):
         self.active_exlorer = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-        ttk.Radiobutton(self, text="Open work folder", variable=self.v, value="pwf", width=25, command= self.open_work_folder,
+        ttk.Radiobutton(self, text="Open Workspace", variable=self.v, value="pwf", width=25, command= self.open_work_folder,
                             style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')

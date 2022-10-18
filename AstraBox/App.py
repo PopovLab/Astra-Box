@@ -24,7 +24,7 @@ class App:
                                 font=('Helvetica', 12))
         style.configure("Header.TLabel", padding=12, font=('Helvetica', 12))
 
-        abspath = os.path.abspath(Config.get_CWD())
+        abspath = os.path.abspath(Config.get_current_workspace_dir())
         if not os.path.exists(abspath):
             os.mkdir(abspath)
         self.base_folder = abspath
