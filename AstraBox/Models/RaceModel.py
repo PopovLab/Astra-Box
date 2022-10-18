@@ -77,7 +77,7 @@ class RaceModel(BaseModel):
         }
 
     def prepare_run_data(self):
-        zip_file = 'Data/races/race_data.zip'
+        zip_file = os.path.join(Storage().data_folder, 'race_data.zip')
         with zipfile.ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)

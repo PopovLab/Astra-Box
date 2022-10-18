@@ -13,13 +13,12 @@ class App:
         root.title("ASTRA Box")
         root.minsize(1000, 550)
 
-
-
         style = ttk.Style()
         # стиль для кнопок
+
         style.configure('Toolbutton', foreground='maroon', 
                                 backgound = 'red',
-                                padding=12,  #{'padx': 5, 'pady': 10},
+                                padding= 8,  #{'padx': 5, 'pady': 10},
                                 font=('Helvetica', 12))
         style.configure("Header.TLabel", padding=12, font=('Helvetica', 12))
 
@@ -30,7 +29,7 @@ class App:
         
         store = Storage()
         store.open(abspath)
-        self.scan_folders()
+        #self.scan_folders()
         # first paned window
         w1 = tk.PanedWindow( background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
@@ -58,25 +57,3 @@ class App:
             self.root.destroy()
             
 
-    def scan_folders(self):
-        store = Storage()
-        path = os.path.join(store.data_folder, 'exp')
-        if os.path.exists(path):
-            filenames = next(os.walk(path), (None, None, []))[2]
-            for f in filenames:
-                if not f in store.exp_store.data:
-                    store.exp_store.data[f] = ModelFactory.create_model('exp',f)
-
-        path = os.path.join(store.data_folder, 'equ')
-        if os.path.exists(path):
-            filenames = next(os.walk(path), (None, None, []))[2]
-            for f in filenames:
-                if not f in store.equ_store.data:
-                    store.equ_store.data[f] = ModelFactory.create_model('equ',f)     
-
-        path = os.path.join(store.data_folder, 'sbr')
-        if os.path.exists(path):
-            filenames = next(os.walk(path), (None, None, []))[2]
-            for f in filenames:
-                if not f in store.sbr_store.data:
-                    store.sbr_store.data[f] = ModelFactory.create_model('sbr',f)           
