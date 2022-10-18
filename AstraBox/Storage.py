@@ -8,10 +8,17 @@ import AstraBox.Config as Config
 class ModelStore:
     def __init__(self, name) -> None:
         self.name = name
+        self.data = {}
         self.on_update_data = None
 
     def close(self):
         self.data.close()
+
+    def reset(self, data_folder):
+        self.data_folder = data_folder
+        self.data = {}
+        if self.on_update_data:
+            self.on_update_data()        
 
     def open(self, data_folder):
         self.data_folder = data_folder
@@ -23,6 +30,10 @@ class ModelStore:
         self.data = shelve.open(filename)
         if self.on_update_data:
             self.on_update_data()        
+
+    def update(self):
+        if self.on_update_data:
+            self.on_update_data()  
 
     def get_keys_list(self):
         return list(self.data.keys())
@@ -59,12 +70,15 @@ class Storage:
         Config.set_current_workspace_dir(folder)
         self.data_folder = folder
 
-        self.exp_store.open(folder)
-        self.equ_store.open(folder)
-        self.sbr_store.open(folder)
+        self.exp_store.reset(folder)
+        self.equ_store.reset(folder)
+        self.sbr_store.reset(folder)
         self.rt_store.open(folder)
         self.race_store.open(folder)         
         self.scan_folders()
+        self.exp_store.update()
+        self.equ_store.update()
+        self.sbr_store.update()
 
     def close(self):
         self.exp_store.close()
