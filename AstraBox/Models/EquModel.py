@@ -6,8 +6,8 @@ from AstraBox.Storage import Storage
 
 class EquModel(BaseModel):
 
-    def __init__(self, name = None, model= None) -> None:
-        super().__init__(name, model)
+    def __init__(self, name = None) -> None:
+        super().__init__(name)
         self._setting = None
         self.changed = False
 

@@ -7,18 +7,10 @@ def get_uuid_id():
 
 class BaseModel:
     
-    def __init__(self, name = None, model = None) -> None:
+    def __init__(self, name = None) -> None:
         self.data = {}
-        if model is not None:
-            self.data = model.data.copy()
-            self.data['uuid'] = get_uuid_id()
-            self.data['name'] = model.name + '_' + self.data['uuid'][0:4]
-            self.status = ''
-            return
-
-        self.data['uuid'] = get_uuid_id()
         if name is None:
-            self.data['name'] = 'undef_' + self.data['uuid'][0:4]
+            self.data['name'] = 'undef_' + get_uuid_id()[0:4]
         else:
             self.data['name'] = name
 

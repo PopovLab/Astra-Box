@@ -23,8 +23,8 @@ def float_try(str):
 
 class RaceModel(BaseModel):
 
-    def __init__(self, name = None, model= None, exp_name = None, equ_name = None, rt_name = None) -> None:
-        super().__init__(name, model)
+    def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None) -> None:
+        super().__init__(name)
         self._setting = None
         self.changed = False
         self.exp_model = Storage().exp_store.data[exp_name]
