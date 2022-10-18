@@ -7,7 +7,7 @@ class HeaderPanel(ttk.Frame):
         # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
         padx = 20
         pady = 5
-        label = ttk.Label(self,  text=content['title'])
+        label = ttk.Label(self,  text=content['title'], style="Header.TLabel")
         label.pack(side=tk.LEFT, padx=padx, pady=pady)
 
         for text, command in content['buttons']:

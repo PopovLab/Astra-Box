@@ -21,6 +21,7 @@ class App:
                                 backgound = 'red',
                                 padding=12,  #{'padx': 5, 'pady': 10},
                                 font=('Helvetica', 12))
+        style.configure("Header.TLabel", padding=12, font=('Helvetica', 12))
 
         abspath = os.path.abspath('data')
         if not os.path.exists(abspath):

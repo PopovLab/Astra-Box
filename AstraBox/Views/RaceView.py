@@ -28,7 +28,7 @@ class RaceView(ttk.Frame):
  
     def __init__(self, master, model) -> None:
         super().__init__(master)        
-        title = f"Race data View {model.name}"
+        title = f"Race: {model.name}"
         print(title)
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', self.delete_model)]}
         self.model = model
