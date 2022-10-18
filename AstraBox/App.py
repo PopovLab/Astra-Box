@@ -8,6 +8,8 @@ from AstraBox.Views.ContentFrame import ContentFrame
 from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
+import AstraBox.Config as Config
+
 class App:
     def __init__(self, root):
         root.title("ASTRA Box")
@@ -22,12 +24,13 @@ class App:
                                 font=('Helvetica', 12))
         style.configure("Header.TLabel", padding=12, font=('Helvetica', 12))
 
-        abspath = os.path.abspath('data')
+        abspath = os.path.abspath(Config.get_CWD())
         if not os.path.exists(abspath):
             os.mkdir(abspath)
         self.base_folder = abspath
         
         store = Storage()
+        store.tk_root = root
         store.open(abspath)
         #self.scan_folders()
         # first paned window

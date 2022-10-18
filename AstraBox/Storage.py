@@ -1,9 +1,9 @@
-import math
+import tkinter as tk
 import os
 import shelve
 from sre_constants import NOT_LITERAL
 import AstraBox.Models.ModelFactory as ModelFactory
-
+import AstraBox.Config as Config
 
 class ModelStore:
     def __init__(self, name) -> None:
@@ -40,6 +40,7 @@ class Storage:
         return cls.instance
 
     __init_flag__ = True    
+    tk_root = None
 
     def __init__(self) -> None:
         print('Storage.init')
@@ -49,10 +50,13 @@ class Storage:
             self.sbr_store = ModelStore('sbr')
             self.rt_store = ModelStore('rt')
             self.race_store = ModelStore('races')            
+            
             self.__init_flag__ = False
 
     def open(self, folder) ->None:
         print(folder)
+        self.tk_root.title(f"ASTRA Box in {folder}")
+        Config.set_CWD(folder)
         self.data_folder = folder
 
         self.exp_store.open(folder)
