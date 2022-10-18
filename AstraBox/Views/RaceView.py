@@ -9,9 +9,9 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
 
-class InfoPanel(tk.Frame):
+class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
-        super().__init__(master)
+        super().__init__(master, text= 'Race info')
         info = {
             'Exp:': model.data['ExpModel']['name'],
             'Equ:': model.data['EquModel']['name'],
@@ -37,11 +37,11 @@ class RaceView(ttk.Frame):
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-        self.label = ttk.Label(self,  text=f'name: {model.name}')
-        self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+        #self.label = ttk.Label(self,  text=f'name: {model.name}')
+        #self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
         ip = InfoPanel(self, model)
-        ip.grid(row=2, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        ip.grid(row=2, column=0, columnspan=5, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
