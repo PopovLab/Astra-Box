@@ -16,10 +16,10 @@ class Controller:
         print('Controller.init')
         #self.data = None
 
-    def open_work_folder(self):
+    def open_folder_dialog(self):
         dir = tk.filedialog.askdirectory()
-        print(dir)
-        Storage().open(dir)
+        if len(dir)>0:
+            Storage().open(dir)
 
 
     def set_views(self, rack_frame, content_frame) ->None:
