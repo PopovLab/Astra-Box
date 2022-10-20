@@ -13,7 +13,7 @@ import AstraBox.Config as Config
 class App:
     def __init__(self, root):
         root.title("ASTRA Box")
-        root.minsize(1000, 550)
+        root.minsize(1050, 550)
 
         style = ttk.Style()
         # стиль для кнопок
