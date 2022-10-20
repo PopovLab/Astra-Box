@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
 
+
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
         super().__init__(master, text= 'Race info')
@@ -28,9 +29,9 @@ class RaceView(ttk.Frame):
  
     def __init__(self, master, model) -> None:
         super().__init__(master)        
+        self.master = master
         title = f"Race: {model.name}"
-        print(title)
-        self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', self.delete_model)]}
+        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('new windows', self.open_new_windows) ]}
         self.model = model
         self.model.load_model_data()
         self.hp = HeaderPanel(self, self.header_content)
@@ -55,6 +56,13 @@ class RaceView(ttk.Frame):
     def delete_model(self):
         ModelFactory.delete_model(self.model)
         
+    def open_new_windows(self):
+        new_window = tk.Toplevel(self.master)
+        new_window.title("Race Window")
+        new_window.geometry("1150x870")                
+        model_view = RaceView(new_window, self.model)   
+        model_view.grid(row=0, column=0, padx=20, sticky=tk.N + tk.S + tk.E + tk.W)     
+
     def destroy(self):
         print("RaceView destroy")
         super().destroy()   
