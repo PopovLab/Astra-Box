@@ -174,22 +174,30 @@ class SimplePlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.fig = plt.figure(figsize=(7, 6))
+        self.fig = plt.figure(figsize=(7, 8))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
-        self.axs = self.fig.subplots(2, 2)
-        self.profile_a, = self.axs[0,0].plot(profiles['a'])
-        #axs[0,0].plot(profiles2['a'])    
-        self.axs[0,0].set_title("a")
+        self.axs = self.fig.subplots(4, 1)
+        
+        # профили токов
+        self.profile_J,    = self.axs[0].plot(profiles['a'], profiles['J'])
+        self.profile_Johm, = self.axs[0].plot(profiles['a'], profiles['Johm'])
+        self.profile_Jlh, = self.axs[0].plot(profiles['a'], profiles['Jlh'])
+        self.axs[0].set_title("J, Johm, Jlh")
 
-        self.profile_J, = self.axs[1,0].plot(profiles['J'])
-        #axs[1,0].plot(profiles2['J'])
-        self.axs[1,0].set_title("J")
-
-        self.profile_E, = self.axs[0,1].plot(profiles['E'])
-        self.axs[0,1].set_title("E")
+        # профили E
+        self.profile_E, = self.axs[1].plot(profiles['E'])
+        self.profile_En, = self.axs[1].plot(profiles['En'])
+        self.axs[1].set_title("E, En")
     
-        self.profile_Johm, = self.axs[1,1].plot(profiles['Johm'])
-        self.axs[1,1].set_title("Johm")
+        # профили мощности
+        self.profile_Plh, = self.axs[2].plot(profiles['Plh'])
+        self.profile_Poh, = self.axs[2].plot(profiles['Poh'])
+        self.axs[2].set_title("Plh, Poh")
+    
+        # профили температуры
+        self.profile_Te, = self.axs[3].plot(profiles['Te'])
+        #self.profile_Poh, = self.axs[2].plot(profiles['Poh'])
+        self.axs[3].set_title("Te")
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -203,22 +211,25 @@ class SimplePlot(ttk.Frame):
     def update(self, profiles):
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
 
-        #self.profile_a.set_xdata([1,2,3,5])
-        self.profile_a.set_ydata(profiles['a']) 
-        self.axs[0,0].relim()
-        self.axs[0,0].autoscale_view(True,True,True)        
-        
         self.profile_J.set_ydata(profiles['J']) 
-        self.axs[1,0].relim()
-        self.axs[1,0].autoscale_view(True,True,True)   
+        self.profile_Johm.set_ydata(profiles['Johm']) 
+        self.profile_Jlh.set_ydata(profiles['Jlh']) 
+        self.axs[0].relim()
+        self.axs[0].autoscale_view(True,True,True)        
 
         self.profile_E.set_ydata(profiles['E']) 
-        self.axs[0,1].relim()
-        self.axs[0,1].autoscale_view(True,True,True) 
+        self.profile_En.set_ydata(profiles['En']) 
+        self.axs[1].relim()
+        self.axs[1].autoscale_view(True,True,True) 
 
-        self.profile_Johm.set_ydata(profiles['Johm']) 
-        self.axs[1,1].relim()
-        self.axs[1,1].autoscale_view(True,True,True)  
+        self.profile_Plh.set_ydata(profiles['Plh']) 
+        self.profile_Poh.set_ydata(profiles['Poh']) 
+        self.axs[2].relim()
+        self.axs[2].autoscale_view(True,True,True) 
+        
+        self.profile_Te.set_ydata(profiles['Te']) 
+        self.axs[3].relim()
+        self.axs[3].autoscale_view(True,True,True)         
 
         self.canvas.draw()
 
