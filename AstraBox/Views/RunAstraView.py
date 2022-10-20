@@ -8,6 +8,7 @@ from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
+import AstraBox.Config as Config
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -46,7 +47,7 @@ class RunAstraView(ttk.Frame):
         self.equ_combo.grid(row=2, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
         self.rt_combo = ComboBox(self, 'RT configuration', Storage().rt_store.get_keys_list())
         self.rt_combo.grid(row=2, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.astra_combo = ComboBox(self, 'Astra profiles', list(self.astra_profiles.keys()))
+        self.astra_combo = ComboBox(self, 'Astra profiles', Config.get_astra_profile_list())
         self.astra_combo.grid(row=2, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
@@ -71,7 +72,7 @@ class RunAstraView(ttk.Frame):
         #name =  datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         race_model = RaceModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
         #self.controller.save_model(spectrum)
-        astra_profile = self.astra_profiles[self.astra_combo.selected_value]
+        astra_profile = Config.get_astra_profile(self.astra_combo.selected_value)
         self.worker = Kernel.AstraWorker(race_model, astra_profile)
         #self.worker.controller = self.controller
         self.log_console.set_logger(self.worker.logger)

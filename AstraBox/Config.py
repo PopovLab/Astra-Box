@@ -3,7 +3,19 @@ import json
 import re 
 
 __instance = {
-        'current_workspace_dir' : 'data'
+        'current_workspace_dir' : 'data',
+        'Astra Profiles':{
+            "Astra-6 a4": {
+                'home' : '/home/tmp8/ASTRA-6',
+                'profile' : 'a4',
+                'dest' : '\\\\wsl$\\Ubuntu-20.04\\home\\tmp8\\ASTRA-6'
+            },
+            "Astra-7 a3": {
+                'home' : '/home/tmp8/ASTRA-7',
+                'profile' : 'a3',
+                'dest' : '//wsl$/Ubuntu-20.04/home/tmp8/ASTRA-7',
+            },        
+        }
     }
 
 
@@ -29,3 +41,11 @@ def set_current_workspace_dir(path):
     print(f'set workspace: {path}')
     __instance['current_workspace_dir'] = path
     save()
+
+def get_astra_profile_list():
+    cfg = get()
+    return list(cfg['Astra Profiles'].keys())
+
+def get_astra_profile(profile_name):
+    cfg = get()
+    return cfg['Astra Profiles'][profile_name]
