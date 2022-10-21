@@ -69,7 +69,7 @@ class RaceView(ttk.Frame):
     def open_extra_race_view(self):
         new_window = tk.Toplevel(self.master)
         new_window.title("Extra Race View")
-        new_window.geometry("850x870")                
+        new_window.geometry("950x870")                
         model_view = ExtraRaceView(new_window, self.model)   
         model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)   
 
