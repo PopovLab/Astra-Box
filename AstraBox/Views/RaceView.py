@@ -6,8 +6,11 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 
-from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
+
+from AstraBox.Views.HeaderPanel import HeaderPanel
+from AstraBox.Views.ExtraRaceView import ExtraRaceView
+
 
 
 class InfoPanel(tk.LabelFrame):
@@ -31,7 +34,7 @@ class RaceView(ttk.Frame):
         super().__init__(master)        
         self.master = master
         title = f"Race: {model.name}"
-        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('new windows', self.open_new_windows) ]}
+        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('New windows', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
         self.model = model
         self.model.load_model_data()
         self.hp = HeaderPanel(self, self.header_content)
@@ -62,6 +65,13 @@ class RaceView(ttk.Frame):
         new_window.geometry("850x870")                
         model_view = RaceView(new_window, self.model)   
         model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
+
+    def open_extra_race_view(self):
+        new_window = tk.Toplevel(self.master)
+        new_window.title("Extra Race View")
+        new_window.geometry("850x870")                
+        model_view = ExtraRaceView(new_window, self.model)   
+        model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)   
 
     def destroy(self):
         print("RaceView destroy")
