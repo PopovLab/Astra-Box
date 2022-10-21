@@ -14,4 +14,4 @@ class ContentFrame(ttk.Frame):
             self.content.destroy()
        
         self.content = content
-        self.content.grid(row=0, column=0, padx=20, sticky=tk.N + tk.S + tk.E + tk.W)     
+        self.content.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
