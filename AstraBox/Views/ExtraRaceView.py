@@ -64,10 +64,9 @@ class ExtraRaceView(ttk.Frame):
         self.z = self.make_extra(key)
         plot = ZimPlot(self, self.z, title= key, cmap= self.combo_cmap.get())
         plot.grid(row=self.row_count, column=0, columnspan=5,)
-        #elf.row_count = self.row_count + 1
+        #self.row_count = self.row_count + 1
 
     def make_extra(self, key):
-         
         data_list = [ np.array(self.model.read_radial_data(file)[key]) for file in self.radial_data_list]
         z = np.row_stack(data_list)
         return np.transpose(z)
