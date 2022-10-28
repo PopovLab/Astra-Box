@@ -1,4 +1,5 @@
 import uuid
+import os
 import pathlib
 import json
 
@@ -6,12 +7,9 @@ def get_uuid_id():
     return str(uuid.uuid4())
 
 class BaseModel:
-    
     def __init__(self, name = None) -> None:
         self.data = {}
-        if name is None:
-            self.data['name'] = 'undef_' + get_uuid_id()[0:4]
-        else:
+        if name:
             self.data['name'] = name
 
     @property
@@ -26,9 +24,15 @@ class BaseModel:
     def model_name(self):
         return 'BaseModel'
 
-    @property
-    def uuid(self):
-        return self.data['uuid']
+    def read(self, folder= None):
+        f = os.path.join(folder, f'{self.name}.json')
+        with open(f, "r") as json_file:
+            self.data = json.load(json_file)
+
+    def write(self, folder= None):
+        f = os.path.join(folder, f'{self.name}.json')
+        with open(f, "w") as json_file:
+            json.dump(self.data, json_file, indent=2)
 
     @property
     def status(self):

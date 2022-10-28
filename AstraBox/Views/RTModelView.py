@@ -67,5 +67,5 @@ class RTModelView(ttk.Frame):
         #if self.model.name in Storage().rt_store.data:
         #    tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
         #    return
-        Storage().rt_store.data[self.model.name] = self.model
-        Storage().rt_store.on_update_data()
+        Storage().rt_store.save_model(self.model)
+        

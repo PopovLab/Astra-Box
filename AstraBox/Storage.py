@@ -6,8 +6,8 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
 
 class ModelStore:
-    def __init__(self, name) -> None:
-        self.name = name
+    def __init__(self, model_type) -> None:
+        self.model_type = model_type
         self.data = {}
         self.on_update_data = None
 
@@ -22,14 +22,28 @@ class ModelStore:
 
     def open(self, data_folder):
         self.data_folder = data_folder
-        path = os.path.join(self.data_folder, self.name)
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        filename = os.path.join(self.data_folder, f'{self.name}_db')
-        self.data = shelve.open(filename)
+        self.model_folder = os.path.join(self.data_folder, self.model_type)
+        if not os.path.exists(self.model_folder):
+            os.mkdir(self.model_folder)
+        self.data = {}
+        self.scan_folder()
+        #filename = os.path.join(self.data_folder, f'{self.name}_db')
+        #self.data = shelve.open(filename)
         if self.on_update_data:
             self.on_update_data()        
+
+    def scan_folder(self):
+        if os.path.exists(self.model_folder):
+            filenames = next(os.walk(self.model_folder), (None, None, []))[2]
+            for f in filenames:
+                print(f)
+                if not f in self.data:
+                    self.data[f] = ModelFactory.create_model(self.model_type, f)
+
+    def save_model(self, model):
+        self.data[model.name] = model
+        model.write(self.model_folder)
+        self.update()
 
     def update(self):
         if self.on_update_data:
@@ -59,7 +73,7 @@ class Storage:
             self.exp_store = ModelStore('exp')
             self.equ_store = ModelStore('equ')
             self.sbr_store = ModelStore('sbr')
-            self.rt_store = ModelStore('rt')
+            self.rt_store = ModelStore('ray_tracing')
             self.race_store = ModelStore('races')            
             
             self.__init_flag__ = False
@@ -70,15 +84,15 @@ class Storage:
         Config.set_current_workspace_dir(folder)
         self.data_folder = folder
 
-        self.exp_store.reset(folder)
-        self.equ_store.reset(folder)
-        self.sbr_store.reset(folder)
+        self.exp_store.open(folder)
+        self.equ_store.open(folder)
+        self.sbr_store.open(folder)
         self.rt_store.open(folder)
         self.race_store.open(folder)         
-        self.scan_folders()
-        self.exp_store.update()
-        self.equ_store.update()
-        self.sbr_store.update()
+        #self.scan_folders()
+        #self.exp_store.update()
+        #self.equ_store.update()
+        #self.sbr_store.update()
 
     def close(self):
         self.exp_store.close()

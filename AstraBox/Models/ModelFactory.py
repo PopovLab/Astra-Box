@@ -7,7 +7,8 @@ from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Storage import Storage
 
-def create_model(model_type, model_name):
+
+def create_model(model_type, model_name=None, file=None):
     match model_type:
         case 'exp':
             print(f'create exp - {model_name}')
@@ -18,7 +19,7 @@ def create_model(model_type, model_name):
         case 'sbr':
             print(f'create sbr - {model_name}')
             model = SbrModel(model_name)        
-        case 'rt':
+        case 'ray_tracing':
             print(f'create rt - {model_name}')
             model = RTModel(model_name)
         case _:
