@@ -9,6 +9,7 @@ from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
+import AstraBox.WorkSpace as WorkSpace
 
 class App:
     def __init__(self, root):
@@ -29,6 +30,7 @@ class App:
             os.mkdir(abspath)
         self.base_folder = abspath
         
+        self.open_work_space(abspath)
         store = Storage()
         store.tk_root = root
         store.open(abspath)
@@ -52,7 +54,10 @@ class App:
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.root = root
 
-
+    def open_work_space(self, path):
+        ws = WorkSpace.getInstance()
+        ws.open(path)
+        
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             #self.controller.destroy()

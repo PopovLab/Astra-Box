@@ -1,14 +1,15 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import AstraBox.Models.ModelFactory as ModelFactory
+import AstraBox.WorkSpace as WorkSpace
 
 class Explorer(ttk.Frame):
-    def __init__(self, master, title = None, new_button = False, model_store = None) -> None:
+    def __init__(self, master, title = None, new_button = False, data_source = None) -> None:
         super().__init__(master)      
         self.on_select = None
         self.new_button = new_button
-        self.model_store = model_store
-        self.model_store.on_update_data = self.update_tree
+        self.data_source = data_source
+        #self.model_store.on_update_data = self.update_tree
         lab = ttk.Label(self, text=title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
@@ -43,15 +44,16 @@ class Explorer(ttk.Frame):
         self.nodes = {}
         if self.new_button:
             self.tree.insert('', tk.END, text='New ',  tags=('action',))          
-        if self.model_store:
+        if self.data_source:
             self.make_tree_nodes()
 
     def make_tree_nodes(self):
-        for key in self.model_store.data.keys():
-            model = self.model_store.data[key]
+        self.data_items = WorkSpace.getInstance().DataSources[self.data_source].items()
+        for index, item in enumerate(self.data_items):
+            #model = self.model_store.data[key]
             status = 'ok'
             #self.nodes[uuid] = 
-            self.tree.insert('', tk.END, text=key, values=(status,), tags=('model'))  
+            self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(str(index)))  
 
     def select_node(self, event):
         print('Explorer select_node ')
@@ -68,5 +70,6 @@ class Explorer(ttk.Frame):
                 model = ModelFactory.create_model(self.model_store.name, 'new model')
                 self.on_select(self, model)
             elif self.on_select:
-                model = self.model_store.data[selected_item['text']]                           
+                model = ModelFactory.build(self.data_items[int(tag)])
+                # self.model_store.data[selected_item['text']]                           
                 self.on_select(self, model)

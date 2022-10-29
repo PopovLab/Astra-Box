@@ -1,5 +1,7 @@
 import os
+from pathlib import Path
 import tkinter as tk
+
 from AstraBox.Controller import Controller
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
@@ -7,6 +9,27 @@ from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Storage import Storage
 
+def build(data_item):
+    p = data_item.path
+    print(p)
+    print(p.suffix)
+    match p.suffix:
+        case '.exp':
+            print(f'build exp - {p.name}')
+            model = ExpModel(path= p)        
+        case '.equ':
+            print(f'build equ - {p.name}')
+            model = EquModel(path= p)        
+        case '.f':
+            print(f'build sbr - {p.name}')
+            model = SbrModel(path= p)        
+        case '.json':
+            print(f'build ray_tracing - {p.name}')
+            model = RTModel(path= p)
+        case _:
+            print("Это другое")
+            model = None
+    return model    
 
 def create_model(model_type, model_name=None, file=None):
     match model_type:
@@ -40,3 +63,4 @@ def delete_model(model):
             case _:
                 print('delete')
         Controller().show_empty_view()
+

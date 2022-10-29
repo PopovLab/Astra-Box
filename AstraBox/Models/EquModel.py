@@ -6,8 +6,12 @@ from AstraBox.Storage import Storage
 
 class EquModel(BaseModel):
 
-    def __init__(self, name = None) -> None:
-        super().__init__(name)
+    def __init__(self, name= None, path= None) -> None:
+        if name:
+            super().__init__(name)
+        if path:
+            super().__init__(path.name)
+            self._path = path
         self._setting = None
         self.changed = False
 
@@ -16,7 +20,7 @@ class EquModel(BaseModel):
         return 'EquModel'   
 
     def get_text(self):
-        path = os.path.join(Storage().data_folder, 'equ', self.name)
+        path = str(self._path) #os.path.join(Storage().data_folder, 'equ', self.name)
         print(path)
         with open(path) as f:
             lines = f.read()
@@ -24,7 +28,7 @@ class EquModel(BaseModel):
         return lines        
 
     def save_text(self, text):
-        path = os.path.join(Storage().data_folder, 'equ', self.name)
+        path = str(self._path) #os.path.join(Storage().data_folder, 'equ', self.name)
         with open(path, mode='w') as f:
             f.write(text)
 

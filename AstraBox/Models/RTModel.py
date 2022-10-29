@@ -321,8 +321,12 @@ def default_rt_setting():
     
 class RTModel(BaseModel):
 
-    def __init__(self, name = None) -> None:
-        super().__init__(name)
+    def __init__(self, name= None, path= None) -> None:
+        if name:
+            super().__init__(name)
+        if path:
+            super().__init__(path.name)
+            self._path = path
         self.changed = False
 
     @property

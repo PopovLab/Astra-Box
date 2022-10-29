@@ -24,8 +24,10 @@ class BaseModel:
     def model_name(self):
         return 'BaseModel'
 
-    def read(self, folder= None):
+    def read(self, folder= None, path= None):
         f = os.path.join(folder, f'{self.name}.json')
+        if path:
+            f = str(path)
         with open(f, "r") as json_file:
             self.data = json.load(json_file)
 

@@ -16,23 +16,23 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.exp_explorer = Explorer(self, title='Experiments', model_store=Storage().exp_store)
+        self.exp_explorer = Explorer(self, title='Experiments', data_source='exp')
         self.exp_explorer.on_select = self.on_explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))   
              
-        self.exp_explorer = Explorer(self, title='Equlibrium', model_store=Storage().equ_store)
+        self.exp_explorer = Explorer(self, title='Equlibrium', data_source='equ')
         self.exp_explorer.on_select = self.on_explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.exp_explorer = Explorer(self, title='Subroutine', model_store=Storage().sbr_store)
+        self.exp_explorer = Explorer(self, title='Subroutine', data_source='sbr')
         self.exp_explorer.on_select = self.on_explorer_select
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', new_button = True, model_store=Storage().rt_store)
+        self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', new_button = True, data_source='ray_tracing')
         self.rt_explorer.on_select = self.on_explorer_select
         self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
@@ -43,7 +43,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.race_explorer = Explorer(self, title='Race history', model_store=Storage().race_store)
+        self.race_explorer = Explorer(self, title='Race history', data_source='races')
         self.race_explorer.on_select = self.on_explorer_select
         self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20)) 
 
