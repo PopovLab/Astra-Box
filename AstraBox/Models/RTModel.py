@@ -1,6 +1,6 @@
 import os
 import json
-import pathlib 
+from pathlib import Path
 from AstraBox.Models.BaseModel import BaseModel
 from AstraBox.Models.SpectrumModel import SpectrumModel
 
@@ -325,8 +325,9 @@ class RTModel(BaseModel):
         if name:
             super().__init__(name)
         if path:
-            super().__init__(path.name)
-            self._path = path
+            super().__init__(path.stem)
+            self.path = path
+            self.load()
         self.changed = False
 
     @property
@@ -340,7 +341,17 @@ class RTModel(BaseModel):
             self.data['setting'] = default_rt_setting()
         return self.data['setting']
 
-    
+    def load(self):
+        with self.path.open("r") as json_file:
+            self.data = json.load(json_file)
+
+    def save_to_json(self):
+        print('save_to_json:')
+        print(self.path)
+        #self.path.unlink()
+        with self.path.open(mode= "w") as json_file:
+            json.dump(self.data, json_file, indent=2)
+
     def get_text(self):
         #return 'test ray_tracing data'
         return self.prepare_dat_file()

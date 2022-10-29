@@ -64,6 +64,10 @@ def delete_model(model):
                 print('delete RaceModel')                 
                 os.remove(model.race_zip_file)
                 WorkSpace.getDataSource('races').refresh()
+            case 'RTModel':
+                print('delete RTModel')                 
+                model.path.unlink()
+                WorkSpace.getDataSource('ray_tracing').refresh()                
             case _:
                 print('delete')
         Controller().show_empty_view()

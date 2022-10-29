@@ -5,6 +5,8 @@ from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
 from AstraBox.Storage import Storage
 from AstraBox.Views.SpectrumView import SpectrumView
+import AstraBox.Models.ModelFactory as ModelFactory
+import AstraBox.WorkSpace as WorkSpace
 
 class RTModelView(ttk.Frame):
     def __init__(self, master, model) -> None:
@@ -14,7 +16,7 @@ class RTModelView(ttk.Frame):
         if model.name == 'new model':
             self.header_content = { "title": title, "buttons":[('Save', self.save_model)]}
         else:    
-            self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', None), ('Clone', None)]}
+            self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', self.delete_model), ('Clone', None)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -63,9 +65,13 @@ class RTModelView(ttk.Frame):
             return        
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
-
+        self.model.path = self.model.path.with_stem(self.model.name)
         #if self.model.name in Storage().rt_store.data:
         #    tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
         #    return
-        Storage().rt_store.save_model(self.model)
-        
+        #Storage().rt_store.save_model(self.model)
+        self.model.save_to_json()
+        WorkSpace.getDataSource('ray_tracing').refresh() 
+    
+    def delete_model(self):
+        ModelFactory.delete_model(self.model)
