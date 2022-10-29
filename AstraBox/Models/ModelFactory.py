@@ -8,7 +8,7 @@ from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Models.RaceModel import RaceModel
-from AstraBox.Storage import Storage
+import AstraBox.WorkSpace as WorkSpace
 
 def build(data_item):
     p = data_item.path
@@ -63,7 +63,7 @@ def delete_model(model):
             case 'RaceModel':
                 print('delete RaceModel')                 
                 os.remove(model.race_zip_file)
-                Storage().race_store.delete_model(model.name)
+                WorkSpace.getDataSource('races').refresh()
             case _:
                 print('delete')
         Controller().show_empty_view()
