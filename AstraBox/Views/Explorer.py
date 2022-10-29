@@ -6,7 +6,7 @@ import AstraBox.WorkSpace as WorkSpace
 class Explorer(ttk.Frame):
     def __init__(self, master, title = None, new_button = False, data_source = None) -> None:
         super().__init__(master)      
-        self.on_select = None
+        self.on_select_item = None
         self.new_button = new_button
         self.data_source = data_source
         #self.model_store.on_update_data = self.update_tree
@@ -50,9 +50,7 @@ class Explorer(ttk.Frame):
     def make_tree_nodes(self):
         self.data_items = WorkSpace.getDataSource(self.data_source).get_items()
         for key, item in self.data_items.items():
-            #model = self.model_store.data[key]
             status = 'ok'
-            #self.nodes[uuid] = 
             self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(key))  
 
     def select_node(self, event):
@@ -69,7 +67,6 @@ class Explorer(ttk.Frame):
                 print('new')
                 model = ModelFactory.create_model(self.model_store.name, 'new model')
                 self.on_select(self, model)
-            elif self.on_select:
-                model = ModelFactory.build(self.data_items[tag])
-                # self.model_store.data[selected_item['text']]                           
-                self.on_select(self, model)
+            elif self.on_select_item:
+                self.on_select_item(self, self.data_items[tag])
+

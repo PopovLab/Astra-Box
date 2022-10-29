@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
 from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
+import AstraBox.Models.ModelFactory as ModelFactory
 
 class RackFrame(ttk.Frame):
     def __init__(self, master) -> None:
@@ -17,23 +18,23 @@ class RackFrame(ttk.Frame):
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.exp_explorer = Explorer(self, title='Experiments', data_source='exp')
-        self.exp_explorer.on_select = self.on_explorer_select
+        self.exp_explorer.on_select_item = self.on_explorer_select_item
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))   
              
         self.exp_explorer = Explorer(self, title='Equlibrium', data_source='equ')
-        self.exp_explorer.on_select = self.on_explorer_select
+        self.exp_explorer.on_select_item = self.on_explorer_select_item
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.exp_explorer = Explorer(self, title='Subroutine', data_source='sbr')
-        self.exp_explorer.on_select = self.on_explorer_select
+        self.exp_explorer.on_select_item = self.on_explorer_select_item
         self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', new_button = True, data_source='ray_tracing')
-        self.rt_explorer.on_select = self.on_explorer_select
+        self.rt_explorer.on_select_item = self.on_explorer_select_item
         self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
@@ -44,18 +45,19 @@ class RackFrame(ttk.Frame):
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.race_explorer = Explorer(self, title='Race history', data_source='races')
-        self.race_explorer.on_select = self.on_explorer_select
+        self.race_explorer.on_select_item = self.on_explorer_select_item
         self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20)) 
 
-    def on_explorer_select(self, explorer, model):
-        print(model)
+    def on_explorer_select_item(self, explorer, item):
+        print(item)
         if self.active_exlorer:
             if self.active_exlorer is not explorer:
                 self.active_exlorer.selection_clear()
-
         self.active_exlorer = explorer
 
+        model = ModelFactory.build(item)
         Controller().show_model(model)
+
 
     def open_folder_dialog(self):
         Controller().open_folder_dialog()
