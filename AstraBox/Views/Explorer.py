@@ -65,8 +65,8 @@ class Explorer(ttk.Frame):
             print(tag)
             if tag == 'action':
                 print('new')
-                model = ModelFactory.create_model(self.model_store.name, 'new model')
-                self.on_select(self, model)
+                #model = ModelFactory.create_model(self.model_store.name, 'new model')
+                self.on_select_item(self, 'new_model')
             elif self.on_select_item:
                 self.on_select_item(self, self.data_items[tag])
 

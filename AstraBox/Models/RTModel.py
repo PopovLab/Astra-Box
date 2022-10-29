@@ -327,7 +327,8 @@ class RTModel(BaseModel):
         if path:
             super().__init__(path.stem)
             self.path = path
-            self.load()
+            if self.path.exists():
+                self.load()
         self.changed = False
 
     @property

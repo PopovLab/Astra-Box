@@ -3,6 +3,7 @@ from pathlib import Path
 import tkinter as tk
 
 from AstraBox.Controller import Controller
+from AstraBox.Models.BaseModel import get_new_name
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
@@ -35,6 +36,8 @@ def build(data_item):
             model = None
     return model    
 
+
+
 def create_model(model_type, model_name=None, file=None):
     match model_type:
         case 'exp':
@@ -48,7 +51,10 @@ def create_model(model_type, model_name=None, file=None):
             model = SbrModel(model_name)        
         case 'ray_tracing':
             print(f'create rt - {model_name}')
-            model = RTModel(model_name)
+            ds = WorkSpace.getDataSource('ray_tracing')
+            nn = get_new_name()
+            path = ds.get_item_path(f'{nn}.json')
+            model = RTModel(path= path)
         case _:
             print("Это другое")
             model = None

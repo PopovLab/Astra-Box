@@ -28,6 +28,9 @@ class DataSource:
     def get_keys_list(self):
         return list(self.items.keys())        
 
+    def get_item_path(self, name):
+        return self.destpath.joinpath(name)
+
     def get_items(self):
         self._items = {p.name: DataItem(p) for p in self.destpath.glob('*.*')}
         return self._items

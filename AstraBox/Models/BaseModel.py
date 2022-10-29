@@ -6,6 +6,9 @@ import json
 def get_uuid_id():
     return str(uuid.uuid4())
 
+def get_new_name():
+    return f'new_model_{get_uuid_id()[0:4]}'
+
 class BaseModel:
     def __init__(self, name = None) -> None:
         self.data = {}

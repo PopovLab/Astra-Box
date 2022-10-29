@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
-from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
 
@@ -54,8 +53,10 @@ class RackFrame(ttk.Frame):
             if self.active_exlorer is not explorer:
                 self.active_exlorer.selection_clear()
         self.active_exlorer = explorer
-
-        model = ModelFactory.build(item)
+        if item == 'new_model':
+            model = ModelFactory.create_model('ray_tracing')
+        else:
+            model = ModelFactory.build(item)
         Controller().show_model(model)
 
 
