@@ -4,7 +4,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
 class Explorer(ttk.Frame):
-    def __init__(self, master, title = None, new_button = False, data_source = None) -> None:
+    def __init__(self, master, title = None, new_button = False, data_source = None, height= 5) -> None:
         super().__init__(master)      
         self.on_select_item = None
         self.new_button = new_button
@@ -13,7 +13,7 @@ class Explorer(ttk.Frame):
         lab = ttk.Label(self, text=title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
-        self.tree = ttk.Treeview(self,  selectmode="browse", show="tree", columns=  ( "#1"), height=5)
+        self.tree = ttk.Treeview(self,  selectmode="browse", show="tree", columns=  ( "#1"), height= height)
         self.tree.column('#0',stretch=tk.NO)
         self.tree.column('#1', width=40, stretch=tk.NO)
         

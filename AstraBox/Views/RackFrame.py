@@ -43,7 +43,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        self.race_explorer = Explorer(self, title='Race history', data_source='races')
+        self.race_explorer = Explorer(self, title='Race history', data_source='races', height= 10)
         self.race_explorer.on_select_item = self.on_explorer_select_item
         self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20)) 
 
