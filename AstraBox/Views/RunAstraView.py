@@ -2,7 +2,6 @@ import datetime
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.HeaderPanel import HeaderPanel
-from AstraBox.Storage import Storage
 from AstraBox.Views.LogConsole import LogConsole
 from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.Kernel as Kernel
@@ -80,8 +79,6 @@ class RunAstraView(ttk.Frame):
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
         self.worker.start()
-        #Storage().race_store.data[race_model.name] = race_model
-        #Storage().race_store.on_update_data()
         WorkSpace.getDataSource('races').refresh()
 
     def terminate(self):

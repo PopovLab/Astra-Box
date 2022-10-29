@@ -5,7 +5,6 @@ import pathlib
 import zipfile
 import datetime
 from AstraBox.Models.BaseModel import BaseModel
-from AstraBox.Storage import Storage
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
@@ -88,7 +87,6 @@ class RaceModel(BaseModel):
         }
 
     def prepare_run_data(self):
-        #zip_file = os.path.join(Storage().data_folder, 'race_data.zip')
         zip_file = os.path.join(str(WorkSpace.getInstance().destpath), 'race_data.zip')
         with zipfile.ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
             self.pack_model_to_zip(zip, self.exp_model)
@@ -96,8 +94,6 @@ class RaceModel(BaseModel):
             self.pack_model_to_zip(zip, self.rt_model)
             for key, item in WorkSpace.getDataSource('sbr').items.items():
                 self.pack_model_to_zip(zip, ModelFactory.build(item))
-            #for key, item in Storage().sbr_store.data.items():
-            #    self.pack_model_to_zip(zip, item)
             with zip.open( 'race_model.json' , "w" ) as json_file:
                 json_writer = encodings.utf_8.StreamWriter(json_file)
                 # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
