@@ -8,8 +8,8 @@ class Explorer(ttk.Frame):
         super().__init__(master)      
         self.on_select_item = None
         self.new_button = new_button
-        self.data_source = data_source
-        #self.model_store.on_update_data = self.update_tree
+        self.data_source = WorkSpace.getDataSource(data_source)
+        self.data_source.on_refresh = self.update_tree
         lab = ttk.Label(self, text=title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
@@ -48,7 +48,7 @@ class Explorer(ttk.Frame):
             self.make_tree_nodes()
 
     def make_tree_nodes(self):
-        self.data_items = WorkSpace.getDataSource(self.data_source).get_items()
+        self.data_items = self.data_source.get_items()
         for key, item in self.data_items.items():
             status = 'ok'
             self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(key))  

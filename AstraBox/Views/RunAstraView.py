@@ -9,6 +9,7 @@ import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
 import AstraBox.Config as Config
+import AstraBox.WorkSpace as WorkSpace
 
 class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
@@ -41,11 +42,11 @@ class RunAstraView(ttk.Frame):
         self.rn_wdg = StringBox(self, self.race_name)
         self.rn_wdg.grid(row=1, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.exp_combo = ComboBox(self, 'Experiments', Storage().exp_store.get_keys_list())
+        self.exp_combo = ComboBox(self, 'Experiments', WorkSpace.getDataSource('exp').get_keys_list())
         self.exp_combo.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.equ_combo = ComboBox(self, 'Equlibrium', Storage().equ_store.get_keys_list())
+        self.equ_combo = ComboBox(self, 'Equlibrium', WorkSpace.getDataSource('equ').get_keys_list())
         self.equ_combo.grid(row=2, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
-        self.rt_combo = ComboBox(self, 'RT configuration', Storage().rt_store.get_keys_list())
+        self.rt_combo = ComboBox(self, 'Ray tracing', WorkSpace.getDataSource('ray_tracing').get_keys_list())
         self.rt_combo.grid(row=2, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.astra_combo = ComboBox(self, 'Astra profiles', Config.get_astra_profile_list())
         self.astra_combo.grid(row=2, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -79,8 +80,9 @@ class RunAstraView(ttk.Frame):
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
         self.worker.start()
-        Storage().race_store.data[race_model.name] = race_model
-        Storage().race_store.on_update_data()
+        #Storage().race_store.data[race_model.name] = race_model
+        #Storage().race_store.on_update_data()
+        WorkSpace.getDataSource('races').refresh()
 
     def terminate(self):
         pass

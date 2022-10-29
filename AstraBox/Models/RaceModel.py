@@ -7,6 +7,8 @@ import datetime
 from AstraBox.Models.BaseModel import BaseModel
 from AstraBox.Storage import Storage
 import AstraBox.Models.RadialData as RadialData
+import AstraBox.Models.ModelFactory as ModelFactory
+import AstraBox.WorkSpace as WorkSpace
 
 class RaceHelper:
     def __init__(self, exp_model, equ_model, rt_model) -> None:
@@ -33,9 +35,12 @@ class RaceModel(BaseModel):
         else:
             self._setting = None
             self.changed = False
-            self.exp_model = Storage().exp_store.data[exp_name]
-            self.equ_model = Storage().equ_store.data[equ_name]
-            self.rt_model = Storage().rt_store.data[rt_name]
+            self.exp_model = ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
+            self.equ_model = ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
+            self.rt_model = ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
+            #self.exp_model = Storage().exp_store.data[exp_name]
+            #self.equ_model = Storage().equ_store.data[equ_name]
+            #self.rt_model = Storage().rt_store.data[rt_name]
             self.data['ExpModel'] = self.exp_model.data
             self.data['EquModel'] = self.equ_model.data
             self.data['RTModel'] = self.rt_model.data
@@ -83,13 +88,16 @@ class RaceModel(BaseModel):
         }
 
     def prepare_run_data(self):
-        zip_file = os.path.join(Storage().data_folder, 'race_data.zip')
+        #zip_file = os.path.join(Storage().data_folder, 'race_data.zip')
+        zip_file = os.path.join(str(WorkSpace.getInstance().destpath), 'race_data.zip')
         with zipfile.ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)
             self.pack_model_to_zip(zip, self.rt_model)
-            for key, item in Storage().sbr_store.data.items():
-                self.pack_model_to_zip(zip, item)
+            for key, item in WorkSpace.getDataSource('sbr').items.items():
+                self.pack_model_to_zip(zip, ModelFactory.build(item))
+            #for key, item in Storage().sbr_store.data.items():
+            #    self.pack_model_to_zip(zip, item)
             with zip.open( 'race_model.json' , "w" ) as json_file:
                 json_writer = encodings.utf_8.StreamWriter(json_file)
                 # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
