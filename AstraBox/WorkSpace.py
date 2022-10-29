@@ -10,6 +10,9 @@ def getInstance():
         _instance = WorkSpace()
     return _instance
 
+def getDataSource(data_source):
+    return getInstance().DataSources[data_source]
+    
 class WorkSpace:
     def __init__(self) -> None:
         print('init workspace')

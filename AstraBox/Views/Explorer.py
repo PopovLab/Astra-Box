@@ -48,7 +48,7 @@ class Explorer(ttk.Frame):
             self.make_tree_nodes()
 
     def make_tree_nodes(self):
-        self.data_items = WorkSpace.getInstance().DataSources[self.data_source].get_items()
+        self.data_items = WorkSpace.getDataSource(self.data_source).get_items()
         for index, item in enumerate(self.data_items):
             #model = self.model_store.data[key]
             status = 'ok'
