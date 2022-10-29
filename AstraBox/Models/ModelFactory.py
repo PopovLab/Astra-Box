@@ -7,6 +7,7 @@ from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
+from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.Storage import Storage
 
 def build(data_item):
@@ -25,7 +26,10 @@ def build(data_item):
             model = SbrModel(path= p)        
         case '.json':
             print(f'build ray_tracing - {p.name}')
-            model = RTModel(path= p)
+            model = RTModel(path= p )
+        case '.zip':
+            print(f'build race - {p.name}')
+            model = RaceModel(path= p )            
         case _:
             print("Это другое")
             model = None

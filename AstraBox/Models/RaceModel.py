@@ -23,17 +23,23 @@ def float_try(str):
 
 class RaceModel(BaseModel):
 
-    def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None) -> None:
+    def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None, path = None) -> None:
         super().__init__(name)
-        self._setting = None
-        self.changed = False
-        self.exp_model = Storage().exp_store.data[exp_name]
-        self.equ_model = Storage().equ_store.data[equ_name]
-        self.rt_model = Storage().rt_store.data[rt_name]
-        self.data['ExpModel'] = self.exp_model.data
-        self.data['EquModel'] = self.equ_model.data
-        self.data['RTModel'] = self.rt_model.data
-        self.race_zip_file = None
+        if path:
+            self._path = path
+            self.race_zip_file = str(path)
+            print(self.race_zip_file)
+            self.name = path.name
+        else:
+            self._setting = None
+            self.changed = False
+            self.exp_model = Storage().exp_store.data[exp_name]
+            self.equ_model = Storage().equ_store.data[equ_name]
+            self.rt_model = Storage().rt_store.data[rt_name]
+            self.data['ExpModel'] = self.exp_model.data
+            self.data['EquModel'] = self.equ_model.data
+            self.data['RTModel'] = self.rt_model.data
+            self.race_zip_file = None
 
     @property
     def model_name(self):

@@ -32,6 +32,8 @@ class Controller:
 
     def show_model(self, model):
         print(model)
+        if model is None:
+            return
         print(f'show {model.name}')
         match model.model_name:
             case 'RTModel':
