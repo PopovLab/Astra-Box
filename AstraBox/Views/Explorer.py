@@ -49,11 +49,11 @@ class Explorer(ttk.Frame):
 
     def make_tree_nodes(self):
         self.data_items = WorkSpace.getDataSource(self.data_source).get_items()
-        for index, item in enumerate(self.data_items):
+        for key, item in self.data_items.items():
             #model = self.model_store.data[key]
             status = 'ok'
             #self.nodes[uuid] = 
-            self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(str(index)))  
+            self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(key))  
 
     def select_node(self, event):
         print('Explorer select_node ')
@@ -70,6 +70,6 @@ class Explorer(ttk.Frame):
                 model = ModelFactory.create_model(self.model_store.name, 'new model')
                 self.on_select(self, model)
             elif self.on_select:
-                model = ModelFactory.build(self.data_items[int(tag)])
+                model = ModelFactory.build(self.data_items[tag])
                 # self.model_store.data[selected_item['text']]                           
                 self.on_select(self, model)

@@ -17,4 +17,4 @@ class DataSource:
         pass
     
     def get_items(self):
-        return list(DataItem(p) for p in self.destpath.glob('*.*'))
+        return {p.name: DataItem(p) for p in self.destpath.glob('*.*')}
