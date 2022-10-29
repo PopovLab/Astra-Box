@@ -16,5 +16,5 @@ class DataSource:
         self.destpath = Path(destpath)
         pass
     
-    def items(self):
+    def get_items(self):
         return list(DataItem(p) for p in self.destpath.glob('*.*'))
