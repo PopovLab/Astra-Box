@@ -5,7 +5,6 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
-from AstraBox.Storage import Storage
 from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
@@ -13,6 +12,7 @@ import AstraBox.WorkSpace as WorkSpace
 
 class App:
     def __init__(self, root):
+        self.tk_root = root        
         root.title("ASTRA Box")
         root.minsize(1150, 850)
 
@@ -31,10 +31,6 @@ class App:
         self.base_folder = abspath
         
         self.open_work_space(abspath)
-        store = Storage()
-        store.tk_root = root
-        store.open(abspath)
-        #self.scan_folders()
         # first paned window
         w1 = tk.PanedWindow( background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
@@ -43,7 +39,7 @@ class App:
         w2 = tk.PanedWindow(w1, orient=tk.VERTICAL)  
         w1.add(w2)  
 
-        rack_frame = RackFrame(w2)
+        rack_frame = RackFrame(w2, self)
         w2.add(rack_frame)
 
         self.main_layout = ContentFrame(w1)
@@ -52,16 +48,17 @@ class App:
         Controller().set_views(rack_frame, self.main_layout)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.root = root
+
 
     def open_work_space(self, path):
-        ws = WorkSpace.getInstance()
-        ws.open(path)
-        
+        WorkSpace.getInstance().open(path)
+        self.tk_root.title(f"ASTRA Box in {path}")
+        Config.set_current_workspace_dir(path)        
+
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             #self.controller.destroy()
             #Storage().close()
-            self.root.destroy()
+            self.tk_root.destroy()
             
 

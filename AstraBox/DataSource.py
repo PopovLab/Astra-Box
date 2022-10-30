@@ -15,10 +15,17 @@ class DataSource:
     _items = None    
     on_refresh = None
 
-    def __init__(self, destpath='.') -> None:
-        self.destpath = Path(destpath)
+    def __init__(self, name) -> None:
+        self.name = name
         pass
     
+    def open(self, destpath='.') -> None:
+        self.destpath = Path(destpath).joinpath(self.name)
+        if not self.destpath.exists():
+            self.destpath.mkdir()
+        self.get_items()
+        self.refresh()
+
     @property
     def items(self):
         if self._items is None:

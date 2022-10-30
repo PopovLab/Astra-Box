@@ -3,7 +3,6 @@ import tkinter.ttk as ttk
 from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
-from AstraBox.Storage import Storage
 from AstraBox.Views.SpectrumView import SpectrumView
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace

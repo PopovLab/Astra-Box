@@ -5,8 +5,9 @@ from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
 
 class RackFrame(ttk.Frame):
-    def __init__(self, master) -> None:
+    def __init__(self, master, app) -> None:
         super().__init__(master)
+        self.app = app
         self.on_select = None
         self.active_exlorer = None
         self.v = tk.StringVar(self, "xxx")  # initialize
@@ -61,7 +62,10 @@ class RackFrame(ttk.Frame):
 
 
     def open_folder_dialog(self):
-        Controller().open_folder_dialog()
+        dir = tk.filedialog.askdirectory()
+        if len(dir)>0:
+            self.app.open_work_space(dir)
+        #Controller().open_folder_dialog()
 
     def show_calc_view(self):
         Controller().show_calc_view()

@@ -1,10 +1,11 @@
 import tkinter as tk
-from AstraBox.Storage import Storage
 from AstraBox.Views.EmptyView import EmptyView
 from AstraBox.Views.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
 from AstraBox.Views.RaceView import RaceView
 from AstraBox.Views.RunAstraView import RunAstraView
+import AstraBox.WorkSpace as WorkSpace
+import AstraBox.Config as Config
 
 class Controller:
     def __new__(cls):
@@ -15,12 +16,6 @@ class Controller:
     def __init__(self) -> None:
         print('Controller.init')
         #self.data = None
-
-    def open_folder_dialog(self):
-        dir = tk.filedialog.askdirectory()
-        if len(dir)>0:
-            Storage().open(dir)
-
 
     def set_views(self, rack_frame, content_frame) ->None:
         self.rack_frame = rack_frame

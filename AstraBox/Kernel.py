@@ -6,7 +6,8 @@ import logging
 import subprocess
 import asyncio
 import shutil
-from AstraBox.Storage import Storage
+import AstraBox.WorkSpace as WorkSpace
+
 proc = NULL
 
 current_working_directory = ''
@@ -232,6 +233,7 @@ class AstraWorker(Worker):
         asyncio.run(self.run(pack_cmd, shell=True))
 
         #race_zip_file = f'Data/races/race_{self.model.name}.zip'
-        race_zip_file = os.path.join(Storage().data_folder, f'races/race_{self.model.name}.zip')
+        zip_path = WorkSpace.getDataSource('races').destpath.joinpath(f'race_{self.model.name}.zip')
+        race_zip_file = str(zip_path)
         copy_file(self.astra_profile["dest"] + '/race_data.zip', race_zip_file )
         self.model.race_zip_file = race_zip_file

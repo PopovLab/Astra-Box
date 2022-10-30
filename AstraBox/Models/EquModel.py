@@ -2,7 +2,6 @@ import os
 import json
 import pathlib 
 from AstraBox.Models.BaseModel import BaseModel
-from AstraBox.Storage import Storage
 
 class EquModel(BaseModel):
 

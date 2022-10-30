@@ -17,13 +17,12 @@ class WorkSpace:
     def __init__(self) -> None:
         print('init workspace')
         self.DataSources = {}
+        for key in ['exp', 'equ', 'sbr', 'ray_tracing', 'races']:
+            self.DataSources[key] = DataSource.DataSource(key)
 
     def open(self, path):
         print(f'Open {path}')
         self.destpath = Path(path)
-        self.DataSources['exp'] = DataSource.build(path, 'exp')
-        self.DataSources['equ'] = DataSource.build(path, 'equ')
-        self.DataSources['sbr'] = DataSource.build(path, 'sbr')
-        self.DataSources['ray_tracing'] = DataSource.build(path, 'ray_tracing')
-        self.DataSources['races'] = DataSource.build(path, 'races')
-        #print(self.DataSources['exp'].items())
+        for key, ds in self.DataSources.items():
+            ds.open(self.destpath)
+        
