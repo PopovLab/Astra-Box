@@ -38,7 +38,7 @@ class RunAstraView(ttk.Frame):
         #self.rowconfigure(0, weight=1)    
 
         self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
-        self.rn_wdg = StringBox(self, self.race_name)
+        self.rn_wdg = StringBox(self, self.race_name, width=30)
         self.rn_wdg.grid(row=1, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.exp_combo = ComboBox(self, 'Experiments', WorkSpace.getDataSource('exp').get_keys_list())
