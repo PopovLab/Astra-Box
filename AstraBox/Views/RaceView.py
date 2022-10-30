@@ -192,7 +192,7 @@ class SimplePlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.fig = plt.figure(figsize=(8, 6))
+        self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
         self.axs = self.fig.subplots(2, 2)
         
