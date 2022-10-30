@@ -1,6 +1,8 @@
 import datetime
 import tkinter as tk
 import tkinter.ttk as ttk
+import json
+
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
 from AstraBox.Models.RaceModel import RaceModel
@@ -14,6 +16,12 @@ class ComboBox(ttk.Frame):
     def combo_selected(self, *args):
         self.selected_value = self.combo.get()
         
+    def set(self, value):
+        self.combo.set(value)
+
+    def get(self):
+        return self.combo.get()
+
     def __init__(self, master, title, values) -> None:
         super().__init__(master)     
         self.selected_value = None
@@ -25,6 +33,7 @@ class ComboBox(ttk.Frame):
         #self.combo.set(item['value'])
         #self.combo.current(1)  # установите вариант по умолчанию  
         self.combo.grid(row=1, column=0)
+
 
 
 class RunAstraView(ttk.Frame):
@@ -50,6 +59,8 @@ class RunAstraView(ttk.Frame):
         self.astra_combo = ComboBox(self, 'Astra profiles', Config.get_astra_profile_list())
         self.astra_combo.grid(row=2, column=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+        self.restore_last_run()
+
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
         self.log_console = LogConsole(runframe)
         self.log_console.grid(row=1, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -60,26 +71,43 @@ class RunAstraView(ttk.Frame):
         runframe.grid(row=3, column=0, columnspan=5,  sticky=tk.N + tk.S + tk.E + tk.W)
         self.rowconfigure(3, weight=1)
 
+    def restore_last_run(self):
+        ds = WorkSpace.getDataSource('races')
+        p = ds.destpath.joinpath('last_run')
+        if p.exists():
+            with p.open(mode= "r") as json_file:
+                last_run = json.load(json_file)
+            self.exp_combo.set(last_run['exp'])
+            self.equ_combo.set(last_run['equ'])
+            self.rt_combo.set(last_run['rt'])
+            self.astra_combo.set(last_run['astra_profile'])          
 
     def start(self):
         #if self.grill_model == None:
         #    return
         #if self.imped_model == None:
         #    return
-        exp = self.exp_combo.selected_value
-        equ = self.equ_combo.selected_value
-        rt = self.rt_combo.selected_value
-        #name =  datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        exp = self.exp_combo.get()
+        equ = self.equ_combo.get()
+        rt = self.rt_combo.get()
+        ap = self.astra_combo.get()
+        
         race_model = RaceModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
-        #self.controller.save_model(spectrum)
-        astra_profile = Config.get_astra_profile(self.astra_combo.selected_value)
+        
+        astra_profile = Config.get_astra_profile(ap)
         self.worker = Kernel.AstraWorker(race_model, astra_profile)
-        #self.worker.controller = self.controller
         self.log_console.set_logger(self.worker.logger)
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
+        ds = WorkSpace.getDataSource('races')
+        last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
+        p = ds.destpath.joinpath('last_run')
+        with p.open(mode= "w") as json_file:
+            json.dump(last_run, json_file, indent=2)
+
         self.worker.start()
-        WorkSpace.getDataSource('races').refresh()
+
+        ds.refresh()
 
     def terminate(self):
         pass
