@@ -40,7 +40,7 @@ class TextBox(ttk.Frame):
         pass        
 
 class StringBox(ttk.Frame):
-    def __init__(self, master, item) -> None:
+    def __init__(self, master, item, width=20) -> None:
         super().__init__(master)
         self.item = item
         #print(item)
@@ -49,7 +49,7 @@ class StringBox(ttk.Frame):
         self.tk_var = tk.StringVar(self, value=item['value'])
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = tk.Entry(self, width=20, textvariable= self.tk_var)
+        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var)
         self.entry.grid(row=0, column=1, columnspan=1)        
 
     def update_var(self, var, indx, mode):
