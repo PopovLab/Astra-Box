@@ -166,22 +166,45 @@ class RadialDataView(ttk.Frame):
         super().__init__(master)  
         self.model = model
         self.radial_data_list = model.get_radial_data_list()
+        n = len(self.radial_data_list)
+        if n>0: 
+            #self.index_var = tk.IntVar(master = self, value=0)
+            #self.index_var.trace_add('write', self.update_var)
 
-        if len(self.radial_data_list)>0: 
-            self.index_var = tk.IntVar(master = self, value=0)
-            self.index_var.trace_add('write', self.update_var)
-
-            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.radial_data_list)-1, resolution=1, length = 250 )
-            self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            #self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=n-1, resolution=1, length = 250 )
+            #self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
  
             profiles = self.get_profiles(0)
+            self.start_time = profiles["Time"]
+            self.finish_time = self.get_profiles(n-1)["Time"]
+            self.n = n
+
+            self.time_var = tk.DoubleVar(master = self, value=self.start_time)
+            self.time_var.trace_add('write', self.update_time_var)
+
+            self.time_slider = tk.Scale(master=  self, 
+                                   variable = self.time_var,
+                                   orient = tk.HORIZONTAL,
+                                   label='Time scale',
+                                   tickinterval= (self.finish_time-self.start_time)/7,
+                                   from_= self.start_time,
+                                   to= self.finish_time, 
+                                   resolution= (self.finish_time-self.start_time)/n, 
+                                   length = 250 )
+            self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            
             self.plot = SimplePlot(self, profiles)
-            self.plot.grid(row=1, column=0, sticky=tk.W, pady=4, padx=8)
+            self.plot.grid(row=2, column=0, sticky=tk.W, pady=4, padx=8)
 
     def get_profiles(self, index):
         file = self.radial_data_list[index]
         print(f'{file} {index}')
         return self.model.read_radial_data(file)
+
+    def update_time_var(self, var, indx, mode):
+        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
+        profiles = self.get_profiles(index)
+        self.plot.update(profiles)
 
     def update_var(self, var, indx, mode):
         profiles = self.get_profiles(self.index_var.get())
