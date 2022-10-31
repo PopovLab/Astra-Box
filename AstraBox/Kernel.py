@@ -6,6 +6,8 @@ import logging
 import subprocess
 import asyncio
 import shutil
+import platform
+
 import AstraBox.WorkSpace as WorkSpace
 
 proc = NULL
@@ -211,7 +213,13 @@ class AstraWorker(Worker):
         print(unpack_cmd)
         asyncio.run(self.run(unpack_cmd, shell=True))
         self.set_model_status('run')
-        astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+        
+        match (platform.system(), platform.release()):
+            case ('Windows', '10'): 
+                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+            case ('Windows', '11'): 
+                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+
         run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         #self.run_cmd = 'start wsl ls'
 
