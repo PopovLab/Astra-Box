@@ -174,9 +174,9 @@ class RadialDataView(ttk.Frame):
             #self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=n-1, resolution=1, length = 250 )
             #self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
  
-            profiles = self.get_profiles(0)
-            self.start_time = profiles["Time"]
-            self.finish_time = self.get_profiles(n-1)["Time"]
+            radial_data = self.get_radial_data(0)
+            self.start_time = radial_data["Time"]
+            self.finish_time = self.get_radial_data(n-1)["Time"]
             self.n = n
 
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
@@ -193,22 +193,22 @@ class RadialDataView(ttk.Frame):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = SimplePlot(self, profiles)
+            self.plot = SimplePlot(self, radial_data)
             self.plot.grid(row=2, column=0, sticky=tk.W, pady=4, padx=8)
 
-    def get_profiles(self, index):
+    def get_radial_data(self, index):
         file = self.radial_data_list[index]
         print(f'{file} {index}')
         return self.model.read_radial_data(file)
 
     def update_time_var(self, var, indx, mode):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
-        profiles = self.get_profiles(index)
-        self.plot.update(profiles)
+        radial_data = self.get_radial_data(index)
+        self.plot.update(radial_data)
 
     def update_var(self, var, indx, mode):
-        profiles = self.get_profiles(self.index_var.get())
-        self.plot.update(profiles)
+        radial_data = self.get_radial_data(self.index_var.get())
+        self.plot.update(radial_data)
 
 
 class SimplePlot(ttk.Frame):
