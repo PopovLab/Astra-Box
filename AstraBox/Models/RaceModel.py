@@ -118,7 +118,7 @@ class RaceModel(BaseModel):
 
 
     def get_trajectory_list(self):
-        tmp = 'lhcd/out/traj.'
+        tmp = 'lhcd/out/traj'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
         list.sort()  
@@ -126,7 +126,8 @@ class RaceModel(BaseModel):
 
 
     def get_rays(self, f):
-        time_stamp = '0' + f[13:20]
+        time_stamp = float(f[13:20])
+        print(time_stamp)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 header = file.readline().decode("utf-8").replace('=', '_').split()

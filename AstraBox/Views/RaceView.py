@@ -83,39 +83,68 @@ class TrajectoryView(ttk.Frame):
         self.model = model
         self.trajectory_list = model.get_trajectory_list()
         self.rays_cache = {}
-        if len(self.trajectory_list)>0: 
+        n = len(self.trajectory_list)
+        if n>0: 
             plasma_bound = model.read_plasma_bound()
-            self.index_var = tk.IntVar(master = self, value=0)
-            self.index_var.trace_add('write', self.update_var)
 
-            self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=len(self.trajectory_list)-1, resolution=1)
-            self.slider.grid(row=0, column=0, columnspan=2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-           
-            rays, time_stamp  = model.get_rays(self.trajectory_list[0])
+            rays, self.start_time  = self.get_rays(0)
+            _, self.finish_time  = self.get_rays(n-1)
+
+            self.n = n
+
+            self.time_var = tk.DoubleVar(master = self, value=self.start_time)
+            self.time_var.trace_add('write', self.update_plot)
+
+            self.time_slider = tk.Scale(master=  self, 
+                                   variable = self.time_var,
+                                   orient = tk.HORIZONTAL,
+                                   label='Time scale',
+                                   tickinterval= (self.finish_time-self.start_time)/7,
+                                   from_= self.start_time,
+                                   to= self.finish_time, 
+                                   resolution= (self.finish_time-self.start_time)/n, 
+                                   length = 250 )
+            self.time_slider.grid(row=0, column=0, columnspan=2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+
+
             self.index_1 = tk.IntVar(master = self, value=0)
-            self.index_1.trace_add('write', self.update_var)
-            self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, from_=0, to=len(rays)-1, resolution=1 )
+            self.index_1.trace_add('write', self.update_plot)
+            self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, 
+                                    label='start ray',
+                                    tickinterval= len(rays)/4,
+                                    from_=0, 
+                                    to=len(rays)-1, 
+                                    resolution=1 )
             self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
             self.index_2 = tk.IntVar(master = self, value=len(rays)-1)
-            self.index_2.trace_add('write', self.update_var)
-            self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL, from_=0, to=len(rays)-1, resolution=1 )
+            self.index_2.trace_add('write', self.update_plot)
+            self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL,
+                                    label='numbers of ray',
+                                    tickinterval= len(rays)/4,
+                                    from_=0, 
+                                    to=len(rays)-1, 
+                                    resolution=1 )
             self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-            self.plot = TrajectoryPlot(self, rays, time_stamp, plasma_bound)
+            self.plot = TrajectoryPlot(self, rays, self.start_time, plasma_bound)
             self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
 
-    def update_var(self, var, indx, mode):
-        index = self.index_var.get()
-        i1 = self.index_1.get()
-        i2 = i1 + self.index_2.get()
-        
+    def get_rays(self, index):
         if not index in self.rays_cache:
             print(f'{index} not in cache')
             self.rays_cache[index] = self.model.get_rays(self.trajectory_list[index])
-        rays, time_stamp = self.rays_cache[index]
+        rays, time_stamp = self.rays_cache[index]        
+        return rays, time_stamp
+
+    def update_plot(self, var, indx, mode):
+        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
+        i1 = self.index_1.get()
+        i2 = i1 + self.index_2.get()
+
+        rays, time_stamp = self.get_rays(index)
         if i2>len(rays):
             i2 = len(rays)
         self.plot.update(rays[i1:i2], time_stamp)
