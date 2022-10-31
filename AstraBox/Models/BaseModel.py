@@ -27,6 +27,16 @@ class BaseModel:
     def model_name(self):
         return 'BaseModel'
 
+    def get_text(self):
+        with self.path.open('r') as f:
+            lines = f.read()
+
+        return lines        
+
+    def save_text(self, text):
+        with self.path.open(mode='w') as f:
+            f.write(text)
+
     def read(self, folder= None, path= None):
         f = os.path.join(folder, f'{self.name}.json')
         if path:
