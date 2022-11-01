@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import tkinter as tk
 
-from AstraBox.Controller import Controller
 from AstraBox.Models.BaseModel import get_new_name
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
@@ -62,7 +61,7 @@ def create_model(model_type, model_name=None, file=None):
 
 
 def delete_model(model):
-    print(model.name)
+    print(f'delete {model.name}')
     ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {model.name}?', icon ='warning')
     if ans == 'yes':
         match model.model_name:
@@ -76,5 +75,7 @@ def delete_model(model):
                 WorkSpace.getDataSource('ray_tracing').refresh()                
             case _:
                 print('delete')
-        Controller().show_empty_view()
+        return True
+    return False
+
 

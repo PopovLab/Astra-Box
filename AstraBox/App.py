@@ -5,7 +5,13 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
-from AstraBox.Controller import Controller
+
+from AstraBox.Views.EmptyView import EmptyView
+from AstraBox.Views.RTModelView import RTModelView
+from AstraBox.Views.TextView import TextView
+from AstraBox.Views.RaceView import RaceView
+from AstraBox.Views.RunAstraView import RunAstraView
+
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
@@ -42,10 +48,8 @@ class App:
         rack_frame = RackFrame(w2, self)
         w2.add(rack_frame)
 
-        self.main_layout = ContentFrame(w1)
-        w1.add(self.main_layout)
-
-        Controller().set_views(rack_frame, self.main_layout)
+        self.content_frame = ContentFrame(w1)
+        w1.add(self.content_frame)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -62,3 +66,30 @@ class App:
             self.tk_root.destroy()
             
 
+
+
+    def show_model(self, model):
+        print(model)
+        if model is None:
+            return
+        print(f'show {model.name}')
+        match model.model_name:
+            case 'RTModel':
+                model_view = RTModelView(self.content_frame, model)     
+            case 'ExpModel':
+                model_view = TextView(self.content_frame, model)                     
+            case 'EquModel':
+                model_view = TextView(self.content_frame, model)     
+            case 'SbrModel':
+                model_view = TextView(self.content_frame, model)                   
+            case 'RaceModel':
+                model_view = RaceView(self.content_frame, model)                 
+            case _:
+                print('create Emptyview')
+                model_view = EmptyView(self.content_frame, model)  
+        self.content_frame.set_content(model_view)
+
+    def show_calc_view(self):
+        print('show_calc_view')
+        calc_view = RunAstraView(self.content_frame)  
+        self.content_frame.set_content(calc_view)

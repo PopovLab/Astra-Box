@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
-from AstraBox.Controller import Controller
 import AstraBox.Models.ModelFactory as ModelFactory
 
 class RackFrame(ttk.Frame):
@@ -58,7 +57,7 @@ class RackFrame(ttk.Frame):
             model = ModelFactory.create_model('ray_tracing')
         else:
             model = ModelFactory.build(item)
-        Controller().show_model(model)
+        self.app.show_model(model)
 
 
     def open_folder_dialog(self):
@@ -68,4 +67,4 @@ class RackFrame(ttk.Frame):
         #Controller().open_folder_dialog()
 
     def show_calc_view(self):
-        Controller().show_calc_view()
+        self.app.show_calc_view()

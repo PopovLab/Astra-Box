@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from AstraBox.Views.EmptyView import EmptyView
 
 class ContentFrame(ttk.Frame):
     def __init__(self, master) -> None:
@@ -15,3 +16,6 @@ class ContentFrame(ttk.Frame):
        
         self.content = content
         self.content.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
+
+    def show_empty_view(self):
+        self.set_content(EmptyView(self))

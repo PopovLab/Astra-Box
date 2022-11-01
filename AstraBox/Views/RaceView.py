@@ -57,7 +57,8 @@ class RaceView(ttk.Frame):
         self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
 
     def delete_model(self):
-        ModelFactory.delete_model(self.model)
+        if ModelFactory.delete_model(self.model):
+            self.master.show_empty_view()
         
     def open_new_windows(self):
         new_window = tk.Toplevel(self.master)

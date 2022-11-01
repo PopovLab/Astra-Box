@@ -73,4 +73,5 @@ class RTModelView(ttk.Frame):
         WorkSpace.getDataSource('ray_tracing').refresh() 
     
     def delete_model(self):
-        ModelFactory.delete_model(self.model)
+        if ModelFactory.delete_model(self.model):
+            self.master.show_empty_view()
