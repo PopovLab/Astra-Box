@@ -60,7 +60,7 @@ def create_model(model_type, model_name=None, file=None):
     return model
 
 
-def delete_model(model):
+def delete_model(model)  -> bool:
     print(f'delete {model.name}')
     ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {model.name}?', icon ='warning')
     if ans == 'yes':
