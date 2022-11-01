@@ -55,12 +55,12 @@ class ControlPanel(tk.Frame):
         self.path_var = tk.StringVar(master= self, value=path)
         label = tk.Label(master=self, text='Source:')
         label.pack(side = tk.LEFT, ipadx=10)		
-        entry = tk.Entry(self, width=50, textvariable= self.path_var)
+        entry = tk.Entry(self, width=55, textvariable= self.path_var)
         entry.pack(side = tk.LEFT, ipadx=10)
         btn1 = ttk.Button(self, text= 'Select file', command=self.select_file)
         btn1.pack(side = tk.LEFT, ipadx=10)   
-        btn2 = ttk.Button(self, text= 'Load', command=self.load_file)
-        btn2.pack(side = tk.LEFT, ipadx=10)
+        #btn2 = ttk.Button(self, text= 'Load', command=self.load_file)
+        #btn2.pack(side = tk.LEFT, ipadx=10)
 
     def load_file(self):
         if self.load_file_cb:
@@ -69,7 +69,8 @@ class ControlPanel(tk.Frame):
     def select_file(self):
         filename = fd.askopenfilename()
         self.path_var.set(filename)
-
+        if self.load_file_cb:
+            self.load_file_cb(filename)
 
 
 
