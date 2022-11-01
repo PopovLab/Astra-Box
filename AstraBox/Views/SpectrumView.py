@@ -88,7 +88,7 @@ class Spectrum1DView(tk.LabelFrame):
 
     def on_load_file(self, filename):
         print(filename)
-        self.model.setting['source']
+        self.model.setting['source'] = filename
         self.make_plot()
 
     def make_plot(self):
