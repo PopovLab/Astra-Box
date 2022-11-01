@@ -17,6 +17,7 @@ class ExtraRaceView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)        
         self.master = master
+        self.plot = None
         title = f"Race: {model.name}"
         self.header_content = { "title": title, "buttons":[('Delete', None), ('new windows', None) ]}
         self.model = model
@@ -54,17 +55,21 @@ class ExtraRaceView(ttk.Frame):
 
     def update_palette(self, *args):
         if self.selected_key:
-            plot = ZimPlot(self, self.z, title= self.selected_key, cmap= self.combo_cmap.get())
-            plot.grid(row=self.row_count, column=0, columnspan=5)
+            self.make_plot()
 
     def generate(self, key):
         print(key)
         #z = self.make_test()
         self.selected_key = key
         self.z = self.make_extra(key)
-        plot = ZimPlot(self, self.z, title= key, cmap= self.combo_cmap.get())
-        plot.grid(row=self.row_count, column=0, columnspan=5,)
+        self.make_plot()
         #self.row_count = self.row_count + 1
+
+    def make_plot(self):
+        if self.plot:
+            self.plot.destroy()
+        plot = ZimPlot(self, self.z, title= self.selected_key, cmap= self.combo_cmap.get())
+        plot.grid(row=self.row_count, column=0, columnspan=5,)
 
     def make_extra(self, key):
         data_list = [ np.array(self.model.read_radial_data(file)[key]) for file in self.radial_data_list]
