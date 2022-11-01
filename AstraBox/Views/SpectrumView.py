@@ -44,7 +44,7 @@ class GaussianSpectrumView(tk.LabelFrame):
     def generate(self):
         self.options_box.update()
         self.model.generate()
-        self.spectrum_plot = SpectrumPlot(self,self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
@@ -71,23 +71,7 @@ class ControlPanel(tk.Frame):
         self.path_var.set(filename)
 
 
-def read_spcp1D(file_name):        
-    file_path = file_name
-    if not os.path.exists(file_path):
-        return None
-    file = open(file_path)
-    header = ['N', 'Amp']
-    print(header)
-    spectrum = { h: [] for h in header }
-    lines = file.readlines()
-    table = []
-    for line in lines:
-        table.append(line.split())
 
-    for row in table:
-        for index, (p, item) in enumerate(spectrum.items()):
-            item.append(float(row[index]))
-    return spectrum 
 
 class Spectrum1DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
@@ -95,25 +79,22 @@ class Spectrum1DView(tk.LabelFrame):
 
         self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
-        self.label = ttk.Label(self,  text=f'Spectrum View')
-        self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.control_panel = ControlPanel(self, '1243', self.on_load_file)
-        self.control_panel.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        #self.options_box = OptionsPanel(self, self.model.setting['options'])
-        #self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        #btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-        #self.generate()
+        self.make_plot()
 
     def on_load_file(self, filename):
         print(filename)
-        #    self.options_box.update()
-        spectrum_data = read_spcp1D(filename)
-        self.spectrum_plot = SpectrumPlot(self,spectrum_data['N'], spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.model.setting['source']
+        self.make_plot()
+
+    def make_plot(self):
+        self.model.read_spcp1D()
+        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 
 class SpectrumPlot(ttk.Frame):

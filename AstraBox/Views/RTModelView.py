@@ -11,19 +11,30 @@ import AstraBox.WorkSpace as WorkSpace
 
 
 class RadioPanel(ttk.Frame):
-    def __init__(self, master, content, on_select_spectrum) -> None:
+    def __init__(self, master, spectrum_model, on_change_spectrum) -> None:
         super().__init__(master, relief=tk.FLAT)
+        self.spectrum_model = spectrum_model
+        self.on_change_spectrum = on_change_spectrum
         # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
         padx = 20
         pady = 5
-        v, _ = content[len(content)-1]
-        self.value = tk.StringVar(self, v)  # initialize
+        #v, _ = content[len(content)-1]
+        self.value = tk.StringVar(self, spectrum_model.spectrum_type)  # initialize
 
-        for text, command in content:
-            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=text, width=25, 
-                                command= lambda x = text: on_select_spectrum(x) ,
+        for text, key in spectrum_model.get_ratio_content():
+            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=25, 
+                                command= lambda x = key: self.on_radio_select(x) ,
                                 style= 'Toolbutton')
             btn.pack(side=tk.RIGHT, padx=padx, pady=pady)
+    
+    def on_radio_select(self, value):
+        if self.spectrum_model.spectrum_type == value: return
+        if messagebox.askquestion("Spectrum", "Do you want change spectrum?") == 'yes':
+            self.spectrum_model.spectrum_type = value
+            self.on_change_spectrum()
+        else:
+            self.radio.value.set(self.spectrum_model.spectrum_type)
+
 
 class RTModelView(ttk.Frame):
     def __init__(self, master, model) -> None:
@@ -73,35 +84,27 @@ class RTModelView(ttk.Frame):
                 wg = Widgets.create_widget(frame, item)
                 wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.spectrum_type = 'gaussian spectrum'
-        radio_content = [('spectrum 2D', None), ('spectrum 1D', None), ('gaussian spectrum', None)]
-        self.radio = RadioPanel(self, radio_content, self.on_select_spectrum)
+        self.spectrum_model = SpectrumModel(self.model.setting)
+        
+        self.radio = RadioPanel(self, self.spectrum_model, self.make_spectum_view)
         self.radio.grid(row=5, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.spectrum_view = None
         self.make_spectum_view()
         
-
-    def on_select_spectrum(self, spectrum_type):
-        if self.spectrum_type == spectrum_type: return
-        if messagebox.askquestion("Spectrum", "Do you want change spectrum?") == 'yes':
-            self.spectrum_type = spectrum_type
-            self.make_spectum_view()
-        else:
-            self.radio.value.set(self.spectrum_type)
-
+  
     def make_spectum_view(self):
         if self.spectrum_view:
             self.spectrum_view.destroy()
-
-        match self.spectrum_type:
-            case 'gaussian spectrum':
-                self.spectrum_view = SpectrumView.GaussianSpectrumView(self, SpectrumModel(self.model.setting))
+        print(self.spectrum_model.spectrum_type)
+        match self.spectrum_model.spectrum_type:
+            case 'gaussian':
+                self.spectrum_view = SpectrumView.GaussianSpectrumView(self, self.spectrum_model)
                 self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
-            case 'spectrum 1D':
-                self.spectrum_view = SpectrumView.Spectrum1DView(self, SpectrumModel(self.model.setting))
+            case 'spectrum_1D':
+                self.spectrum_view = SpectrumView.Spectrum1DView(self, self.spectrum_model)
                 self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
-            case 'spectrum 2D':
+            case 'spectrum_2D':
                 pass
         
         

@@ -1,8 +1,9 @@
 import numpy as np
+import os
 
-def defaultGaussSetting():
+def defaultGaussSpectrum():
     return {
-        'spectrum_type': 'Gaussian',
+        'spectrum_type': 'gaussian',
         'options':{
             'x_min' : -40.0,
             'x_max' : 40.0,
@@ -12,20 +13,78 @@ def defaultGaussSetting():
         }
     }
 
+def defaulSpectrum1D():
+    return {
+        'spectrum_type': 'spectrum_1D',
+        'source': ''
+    }    
+
+def defaulSpectrum2D():
+    return {
+        'spectrum_type': 'spectrum_2D',
+        'source': ''
+    }
+
 class SpectrumModel():
     def __init__(self, parent) -> None:
+        self.parent = parent
         if not 'spectrum' in parent:
-            parent['spectrum'] = defaultGaussSetting()
-        self.setting = parent['spectrum']
+            self.spectrum_type = 'gaussian'
+        self.setting = self.parent['spectrum']
         self.power = parent['grill parameters']['total_power']['value']
 
-    def generate(self):
+    def get_ratio_content(self):
+        return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
+
+    @property
+    def spectrum_type(self):
+        return self.parent['spectrum']['spectrum_type']
+
+    @spectrum_type.setter
+    def spectrum_type(self, value):
+        match value:
+            case 'gaussian':
+                self.parent['spectrum'] = defaultGaussSpectrum()
+            case 'spectrum_1D':
+                self.parent['spectrum'] = defaulSpectrum1D()
+            case 'spectrum_2D':
+                self.parent['spectrum'] = defaulSpectrum2D()
+        self.setting = self.parent['spectrum']
+
+    def read_spcp1D(self):        
+        file_path = self.setting['source']
+        if os.path.exists(file_path):
+            file = open(file_path)
+            header = ['Ntor', 'Amp']
+            print(header)
+            spectrum = { h: [] for h in header }
+            lines = file.readlines()
+            table = []
+            for line in lines:
+                table.append(line.split())
+            for row in table:
+                for index, (p, item) in enumerate(spectrum.items()):
+                    item.append(float(row[index]))
+            self.spectrum_data = spectrum 
+        else:
+            self.spectrum_data = { 'Ntor': [], 'Amp': []  }
+  
+    def make_gauss_data(self):
         options = self.setting['options']
         x = np.arange(options['x_min'], options['x_max'], options['step'])
         bias = options['bias']
         sigma = options['sigma']
         y = np.exp(-0.5*((x-bias)/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
         self.spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }        
+
+    def generate(self):
+        match self.spectrum_type:
+            case 'gaussian':
+                self.make_gauss_data()
+            case 'spectrum_1D':
+                self.read_spcp1D()
+            case 'spectrum_2D':
+                pass
 
     def divide_spectrum(self):
         sp = [x for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
