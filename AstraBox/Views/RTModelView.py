@@ -33,7 +33,7 @@ class RadioPanel(ttk.Frame):
             self.spectrum_model.spectrum_type = value
             self.on_change_spectrum()
         else:
-            self.radio.value.set(self.spectrum_model.spectrum_type)
+            self.value.set(self.spectrum_model.spectrum_type)
 
 
 class RTModelView(ttk.Frame):
