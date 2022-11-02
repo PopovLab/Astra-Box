@@ -36,6 +36,9 @@ class FindToolBar(ttk.Frame):
 
     def find_next(self):
         print('find next')
+        if len(self.query_var.get()) < 2:
+            self.text_box.tag_delete("search")
+            return
         if self.query != self.query_var.get():
             self.query = self.query_var.get()
             self.find_first()
