@@ -1,6 +1,8 @@
 # Astra-Box
 
-Python wrapper for ASTRA
+Astra-Box - приложение, для удобной работы c системой ASTRA. 
+Позволяет создавать конфигурацию за расчетов и просмтривать результаты
+
 
 Required for run: python 3.10, poetry, ASTRA on WSL.
 
