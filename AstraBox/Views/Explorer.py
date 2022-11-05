@@ -50,7 +50,7 @@ class Explorer(ttk.Frame):
     def make_tree_nodes(self):
         self.data_items = self.data_source.get_items()
         for key, item in self.data_items.items():
-            status = 'ok'
+            status = ''
             self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(key))  
 
     def select_node(self, event):
