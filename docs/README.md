@@ -36,13 +36,13 @@ Astra-box WrokSpace
 Интерфейс позволяет редактировать файлы Exp, Equ и Sbr.
 
 Редактор параметров трассировки лучей:
-![](rt.png)
+![](media/rt.png)
 
 Запуск расчета:
-![](run.png)
+![](media/run.png)
 
 Простмотр радиальных данных:
-![](radial_data.png)
+![](media/radial_data.png)
 
 Траектории:
-![](traj.png)
+![](media/traj.png)
