@@ -24,7 +24,7 @@ def build(data_item):
         case '.f':
             print(f'build sbr - {p.name}')
             model = SbrModel(path= p)        
-        case '.json':
+        case '.rt':
             print(f'build ray_tracing - {p.name}')
             model = RTModel(path= p )
         case '.zip':
