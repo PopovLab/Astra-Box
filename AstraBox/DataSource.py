@@ -7,7 +7,7 @@ def build(parent_path, path):
 
 class DataItem():
     def __init__(self, p) -> None:
-        self.title = p.stem
+        self.title = p.name
         self.path = p
         pass
 
