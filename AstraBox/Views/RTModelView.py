@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 
+import AstraBox.Models.BaseModel as BaseModel
 from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
@@ -44,7 +45,7 @@ class RTModelView(ttk.Frame):
         if model.name == 'new model':
             self.header_content = { "title": title, "buttons":[('Save', self.save_model)]}
         else:    
-            self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', self.delete_model), ('Clone', None)]}
+            self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', self.delete_model), ('Clone', self.clone_model)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -107,12 +108,12 @@ class RTModelView(ttk.Frame):
             case 'spectrum_2D':
                 pass
         
+    def clone_model(self):
+        name = self.var_name.get()
+        self.var_name.set(f'{name}_clone_{BaseModel.get_uuid_id()[0:4]}')
+        self.save_model()
         
-
     def save_model(self):
-        if self.var_name.get() == 'new model':
-            tk.messagebox.showwarning(title=None, message='Please, change model name')
-            return        
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
         self.model.path = self.model.path.with_stem(self.model.name)
