@@ -19,7 +19,7 @@ class ExtraRaceView(ttk.Frame):
         self.master = master
         self.plot = None
         title = f"Race: {model.name}"
-        self.header_content = { "title": title, "buttons":[('Delete', None), ('new windows', None) ]}
+        self.header_content = { "title": title, "buttons":[]}
         self.model = model
         self.model.load_model_data()
         self.hp = HeaderPanel(self, self.header_content)
