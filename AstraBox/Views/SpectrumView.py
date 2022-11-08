@@ -5,7 +5,8 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
-
+from AstraBox.Views.SmectrumPlot import Plot2D
+from AstraBox.Views.SmectrumPlot import SpectrumPlot
 
 class OptionsPanel(tk.Frame):
     def __init__(self, master, options) -> None:
@@ -98,22 +99,34 @@ class Spectrum1DView(tk.LabelFrame):
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 
-class SpectrumPlot(ttk.Frame):
-    def __init__(self, master, X, Y) -> None:
-        super().__init__(master)  
-        self.fig = plt.figure(figsize=(5, 3), dpi=100)
-        self.fig.add_subplot(111).plot(X, Y)
-        canvas = FigureCanvasTkAgg(self.fig, self)
-        canvas.draw()
-        canvas.get_tk_widget().grid(row=1, column=0)
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=0, sticky=tk.W)
-        toobar = NavigationToolbar2Tk(canvas, frame)
-        #tb = VerticalNavigationToolbar2Tk(canvas, frame)
-        #canvas.get_tk_widget().grid(row=2, column=0)
+class Spectrum2DView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Spectrum 2D')        
 
-    def destroy(self):
-        print("SpectrumPlot destroy")
-        if self.fig:
-            plt.close(self.fig)
-        super().destroy()       
+        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        self.model = model
+
+        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.make_plot()
+
+    def on_load_file(self, filename):
+        print(filename)
+        self.model.setting['source'] = filename
+        self.make_plot()
+
+    def make_plot(self):
+        self.model.read_spcp2()
+            
+        if self.model.spectrum_data == None:
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+        else:
+            self.spectrum_plot = Plot2D(self, self.model.spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        #self.model.read_spcp1D()
+        #self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        #self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+

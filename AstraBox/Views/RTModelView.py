@@ -106,7 +106,8 @@ class RTModelView(ttk.Frame):
                 self.spectrum_view = SpectrumView.Spectrum1DView(self, self.spectrum_model)
                 self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
             case 'spectrum_2D':
-                pass
+                self.spectrum_view = SpectrumView.Spectrum2DView(self, self.spectrum_model)
+                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
         
     def clone_model(self):
         name = self.var_name.get()

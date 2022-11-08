@@ -69,6 +69,39 @@ class SpectrumModel():
         else:
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
   
+    def read_spcp2(self):
+        file_path = self.setting['source']
+        if os.path.exists(file_path):
+            file = open(file_path)
+            table = []
+            header = file.readline().split()
+            print(header)
+            spectrum1D = { h: [] for h in header }
+            lines = file.readlines()    
+            for line in lines:
+                table.append(line.split())
+            for row in table:
+                for index, (p, item) in enumerate(spectrum1D.items()):
+                    item.append(float(row[index]))
+    
+            Nz_v = spectrum1D['Nz'][0]
+            Ny_v = spectrum1D['Ny'][0]
+            spectrum_shape = (spectrum1D['Nz'].count(Nz_v),spectrum1D['Ny'].count(Ny_v) )
+            print(spectrum_shape)
+            spectrum2D = { h: [] for h in header }
+            for key, item in spectrum1D.items():
+                spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )# dtype=float, order='F')
+        
+            level = 0.4
+            arr = spectrum2D['Px']
+            with np.nditer(arr, op_flags=['readwrite']) as it:
+                for x in it:
+                    x[...] = x if x<level else level
+            self.spectrum_data = spectrum2D   
+        else:
+            self.spectrum_data = None
+
+
     def make_gauss_data(self):
         options = self.setting['options']
         x = np.arange(options['x_min'], options['x_max'], options['step'])
@@ -84,7 +117,7 @@ class SpectrumModel():
             case 'spectrum_1D':
                 self.read_spcp1D()
             case 'spectrum_2D':
-                pass
+                self.read_spcp2D()
 
     def divide_spectrum(self):
         sp = [x for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
