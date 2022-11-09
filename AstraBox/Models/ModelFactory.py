@@ -51,8 +51,7 @@ def create_model(model_type, model_name=None, file=None):
         case 'ray_tracing':
             print(f'create rt - {model_name}')
             ds = WorkSpace.getDataSource('ray_tracing')
-            nn = get_new_name()
-            path = ds.get_item_path(f'{nn}.json')
+            path = ds.get_item_path(f'{get_new_name()}.rt')
             model = RTModel(path= path)
         case _:
             print("Это другое")
