@@ -21,4 +21,4 @@ class EquModel(BaseModel):
 
 
     def get_dest_path(self):
-        return os.path.join('equ', self.name)        
+        return os.path.join('equ', self.path.name)        

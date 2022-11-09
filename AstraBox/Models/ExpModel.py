@@ -21,4 +21,4 @@ class ExpModel(BaseModel):
 
 
     def get_dest_path(self):
-        return os.path.join('exp', self.name)
+        return os.path.join('exp', self.path.name)

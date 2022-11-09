@@ -19,4 +19,4 @@ class SbrModel(BaseModel):
         return 'SbrModel'   
 
     def get_dest_path(self):
-        return os.path.join('sbr', self.name)
+        return os.path.join('sbr', self.path.name)
