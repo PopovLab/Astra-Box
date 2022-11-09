@@ -216,9 +216,9 @@ class AstraWorker(Worker):
         
         match (platform.system(), platform.release()):
             case ('Windows', '10'): 
-                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.path.name} {self.model.equ_model.path.name}'
             case ('Windows', '11'): 
-                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.model.exp_model.name} {self.model.equ_model.name}'
+                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.model.exp_model.path.name} {self.model.equ_model.path.name}'
 
         run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         #self.run_cmd = 'start wsl ls'
