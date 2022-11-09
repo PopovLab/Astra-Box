@@ -9,7 +9,7 @@ class SbrModel(BaseModel):
         if name:
             super().__init__(name)
         if path:
-            super().__init__(path.name)
+            super().__init__(path.stem)
             self.path = path
         self._setting = None
         self.changed = False

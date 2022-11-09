@@ -96,3 +96,23 @@ def delete_model(model)  -> bool:
     return deleted
 
 
+
+def refresh(model)  -> None:
+    print(f'refresh {model.name}')
+    match model.model_name:
+        case 'RaceModel':
+            WorkSpace.getDataSource('races').refresh()
+
+        case 'RTModel':
+            WorkSpace.getDataSource('ray_tracing').refresh()                
+
+        case 'ExpModel':
+            WorkSpace.getDataSource('exp').refresh()                
+
+        case 'EquModel':
+            WorkSpace.getDataSource('equ').refresh()                
+        case 'SbrModel':
+            WorkSpace.getDataSource('sbr').refresh()                
+        case _:
+            pass
+
