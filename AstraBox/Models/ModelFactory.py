@@ -60,21 +60,39 @@ def create_model(model_type, model_name=None, file=None):
 
 
 def delete_model(model)  -> bool:
-    print(f'delete {model.name}')
+    print(f'try delete {model.name}')
     ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {model.name}?', icon ='warning')
+    deleted = False
     if ans == 'yes':
         match model.model_name:
             case 'RaceModel':
-                print('delete RaceModel')                 
                 os.remove(model.race_zip_file)
                 WorkSpace.getDataSource('races').refresh()
+                deleted = True
+
             case 'RTModel':
-                print('delete RTModel')                 
                 model.path.unlink()
                 WorkSpace.getDataSource('ray_tracing').refresh()                
+                deleted = True
+
+            case 'ExpModel':
+                model.path.unlink()
+                WorkSpace.getDataSource('exp').refresh()                
+                deleted = True   
+
+            case 'EquModel':
+                model.path.unlink()
+                WorkSpace.getDataSource('equ').refresh()                
+                deleted = True   
+
+            case 'SbrModel':
+                model.path.unlink()
+                WorkSpace.getDataSource('sbr').refresh()                
+                deleted = True                
             case _:
+
                 print('delete')
-        return True
-    return False
+
+    return deleted
 
 
