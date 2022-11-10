@@ -10,7 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
-
+from AstraBox.Views.DistributionView import DistributionView
 
 
 class InfoPanel(tk.LabelFrame):
@@ -55,6 +55,9 @@ class RaceView(ttk.Frame):
         
         trajectory_view = TrajectoryView(self.notebook, model= model)
         self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
+
+        distrib_view = DistributionView(self.notebook, model= model)
+        self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
 
     def delete_model(self):
         if ModelFactory.delete_model(self.model):
@@ -309,3 +312,6 @@ class SimplePlot(ttk.Frame):
         if self.fig:
             plt.close(self.fig)
         super().destroy()   
+
+
+    

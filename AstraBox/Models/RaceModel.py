@@ -6,8 +6,10 @@ import zipfile
 import datetime
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
+import AstraBox.Models.Distribution as Distribution
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
+
 
 class RaceHelper:
     def __init__(self, exp_model, equ_model, rt_model) -> None:
@@ -116,6 +118,22 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
+
+    def get_distribution_list(self):
+        tmp = 'lhcd/distribution/dstr'
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+        list.sort()  
+        return list            
+
+    def read_distribution(self, f):
+        print(f)
+        print(f[22:30])
+        
+        time_stamp = float(f[22:30])
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(f) as file:
+                return Distribution.get(file), time_stamp
 
     def get_trajectory_list(self):
         tmp = 'lhcd/out/traj'
