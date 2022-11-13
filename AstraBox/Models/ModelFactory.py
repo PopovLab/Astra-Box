@@ -21,7 +21,7 @@ def build(data_item):
         case '.equ':
             print(f'build equ - {p.name}')
             model = EquModel(path= p)        
-        case '.f':
+        case '.f' | '.f95':
             print(f'build sbr - {p.name}')
             model = SbrModel(path= p)        
         case '.rt':
