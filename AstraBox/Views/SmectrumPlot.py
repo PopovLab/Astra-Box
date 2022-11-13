@@ -86,7 +86,7 @@ class Plot2D(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
         super().__init__(master)  
         self.spectrum = spectrum
-        self.fig = plt.figure(figsize=(11, 5), dpi=100)
+        self.fig = plt.figure(figsize=(11, 4.7), dpi=100)
         axd = self.fig.subplot_mosaic([['left', 'upper right'],
                                        ['left', 'lower right']])
         #plt.title("Spectrum")

@@ -16,11 +16,11 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 
-class App:
-    def __init__(self, root):
-        self.tk_root = root        
-        root.title("ASTRA Box")
-        root.minsize(1150, 850)
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("ASTRA Box")
+        self.minsize(1150, 850)
 
         style = ttk.Style()
         # стиль для кнопок
@@ -51,19 +51,19 @@ class App:
         self.content_frame = ContentFrame(w1)
         w1.add(self.content_frame)
 
-        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
     def open_work_space(self, path):
         WorkSpace.getInstance().open(path)
-        self.tk_root.title(f"ASTRA Box in {path}")
+        self.title(f"ASTRA Box in {path}")
         Config.set_current_workspace_dir(path)        
 
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             #self.controller.destroy()
             #Storage().close()
-            self.tk_root.destroy()
+            self.destroy()
             
 
 
