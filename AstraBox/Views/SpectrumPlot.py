@@ -163,7 +163,7 @@ class SpectrumPlot(ttk.Frame):
         #toobar = NavigationToolbar2Tk(canvas, frame)
         tb = VerticalNavigationToolbar2Tk(canvas, self)
         tb.update()
-        tb.grid(row=0, column=0, sticky=tk.W)
+        tb.grid(row=0, column=0, sticky=tk.N)
 
     def destroy(self):
         print("SpectrumPlot destroy")
