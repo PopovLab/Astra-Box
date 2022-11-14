@@ -159,12 +159,11 @@ class SpectrumPlot(ttk.Frame):
         self.fig.add_subplot(111).plot(X, Y)
         canvas = FigureCanvasTkAgg(self.fig, self)
         canvas.draw()
-        canvas.get_tk_widget().grid(row=1, column=0)
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=0, sticky=tk.W)
-        toobar = NavigationToolbar2Tk(canvas, frame)
-        #tb = VerticalNavigationToolbar2Tk(canvas, frame)
-        #canvas.get_tk_widget().grid(row=2, column=0)
+        canvas.get_tk_widget().grid(row=0, column=1)
+        #toobar = NavigationToolbar2Tk(canvas, frame)
+        tb = VerticalNavigationToolbar2Tk(canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.W)
 
     def destroy(self):
         print("SpectrumPlot destroy")
