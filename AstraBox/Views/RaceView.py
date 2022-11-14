@@ -41,7 +41,7 @@ class RaceView(ttk.Frame):
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
+        self.rowconfigure(3, weight=1)    
         #self.label = ttk.Label(self,  text=f'name: {model.name}')
         #self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
@@ -103,7 +103,6 @@ class TrajectoryView(ttk.Frame):
             self.time_slider = tk.Scale(master=  self, 
                                    variable = self.time_var,
                                    orient = tk.HORIZONTAL,
-                                   length = 250,
                                    sliderlength = 20,
                                    width = 10,
                                    label='Time scale',
@@ -139,9 +138,10 @@ class TrajectoryView(ttk.Frame):
             self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
             self.plot = TrajectoryPlot(self, rays, self.start_time, plasma_bound)
-            self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=4, padx=8)
+            self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
+            self.rowconfigure(2, weight=1)
 
     def get_rays(self, index):
         if not index in self.rays_cache:
@@ -195,7 +195,10 @@ class RadialDataView(ttk.Frame):
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
             self.plot = RadialDataPlot(self, radial_data)
-            self.plot.grid(row=2, column=0, sticky=tk.W, pady=4, padx=8)
+            self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+            self.columnconfigure(0, weight=1)
+            self.rowconfigure(2, weight=1)
+
 
     def get_radial_data(self, index):
         file = self.radial_data_list[index]
@@ -238,7 +241,9 @@ class DistributionView(ttk.Frame):
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
             self.plot = DistributionPlot(self, distribution, self.start_time)
-            self.plot.grid(row=2, column=0, sticky=tk.W, pady=4, padx=8)
+            self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+            self.columnconfigure(0, weight=1)
+            self.rowconfigure(2, weight=1)            
 
     def get_distribution(self, index):
         file = self.distribution_list[index]

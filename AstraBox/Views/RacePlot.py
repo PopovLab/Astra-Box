@@ -63,7 +63,9 @@ class RadialDataPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)        
-        #canvas.get_tk_widget().grid(row=2, column=0)
+        
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
     def update(self, profiles):
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
@@ -118,6 +120,8 @@ class TrajectoryPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)    
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
     def update(self, rays, time_stamp):
         self.ax.clear()
@@ -142,7 +146,7 @@ class DistributionPlot(ttk.Frame):
         self.fig.suptitle(f'Distribution. Time={time_stamp}')
         self.ax1 = self.fig.subplots(1, 1)
         
-        # 
+        #  show distribution
         for line in distribution:
             #self.ax1.plot(line['X'], line['Y'])
             self.ax1.plot(line['X'], line['logY']);
@@ -151,12 +155,12 @@ class DistributionPlot(ttk.Frame):
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
-        #frame = ttk.Frame(self)
-        #frame.grid(row=0, column=0, sticky=tk.W)
         #toobar = NavigationToolbar2Tk(self.canvas, frame)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)    
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)        
 
     def update(self, distribution, time_stamp):
         self.fig.suptitle(f'Distribution. Time={time_stamp}')
