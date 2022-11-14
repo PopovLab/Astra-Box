@@ -26,7 +26,7 @@ class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
       pass
 
 
-class SimplePlot(ttk.Frame):
+class RadialDataPlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
@@ -91,7 +91,6 @@ class SimplePlot(ttk.Frame):
         self.canvas.draw()
 
     def destroy(self):
-        print("SimplePlot destroy")
         if self.fig:
             plt.close(self.fig)
         super().destroy()   
@@ -129,7 +128,6 @@ class TrajectoryPlot(ttk.Frame):
         self.canvas.draw()
 
     def destroy(self):
-        print("SimplePlot destroy")
         if self.fig:
             plt.close(self.fig)
         super().destroy()   
@@ -173,7 +171,6 @@ class DistributionPlot(ttk.Frame):
         self.canvas.draw()
 
     def destroy(self):
-        print("DistributionPlot destroy")
         if self.fig:
             plt.close(self.fig)
         super().destroy()   

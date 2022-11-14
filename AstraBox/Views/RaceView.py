@@ -10,7 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
-from AstraBox.Views.RacePlot import SimplePlot
+from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 
@@ -103,18 +103,22 @@ class TrajectoryView(ttk.Frame):
             self.time_slider = tk.Scale(master=  self, 
                                    variable = self.time_var,
                                    orient = tk.HORIZONTAL,
+                                   length = 250,
+                                   sliderlength = 20,
+                                   width = 10,
                                    label='Time scale',
                                    tickinterval= (self.finish_time-self.start_time)/7,
                                    from_= self.start_time,
                                    to= self.finish_time, 
-                                   resolution= (self.finish_time-self.start_time)/n, 
-                                   length = 250 )
+                                   resolution= (self.finish_time-self.start_time)/n )
             self.time_slider.grid(row=0, column=0, columnspan=2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
 
             self.index_1 = tk.IntVar(master = self, value=0)
             self.index_1.trace_add('write', self.update_plot)
             self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, 
+                                    sliderlength = 20,
+                                    width = 10,            
                                     label='start ray',
                                     tickinterval= len(rays)/4,
                                     from_=0, 
@@ -125,6 +129,8 @@ class TrajectoryView(ttk.Frame):
             self.index_2 = tk.IntVar(master = self, value=len(rays)-1)
             self.index_2.trace_add('write', self.update_plot)
             self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL,
+                                    sliderlength = 20,
+                                    width = 10,            
                                     label='numbers of ray',
                                     tickinterval= len(rays)/4,
                                     from_=0, 
@@ -188,7 +194,7 @@ class RadialDataView(ttk.Frame):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = SimplePlot(self, radial_data)
+            self.plot = RadialDataPlot(self, radial_data)
             self.plot.grid(row=2, column=0, sticky=tk.W, pady=4, padx=8)
 
     def get_radial_data(self, index):
