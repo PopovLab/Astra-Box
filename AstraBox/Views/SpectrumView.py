@@ -5,8 +5,8 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
-from AstraBox.Views.SmectrumPlot import Plot2D
-from AstraBox.Views.SmectrumPlot import SpectrumPlot
+from AstraBox.Views.SpectrumPlot import Plot2D
+from AstraBox.Views.SpectrumPlot import SpectrumPlot
 
 class OptionsPanel(tk.Frame):
     def __init__(self, master, options) -> None:
