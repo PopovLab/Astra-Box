@@ -112,17 +112,17 @@ class RTModelView(ttk.Frame):
     def clone_model(self):
         name = self.var_name.get()
         self.var_name.set(f'{name}_clone_{BaseModel.get_uuid_id()[0:4]}')
-        self.save_model()
+        self.model.name = self.var_name.get()
+        self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
+        self.model.path = self.model.path.with_stem(self.model.name)
+        self.model.save_to_json()
+        WorkSpace.getDataSource('ray_tracing').refresh() 
         
     def save_model(self):
         old_path = self.model.path
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
         self.model.path = self.model.path.with_stem(self.model.name)
-        #if self.model.name in Storage().rt_store.data:
-        #    tk.messagebox.showwarning(title=None, message=f'{self.model.name} exist in store! \n Please, change model name')
-        #    return
-        #Storage().rt_store.save_model(self.model)
         self.model.save_to_json()
         if (self.model.path != old_path):
             old_path.unlink(missing_ok = True)
