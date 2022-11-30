@@ -6,7 +6,6 @@ def read_from_file(file):
     lines = file.readlines()
     table = []
     for line in lines:
-        #print(line)
         table.append(line.split())
 
     for row in table:
@@ -34,7 +33,9 @@ def get(file):
             lines_list.append(line)
             line = { 'X': [x] ,'Y': [y], 'logY':[math.log(y)] }
             x0 = x
-
+    
+    lines_list.append(line)
+    
     print(len(lines_list))
     len(lines_list[0]['X'])
     return lines_list
