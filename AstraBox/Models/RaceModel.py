@@ -9,6 +9,7 @@ import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.Distribution as Distribution
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
+import AstraBox.Models.Matrix as Matrix
 
 
 class RaceHelper:
@@ -118,6 +119,21 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
+    def get_maxwell_distr_list(self):
+        tmp = 'lhcd/maxwell/mat'
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+        list.sort()  
+        return list   
+
+    def read_maxwell_distribution(self, f):
+        print(f)
+        print(f[16:24])
+        
+        time_stamp = float(f[16:24])
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(f) as file:
+                return Matrix.get_maxwell(file), time_stamp        
 
     def get_distribution_list(self):
         tmp = 'lhcd/distribution/dstr'

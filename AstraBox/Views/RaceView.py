@@ -13,6 +13,7 @@ from AstraBox.Views.ExtraRaceView import ExtraRaceView
 from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
+from AstraBox.Views.RacePlot import MaxwellPlot
 
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
@@ -59,6 +60,9 @@ class RaceView(ttk.Frame):
 
         distrib_view = DistributionView(self.notebook, model= model)
         self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
+
+        maxwell_view = MaxwellView(self.notebook, model= model)
+        self.notebook.add(maxwell_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
 
     def delete_model(self):
         if ModelFactory.delete_model(self.model):
@@ -259,3 +263,47 @@ class DistributionView(ttk.Frame):
         distribution, time_stamp  = self.get_distribution(self.index_var.get())
         self.plot.update(distribution)
 
+
+class MaxwellView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        self.model = model
+        self.maxwell_list = model.get_maxwell_distr_list()
+        n = len(self.maxwell_list)
+        if n>0: 
+            distribution, self.start_time  =  self.get_distribution(0)
+            _, self.finish_time  = self.get_distribution(n-1)
+            self.n = n
+
+            self.time_var = tk.DoubleVar(master = self, value=self.start_time)
+            self.time_var.trace_add('write', self.update_time_var)
+
+            self.time_slider = tk.Scale(master=  self, 
+                                   variable = self.time_var,
+                                   orient = tk.HORIZONTAL,
+                                   label='Time scale',
+                                   tickinterval= (self.finish_time-self.start_time)/7,
+                                   from_= self.start_time,
+                                   to= self.finish_time, 
+                                   resolution= (self.finish_time-self.start_time)/n, 
+                                   length = 250 )
+            self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            
+            self.plot = MaxwellPlot(self, distribution, self.start_time)
+            self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+            self.columnconfigure(0, weight=1)
+            self.rowconfigure(2, weight=1)            
+
+    def get_distribution(self, index):
+        file = self.maxwell_list[index]
+        print(f'{file} {index}')
+        return self.model.read_maxwell_distribution(file)
+
+    def update_time_var(self, var, indx, mode):
+        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
+        distribution, time_stamp = self.get_distribution(index)
+        self.plot.update(distribution, time_stamp)
+
+    def update_var(self, var, indx, mode):
+        distribution, time_stamp  = self.get_distribution(self.index_var.get())
+        self.plot.update(distribution)
