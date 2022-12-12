@@ -179,65 +179,21 @@ class DistributionPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()   
 
-
-class MaxwellPlot(ttk.Frame):
-    def __init__(self, master, maxwell, time_stamp) -> None:
+class SeriesPlot(ttk.Frame):
+    def __init__(self, master, series, title, time_stamp, уscale_log = True) -> None:
         super().__init__(master)  
-        #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
+        self.уscale_log = уscale_log
+        self.title = title
         self.fig = plt.figure(figsize=(8, 5))
-        self.fig.suptitle(f'Maxwell Distribution. Time={time_stamp}')
+        self.fig.suptitle(f'{self.title} Time={time_stamp}')
         self.ax1 = self.fig.subplots(1, 1)
         
         #  show distribution
-        for item in maxwell:
+        for item in series:
             self.ax1.plot(item['X'], item['Y']);
 
-        self.ax1.set_yscale('log')
-        self.ax1.autoscale_view(False,False,False)   
-        self.canvas = FigureCanvasTkAgg(self.fig, self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
-        #toobar = NavigationToolbar2Tk(self.canvas, frame)
-        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
-        tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)    
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)        
-
-    def update(self, maxwell, time_stamp):
-        self.fig.suptitle(f'Maxwell Distribution. Time={time_stamp}')
-        bottom, top = self.ax1.get_ylim()
-        left, right = self.ax1.get_xlim()
-        self.ax1.clear()
-        for item in maxwell:
-            self.ax1.plot(item['X'], item['Y']);
-            
-        self.ax1.set_yscale('log')
-        self.ax1.set_ylim(bottom, top)
-        self.ax1.set_xlim(left, right)
-        #self.ax1.set_ylim(-30, 0)
-   
-
-        self.canvas.draw()
-
-    def destroy(self):
-        if self.fig:
-            plt.close(self.fig)
-        super().destroy()           
-
-class DiffusionPlot(ttk.Frame):
-    def __init__(self, master, maxwell, time_stamp) -> None:
-        super().__init__(master)  
-        #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.fig = plt.figure(figsize=(8, 5))
-        self.fig.suptitle(f'Diffusion. Time={time_stamp}')
-        self.ax1 = self.fig.subplots(1, 1)
-        
-        #  show distribution
-        for item in maxwell:
-            self.ax1.plot(item['X'], item['Y']);
-
-        #self.ax1.set_yscale('log')
+        if self.уscale_log:
+            self.ax1.set_yscale('log')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -249,15 +205,16 @@ class DiffusionPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)        
 
-    def update(self, maxwell, time_stamp):
-        self.fig.suptitle(f'Diffusion Distribution. Time={time_stamp}')
+    def update(self, series, time_stamp):
+        self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()
         self.ax1.clear()
-        for item in maxwell:
+        for item in series:
             self.ax1.plot(item['X'], item['Y']);
             
-        #self.ax1.set_yscale('log')
+        if self.уscale_log:
+            self.ax1.set_yscale('log')
         self.ax1.set_ylim(bottom, top)
         self.ax1.set_xlim(left, right)
         self.canvas.draw()

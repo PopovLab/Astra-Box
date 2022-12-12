@@ -13,8 +13,7 @@ from AstraBox.Views.ExtraRaceView import ExtraRaceView
 from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
-from AstraBox.Views.RacePlot import MaxwellPlot
-from AstraBox.Views.RacePlot import DiffusionPlot
+from AstraBox.Views.RacePlot import SeriesPlot
 
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
@@ -293,7 +292,7 @@ class MaxwellView(ttk.Frame):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = MaxwellPlot(self, distribution, self.start_time)
+            self.plot = SeriesPlot(self, distribution, 'Maxwell', self.start_time)
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
@@ -339,7 +338,7 @@ class DiffusionView(ttk.Frame):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = DiffusionPlot(self, distribution, self.start_time)
+            self.plot = SeriesPlot(self, distribution, 'Diffusion', self.start_time, уscale_log=False)
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
