@@ -189,14 +189,11 @@ class MaxwellPlot(ttk.Frame):
         self.ax1 = self.fig.subplots(1, 1)
         
         #  show distribution
-        nx, ny = maxwell.shape
-        x_axis = maxwell[:, 0]
-        for i in range(1,ny):
-            vector = maxwell[:, i]
-            self.ax1.plot(x_axis, vector);
+        for item in maxwell:
+            self.ax1.plot(item['X'], item['Y']);
 
         self.ax1.set_yscale('log')
-
+        self.ax1.autoscale_view(False,False,False)   
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -209,16 +206,17 @@ class MaxwellPlot(ttk.Frame):
 
     def update(self, maxwell, time_stamp):
         self.fig.suptitle(f'Maxwell Distribution. Time={time_stamp}')
+        bottom, top = self.ax1.get_ylim()
+        left, right = self.ax1.get_xlim()
         self.ax1.clear()
-        nx, ny = maxwell.shape
-        x_axis = maxwell[:, 0]
-        for i in range(1,ny):
-            vector = maxwell[:, i]
-            self.ax1.plot(x_axis, vector);
+        for item in maxwell:
+            self.ax1.plot(item['X'], item['Y']);
             
         self.ax1.set_yscale('log')
+        self.ax1.set_ylim(bottom, top)
+        self.ax1.set_xlim(left, right)
         #self.ax1.set_ylim(-30, 0)
-        #self.ax1.autoscale_view(True,True,True)        
+   
 
         self.canvas.draw()
 
@@ -236,11 +234,8 @@ class DiffusionPlot(ttk.Frame):
         self.ax1 = self.fig.subplots(1, 1)
         
         #  show distribution
-        nx, ny = maxwell.shape
-        x_axis = maxwell[:, 0]
-        for i in range(1,ny):
-            vector = maxwell[:, i]
-            self.ax1.plot(x_axis, vector);
+        for item in maxwell:
+            self.ax1.plot(item['X'], item['Y']);
 
         #self.ax1.set_yscale('log')
 
@@ -256,17 +251,15 @@ class DiffusionPlot(ttk.Frame):
 
     def update(self, maxwell, time_stamp):
         self.fig.suptitle(f'Diffusion Distribution. Time={time_stamp}')
+        bottom, top = self.ax1.get_ylim()
+        left, right = self.ax1.get_xlim()
         self.ax1.clear()
-        nx, ny = maxwell.shape
-        x_axis = maxwell[:, 0]
-        for i in range(1,ny):
-            vector = maxwell[:, i]
-            self.ax1.plot(x_axis, vector);
+        for item in maxwell:
+            self.ax1.plot(item['X'], item['Y']);
             
         #self.ax1.set_yscale('log')
-        #self.ax1.set_ylim(-30, 0)
-        #self.ax1.autoscale_view(True,True,True)        
-
+        self.ax1.set_ylim(bottom, top)
+        self.ax1.set_xlim(left, right)
         self.canvas.draw()
 
     def destroy(self):

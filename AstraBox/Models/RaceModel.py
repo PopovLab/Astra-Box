@@ -120,7 +120,7 @@ class RaceModel(BaseModel):
                 return RadialData.read_radial_data(file)        
 
     def get_diffusion_list(self):
-        tmp = 'lhcd/diffusion/mat'
+        tmp = 'lhcd/diffusion/xar'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
         list.sort()  
@@ -136,7 +136,7 @@ class RaceModel(BaseModel):
                 return Matrix.get_maxwell(file), time_stamp      
 
     def get_maxwell_distr_list(self):
-        tmp = 'lhcd/maxwell/mat'
+        tmp = 'lhcd/maxwell/xar'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
         list.sort()  
