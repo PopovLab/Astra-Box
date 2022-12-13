@@ -14,6 +14,10 @@ from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 from AstraBox.Views.RacePlot import SeriesPlot
+from AstraBox.Models.RaceModel import DISTRIBUTION_PATH
+from AstraBox.Models.RaceModel import DIFFUSION_DATA_PATH
+from AstraBox.Models.RaceModel import MAXWELL_DATA_PATH
+from AstraBox.Models.RaceModel import RADIAL_DATA__PATH
 
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
@@ -173,7 +177,7 @@ class RadialDataView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
         self.model = model
-        self.radial_data_list = model.get_radial_data_list()
+        self.radial_data_list = model.get_data_series_file_list(RADIAL_DATA__PATH)
         n = len(self.radial_data_list)
         if n>0: 
             #self.index_var = tk.IntVar(master = self, value=0)
@@ -226,7 +230,7 @@ class DistributionView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
         self.model = model
-        self.distribution_list = model.get_distribution_list()
+        self.distribution_list = model.get_data_series_file_list(DISTRIBUTION_PATH) 
         n = len(self.distribution_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -271,7 +275,7 @@ class MaxwellView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
         self.model = model
-        self.maxwell_list = model.get_maxwell_distr_list()
+        self.maxwell_list = model.get_data_series_file_list(MAXWELL_DATA_PATH)
         n = len(self.maxwell_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -317,7 +321,7 @@ class DiffusionView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
         self.model = model
-        self.file_list = model.get_diffusion_list()
+        self.file_list = model.get_data_series_file_list(DIFFUSION_DATA_PATH)
         n = len(self.file_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)

@@ -108,9 +108,6 @@ class RaceModel(BaseModel):
         return zip_file
 
 
-    def get_radial_data_list(self):
-        return self.get_data_series_file_list(RADIAL_DATA__PATH)
-
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
@@ -123,9 +120,6 @@ class RaceModel(BaseModel):
         list.sort()  
         return list
 
-    def get_diffusion_list(self):
-        return self.get_data_series_file_list(DIFFUSION_DATA_PATH)   
-
     def read_diffusion(self, f):
         p = pathlib.Path(f)
         print(p.suffix)
@@ -136,9 +130,6 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return DataSeries.read_XY_series(file), time_stamp      
 
-    def get_maxwell_distr_list(self):
-        return self.get_data_series_file_list(MAXWELL_DATA_PATH)    
-
     def read_maxwell_distribution(self, f):
         p = pathlib.Path(f)
         print(p.suffix)
@@ -148,9 +139,7 @@ class RaceModel(BaseModel):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return DataSeries.read_XY_series(file), time_stamp        
-
-    def get_distribution_list(self):
-        return self.get_data_series_file_list(DISTRIBUTION_PATH)             
+    
 
     def read_distribution(self, f):
         p = pathlib.Path(f)
