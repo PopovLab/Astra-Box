@@ -130,7 +130,7 @@ class RaceModel(BaseModel):
         time_stamp = float(p.stem)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
-                return DataSeries.get_maxwell(file), time_stamp      
+                return DataSeries.read_XY_series(file), time_stamp      
 
     def get_maxwell_distr_list(self):
         return self.get_file_list('lhcd/maxwell/')    
@@ -143,7 +143,7 @@ class RaceModel(BaseModel):
         time_stamp = float(p.stem)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
-                return DataSeries.get_maxwell(file), time_stamp        
+                return DataSeries.read_XY_series(file), time_stamp        
 
     def get_distribution_list(self):
         return self.get_file_list('lhcd/distribution/')             

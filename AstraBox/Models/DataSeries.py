@@ -8,7 +8,7 @@ def float_try(str):
         #print(str)
         return 0.0
 
-def read_from_file(file):
+def read_XY_series(file):
     data = []
     
     lines = file.readlines()
@@ -26,8 +26,3 @@ def read_from_file(file):
     return  data
 
 
-def get_maxwell(file):
-
-    data = read_from_file(file)
-
-    return data
