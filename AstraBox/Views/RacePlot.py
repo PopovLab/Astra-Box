@@ -231,15 +231,15 @@ class SeriesPlot(ttk.Frame):
                                     resolution=1 )
         self.slider_1.pack(side=tk.LEFT, expand=1, fill=tk.X, padx=5) 
 
-        self.index_2 = tk.IntVar(master = self, value=ns-1)
+        self.index_2 = tk.IntVar(master = self, value=ns)
         self.index_2.trace_add('write', self.update_plot)
         self.slider_2 = tk.Scale(master=  frame, variable = self.index_2, orient = tk.HORIZONTAL,
                                     sliderlength = 20,
                                     width = 10,            
                                     label='numbers',
                                     tickinterval= ns/4,
-                                    from_=0, 
-                                    to=ns-1, 
+                                    from_=1, 
+                                    to=ns, 
                                     resolution=1 )
         self.slider_2.pack(side=tk.LEFT, expand=1, fill=tk.X, padx=5)   
             
