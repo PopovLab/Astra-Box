@@ -44,9 +44,7 @@ class RaceModel(BaseModel):
             self.exp_model = ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
             self.equ_model = ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
             self.rt_model = ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
-            #self.exp_model = Storage().exp_store.data[exp_name]
-            #self.equ_model = Storage().equ_store.data[equ_name]
-            #self.rt_model = Storage().rt_store.data[rt_name]
+ 
             self.data['ExpModel'] = self.exp_model.data
             self.data['EquModel'] = self.equ_model.data
             self.data['RTModel'] = self.rt_model.data
