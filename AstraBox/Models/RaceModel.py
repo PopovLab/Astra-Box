@@ -6,7 +6,6 @@ import zipfile
 import datetime
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
-import AstraBox.Models.Distribution as Distribution
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Models.DataSeries as DataSeries
@@ -159,7 +158,7 @@ class RaceModel(BaseModel):
             return [], 0.0
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
-                return Distribution.get(file), time_stamp
+                return DataSeries.read_original_distribution_file(file), time_stamp
 
     def get_trajectory_list(self):
         tmp = 'lhcd/out/traj'
