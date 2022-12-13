@@ -105,64 +105,55 @@ class RaceModel(BaseModel):
 
 
     def get_radial_data_list(self):
-        tmp = 'dat/'
-        print(self.race_zip_file)
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            list = [ z.filename for z in zip.filelist if (z.filename.startswith(tmp) and len(z.filename)>4 )]
-        num = len(list)
-        print(num)
-        list.sort()  
-        return list
+        return self.get_file_list('dat/')
 
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
-    def get_diffusion_list(self):
-        tmp = 'lhcd/diffusion/xar'
+    def get_file_list(self, folder):
+        length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
-            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
+            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length )]
         list.sort()  
-        return list   
+        return list
+
+    def get_diffusion_list(self):
+        return self.get_file_list('lhcd/diffusion/')   
 
     def read_diffusion(self, f):
-        print(f)
-        print(f[18:27])
-        
-        time_stamp = float(f[18:27])
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return Matrix.get_maxwell(file), time_stamp      
 
     def get_maxwell_distr_list(self):
-        tmp = 'lhcd/maxwell/xar'
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
-        list.sort()  
-        return list   
+        return self.get_file_list('lhcd/maxwell/')    
 
     def read_maxwell_distribution(self, f):
-        print(f)
-        print(f[16:24])
-        
-        time_stamp = float(f[16:24])
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return Matrix.get_maxwell(file), time_stamp        
 
     def get_distribution_list(self):
-        tmp = 'lhcd/distribution/dstr'
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
-        list.sort()  
-        return list            
+        return self.get_file_list('lhcd/distribution/')             
 
     def read_distribution(self, f):
-        print(f)
-        print(f[22:30])
-        
-        time_stamp = float(f[22:30])
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return Distribution.get(file), time_stamp
@@ -173,7 +164,6 @@ class RaceModel(BaseModel):
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
         list.sort()  
         return list            
-
 
     def get_rays(self, f):
         time_stamp = float(f[13:20])
