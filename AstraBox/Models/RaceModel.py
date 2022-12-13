@@ -156,7 +156,7 @@ class RaceModel(BaseModel):
         try:
             time_stamp = float(p.stem)
         except ValueError:
-            return None, 0.0
+            return [], 0.0
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return Distribution.get(file), time_stamp
