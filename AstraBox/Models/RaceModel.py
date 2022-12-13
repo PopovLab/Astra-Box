@@ -10,6 +10,11 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Models.DataSeries as DataSeries
 
+RADIAL_DATA__PATH = "dat/"
+DIFFUSION_DATA_PATH = 'lhcd/diffusion/'
+MAXWELL_DATA_PATH = 'lhcd/maxwell/'
+DISTRIBUTION_PATH = 'lhcd/distribution/'
+TRAJECTROY_PATH = 'lhcd/out/traj'
 
 class RaceHelper:
     def __init__(self, exp_model, equ_model, rt_model) -> None:
@@ -104,7 +109,7 @@ class RaceModel(BaseModel):
 
 
     def get_radial_data_list(self):
-        return self.get_data_series_file_list('dat/')
+        return self.get_data_series_file_list(RADIAL_DATA__PATH)
 
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
@@ -119,7 +124,7 @@ class RaceModel(BaseModel):
         return list
 
     def get_diffusion_list(self):
-        return self.get_data_series_file_list('lhcd/diffusion/')   
+        return self.get_data_series_file_list(DIFFUSION_DATA_PATH)   
 
     def read_diffusion(self, f):
         p = pathlib.Path(f)
@@ -132,7 +137,7 @@ class RaceModel(BaseModel):
                 return DataSeries.read_XY_series(file), time_stamp      
 
     def get_maxwell_distr_list(self):
-        return self.get_data_series_file_list('lhcd/maxwell/')    
+        return self.get_data_series_file_list(MAXWELL_DATA_PATH)    
 
     def read_maxwell_distribution(self, f):
         p = pathlib.Path(f)
@@ -145,7 +150,7 @@ class RaceModel(BaseModel):
                 return DataSeries.read_XY_series(file), time_stamp        
 
     def get_distribution_list(self):
-        return self.get_data_series_file_list('lhcd/distribution/')             
+        return self.get_data_series_file_list(DISTRIBUTION_PATH)             
 
     def read_distribution(self, f):
         p = pathlib.Path(f)
@@ -161,7 +166,7 @@ class RaceModel(BaseModel):
                 return DataSeries.read_original_distribution_file(file), time_stamp
 
     def get_trajectory_list(self):
-        tmp = 'lhcd/out/traj'
+        tmp = TRAJECTROY_PATH
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp))]
         list.sort()  
