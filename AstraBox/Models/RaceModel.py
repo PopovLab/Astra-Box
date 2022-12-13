@@ -153,7 +153,10 @@ class RaceModel(BaseModel):
         print(p.suffix)
         print(p.stem)
         if p.suffix != '.dat': return
-        time_stamp = float(p.stem)
+        try:
+            time_stamp = float(p.stem)
+        except ValueError:
+            return None, None
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return Distribution.get(file), time_stamp
