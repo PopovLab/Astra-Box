@@ -28,10 +28,9 @@ class BaseModel:
         return 'BaseModel'
 
     def get_text(self):
-        with self.path.open('r') as f:
+        with self.path.open('r', encoding='utf-8',) as f:
             lines = f.read()
-
-        return lines        
+        return lines
 
     def save_text(self, text):
         with self.path.open(mode='w') as f:
