@@ -149,7 +149,7 @@ class SpectrumModel():
         sp_pos, sp_neg = self.divide_spectrum()
         out_lines.append("!!positive Nfi; P_LH(a.units); points<1001\n")
         for s in sp_pos:
-            out_lines.append(str(s[0]) + "   " + str(s[1])+"\n")
+            out_lines.append(f'{s[0]:.5f}   {s[1]}\n')
         #print(len(out_lines))
 
         #power = parameters['grill parameters']['total power'][0]
@@ -157,6 +157,6 @@ class SpectrumModel():
         out_lines.append('!!negative Nfi; P_LH(a.units); points number<1001, arbitrary spacing.\n')
 
         for s in sp_neg:
-            out_lines.append(str(s[0]) + "   " + str(s[1])+"\n")
+            out_lines.append(f'{s[0]:.5f}   {s[1]}\n')
         #print(len(out_lines))
         return out_lines
