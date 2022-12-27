@@ -118,7 +118,7 @@ class Spectrum2DView(tk.LabelFrame):
         self.make_plot()
 
     def make_plot(self):
-        self.model.read_spcp2()
+        self.model.read_spcp2D()
             
         if self.model.spectrum_data == None:
             label = ttk.Label(self, text="Spectrum None", width=20)

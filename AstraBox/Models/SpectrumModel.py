@@ -76,7 +76,7 @@ class SpectrumModel():
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
         self.spectrum_normalization()            
   
-    def read_spcp2(self):
+    def read_spcp2D(self):
         file_path = self.setting['source']
         if os.path.exists(file_path):
             file = open(file_path)
