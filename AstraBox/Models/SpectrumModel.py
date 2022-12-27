@@ -121,13 +121,10 @@ class SpectrumModel():
     
     def spectrum_normalization(self):
         power = fsum(self.spectrum_data['Amp'])
-        positive_power = 0
         positive_power = fsum([x[1] for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']) if x[0]>0])
-
         self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
-        print(f'{power} {positive_power}')
         self.positive_power = positive_power /power
-        print(self.positive_power)
+  
 
     def generate(self):
         match self.spectrum_type:
