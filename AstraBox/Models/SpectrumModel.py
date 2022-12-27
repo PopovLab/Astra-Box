@@ -31,10 +31,12 @@ class SpectrumModel():
         if not 'spectrum' in parent:
             self.spectrum_type = 'gaussian'
         self.setting = self.parent['spectrum']
-        self.power = parent['grill parameters']['total_power']['value']
+        self.positive_power = 0 
 
     def get_ratio_content(self):
         return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
+
+
 
     @property
     def spectrum_type(self):
@@ -50,6 +52,9 @@ class SpectrumModel():
             case 'spectrum_2D':
                 self.parent['spectrum'] = defaulSpectrum2D()
         self.setting = self.parent['spectrum']
+
+
+
 
     def read_spcp1D(self):        
         file_path = self.setting['source']
@@ -68,6 +73,7 @@ class SpectrumModel():
             self.spectrum_data = spectrum 
         else:
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
+        self.spectrum_normalization()            
   
     def read_spcp2(self):
         file_path = self.setting['source']
@@ -109,6 +115,17 @@ class SpectrumModel():
         sigma = options['sigma']
         y = np.exp(-0.5*((x-bias)/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
         self.spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }        
+        self.spectrum_normalization()
+    
+    def spectrum_normalization(self):
+        power = 0
+        positive_power = 0
+        for x, y  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']):
+            power += y
+            if x>0: positive_power += y
+        self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
+        print(f'{power} {positive_power}')
+        self.positive_power = positive_power /power
 
     def generate(self):
         match self.spectrum_type:
@@ -136,7 +153,7 @@ class SpectrumModel():
         #print(len(out_lines))
 
         #power = parameters['grill parameters']['total power'][0]
-        out_lines.append(str(self.power) + '	-88888. !0.57 first value=part(%) of total power in positive spectrum.\n')
+        out_lines.append(f'{self.positive_power:.4f} -88888. !0.57 first value=part(%) of total power in positive spectrum.\n')
         out_lines.append('!!negative Nfi; P_LH(a.units); points number<1001, arbitrary spacing.\n')
 
         for s in sp_neg:

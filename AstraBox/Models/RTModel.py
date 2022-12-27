@@ -307,14 +307,7 @@ def default_rt_setting():
                     'value' : 51, 
                     'type': 'int',
                     'description' : "iN_phi grid number"
-                },                
-                   "total_power": { 
-                    'title' : 'total power',
-                    'value' : 1, 
-                    'type': 'float',
-                    'unit'  : '%',                    
-                    'description' : "total power in positive spectrum"
-                }, 
+                }
             }
         }
 
