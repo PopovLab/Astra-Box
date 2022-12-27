@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from math import fsum
 
 def defaultGaussSpectrum():
     return {
@@ -110,7 +111,8 @@ class SpectrumModel():
 
     def make_gauss_data(self):
         options = self.setting['options']
-        x = np.arange(options['x_min'], options['x_max'], options['step'])
+        num = int((options['x_max'] - options['x_min'])/options['step'])
+        x = np.linspace(options['x_min'], options['x_max'], num = num)
         bias = options['bias']
         sigma = options['sigma']
         y = np.exp(-0.5*((x-bias)/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
@@ -118,14 +120,14 @@ class SpectrumModel():
         self.spectrum_normalization()
     
     def spectrum_normalization(self):
-        power = 0
+        power = fsum(self.spectrum_data['Amp'])
         positive_power = 0
-        for x, y  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']):
-            power += y
-            if x>0: positive_power += y
+        positive_power = fsum([x[1] for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']) if x[0]>0])
+
         self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
         print(f'{power} {positive_power}')
         self.positive_power = positive_power /power
+        print(self.positive_power)
 
     def generate(self):
         match self.spectrum_type:
