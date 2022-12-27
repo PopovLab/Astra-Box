@@ -11,6 +11,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
+from AstraBox.Models.RaceModel import RADIAL_DATA__PATH
 
 class ExtraRaceView(ttk.Frame):
  
@@ -36,7 +37,7 @@ class ExtraRaceView(ttk.Frame):
         self.combo_cmap.set("viridis")        
         self.combo_cmap.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.radial_data_list = model.get_radial_data_list()
+        self.radial_data_list = model.get_data_series_file_list(RADIAL_DATA__PATH)
 
         profile = self.get_profile(0)
 
