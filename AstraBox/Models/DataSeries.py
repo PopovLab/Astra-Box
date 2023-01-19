@@ -57,8 +57,8 @@ def read_original_distribution_file(file):
             x0 = x
         else:
             lines_list.append(line)
-            line = { 'X': [x] ,'Y': [y], 'logY': [math.log(x) if x>0 else 0] }
-            x0 = x
+            line = { 'X': [x] ,'Y': [y], 'logY': [math.log(y) if y>0 else 0] }
+            x0 = 0
     
     lines_list.append(line)
     
