@@ -142,7 +142,7 @@ class SpectrumModel():
         sp_neg = list(reversed(sp_neg))
         return sp_pos, sp_neg
 
-    def get_text(self):
+    def get_text_div_spectrum(self):
         self.generate()
         sp_pos, sp_neg = self.divide_spectrum()
         text1 = "!!positive Nfi; P_LH(a.units); points<1001\n"

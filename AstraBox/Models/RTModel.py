@@ -374,5 +374,5 @@ class RTModel(BaseModel):
                 lines += [ item_to_line(item) for name, item in items.items() if name !='total_power']
                 
         spect = SpectrumModel(self.setting)
-        lines += spect.get_text()   
+        lines += spect.get_text_div_spectrum()   
         return ''.join(lines)        
