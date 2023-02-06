@@ -144,18 +144,14 @@ class SpectrumModel():
 
     def get_text(self):
         self.generate()
-        out_lines = []
         sp_pos, sp_neg = self.divide_spectrum()
-        out_lines.append("!!positive Nfi; P_LH(a.units); points<1001\n")
-        for s in sp_pos:
-            out_lines.append(f'{s[0]:.5f}   {s[1]}\n')
-        #print(len(out_lines))
+        text1 = "!!positive Nfi; P_LH(a.units); points<1001\n"
+        pos_lines = [f'{s[0]:.5f}   {s[1]}\n' for s in sp_pos]
 
         #power = parameters['grill parameters']['total power'][0]
-        out_lines.append(f'{self.positive_power:.4f} -88888. !0.57 first value=part(%) of total power in positive spectrum.\n')
-        out_lines.append('!!negative Nfi; P_LH(a.units); points number<1001, arbitrary spacing.\n')
+        text2 = f'{self.positive_power:.4f} -88888. !0.57 first value=part(%) of total power in positive spectrum.\n'
+        text3 = '!!negative Nfi; P_LH(a.units); points number<1001, arbitrary spacing.\n'
 
-        for s in sp_neg:
-            out_lines.append(f'{s[0]:.5f}   {s[1]}\n')
+        neg_lines = [f'{s[0]:.5f}   {s[1]}\n' for s in sp_neg]
         #print(len(out_lines))
-        return out_lines
+        return [text1, *pos_lines, text2, text3, *neg_lines]
