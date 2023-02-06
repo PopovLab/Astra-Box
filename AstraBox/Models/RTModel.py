@@ -313,7 +313,7 @@ def default_rt_setting():
 
     
 class RTModel(BaseModel):
-
+    """Ray tracing model"""
     def __init__(self, name= None, path= None) -> None:
         if name:
             super().__init__(name)
