@@ -97,6 +97,7 @@ class RaceModel(BaseModel):
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)
             self.pack_model_to_zip(zip, self.rt_model)
+            self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
             for key, item in WorkSpace.getDataSource('sbr').items.items():
                 self.pack_model_to_zip(zip, ModelFactory.build(item))
             with zip.open( 'race_model.json' , "w" ) as json_file:

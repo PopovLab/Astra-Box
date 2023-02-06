@@ -376,3 +376,6 @@ class RTModel(BaseModel):
         spect = SpectrumModel(self.setting)
         lines += spect.get_text_div_spectrum()   
         return ''.join(lines)        
+
+    def get_spectrum_model(self):
+        return SpectrumModel(self.setting)

@@ -34,6 +34,9 @@ class SpectrumModel():
         self.setting = self.parent['spectrum']
         self.positive_power = 0 
 
+    def get_dest_path(self):
+        return os.path.join('lhcd', 'spectrum.dat')
+
     def get_ratio_content(self):
         return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
 
@@ -141,6 +144,16 @@ class SpectrumModel():
         sp_neg = [ (-s[0], s[1]) for s in sp if s[0]<0]
         sp_neg = list(reversed(sp_neg))
         return sp_pos, sp_neg
+
+    def get_text(self):
+        self.generate()
+        print(self.spectrum_type)
+        match self.spectrum_type:
+            case 'gaussian'| 'spectrum_1D':
+                sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
+            case 'spectrum_2D':
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                
+        return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
 
     def get_text_div_spectrum(self):
         self.generate()
