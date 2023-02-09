@@ -14,6 +14,7 @@ from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 from AstraBox.Views.RacePlot import SeriesPlot
+from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Models.RaceModel import DISTRIBUTION_PATH
 from AstraBox.Models.RaceModel import DIFFUSION_DATA_PATH
 from AstraBox.Models.RaceModel import MAXWELL_DATA_PATH
@@ -71,6 +72,9 @@ class RaceView(ttk.Frame):
         maxwell_view = DiffusionView(self.notebook, model= model)
         self.notebook.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
 
+        spectrum_view = SpectrumView(self.notebook, model= model)
+        self.notebook.add(spectrum_view, text="Spectrum View", underline=0, sticky=tk.NE + tk.SW)      
+
     def delete_model(self):
         if ModelFactory.delete_model(self.model):
             self.master.show_empty_view()
@@ -92,6 +96,16 @@ class RaceView(ttk.Frame):
     def destroy(self):
         print("RaceView destroy")
         super().destroy()   
+
+class SpectrumView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        print('create SpectrumView')
+        self.race_model = model
+        self.spectrum_model = model.read_spectrum()
+        print(self.spectrum_model.get_dest_path())
+
+
 
 class TrajectoryView(ttk.Frame):
     def __init__(self, master, model) -> None:

@@ -41,7 +41,6 @@ class SpectrumModel():
         return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
 
 
-
     @property
     def spectrum_type(self):
         return self.parent['spectrum']['spectrum_type']
@@ -56,8 +55,6 @@ class SpectrumModel():
             case 'spectrum_2D':
                 self.parent['spectrum'] = defaulSpectrum2D()
         self.setting = self.parent['spectrum']
-
-
 
 
     def read_spcp1D(self):        

@@ -9,6 +9,7 @@ import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Models.DataSeries as DataSeries
+from AstraBox.Models.SpectrumModel import SpectrumModel
 
 RADIAL_DATA__PATH = "dat/"
 DIFFUSION_DATA_PATH = 'lhcd/diffusion/'
@@ -106,6 +107,9 @@ class RaceModel(BaseModel):
                 json.dump(self.data, json_writer, ensure_ascii=False, indent=2)
         return zip_file
 
+    def read_spectrum(self):
+        spectrum_model = SpectrumModel(self.data['RTModel']['setting'])
+        return spectrum_model
 
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
