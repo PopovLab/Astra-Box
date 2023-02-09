@@ -35,7 +35,8 @@ class SpectrumModel():
         self.positive_power = 0 
 
     def get_dest_path(self):
-        return os.path.join('lhcd', 'spectrum.dat')
+        #return os.path.join('lhcd', 'spectrum.dat')
+        return 'lhcd/spectrum.dat'
 
     def get_ratio_content(self):
         return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
@@ -56,6 +57,23 @@ class SpectrumModel():
                 self.parent['spectrum'] = defaulSpectrum2D()
         self.setting = self.parent['spectrum']
 
+
+    def read_data(self, file):
+        data = { 'Nz': [], 'Ny': [], 'Px':[]}
+        lines = file.readlines()
+        table = []
+        for line in lines:
+            #if isBlank(line): break
+            table.append(line.decode("utf-8").split())
+        #print(len(table))
+        for row in table:
+            for index, (p, item) in enumerate(data.items()):
+                #print(p, item, index)
+                try:
+                    item.append(float(row[index]))
+                except ValueError:
+                    item.append(0.0)
+        self.spectrum_data = data
 
     def read_spcp1D(self):        
         file_path = self.setting['source']

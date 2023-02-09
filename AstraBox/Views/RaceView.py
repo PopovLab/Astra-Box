@@ -102,8 +102,13 @@ class SpectrumView(ttk.Frame):
         super().__init__(master)  
         print('create SpectrumView')
         self.race_model = model
-        self.spectrum_model = model.read_spectrum()
+        self.spectrum_model = model.get_spectrum()
         print(self.spectrum_model.get_dest_path())
+        if type(self.spectrum_model.spectrum_data) is dict:
+            print('загрузил спектр')
+            print(len(self.spectrum_model.spectrum_data['Nz']))
+        else:
+            print(self.spectrum_model.spectrum_data)
 
 
 

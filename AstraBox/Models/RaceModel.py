@@ -107,8 +107,16 @@ class RaceModel(BaseModel):
                 json.dump(self.data, json_writer, ensure_ascii=False, indent=2)
         return zip_file
 
-    def read_spectrum(self):
+    def get_spectrum(self):
         spectrum_model = SpectrumModel(self.data['RTModel']['setting'])
+        f = spectrum_model.get_dest_path()
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(f) as file:
+                    spectrum_model.read_data(file)       
+        except Exception as error:
+            print(error)
+            spectrum_model.spectrum_data = 'не смог прочитать спектр'
         return spectrum_model
 
     def read_radial_data(self,f):
