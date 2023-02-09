@@ -97,6 +97,9 @@ class RaceView(ttk.Frame):
         print("RaceView destroy")
         super().destroy()   
 
+from AstraBox.Views.SpectrumPlot import Plot2D
+from AstraBox.Views.SpectrumPlot import SpectrumPlot
+
 class SpectrumView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
@@ -107,9 +110,13 @@ class SpectrumView(ttk.Frame):
         if type(self.spectrum_model.spectrum_data) is dict:
             print('загрузил спектр')
             print(len(self.spectrum_model.spectrum_data['Nz']))
+            self.make_plot()
         else:
             print(self.spectrum_model.spectrum_data)
 
+    def make_plot(self):
+        self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Nz'], self.spectrum_model.spectrum_data['Px']  )
+        self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 
 class TrajectoryView(ttk.Frame):
