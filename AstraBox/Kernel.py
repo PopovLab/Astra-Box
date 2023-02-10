@@ -90,16 +90,16 @@ class Worker:
     def __init__(self, model) -> None:
         self.error_flag = False
         self.stdinput = None
-        self.model = model
-        self.work_folder = self.model.get_work_folder()
+        self.run_model = model
+        self.work_folder = self.run_model.get_work_folder()
         self.logger = self.get_logger('kernel')
         self.logger.info( type(self)) 
         self.logger.log(logging.INFO, 'folder: ' + self.work_folder) 
 
     def set_model_status(self, status):
-        self.model.data['status'] = status
+        self.run_model.data['status'] = status
         if self.controller:
-            self.controller.update_model_status(self.model)
+            self.controller.update_model_status(self.run_model)
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
@@ -203,8 +203,8 @@ class AstraWorker(Worker):
     def start(self):
         #if self.test_folder(): return
         #self.initialization()
-        self.logger.info(f'start {self.model.name}')
-        zip_file = self.model.prepare_run_data()
+        self.logger.info(f'start {self.run_model.name}')
+        zip_file = self.run_model.prepare_run_data()
         self.logger.info(f'copy : {zip_file}')
         self.logger.info(f'to: {self.astra_profile["dest"]}')
         self.logger.info(f'astra: {self.astra_profile["profile"]}')
@@ -216,9 +216,9 @@ class AstraWorker(Worker):
         
         match (platform.system(), platform.release()):
             case ('Windows', '10'): 
-                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.model.exp_model.path.name} {self.model.equ_model.path.name}'
+                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
             case ('Windows', '11'): 
-                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.model.exp_model.path.name} {self.model.equ_model.path.name}'
+                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
         run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         #self.run_cmd = 'start wsl ls'
@@ -231,7 +231,7 @@ class AstraWorker(Worker):
         asyncio.run(self.run(run_cmd, shell=True))        
         #subprocess.call(self.run_cmd, shell=True)
         self.logger.info('finish')
-        if self.model.status == 'run':
+        if self.run_model.status == 'run':
             if self.error_flag:
                 self.set_model_status('error')        
             else:
@@ -240,8 +240,8 @@ class AstraWorker(Worker):
         pack_cmd = f'wsl --cd {self.astra_profile["home"]} ./pack.sh {self.astra_profile["profile"]}'
         asyncio.run(self.run(pack_cmd, shell=True))
 
-        #race_zip_file = f'Data/races/race_{self.model.name}.zip'
-        zip_path = WorkSpace.getDataSource('races').destpath.joinpath(f'race_{self.model.name}.zip')
+        #race_zip_file = f'Data/races/race_{self.run_model.name}.zip'
+        zip_path = WorkSpace.getDataSource('races').destpath.joinpath(f'race_{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
         copy_file(self.astra_profile["dest"] + '/race_data.zip', race_zip_file )
-        self.model.race_zip_file = race_zip_file
+        self.run_model.race_zip_file = race_zip_file
