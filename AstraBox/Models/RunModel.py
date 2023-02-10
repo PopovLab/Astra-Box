@@ -8,12 +8,6 @@ from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
-def float_try(str):
-    try:
-        return float(str)
-    except ValueError:
-        return 0.0
-
 class RunModel(BaseModel):
 
     def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None) -> None:
