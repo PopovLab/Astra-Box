@@ -5,7 +5,7 @@ import json
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
-from AstraBox.Models.RaceModel import RaceModel
+from AstraBox.Models.RunModel import RunModel
 import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
@@ -92,7 +92,7 @@ class RunAstraView(ttk.Frame):
         rt = self.rt_combo.get()
         ap = self.astra_combo.get()
         
-        race_model = RaceModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
+        race_model = RunModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
         
         astra_profile = Config.get_astra_profile(ap)
         self.worker = Kernel.AstraWorker(race_model, astra_profile)
