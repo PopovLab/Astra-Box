@@ -15,10 +15,10 @@ from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 from AstraBox.Views.RacePlot import SeriesPlot
 from AstraBox.Models.SpectrumModel import SpectrumModel
-from AstraBox.Models.RaceModel import DISTRIBUTION_PATH
-from AstraBox.Models.RaceModel import DIFFUSION_DATA_PATH
-from AstraBox.Models.RaceModel import MAXWELL_DATA_PATH
-from AstraBox.Models.RaceModel import RADIAL_DATA__PATH
+from AstraBox.Models.Const import DISTRIBUTION_PATH
+from AstraBox.Models.Const import DIFFUSION_DATA_PATH
+from AstraBox.Models.Const import MAXWELL_DATA_PATH
+from AstraBox.Models.Const import RADIAL_DATA__PATH
 
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:

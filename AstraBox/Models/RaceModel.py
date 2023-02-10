@@ -10,12 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Models.DataSeries as DataSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
-
-RADIAL_DATA__PATH = "dat/"
-DIFFUSION_DATA_PATH = 'lhcd/diffusion/'
-MAXWELL_DATA_PATH = 'lhcd/maxwell/'
-DISTRIBUTION_PATH = 'lhcd/distribution/'
-TRAJECTROY_PATH = 'lhcd/out/traj'
+from AstraBox.Models.Const import TRAJECTROY_PATH
 
 class RaceHelper:
     def __init__(self, exp_model, equ_model, rt_model) -> None:
