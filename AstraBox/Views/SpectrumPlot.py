@@ -82,7 +82,36 @@ class Navigator(NavigationToolbar2Tk):
 def MinMax(arr):
     return np.amin(arr), np.amax(arr)
 
-class Plot2D(ttk.Frame):
+class ScatterPlot3D(ttk.Frame):
+    def __init__(self, master, spectrum) -> None:
+        super().__init__(master)  
+        self.spectrum = spectrum
+        self.z_min, self.z_max = MinMax(self.spectrum['Nz'])
+        self.y_min, self.y_max = MinMax(self.spectrum['Ny'])        
+        self.fig = plt.figure(figsize=(8, 4.3), dpi=100)        
+        ax = self.fig.add_subplot(111, projection='3d')
+        cmhot = plt.get_cmap("plasma")
+        ax.scatter(spectrum['Nz'], spectrum['Ny'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+
+        ax.set_xlabel('Nz')
+        ax.set_ylabel('Ny')
+        ax.set_zlabel('Px')
+
+        self.canvas = FigureCanvasTkAgg(self.fig, self)   
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(row=0, column=1)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)        
+
+    def destroy(self):
+        print("ScatterPlot3D destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()   
+
+
+class Plot2DArray(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
         super().__init__(master)  
         self.spectrum = spectrum

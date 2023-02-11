@@ -97,7 +97,7 @@ class RaceView(ttk.Frame):
         print("RaceView destroy")
         super().destroy()   
 
-from AstraBox.Views.SpectrumPlot import Plot2D
+#from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
 
 class SpectrumView(ttk.Frame):

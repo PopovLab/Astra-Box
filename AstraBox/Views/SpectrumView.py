@@ -5,7 +5,8 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
-from AstraBox.Views.SpectrumPlot import Plot2D
+from AstraBox.Views.SpectrumPlot import ScatterPlot3D
+from AstraBox.Views.SpectrumPlot import Plot2DArray
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
 
 class OptionsPanel(tk.Frame):
@@ -115,7 +116,18 @@ class Spectrum2DView(tk.LabelFrame):
     def on_load_file(self, filename):
         print(filename)
         self.model.setting['source'] = filename
-        self.make_plot()
+        self.make_plot2()
+
+    def make_plot2(self):
+        with open(self.model.setting['source']) as file:
+            self.model.read_data(file)
+            
+        if self.model.spectrum_data == None:
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+        else:
+            self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
     def make_plot(self):
         self.model.read_spcp2D()
@@ -124,7 +136,7 @@ class Spectrum2DView(tk.LabelFrame):
             label = ttk.Label(self, text="Spectrum None", width=20)
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
         else:
-            self.spectrum_plot = Plot2D(self, self.model.spectrum_data)
+            self.spectrum_plot = Plot2DArray(self, self.model.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         #self.model.read_spcp1D()
         #self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )

@@ -64,7 +64,11 @@ class SpectrumModel():
         table = []
         for line in lines:
             #if isBlank(line): break
-            table.append(line.decode("utf-8").split())
+            print(line)
+            if type(line) is str:
+                table.append(line.split())    
+            else:                
+                table.append(line.decode("utf-8").split())
         #print(len(table))
         for row in table:
             for index, (p, item) in enumerate(data.items()):
