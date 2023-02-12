@@ -99,7 +99,7 @@ class RaceView(ttk.Frame):
 
 #from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
-
+from AstraBox.Views.SpectrumPlot import ScatterPlot
 class SpectrumView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
@@ -115,7 +115,14 @@ class SpectrumView(ttk.Frame):
             print(self.spectrum_model.spectrum_data)
 
     def make_plot(self):
-        self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Nz'], self.spectrum_model.spectrum_data['Px']  )
+        match self.spectrum_model.spectrum_type:
+            case 'gaussian'|'spectrum_1D':
+                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Nz'], self.spectrum_model.spectrum_data['Px']  )
+            case 'scatter_spectrum':
+                self.spectrum_plot = ScatterPlot(self, self.spectrum_model.spectrum_data)
+            case 'spectrum_2D':
+                pass       
+        
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 
