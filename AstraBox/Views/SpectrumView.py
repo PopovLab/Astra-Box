@@ -5,6 +5,7 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from AstraBox.Views.SpectrumPlot import ScatterPlot
 from AstraBox.Views.SpectrumPlot import ScatterPlot3D
 from AstraBox.Views.SpectrumPlot import Plot2DArray
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
@@ -130,7 +131,7 @@ class ScatterSpectrumView(tk.LabelFrame):
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             return False
         else:
-            self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
+            self.spectrum_plot = ScatterPlot(self, self.model.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return True
 
