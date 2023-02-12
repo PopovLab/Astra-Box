@@ -88,8 +88,15 @@ class ScatterPlot3D(ttk.Frame):
         self.spectrum = spectrum
         self.z_min, self.z_max = MinMax(self.spectrum['Nz'])
         self.y_min, self.y_max = MinMax(self.spectrum['Ny'])        
-        self.fig = plt.figure(figsize=(8, 4.3), dpi=100)        
-        ax = self.fig.add_subplot(111, projection='3d')
+        self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
+        gs = self.fig.add_gridspec(2, 2)
+        ax1 = self.fig.add_subplot(gs[0, 1])
+        ax1.plot(spectrum['Nz'], spectrum['Px'])
+        ax2 = self.fig.add_subplot(gs[1, 1])
+        ax2.plot(spectrum['Ny'], spectrum['Px'])
+        # spans two rows:
+        ax = self.fig.add_subplot(gs[:, 0], projection='3d')
+        #ax = self.fig.add_subplot(gs[:, 0])
         cmhot = plt.get_cmap("plasma")
         ax.scatter(spectrum['Nz'], spectrum['Ny'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
 
