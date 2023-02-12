@@ -20,6 +20,12 @@ def defaulSpectrum1D():
         'source': ''
     }    
 
+def defaulScatterSpectrum():
+    return {
+        'spectrum_type': 'scatter_spectrum',
+        'source': ''
+    }
+
 def defaulSpectrum2D():
     return {
         'spectrum_type': 'spectrum_2D',
@@ -38,8 +44,8 @@ class SpectrumModel():
         #return os.path.join('lhcd', 'spectrum.dat')
         return 'lhcd/spectrum.dat'
 
-    def get_ratio_content(self):
-        return [('Spectrum 2D', 'spectrum_2D'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
+    def get_radio_content(self):
+        return [('Spectrum 2D', 'spectrum_2D'), ('Scatter Spectrum', 'scatter_spectrum'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
 
 
     @property
@@ -53,10 +59,18 @@ class SpectrumModel():
                 self.parent['spectrum'] = defaultGaussSpectrum()
             case 'spectrum_1D':
                 self.parent['spectrum'] = defaulSpectrum1D()
+            case 'scatter_spectrum':
+                self.parent['spectrum'] = defaulScatterSpectrum()                
             case 'spectrum_2D':
                 self.parent['spectrum'] = defaulSpectrum2D()
         self.setting = self.parent['spectrum']
 
+    def read_scatter(self, filepath):
+        if os.path.exists(filepath):
+            with open(filepath) as file:
+                self.read_data(file)
+        else:
+            self.spectrum_data = None
 
     def read_data(self, file):
         data = { 'Nz': [], 'Ny': [], 'Px':[]}
@@ -98,8 +112,8 @@ class SpectrumModel():
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
         self.spectrum_normalization()            
   
-    def read_spcp2D(self):
-        file_path = self.setting['source']
+    def read_spcp2D(self, file_path):
+        #file_path = self.setting['source']
         if os.path.exists(file_path):
             file = open(file_path)
             table = []
@@ -154,8 +168,10 @@ class SpectrumModel():
                 self.make_gauss_data()
             case 'spectrum_1D':
                 self.read_spcp1D()
+            case 'scatter_spectrum':
+                self.read_scatter(self.setting['source'])
             case 'spectrum_2D':
-                self.read_spcp2D()
+                self.read_spcp2D(self.setting['source'])
 
     def divide_spectrum(self):
         sp = [x for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
@@ -170,6 +186,8 @@ class SpectrumModel():
         match self.spectrum_type:
             case 'gaussian'| 'spectrum_1D':
                 sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
+            case 'scatter_spectrum':
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                                
             case 'spectrum_2D':
                 sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                
         return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])

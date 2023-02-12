@@ -374,7 +374,16 @@ class RTModel(BaseModel):
                 lines += [ item_to_line(item) for name, item in items.items() if name !='total_power']
                 
         spect = SpectrumModel(self.setting)
-        lines += spect.get_text_div_spectrum()   
+        spect_line = ''
+        match spect.spectrum_type:
+            case 'gaussian'| 'spectrum_1D':
+                spect_line = '  1     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+            case 'scatter_spectrum':
+                spect_line = '  3     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+            case 'spectrum_2D':
+                spect_line = '  2     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+
+        lines += spect_line   
         return ''.join(lines)        
 
     def get_spectrum_model(self):

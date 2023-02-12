@@ -22,8 +22,8 @@ class RadioPanel(ttk.Frame):
         #v, _ = content[len(content)-1]
         self.value = tk.StringVar(self, spectrum_model.spectrum_type)  # initialize
 
-        for text, key in spectrum_model.get_ratio_content():
-            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=25, 
+        for text, key in spectrum_model.get_radio_content():
+            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=15, 
                                 command= lambda x = key: self.on_radio_select(x) ,
                                 style= 'Toolbutton')
             btn.pack(side=tk.RIGHT, padx=padx, pady=pady)
@@ -105,6 +105,9 @@ class RTModelView(ttk.Frame):
             case 'spectrum_1D':
                 self.spectrum_view = SpectrumView.Spectrum1DView(self, self.spectrum_model)
                 self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+            case 'scatter_spectrum':
+                self.spectrum_view = SpectrumView.ScatterSpectrumView(self, self.spectrum_model)
+                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)                 
             case 'spectrum_2D':
                 self.spectrum_view = SpectrumView.Spectrum2DView(self, self.spectrum_model)
                 self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 

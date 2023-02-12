@@ -99,6 +99,40 @@ class Spectrum1DView(tk.LabelFrame):
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
+class ScatterSpectrumView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Scatter Spectrum')        
+
+        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        self.model = model
+
+        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.make_plot(self.model.setting['source'])
+
+    def on_load_file(self, filepath):
+        print(filepath)
+        
+        if self.make_plot(filepath):
+            self.model.setting['source'] = filepath
+
+    def make_plot(self, filepath):
+        head, filename = os.path.split(filepath)
+        return self.make_scatter_plot3D(filepath)
+
+    def make_scatter_plot3D(self, filepath):
+        self.model.read_scatter(filepath)
+            
+        if self.model.spectrum_data == None:
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            return False
+        else:
+            self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return True
 
 class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
@@ -111,33 +145,29 @@ class Spectrum2DView(tk.LabelFrame):
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-        self.make_plot()
+        self.make_plot(self.model.setting['source'])
 
-    def on_load_file(self, filename):
-        print(filename)
-        self.model.setting['source'] = filename
-        self.make_plot2()
+    def on_load_file(self, filepath):
+        print(filepath)
+        
+        if self.make_plot(filepath):
+            self.model.setting['source'] = filepath
 
-    def make_plot2(self):
-        with open(self.model.setting['source']) as file:
-            self.model.read_data(file)
+    def make_plot(self, filepath):
+        #head, filename = os.path.split(filepath)
+        return self.make_plot2D(filepath)
+
+    def make_plot2D(self, filepath):
+        self.model.read_spcp2D(filepath)
             
         if self.model.spectrum_data == None:
             label = ttk.Label(self, text="Spectrum None", width=20)
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-        else:
-            self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-
-    def make_plot(self):
-        self.model.read_spcp2D()
-            
-        if self.model.spectrum_data == None:
-            label = ttk.Label(self, text="Spectrum None", width=20)
-            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            return False
         else:
             self.spectrum_plot = Plot2DArray(self, self.model.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return True
         #self.model.read_spcp1D()
         #self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
         #self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
