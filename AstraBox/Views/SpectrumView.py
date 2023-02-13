@@ -31,7 +31,7 @@ class GaussianSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Gaussian Spectrum')        
 
-        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
@@ -81,7 +81,7 @@ class Spectrum1DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
-        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
         self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
@@ -104,11 +104,13 @@ class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Scatter Spectrum')        
 
-        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
         self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        radio_selector = self.make_radio_selector()
+        radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot(self.model.setting['source'])
@@ -132,14 +134,38 @@ class ScatterSpectrumView(tk.LabelFrame):
             return False
         else:
             self.spectrum_plot = ScatterPlot(self, self.model.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return True
+
+    def make_radio_selector(self):
+        frame = ttk.Frame(self, relief=tk.FLAT)
+        # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
+        padx = 10
+        pady = 5
+        btn2 = ttk.Radiobutton(frame, text='3D', value='3D', width=5, 
+                                command= self.select_View3D,
+                                style= 'Toolbutton')
+        btn2.pack(side=tk.RIGHT, padx=padx, pady=pady)
+
+        btn1 = ttk.Radiobutton(frame, text='2D',  value='2D', width=5, 
+                                command= self.select_View2D,
+                                style= 'Toolbutton')
+        btn1.pack(side=tk.RIGHT, padx=padx, pady=pady)
+        return frame
+
+    def select_View2D(self):
+        self.spectrum_plot = ScatterPlot(self, self.model.spectrum_data)
+        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+    def select_View3D(self):
+        self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
+        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+          
 
 class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Spectrum 2D')        
 
-        self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
         self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
