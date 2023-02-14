@@ -3,6 +3,7 @@ import json
 import encodings
 import pathlib 
 import zipfile
+import numpy as np
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
@@ -121,7 +122,7 @@ class RaceModel(BaseModel):
 
                 rays = []
                 N_traj = 0
-
+                np_rays_list = []
                 for row in table:
                     if N_traj != int(row[12]):
                         N_traj = int(row[12])
@@ -129,7 +130,14 @@ class RaceModel(BaseModel):
                         rays.append(ray)
                     for index, (p, item) in enumerate(ray.items()):
                         item.append(float_try(row[index]))
-        return rays, time_stamp        
+        print(f'numbers of rays : {len(rays)}')
+        for ray in rays:
+            np_ray = {}
+            for key, item in ray.items():
+                np_ray[key] = np.asarray(item)
+            if np_ray['N_traj'].size>2:
+                np_rays_list.append(np_ray)
+        return np_rays_list, time_stamp        
 
 
     def read_plasma_bound(self):
