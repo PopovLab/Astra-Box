@@ -129,6 +129,7 @@ class SpectrumView(ttk.Frame):
 class TrajectoryView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
+     
         self.model = model
         self.trajectory_list = model.get_trajectory_list()
         self.rays_cache = {}
@@ -186,6 +187,7 @@ class TrajectoryView(ttk.Frame):
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
             self.rowconfigure(2, weight=1)
+            self.len_rays = len(rays)
 
     def get_rays(self, index):
         if not index in self.rays_cache:
@@ -200,8 +202,14 @@ class TrajectoryView(ttk.Frame):
         i2 = i1 + self.index_2.get()
 
         rays, time_stamp = self.get_rays(index)
-        if i2>len(rays):
-            i2 = len(rays)
+
+        if self.len_rays != len(rays):
+            self.len_rays = len(rays)
+            print(f'update sliders {self.len_rays}')
+            self.slider_1.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
+            self.slider_2.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
+        if i2>self.len_rays: i2 = self.len_rays
+        if i1>self.len_rays: i1 = self.len_rays
         self.plot.update(rays[i1:i2], time_stamp)
         pass
 
