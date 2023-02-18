@@ -75,6 +75,9 @@ class RaceView(ttk.Frame):
         spectrum_view = SpectrumView(self.notebook, model= model)
         self.notebook.add(spectrum_view, text="Spectrum View", underline=0, sticky=tk.NE + tk.SW)      
 
+        rt_result_view = RTResultView(self.notebook, model= model)
+        self.notebook.add(rt_result_view, text="RT Result View", underline=0, sticky=tk.NE + tk.SW)   
+
     def delete_model(self):
         if ModelFactory.delete_model(self.model):
             self.master.show_empty_view()
@@ -97,9 +100,42 @@ class RaceView(ttk.Frame):
         print("RaceView destroy")
         super().destroy()   
 
+from AstraBox.Views.RunAstraView import ComboBox
+from AstraBox.Views.RacePlot import RTResultPlot
+
+class RTResultView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        print('create RT result View')
+        self.race_model = model
+        self.rt_result_file_list = model.get_rt_result_list()
+        self.rt_result_dict = {}
+        n = len(self.rt_result_file_list)
+        if n>0: 
+            start_time = 100 
+            finish_time = 0
+            header = []
+            for f in self.rt_result_file_list:
+                print(f)
+                time_stamp, rt_result, header = model.get_rt_result(f)
+                self.rt_result_dict[time_stamp] = rt_result
+                if time_stamp>finish_time: finish_time = time_stamp
+                if time_stamp<start_time: start_time = time_stamp
+            print(header)
+            self.combo = ComboBox(self, 'RT Result', header)
+            self.combo.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
+            self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    def show_rt_result(self):
+        print(f'show_rt_result: {self.combo.get()}')
+        self.plot = RTResultPlot(self,self.rt_result_dict, self.combo.get() )
+        self.plot.grid(row=1, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
 #from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
 from AstraBox.Views.SpectrumPlot import ScatterPlot
+
 class SpectrumView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  

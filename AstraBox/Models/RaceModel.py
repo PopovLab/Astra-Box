@@ -9,6 +9,7 @@ import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Models.Const import TRAJECTROY_PATH
+from AstraBox.Models.Const import RT_RESULT_PATH
 
 
 def float_try(str):
@@ -64,7 +65,7 @@ class RaceModel(BaseModel):
     def get_data_series_file_list(self, folder):
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
-            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length )]
+            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]
         list.sort()  
         return list
 
@@ -101,6 +102,35 @@ class RaceModel(BaseModel):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
                 return DataSeries.read_original_distribution_file(file), time_stamp
+
+    def get_rt_result_list(self):
+        return self.get_data_series_file_list(RT_RESULT_PATH)
+
+    def get_rt_result(self, f):
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
+        print(time_stamp)
+        rt_result = { -1: {}, 1: {}}
+
+        with zipfile.ZipFile(self.race_zip_file) as zf:
+            with zf.open(f) as file:
+                header = file.readline().decode("utf-8").split()
+                lines = file.readlines()
+                table = [line.decode("utf-8").split() for line in lines]
+                table = list(filter(None, table))
+                
+                for row in table:
+                    if row[0] == 'iteration' : continue
+                    values = {}
+                    for key, v in zip(header,row):
+                        values[key] = float_try(v)
+                    iteration = int(row[0])
+                    direction = int(row[1])
+                    rt_result[direction][iteration] = values
+        return time_stamp, rt_result, header
 
     def get_trajectory_list(self):
         tmp = TRAJECTROY_PATH
