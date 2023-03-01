@@ -78,7 +78,7 @@ class SpectrumModel():
         table = []
         for line in lines:
             #if isBlank(line): break
-            print(line)
+            #print(line)
             if type(line) is str:
                 table.append(line.split())    
             else:                
