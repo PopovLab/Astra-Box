@@ -9,6 +9,7 @@ from AstraBox.Views.SpectrumPlot import ScatterPlot
 from AstraBox.Views.SpectrumPlot import ScatterPlot3D
 from AstraBox.Views.SpectrumPlot import Plot2DArray
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
+from AstraBox.Views.SpectrumPlot import ScatterPlot2D3D
 
 class OptionsPanel(tk.Frame):
     def __init__(self, master, options) -> None:
@@ -133,7 +134,7 @@ class ScatterSpectrumView(tk.LabelFrame):
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             return False
         else:
-            self.spectrum_plot = ScatterPlot(self, self.model.spectrum_data)
+            self.spectrum_plot = ScatterPlot2D3D(self, self.model.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return True
 
@@ -154,7 +155,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         return frame
 
     def select_View2D(self):
-        self.spectrum_plot = ScatterPlot(self, self.model.spectrum_data)
+        self.spectrum_plot = ScatterPlot2D3D(self, self.model.spectrum_data)
         self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
     def select_View3D(self):
         self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)

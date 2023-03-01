@@ -135,6 +135,7 @@ class RTResultView(ttk.Frame):
 #from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.Views.SpectrumPlot import SpectrumPlot
 from AstraBox.Views.SpectrumPlot import ScatterPlot
+from AstraBox.Views.SpectrumPlot import ScatterPlot2D3D
 
 class SpectrumView(ttk.Frame):
     def __init__(self, master, model) -> None:
@@ -145,7 +146,7 @@ class SpectrumView(ttk.Frame):
         print(self.spectrum_model.get_dest_path())
         if type(self.spectrum_model.spectrum_data) is dict:
             print('загрузил спектр')
-            print(len(self.spectrum_model.spectrum_data['Nz']))
+            print(len(self.spectrum_model.spectrum_data['Ntor']))
             self.make_plot()
         else:
             print(self.spectrum_model.spectrum_data)
@@ -153,9 +154,9 @@ class SpectrumView(ttk.Frame):
     def make_plot(self):
         match self.spectrum_model.spectrum_type:
             case 'gaussian'|'spectrum_1D':
-                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Nz'], self.spectrum_model.spectrum_data['Px']  )
+                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Px']  )
             case 'scatter_spectrum':
-                self.spectrum_plot = ScatterPlot(self, self.spectrum_model.spectrum_data)
+                self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
             case 'spectrum_2D':
                 pass       
         

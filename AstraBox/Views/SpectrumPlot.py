@@ -96,13 +96,13 @@ class ScatterPlot(ttk.Frame):
         ax2.plot(spectrum['Npol'], spectrum['Px'])
         # spans two rows:
         #ax = self.fig.add_subplot(gs[:, 0], projection='3d')
-        ax = self.fig.add_subplot(gs[:, 0])
+        ax_2D = self.fig.add_subplot(gs[:, 0])
         cmhot = plt.get_cmap("plasma")
         area = [3] * len(spectrum['Npol'])
-        ax.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
+        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
 
-        ax.set_xlabel('Ntor')
-        ax.set_ylabel('Npol')
+        ax_2D.set_xlabel('Ntor')
+        ax_2D.set_ylabel('Npol')
         #ax.set_zlabel('Px')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
@@ -118,6 +118,44 @@ class ScatterPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()   
 
+class ScatterPlot2D3D(ttk.Frame):
+    def __init__(self, master, spectrum) -> None:
+        super().__init__(master)  
+        self.spectrum = spectrum
+        self.z_min, self.z_max = MinMax(self.spectrum['Ntor'])
+        self.y_min, self.y_max = MinMax(self.spectrum['Npol'])        
+        self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
+        gs = self.fig.add_gridspec(1, 2)
+
+        ax_2D = self.fig.add_subplot(gs[0, 0])
+        cmhot = plt.get_cmap("plasma")
+        area = [3] * len(spectrum['Npol'])
+        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
+
+        ax_2D.set_xlabel('Ntor')
+        ax_2D.set_ylabel('Npol')
+        #ax.set_zlabel('Px')
+
+        ax_3D = self.fig.add_subplot(gs[0, 1], projection='3d')
+        cmhot = plt.get_cmap("plasma")
+        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+
+        ax_3D.set_xlabel('Ntor')
+        ax_3D.set_ylabel('Npol')
+        ax_3D.set_zlabel('Px')
+
+        self.canvas = FigureCanvasTkAgg(self.fig, self)   
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(row=0, column=1)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)        
+
+    def destroy(self):
+        print("ScatterPlot3D destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()   
 
 class ScatterPlot3D(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
@@ -132,14 +170,13 @@ class ScatterPlot3D(ttk.Frame):
         ax2 = self.fig.add_subplot(gs[1, 1])
         ax2.plot(spectrum['Npol'], spectrum['Px'])
         # spans two rows:
-        ax = self.fig.add_subplot(gs[:, 0], projection='3d')
-        #ax = self.fig.add_subplot(gs[:, 0])
+        ax_3D = self.fig.add_subplot(gs[:, 0], projection='3d')
         cmhot = plt.get_cmap("plasma")
-        ax.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
 
-        ax.set_xlabel('Ntor')
-        ax.set_ylabel('Npol')
-        ax.set_zlabel('Px')
+        ax_3D.set_xlabel('Ntor')
+        ax_3D.set_ylabel('Npol')
+        ax_3D.set_zlabel('Px')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
