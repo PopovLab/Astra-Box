@@ -73,7 +73,7 @@ class SpectrumModel():
             self.spectrum_data = None
 
     def read_data(self, file):
-        data = { 'Nz': [], 'Ny': [], 'Px':[]}
+        data = { 'Ntor': [], 'Npol': [], 'Px':[]}
         lines = file.readlines()
         table = []
         for line in lines:
@@ -187,7 +187,7 @@ class SpectrumModel():
             case 'gaussian'| 'spectrum_1D':
                 sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
             case 'scatter_spectrum':
-                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                                
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Px'])]                                
             case 'spectrum_2D':
                 sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                
         return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])

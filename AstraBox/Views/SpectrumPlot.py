@@ -34,7 +34,7 @@ class Plot3D(ttk.Frame):
         super().__init__(master)
         self.fig = plt.figure(figsize=(5,5))
         ax = self.fig.add_subplot(projection='3d')
-        X, Y, Z = spectrum['Nz'], spectrum['Ny'], spectrum['Px']
+        X, Y, Z = spectrum['Ntor'], spectrum['Npol'], spectrum['Px']
 
         # Plot the 3D surface
         #ax.plot_surface(X, Y, Z, rstride=8, cstride=8, alpha=0.5)
@@ -86,23 +86,23 @@ class ScatterPlot(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
         super().__init__(master)  
         self.spectrum = spectrum
-        self.z_min, self.z_max = MinMax(self.spectrum['Nz'])
-        self.y_min, self.y_max = MinMax(self.spectrum['Ny'])        
+        self.z_min, self.z_max = MinMax(self.spectrum['Ntor'])
+        self.y_min, self.y_max = MinMax(self.spectrum['Npol'])        
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
         gs = self.fig.add_gridspec(2, 2)
         ax1 = self.fig.add_subplot(gs[0, 1])
-        ax1.plot(spectrum['Nz'], spectrum['Px'])
+        ax1.plot(spectrum['Ntor'], spectrum['Px'])
         ax2 = self.fig.add_subplot(gs[1, 1])
-        ax2.plot(spectrum['Ny'], spectrum['Px'])
+        ax2.plot(spectrum['Npol'], spectrum['Px'])
         # spans two rows:
         #ax = self.fig.add_subplot(gs[:, 0], projection='3d')
         ax = self.fig.add_subplot(gs[:, 0])
         cmhot = plt.get_cmap("plasma")
-        area = [3] * len(spectrum['Ny'])
-        ax.scatter(spectrum['Nz'], spectrum['Ny'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
+        area = [3] * len(spectrum['Npol'])
+        ax.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
 
-        ax.set_xlabel('Nz')
-        ax.set_ylabel('Ny')
+        ax.set_xlabel('Ntor')
+        ax.set_ylabel('Npol')
         #ax.set_zlabel('Px')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
@@ -123,22 +123,22 @@ class ScatterPlot3D(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
         super().__init__(master)  
         self.spectrum = spectrum
-        self.z_min, self.z_max = MinMax(self.spectrum['Nz'])
-        self.y_min, self.y_max = MinMax(self.spectrum['Ny'])        
+        self.z_min, self.z_max = MinMax(self.spectrum['Ntor'])
+        self.y_min, self.y_max = MinMax(self.spectrum['Npol'])        
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
         gs = self.fig.add_gridspec(2, 2)
         ax1 = self.fig.add_subplot(gs[0, 1])
-        ax1.plot(spectrum['Nz'], spectrum['Px'])
+        ax1.plot(spectrum['Ntor'], spectrum['Px'])
         ax2 = self.fig.add_subplot(gs[1, 1])
-        ax2.plot(spectrum['Ny'], spectrum['Px'])
+        ax2.plot(spectrum['Npol'], spectrum['Px'])
         # spans two rows:
         ax = self.fig.add_subplot(gs[:, 0], projection='3d')
         #ax = self.fig.add_subplot(gs[:, 0])
         cmhot = plt.get_cmap("plasma")
-        ax.scatter(spectrum['Nz'], spectrum['Ny'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+        ax.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
 
-        ax.set_xlabel('Nz')
-        ax.set_ylabel('Ny')
+        ax.set_xlabel('Ntor')
+        ax.set_ylabel('Npol')
         ax.set_zlabel('Px')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
@@ -168,7 +168,7 @@ class Plot2DArray(ttk.Frame):
         print(self.spectrum_shape)
         self.z_min, self.z_max = MinMax(self.spectrum['Nz'][0])
         self.y_min, self.y_max = MinMax(self.spectrum['Ny'][:, 0])
-        #X, Y = np.meshgrid(, self.spectrum['Ny'][:, 0])
+        #X, Y = np.meshgrid(, self.spectrum['Npol'][:, 0])
         #axd['left'].pcolormesh(X, Y, spectrum['Px'], vmin=0.0, vmax=0.5)
         axd['left'].imshow(spectrum['Px'], extent=[self.z_min, self.z_max, self.y_min, self.y_max])
         self.v_cross, = axd['left'].plot([0, 0], [self.z_min+0.1, self.z_max-0.1])
