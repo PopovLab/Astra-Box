@@ -1,4 +1,4 @@
-RADIAL_DATA__PATH = "dat/"
+RADIAL_DATA_PATH = "dat/XData"
 DIFFUSION_DATA_PATH = 'lhcd/diffusion/'
 MAXWELL_DATA_PATH = 'lhcd/maxwell/'
 DISTRIBUTION_PATH = 'lhcd/distribution/'

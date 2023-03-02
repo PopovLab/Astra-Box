@@ -18,7 +18,7 @@ from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Models.Const import DISTRIBUTION_PATH
 from AstraBox.Models.Const import DIFFUSION_DATA_PATH
 from AstraBox.Models.Const import MAXWELL_DATA_PATH
-from AstraBox.Models.Const import RADIAL_DATA__PATH
+from AstraBox.Models.Const import RADIAL_DATA_PATH
 
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
@@ -255,7 +255,7 @@ class RadialDataView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)  
         self.model = model
-        self.radial_data_list = model.get_data_series_file_list(RADIAL_DATA__PATH)
+        self.radial_data_list = model.get_data_series_file_list(RADIAL_DATA_PATH)
         n = len(self.radial_data_list)
         if n>0: 
             #self.index_var = tk.IntVar(master = self, value=0)
