@@ -34,5 +34,7 @@ def read_radial_data(file):
         for index, (p, item) in enumerate(radial_data.items()):
             #print(p, item, index)
             item.append(float_try(row[index]))
-    radial_data['Time'] = float_try(header[1][10])
+    time_str = header[1][9]
+    print(time_str)
+    radial_data['Time'] = float_try(time_str[5:])
     return radial_data

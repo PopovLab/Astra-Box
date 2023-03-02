@@ -14,7 +14,7 @@ from AstraBox.Views.RacePlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 from AstraBox.Views.RacePlot import SeriesPlot
-from AstraBox.Models.SpectrumModel import SpectrumModel
+from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.Models.Const import DISTRIBUTION_PATH
 from AstraBox.Models.Const import DIFFUSION_DATA_PATH
 from AstraBox.Models.Const import MAXWELL_DATA_PATH
@@ -252,10 +252,10 @@ class TrajectoryView(ttk.Frame):
 
 
 class RadialDataView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
-        self.model = model
-        self.radial_data_list = model.get_data_series_file_list(RADIAL_DATA_PATH)
+        self.race_model = model
+        self.radial_data_list = self.race_model.get_data_series_file_list(RADIAL_DATA_PATH)
         n = len(self.radial_data_list)
         if n>0: 
             #self.index_var = tk.IntVar(master = self, value=0)
@@ -267,6 +267,9 @@ class RadialDataView(ttk.Frame):
             radial_data = self.get_radial_data(0)
             self.start_time = radial_data["Time"]
             self.finish_time = self.get_radial_data(n-1)["Time"]
+            print(f'start_time = {self.start_time}')
+            print(f'finish_time = {self.finish_time}')
+            print(n)
             self.n = n
 
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
@@ -292,7 +295,7 @@ class RadialDataView(ttk.Frame):
     def get_radial_data(self, index):
         file = self.radial_data_list[index]
         print(f'{file} {index}')
-        return self.model.read_radial_data(file)
+        return self.race_model.read_radial_data(file)
 
     def update_time_var(self, var, indx, mode):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
