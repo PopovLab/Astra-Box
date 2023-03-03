@@ -383,7 +383,8 @@ class RTModel(BaseModel):
             case 'spectrum_2D':
                 spect_line = '  2     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
 
-        lines += spect_line   
+        lines += spect_line  
+        lines += spect.get_text_div_spectrum() 
         return ''.join(lines)        
 
     def get_spectrum_model(self):
