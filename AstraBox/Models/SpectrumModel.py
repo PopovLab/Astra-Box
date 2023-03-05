@@ -73,7 +73,7 @@ class SpectrumModel():
             self.spectrum_data = None
 
     def read_data(self, file):
-        data = { 'Ntor': [], 'Npol': [], 'Px':[]}
+        data = { 'Ntor': [], 'Npol': [], 'Amp':[]}
         lines = file.readlines()
         table = []
         for line in lines:
@@ -136,7 +136,7 @@ class SpectrumModel():
                 spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )# dtype=float, order='F')
         
             level = 0.4
-            arr = spectrum2D['Px']
+            arr = spectrum2D['Amp']
             with np.nditer(arr, op_flags=['readwrite']) as it:
                 for x in it:
                     x[...] = x if x<level else level
@@ -187,9 +187,9 @@ class SpectrumModel():
             case 'gaussian'| 'spectrum_1D':
                 sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
             case 'scatter_spectrum':
-                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Px'])]                                
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Amp'])]                                
             case 'spectrum_2D':
-                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Px'])]                
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Nz'], self.spectrum_data['Ny'], self.spectrum_data['Amp'])]                
         return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
 
     def get_text_div_spectrum(self):

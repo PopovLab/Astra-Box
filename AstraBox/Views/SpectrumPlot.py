@@ -34,7 +34,7 @@ class Plot3D(ttk.Frame):
         super().__init__(master)
         self.fig = plt.figure(figsize=(5,5))
         ax = self.fig.add_subplot(projection='3d')
-        X, Y, Z = spectrum['Ntor'], spectrum['Npol'], spectrum['Px']
+        X, Y, Z = spectrum['Ntor'], spectrum['Npol'], spectrum['Amp']
 
         # Plot the 3D surface
         #ax.plot_surface(X, Y, Z, rstride=8, cstride=8, alpha=0.5)
@@ -91,15 +91,15 @@ class ScatterPlot(ttk.Frame):
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
         gs = self.fig.add_gridspec(2, 2)
         ax1 = self.fig.add_subplot(gs[0, 1])
-        ax1.plot(spectrum['Ntor'], spectrum['Px'])
+        ax1.plot(spectrum['Ntor'], spectrum['Amp'])
         ax2 = self.fig.add_subplot(gs[1, 1])
-        ax2.plot(spectrum['Npol'], spectrum['Px'])
+        ax2.plot(spectrum['Npol'], spectrum['Amp'])
         # spans two rows:
         #ax = self.fig.add_subplot(gs[:, 0], projection='3d')
         ax_2D = self.fig.add_subplot(gs[:, 0])
         cmhot = plt.get_cmap("plasma")
         area = [3] * len(spectrum['Npol'])
-        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
+        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot) #, c=c, marker=m)
 
         ax_2D.set_xlabel('Ntor')
         ax_2D.set_ylabel('Npol')
@@ -130,7 +130,7 @@ class ScatterPlot2D3D(ttk.Frame):
         ax_2D = self.fig.add_subplot(gs[0, 0])
         cmhot = plt.get_cmap("plasma")
         area = [3] * len(spectrum['Npol'])
-        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Px'],  cmap=cmhot) #, c=c, marker=m)
+        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot) #, c=c, marker=m)
 
         ax_2D.set_xlabel('Ntor')
         ax_2D.set_ylabel('Npol')
@@ -138,7 +138,7 @@ class ScatterPlot2D3D(ttk.Frame):
 
         ax_3D = self.fig.add_subplot(gs[0, 1], projection='3d')
         cmhot = plt.get_cmap("plasma")
-        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Amp'],c = spectrum['Amp'], cmap=cmhot) #, c=c, marker=m)
 
         ax_3D.set_xlabel('Ntor')
         ax_3D.set_ylabel('Npol')
@@ -166,13 +166,13 @@ class ScatterPlot3D(ttk.Frame):
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
         gs = self.fig.add_gridspec(2, 2)
         ax1 = self.fig.add_subplot(gs[0, 1])
-        ax1.plot(spectrum['Ntor'], spectrum['Px'])
+        ax1.plot(spectrum['Ntor'], spectrum['Amp'])
         ax2 = self.fig.add_subplot(gs[1, 1])
-        ax2.plot(spectrum['Npol'], spectrum['Px'])
+        ax2.plot(spectrum['Npol'], spectrum['Amp'])
         # spans two rows:
         ax_3D = self.fig.add_subplot(gs[:, 0], projection='3d')
         cmhot = plt.get_cmap("plasma")
-        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Px'],c = spectrum['Px'], cmap=cmhot) #, c=c, marker=m)
+        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Amp'],c = spectrum['Amp'], cmap=cmhot) #, c=c, marker=m)
 
         ax_3D.set_xlabel('Ntor')
         ax_3D.set_ylabel('Npol')
@@ -206,8 +206,8 @@ class Plot2DArray(ttk.Frame):
         self.z_min, self.z_max = MinMax(self.spectrum['Nz'][0])
         self.y_min, self.y_max = MinMax(self.spectrum['Ny'][:, 0])
         #X, Y = np.meshgrid(, self.spectrum['Npol'][:, 0])
-        #axd['left'].pcolormesh(X, Y, spectrum['Px'], vmin=0.0, vmax=0.5)
-        axd['left'].imshow(spectrum['Px'], extent=[self.z_min, self.z_max, self.y_min, self.y_max])
+        #axd['left'].pcolormesh(X, Y, spectrum['Amp'], vmin=0.0, vmax=0.5)
+        axd['left'].imshow(spectrum['Amp'], extent=[self.z_min, self.z_max, self.y_min, self.y_max])
         self.v_cross, = axd['left'].plot([0, 0], [self.z_min+0.1, self.z_max-0.1])
         self.h_cross, = axd['left'].plot([self.y_min, self.y_max], [0, 0])
 
@@ -247,12 +247,12 @@ class Plot2DArray(ttk.Frame):
 
     def get_col(self, col):
         X = self.spectrum['Ny'][:, col]
-        Y = self.spectrum['Px'][::-1, col]
+        Y = self.spectrum['Amp'][::-1, col]
         return X, Y
 
     def get_row(self, row):
         X = self.spectrum['Nz'][row]
-        Y = self.spectrum['Px'][row]
+        Y = self.spectrum['Amp'][row]
         return X, Y
 
 

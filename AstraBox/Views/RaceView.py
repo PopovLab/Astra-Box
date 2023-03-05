@@ -154,7 +154,7 @@ class SpectrumView(ttk.Frame):
     def make_plot(self):
         match self.spectrum_model.spectrum_type:
             case 'gaussian'|'spectrum_1D':
-                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Px']  )
+                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
             case 'scatter_spectrum':
                 self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
             case 'spectrum_2D':
