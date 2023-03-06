@@ -21,6 +21,7 @@ from AstraBox.Models.Const import MAXWELL_DATA_PATH
 from AstraBox.Models.Const import RADIAL_DATA_PATH
 
 from AstraBox.ToolBox.ComboBox import ComboBox
+from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
 from AstraBox.Views.RacePlot import RTResultPlot
 
 class InfoPanel(tk.LabelFrame):
