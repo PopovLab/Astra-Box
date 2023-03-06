@@ -22,6 +22,8 @@ from AstraBox.Models.Const import RADIAL_DATA_PATH
 
 from AstraBox.ToolBox.ComboBox import ComboBox
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
+from AstraBox.ToolBox.TimeSeriesPlot import TimeSeriesPlot
+
 from AstraBox.Views.RacePlot import RTResultPlot
 
 class InfoPanel(tk.LabelFrame):
@@ -127,10 +129,26 @@ class TimeSeriesView(ttk.Frame):
             self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo3.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
-            
-            self.combo1.set(keys[1])
-            self.combo2.set(keys[2])
-            self.combo3.set(keys[3])
+
+            self.combo1.set(keys[3])
+            self.combo2.set(keys[4])
+            self.combo3.set(keys[5])
+
+            self.combo1.on_combo_selected = self.on_combo_selected
+            self.combo2.on_combo_selected = self.on_combo_selected
+            self.combo3.on_combo_selected = self.on_combo_selected            
+
+            self.make_plot()
+
+    def make_plot(self):
+        keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
+        self.plot = TimeSeriesPlot(self, self.time_series, keys )
+        self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(2, weight=1)
+
+    def on_combo_selected(self):
+        self.make_plot()
 
 class RTResultView(ttk.Frame):
     def __init__(self, master, model: RaceModel) -> None:

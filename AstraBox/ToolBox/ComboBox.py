@@ -2,8 +2,11 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 class ComboBox(ttk.Frame):
+    on_combo_selected = None
     def combo_selected(self, *args):
         self.selected_value = self.combo.get()
+        if self.on_combo_selected:
+            self.on_combo_selected()
         
     def set(self, value):
         self.combo.set(value)
