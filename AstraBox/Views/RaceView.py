@@ -107,7 +107,7 @@ from AstraBox.Views.RunAstraView import ComboBox
 from AstraBox.Views.RacePlot import RTResultPlot
 
 class TimeSeriesView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
         print('Time Series View')
         self.race_model = model
@@ -125,7 +125,7 @@ class TimeSeriesView(ttk.Frame):
             self.combo3.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
 class RTResultView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
         print('create RT result View')
         self.race_model = model
@@ -159,7 +159,7 @@ from AstraBox.Views.SpectrumPlot import ScatterPlot
 from AstraBox.Views.SpectrumPlot import ScatterPlot2D3D
 
 class SpectrumView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
         print('create SpectrumView')
         self.race_model = model
@@ -185,7 +185,7 @@ class SpectrumView(ttk.Frame):
 
 
 class TrajectoryView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
      
         self.model = model
