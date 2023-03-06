@@ -120,11 +120,16 @@ class TimeSeriesView(ttk.Frame):
             keys = list(self.time_series.keys())
             print(keys)
             self.combo1 = ComboBox(self, 'View 1', keys)
-            self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo2 = ComboBox(self, 'View 2', keys)
-            self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo3 = ComboBox(self, 'View 3', keys)
+
+            self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo3.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
+            
+            self.combo1.set(keys[1])
+            self.combo2.set(keys[2])
+            self.combo3.set(keys[3])
 
 class RTResultView(ttk.Frame):
     def __init__(self, master, model: RaceModel) -> None:
