@@ -20,6 +20,9 @@ from AstraBox.Models.Const import DIFFUSION_DATA_PATH
 from AstraBox.Models.Const import MAXWELL_DATA_PATH
 from AstraBox.Models.Const import RADIAL_DATA_PATH
 
+from AstraBox.ToolBox.ComboBox import ComboBox
+from AstraBox.Views.RacePlot import RTResultPlot
+
 class InfoPanel(tk.LabelFrame):
     def __init__(self, master, model) -> None:
         super().__init__(master, text= 'Race info')
@@ -103,8 +106,7 @@ class RaceView(ttk.Frame):
         print("RaceView destroy")
         super().destroy()   
 
-from AstraBox.Views.RunAstraView import ComboBox
-from AstraBox.Views.RacePlot import RTResultPlot
+
 
 class TimeSeriesView(ttk.Frame):
     def __init__(self, master, model: RaceModel) -> None:
