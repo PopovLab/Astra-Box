@@ -57,6 +57,9 @@ class RaceView(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+        time_series_view = TimeSeriesView(self.notebook, model= model)
+        self.notebook.add(time_series_view, text="Time Series", underline=0, sticky=tk.NE + tk.SW)
+
         radial_data_view = RadialDataView(self.notebook, model= model)
         self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
         
@@ -102,6 +105,24 @@ class RaceView(ttk.Frame):
 
 from AstraBox.Views.RunAstraView import ComboBox
 from AstraBox.Views.RacePlot import RTResultPlot
+
+class TimeSeriesView(ttk.Frame):
+    def __init__(self, master, model) -> None:
+        super().__init__(master)  
+        print('Time Series View')
+        self.race_model = model
+        self.time_series = model.get_time_series()
+        if type(self.time_series) == str:
+            print(self.time_series)
+        else:
+            keys = list(self.time_series.keys())
+            print(keys)
+            self.combo1 = ComboBox(self, 'View 1', keys)
+            self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.combo2 = ComboBox(self, 'View 2', keys)
+            self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.combo3 = ComboBox(self, 'View 3', keys)
+            self.combo3.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
 class RTResultView(ttk.Frame):
     def __init__(self, master, model) -> None:

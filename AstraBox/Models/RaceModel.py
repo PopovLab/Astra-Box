@@ -7,6 +7,7 @@ import numpy as np
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
+import AstraBox.Models.TimeSeries as TimeSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Models.Const import TRAJECTROY_PATH
 from AstraBox.Models.Const import RT_RESULT_PATH
@@ -44,6 +45,17 @@ class RaceModel(BaseModel):
             "equ_model" : self.equ_model.data,
             "rt_model" : self.rt_model.data,
         }
+
+    def get_time_series(self):
+        f = 'dat/time_series.dat'
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(f) as file:
+                    return TimeSeries.read_data(file)       
+        except Exception as error:
+            print(error)
+            return f'не смог прочитать {f}'
+     
 
     def get_spectrum(self):
         spectrum_model = SpectrumModel(self.data['RTModel']['setting'])
