@@ -64,6 +64,11 @@ class RaceView(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+
+        
+        #tab_view_basic = TabViewBasic(self.notebook, model= model)
+        #self.notebook.add(tab_view_basic, text="tab_view_basic", underline=0, sticky=tk.NE + tk.SW)
+
         time_series_view = TimeSeriesView(self.notebook, model= model)
         self.notebook.add(time_series_view, text="Time Series", underline=0, sticky=tk.NE + tk.SW)
 
@@ -110,14 +115,32 @@ class RaceView(ttk.Frame):
         print("RaceView destroy")
         super().destroy()   
 
-
-
-class TimeSeriesView(ttk.Frame):
+class TabViewBasic(ttk.Frame):
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
-        print('Time Series View')
+        print('TabViewBasic View')
         self.race_model = model
-        self.time_series = model.get_time_series()
+
+        self.first_time = True
+        self.bind('<Visibility>', self.visibilityChanged)
+    
+    def visibilityChanged(self, event):
+        if self.first_time:
+            self.first_time = False
+            self.init_ui()
+
+    def init_ui(self):
+        print('init TabViewBasic')
+        pass
+
+class TimeSeriesView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self):
+        print('init Time Series View')
+        #self.race_model = model
+        self.time_series = self.race_model.get_time_series()
         if type(self.time_series) == str:
             print(self.time_series)
         else:
@@ -151,12 +174,13 @@ class TimeSeriesView(ttk.Frame):
     def on_combo_selected(self):
         self.make_plot()
 
-class RTResultView(ttk.Frame):
+class RTResultView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
-        super().__init__(master)  
-        print('create RT result View')
-        self.race_model = model
-        self.rt_result_file_list = model.get_rt_result_list()
+        super().__init__(master, model)  
+
+    def init_ui(self):
+        print('init RT result View')
+        self.rt_result_file_list = self.race_model.get_rt_result_list()
         self.rt_result_dict = {}
         n = len(self.rt_result_file_list)
         if n>0: 
@@ -165,7 +189,7 @@ class RTResultView(ttk.Frame):
             header = []
             for f in self.rt_result_file_list:
                 print(f)
-                time_stamp, rt_result, header = model.get_rt_result(f)
+                time_stamp, rt_result, header = self.race_model.get_rt_result(f)
                 self.rt_result_dict[time_stamp] = rt_result
                 if time_stamp>finish_time: finish_time = time_stamp
                 if time_stamp<start_time: start_time = time_stamp
@@ -185,12 +209,13 @@ from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
 
-class SpectrumView(ttk.Frame):
+class SpectrumView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
-        super().__init__(master)  
+        super().__init__(master, model)  
+
+    def init_ui(self):
         print('create SpectrumView')
-        self.race_model = model
-        self.spectrum_model = model.get_spectrum()
+        self.spectrum_model = self.race_model.get_spectrum()
         print(self.spectrum_model.get_dest_path())
         if type(self.spectrum_model.spectrum_data) is dict:
             print('загрузил спектр')
@@ -211,16 +236,16 @@ class SpectrumView(ttk.Frame):
         self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 
-class TrajectoryView(ttk.Frame):
+class TrajectoryView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
-        super().__init__(master)  
-     
-        self.model = model
-        self.trajectory_list = model.get_trajectory_list()
+        super().__init__(master, model)  
+
+    def init_ui(self): 
+        self.trajectory_list = self.race_model.get_trajectory_list()
         self.rays_cache = {}
         n = len(self.trajectory_list)
         if n>0: 
-            plasma_bound = model.read_plasma_bound()
+            plasma_bound = self.race_model.read_plasma_bound()
 
             rays, self.start_time  = self.get_rays(0)
             _, self.finish_time  = self.get_rays(n-1)
@@ -277,7 +302,7 @@ class TrajectoryView(ttk.Frame):
     def get_rays(self, index):
         if not index in self.rays_cache:
             print(f'{index} not in cache')
-            self.rays_cache[index] = self.model.get_rays(self.trajectory_list[index])
+            self.rays_cache[index] = self.race_model.get_rays(self.trajectory_list[index])
         rays, time_stamp = self.rays_cache[index]        
         return rays, time_stamp
 
@@ -299,10 +324,11 @@ class TrajectoryView(ttk.Frame):
         pass
 
 
-class RadialDataView(ttk.Frame):
+class RadialDataView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
-        super().__init__(master)  
-        self.race_model = model
+        super().__init__(master, model)  
+
+    def init_ui(self):   
         self.radial_data_list = self.race_model.get_data_series_file_list(RADIAL_DATA_PATH)
         n = len(self.radial_data_list)
         if n>0: 
@@ -355,11 +381,12 @@ class RadialDataView(ttk.Frame):
         self.plot.update(radial_data)
 
 
-class DistributionView(ttk.Frame):
-    def __init__(self, master, model) -> None:
-        super().__init__(master)  
-        self.model = model
-        self.distribution_list = model.get_data_series_file_list(DISTRIBUTION_PATH) 
+class DistributionView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self):   
+        self.distribution_list = self.race_model.get_data_series_file_list(DISTRIBUTION_PATH) 
         n = len(self.distribution_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -388,7 +415,7 @@ class DistributionView(ttk.Frame):
     def get_distribution(self, index):
         file = self.distribution_list[index]
         print(f'{file} {index}')
-        return self.model.read_distribution(file)
+        return self.race_model.read_distribution(file)
 
     def update_time_var(self, var, indx, mode):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
@@ -400,11 +427,12 @@ class DistributionView(ttk.Frame):
         self.plot.update(distribution)
 
 
-class MaxwellView(ttk.Frame):
-    def __init__(self, master, model) -> None:
-        super().__init__(master)  
-        self.model = model
-        self.maxwell_list = model.get_data_series_file_list(MAXWELL_DATA_PATH)
+class MaxwellView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self): 
+        self.maxwell_list = self.race_model.get_data_series_file_list(MAXWELL_DATA_PATH)
         n = len(self.maxwell_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -433,7 +461,7 @@ class MaxwellView(ttk.Frame):
     def get_distribution(self, index):
         file = self.maxwell_list[index]
         print(f'{file} {index}')
-        return self.model.read_maxwell_distribution(file)
+        return self.race_model.read_maxwell_distribution(file)
 
     def update_time_var(self, var, indx, mode):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
@@ -446,11 +474,12 @@ class MaxwellView(ttk.Frame):
 
 
 
-class DiffusionView(ttk.Frame):
-    def __init__(self, master, model) -> None:
-        super().__init__(master)  
-        self.model = model
-        self.file_list = model.get_data_series_file_list(DIFFUSION_DATA_PATH)
+class DiffusionView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self): 
+        self.file_list = self.race_model.get_data_series_file_list(DIFFUSION_DATA_PATH)
         n = len(self.file_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -479,7 +508,7 @@ class DiffusionView(ttk.Frame):
     def get_distribution(self, index):
         file = self.file_list[index]
         print(f'{file} {index}')
-        return self.model.read_diffusion(file)
+        return self.race_model.read_diffusion(file)
 
     def update_time_var(self, var, indx, mode):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
