@@ -357,18 +357,9 @@ class RadialDataView(TabViewBasic):
         self.radial_data_list = self.race_model.get_data_series_file_list(RADIAL_DATA_PATH)
         n = len(self.radial_data_list)
         if n>0: 
-            #self.index_var = tk.IntVar(master = self, value=0)
-            #self.index_var.trace_add('write', self.update_var)
-
-            #self.slider = tk.Scale(master=  self, variable = self.index_var, orient = tk.HORIZONTAL, from_=0, to=n-1, resolution=1, length = 250 )
-            #self.slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
- 
             radial_data = self.get_radial_data(0)
             self.start_time = radial_data["Time"]
             self.finish_time = self.get_radial_data(n-1)["Time"]
-            print(f'start_time = {self.start_time}')
-            print(f'finish_time = {self.finish_time}')
-            print(n)
             self.n = n
 
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
