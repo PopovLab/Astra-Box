@@ -9,8 +9,9 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 
 #variable name
 class RTResultPlot(ttk.Frame):
-    def __init__(self, master, rt_result_dict, variable_name) -> None:
+    def __init__(self, master, rt_result_dict, keys) -> None:
         super().__init__(master)  
+        variable_name = keys[0]
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
         self.rt_result_dict = rt_result_dict
         self.fig = plt.figure(figsize=(8, 5))

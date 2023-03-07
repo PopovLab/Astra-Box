@@ -191,26 +191,38 @@ class RTResultView(TabViewBasic):
         if n>0: 
             start_time = 100 
             finish_time = 0
-            header = []
+            keys = []
             for f in self.rt_result_file_list:
                 print(f)
-                time_stamp, rt_result, header = self.race_model.get_rt_result(f)
+                time_stamp, rt_result, keys = self.race_model.get_rt_result(f)
                 self.rt_result_dict[time_stamp] = rt_result
                 if time_stamp>finish_time: finish_time = time_stamp
                 if time_stamp<start_time: start_time = time_stamp
-            print(header)
-            self.combo = ComboBox(self, 'RT Result', header)
-            self.combo.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
-            self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            print(keys)
+            self.combo1 = ComboBox(self, 'View 1', keys)
+            self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.combo2 = ComboBox(self, 'View 2', keys)
+            self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
+            #self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
+            #self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.combo1.set(keys[2])
+            self.combo2.set(keys[3])
+
+            self.combo1.on_combo_selected = self.show_rt_result
+            self.combo2.on_combo_selected = self.show_rt_result
+            self.show_rt_result()
         else:
             label = tk.Label(master=self, text='Нет данных')
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
 
     def show_rt_result(self):
-        print(f'show_rt_result: {self.combo.get()}')
-        self.plot = RTResultPlot(self,self.rt_result_dict, self.combo.get() )
+        keys = [self.combo1.get(), self.combo2.get()]
+        print(f'show_rt_result: {keys}')
+        self.plot = RTResultPlot(self,self.rt_result_dict, keys)
         self.plot.grid(row=1, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(2, weight=1)
+
 
 #from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
