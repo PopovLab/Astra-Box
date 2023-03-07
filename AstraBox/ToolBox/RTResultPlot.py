@@ -11,16 +11,24 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 class RTResultPlot(ttk.Frame):
     def __init__(self, master, rt_result_dict, keys) -> None:
         super().__init__(master)  
-        variable_name = keys[0]
-        #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
+
         self.rt_result_dict = rt_result_dict
-        self.fig = plt.figure(figsize=(8, 5))
-        self.fig.suptitle(f'RT Result. {variable_name}')
-        self.ax1 = self.fig.subplots(1, 1)
+        self.fig = plt.figure(figsize=(8, 6), dpi=100)
+
+        gs = self.fig.add_gridspec(2, 1)
+        ax1 = self.fig.add_subplot(gs[0, 0])
+        #  show rt result in View 1
+        self.plot_data(ax1, keys[0], 1)
+        self.plot_data(ax1, keys[0], -1)
+
+        ax2 = self.fig.add_subplot(gs[1, 0])
+        #  show rt result in View 2
+        self.plot_data(ax2, keys[1], 1)
+        self.plot_data(ax2, keys[1], -1)
         
-        #  show rt result
-        self.plot_data(variable_name, 1)
-        self.plot_data(variable_name, -1)
+        ax1.set_ylabel(keys[0])
+        ax2.set_ylabel(keys[1])
+        ax2.set_xlabel('Time')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -32,7 +40,7 @@ class RTResultPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)    
 
-    def plot_data(self, variable_name, direction):
+    def plot_data(self, axis, variable_name, direction):
         color = 'red'
         if direction>0: color = 'blue'
         X = []
@@ -49,8 +57,8 @@ class RTResultPlot(ttk.Frame):
             X0.append(time_stamp)
             Y0.append(values[variable_name])
         area = [3] * len(X)
-        self.ax1.scatter(X, Y, s=area, c= color)
-        self.ax1.plot(X0, Y0, c= color)
+        axis.scatter(X, Y, s=area, c= color)
+        axis.plot(X0, Y0, c= color)
 
     def destroy(self):
         if self.fig:

@@ -205,8 +205,8 @@ class RTResultView(TabViewBasic):
             self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
             #self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
             #self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            self.combo1.set(keys[2])
-            self.combo2.set(keys[3])
+            self.combo1.set(keys[3])
+            self.combo2.set(keys[4])
 
             self.combo1.on_combo_selected = self.show_rt_result
             self.combo2.on_combo_selected = self.show_rt_result
