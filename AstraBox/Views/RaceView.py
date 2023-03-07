@@ -181,9 +181,9 @@ class RTResultView(ttk.Frame):
         self.plot.grid(row=1, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
 #from AstraBox.Views.SpectrumPlot import Plot2D
-from AstraBox.Views.SpectrumPlot import SpectrumPlot
-from AstraBox.Views.SpectrumPlot import ScatterPlot
-from AstraBox.Views.SpectrumPlot import ScatterPlot2D3D
+from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
+from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
+from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
 
 class SpectrumView(ttk.Frame):
     def __init__(self, master, model: RaceModel) -> None:

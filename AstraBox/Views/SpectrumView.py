@@ -5,11 +5,11 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
-from AstraBox.Views.SpectrumPlot import ScatterPlot
-from AstraBox.Views.SpectrumPlot import ScatterPlot3D
-from AstraBox.Views.SpectrumPlot import Plot2DArray
-from AstraBox.Views.SpectrumPlot import SpectrumPlot
-from AstraBox.Views.SpectrumPlot import ScatterPlot2D3D
+from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
+from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
+from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
+from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
+from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
 
 class OptionsPanel(tk.Frame):
     def __init__(self, master, options) -> None:
