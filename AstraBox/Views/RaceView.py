@@ -116,6 +116,8 @@ class RaceView(ttk.Frame):
         super().destroy()   
 
 class TabViewBasic(ttk.Frame):
+    """Базовый класс для вкладок, для перехвата события видимости, что бы потом инициализировать вкладку"""
+    
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
         print('TabViewBasic View')
