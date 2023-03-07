@@ -11,8 +11,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
 
-from AstraBox.Views.RacePlot import DistributionPlot
-from AstraBox.Views.RacePlot import SeriesPlot
+
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.Models.Const import DISTRIBUTION_PATH
 from AstraBox.Models.Const import DIFFUSION_DATA_PATH
@@ -24,6 +23,8 @@ from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
 from AstraBox.ToolBox.TimeSeriesPlot import TimeSeriesPlot
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
 from AstraBox.ToolBox.TrajectoryPlot import TrajectoryPlot
+from AstraBox.ToolBox.DistributionPlot import DistributionPlot
+from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 
 class InfoPanel(tk.LabelFrame):
