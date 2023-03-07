@@ -10,7 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
-from AstraBox.Views.RacePlot import RadialDataPlot
+from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
 from AstraBox.Views.RacePlot import TrajectoryPlot
 from AstraBox.Views.RacePlot import DistributionPlot
 from AstraBox.Views.RacePlot import SeriesPlot
