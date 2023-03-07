@@ -158,17 +158,15 @@ class TimeSeriesView(TabViewBasic):
             self.combo2.set(keys[4])
             self.combo3.set(keys[5])
 
-            self.combo1.on_combo_selected = self.on_combo_selected
-            self.combo2.on_combo_selected = self.on_combo_selected
-            self.combo3.on_combo_selected = self.on_combo_selected            
+            self.combo1.on_combo_selected = self.make_plot
+            self.combo2.on_combo_selected = self.make_plot
+            self.combo3.on_combo_selected = self.make_plot            
 
             self.make_plot()
         else:
             label = tk.Label(master=self, text=self.time_series)
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
         
-
-
     def make_plot(self):
         keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
         self.plot = TimeSeriesPlot(self, self.time_series, keys )
@@ -176,8 +174,6 @@ class TimeSeriesView(TabViewBasic):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)
 
-    def on_combo_selected(self):
-        self.make_plot()
 
 class RTResultView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
@@ -192,19 +188,18 @@ class RTResultView(TabViewBasic):
             start_time = 100 
             finish_time = 0
             keys = []
+
             for f in self.rt_result_file_list:
-                print(f)
                 time_stamp, rt_result, keys = self.race_model.get_rt_result(f)
                 self.rt_result_dict[time_stamp] = rt_result
                 if time_stamp>finish_time: finish_time = time_stamp
                 if time_stamp<start_time: start_time = time_stamp
-            print(keys)
+
             self.combo1 = ComboBox(self, 'View 1', keys)
             self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.combo2 = ComboBox(self, 'View 2', keys)
             self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
-            #self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
-            #self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+ 
             self.combo1.set(keys[3])
             self.combo2.set(keys[4])
 
