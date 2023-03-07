@@ -117,7 +117,7 @@ class RaceView(ttk.Frame):
 
 class TabViewBasic(ttk.Frame):
     """Базовый класс для вкладок, для перехвата события видимости, что бы потом инициализировать вкладку"""
-    
+
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
         print('TabViewBasic View')
@@ -143,9 +143,7 @@ class TimeSeriesView(TabViewBasic):
         print('init Time Series View')
         #self.race_model = model
         self.time_series = self.race_model.get_time_series()
-        if type(self.time_series) == str:
-            print(self.time_series)
-        else:
+        if type(self.time_series) == dict:
             keys = list(self.time_series.keys())
             print(keys)
             self.combo1 = ComboBox(self, 'View 1', keys)
@@ -165,6 +163,11 @@ class TimeSeriesView(TabViewBasic):
             self.combo3.on_combo_selected = self.on_combo_selected            
 
             self.make_plot()
+        else:
+            label = tk.Label(master=self, text=self.time_series)
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
+        
+
 
     def make_plot(self):
         keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
