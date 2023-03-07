@@ -203,6 +203,9 @@ class RTResultView(TabViewBasic):
             self.combo.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.btn = ttk.Button(self, text='Show', command=self.show_rt_result)
             self.btn.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
 
     def show_rt_result(self):
         print(f'show_rt_result: {self.combo.get()}')
@@ -228,6 +231,8 @@ class SpectrumView(TabViewBasic):
             self.make_plot()
         else:
             print(self.spectrum_model.spectrum_data)
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def make_plot(self):
         match self.spectrum_model.spectrum_type:
@@ -303,6 +308,9 @@ class TrajectoryView(TabViewBasic):
             self.columnconfigure(1, weight=1)
             self.rowconfigure(2, weight=1)
             self.len_rays = len(rays)
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
     def get_rays(self, index):
         if not index in self.rays_cache:
@@ -369,7 +377,9 @@ class RadialDataView(TabViewBasic):
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)
-
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def get_radial_data(self, index):
         file = self.radial_data_list[index]
@@ -416,6 +426,9 @@ class DistributionView(TabViewBasic):
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
     def get_distribution(self, index):
         file = self.distribution_list[index]
@@ -462,6 +475,9 @@ class MaxwellView(TabViewBasic):
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
     def get_distribution(self, index):
         file = self.maxwell_list[index]
@@ -508,7 +524,10 @@ class DiffusionView(TabViewBasic):
             self.plot = SeriesPlot(self, distribution, 'Diffusion', self.start_time, уscale_log=False)
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
-            self.rowconfigure(2, weight=1)            
+            self.rowconfigure(2, weight=1)
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
     def get_distribution(self, index):
         file = self.file_list[index]
