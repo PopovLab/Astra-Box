@@ -27,9 +27,9 @@ class RunAstraView(ttk.Frame):
         self.rn_wdg = StringBox(self, self.race_name, width=30)
         self.rn_wdg.grid(row=1, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.exp_combo = ComboBox(self, 'Experiments', WorkSpace.getDataSource('exp').get_keys_list())
+        self.exp_combo = ComboBox(self, 'Exp', WorkSpace.getDataSource('exp').get_keys_list())
         self.exp_combo.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.equ_combo = ComboBox(self, 'Equlibrium', WorkSpace.getDataSource('equ').get_keys_list())
+        self.equ_combo = ComboBox(self, 'Equ', WorkSpace.getDataSource('equ').get_keys_list())
         self.equ_combo.grid(row=2, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)        
         self.rt_combo = ComboBox(self, 'Ray tracing', WorkSpace.getDataSource('ray_tracing').get_keys_list())
         self.rt_combo.grid(row=2, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
