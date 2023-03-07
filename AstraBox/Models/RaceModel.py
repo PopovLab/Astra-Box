@@ -120,11 +120,11 @@ class RaceModel(BaseModel):
 
     def get_rt_result(self, f):
         p = pathlib.Path(f)
-        print(p.suffix)
-        print(p.stem)
+        #print(p.suffix)
+        #print(p.stem)
         if p.suffix != '.dat': return
         time_stamp = float(p.stem)
-        print(time_stamp)
+        #print(time_stamp)
         rt_result = { -1: {}, 1: {}}
 
         with zipfile.ZipFile(self.race_zip_file) as zf:
