@@ -18,7 +18,7 @@ def isBlank (myString):
 def read_data(file):
     header = file.readline().decode("utf-8").split()
     
-    print(header)
+    #print(header)
 
     series = { h: [] for h in header }
 
