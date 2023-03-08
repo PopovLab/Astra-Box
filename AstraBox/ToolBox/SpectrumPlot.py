@@ -118,19 +118,28 @@ class ScatterPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()   
 
+def sort_spectrum(s):
+    tuple_list = [(t, p, a) for t, p, a in zip(s['Ntor'], s['Npol'], s['Amp'])]
+    sort_list = sorted(tuple_list, key=lambda x: x[2])
+    out = {}
+    out['Ntor'] = [x[0] for x in sort_list]
+    out['Npol'] = [x[1] for x in sort_list]
+    out['Amp']  = [x[2] for x in sort_list]
+    return out
+
 class ScatterPlot2D3D(ttk.Frame):
-    def __init__(self, master, spectrum) -> None:
+    def __init__(self, master, spectr) -> None:
         super().__init__(master)  
-        self.spectrum = spectrum
-        self.z_min, self.z_max = MinMax(self.spectrum['Ntor'])
-        self.y_min, self.y_max = MinMax(self.spectrum['Npol'])        
+        spectrum = sort_spectrum(spectr)
+        self.z_min, self.z_max = MinMax(spectrum['Ntor'])
+        self.y_min, self.y_max = MinMax(spectrum['Npol'])        
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
         gs = self.fig.add_gridspec(1, 2)
 
         ax_2D = self.fig.add_subplot(gs[0, 0])
         cmhot = plt.get_cmap("plasma")
-        area = [3] * len(spectrum['Npol'])
-        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot) #, c=c, marker=m)
+        area = [5] * len(spectrum['Npol'])
+        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot, alpha=0.8) #, c=c, marker=m)
 
         ax_2D.set_xlabel('Ntor')
         ax_2D.set_ylabel('Npol')
