@@ -3,10 +3,12 @@ import json
 import encodings
 import pathlib 
 import zipfile
+from zipfile import ZipFile
 import datetime
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
+import AstraBox.Astra as Astra
 
 class RunModel(BaseModel):
 
@@ -52,7 +54,7 @@ class RunModel(BaseModel):
         return f'{prefix}_{dt_string}.zip'
 
     def load_model_data(self):
-        with zipfile.ZipFile(self.race_zip_file) as zip:
+        with ZipFile(self.race_zip_file) as zip:
             with zip.open( 'race_model.json' , "r" ) as json_file:
                 self.data = json.load(json_file)
 
@@ -64,9 +66,16 @@ class RunModel(BaseModel):
             "rt_model" : self.rt_model.data,
         }
 
+
+    def make_folders(self, zip: ZipFile):
+        for key, folder in Astra.data_folder.items():
+            zip.mkdir(folder)
+
     def prepare_run_data(self):
         zip_file = os.path.join(str(WorkSpace.getInstance().destpath), 'race_data.zip')
-        with zipfile.ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
+        with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
+            
+            self.make_folders(zip)
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)
             self.pack_model_to_zip(zip, self.rt_model)

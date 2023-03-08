@@ -10,6 +10,7 @@ import platform
 
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.RunModel import RunModel
+import AstraBox.Astra as Astra
 
 proc = NULL
 
@@ -208,6 +209,12 @@ class AstraWorker(Worker):
             self.logger.info(f'run: {command}')
             asyncio.run(self.run(ps_cmd, shell=True))
 
+    def clear_folders(self):
+        for key, folder in Astra.data_folder.items():
+            clear_cmd = f'rm {self.astra_profile["profile"]}/{folder}*'  
+            self.logger.info(f'run: {clear_cmd}')
+            self.WSL_Run(self.astra_profile["home"], clear_cmd)
+
     def start(self):
         #if self.test_folder(): return
         #self.initialization()
@@ -217,10 +224,9 @@ class AstraWorker(Worker):
         self.logger.info(f'to: {self.astra_profile["dest"]}')
         self.logger.info(f'astra: {self.astra_profile["profile"]}')
         copy_file_to_folder(zip_file, self.astra_profile["dest"])
-        #unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
-        #print(unpack_cmd)
-        #asyncio.run(self.run(unpack_cmd, shell=True))
         self.WSL_Run(self.astra_profile["home"], f'./unpack.sh {self.astra_profile["profile"]}')
+
+        self.clear_folders()
 
         self.set_model_status('run')
         
@@ -230,8 +236,9 @@ class AstraWorker(Worker):
             case ('Windows', '11'): 
                 astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
-
-        self.WSL_Run(self.astra_profile["home"], astra_cmd)
+        run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
+        asyncio.run(self.run(run_cmd, shell=True))
+        #self.WSL_Run(self.astra_profile["home"], astra_cmd)
  
         self.logger.info('finish')
         if self.run_model.status == 'run':
