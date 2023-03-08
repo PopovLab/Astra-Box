@@ -9,6 +9,7 @@ import shutil
 import platform
 
 import AstraBox.WorkSpace as WorkSpace
+from AstraBox.Models.RunModel import RunModel
 
 proc = NULL
 
@@ -87,7 +88,7 @@ class Worker:
     on_progress = None
     controller = None
 
-    def __init__(self, model) -> None:
+    def __init__(self, model: RunModel) -> None:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
@@ -197,7 +198,7 @@ def copy_file_to_folder(src, dst):
    
 
 class AstraWorker(Worker):
-    def __init__(self, model, astra_profile) -> None:
+    def __init__(self, model: RunModel, astra_profile) -> None:
         super().__init__(model)
         self.astra_profile = astra_profile
 
