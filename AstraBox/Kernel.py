@@ -71,7 +71,6 @@ async def test_logger(logger):
 
 class Worker:
 
-
     def get_logger(self, logger_name):
         logger = logging.getLogger(logger_name)
         while logger.hasHandlers():
