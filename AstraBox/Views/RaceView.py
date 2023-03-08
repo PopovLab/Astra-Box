@@ -215,7 +215,6 @@ class RTResultView(TabViewBasic):
         self.rowconfigure(2, weight=1)
 
 
-#from AstraBox.Views.SpectrumPlot import Plot2D
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot, ScatterPlot2D3D
 
 class SpectrumView(TabViewBasic):
