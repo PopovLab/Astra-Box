@@ -194,11 +194,18 @@ def copy_file_to_folder(src, dst):
     except:
         print(f"Error occurred while copying file: {src} to {dst}")
 
+   
 
 class AstraWorker(Worker):
     def __init__(self, model, astra_profile) -> None:
         super().__init__(model)
         self.astra_profile = astra_profile
+
+    def WSL_Run(self, work_folder, command):
+            ps_cmd = f'wsl --cd {work_folder} {command}'
+            print(ps_cmd)
+            self.logger.info(f'run: {command}')
+            asyncio.run(self.run(ps_cmd, shell=True))
 
     def start(self):
         #if self.test_folder(): return
@@ -209,9 +216,11 @@ class AstraWorker(Worker):
         self.logger.info(f'to: {self.astra_profile["dest"]}')
         self.logger.info(f'astra: {self.astra_profile["profile"]}')
         copy_file_to_folder(zip_file, self.astra_profile["dest"])
-        unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
-        print(unpack_cmd)
-        asyncio.run(self.run(unpack_cmd, shell=True))
+        #unpack_cmd = f'wsl --cd {self.astra_profile["home"]} ./unpack.sh {self.astra_profile["profile"]}'
+        #print(unpack_cmd)
+        #asyncio.run(self.run(unpack_cmd, shell=True))
+        self.WSL_Run(self.astra_profile["home"], f'./unpack.sh {self.astra_profile["profile"]}')
+
         self.set_model_status('run')
         
         match (platform.system(), platform.release()):
@@ -220,16 +229,9 @@ class AstraWorker(Worker):
             case ('Windows', '11'): 
                 astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
-        run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
-        #self.run_cmd = 'start wsl ls'
 
-        print(run_cmd)
-        #if not os.path.exists(self.run_cmd):
-        #    self.logger.error(f"Can't find: {self.run_cmd}")
-        #    return
-
-        asyncio.run(self.run(run_cmd, shell=True))        
-        #subprocess.call(self.run_cmd, shell=True)
+        self.WSL_Run(self.astra_profile["home"], astra_cmd)
+ 
         self.logger.info('finish')
         if self.run_model.status == 'run':
             if self.error_flag:
