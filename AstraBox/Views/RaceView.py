@@ -27,9 +27,9 @@ from AstraBox.ToolBox.DistributionPlot import DistributionPlot
 from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 
-class InfoPanel(tk.LabelFrame):
+class InfoPanel(tk.Frame):
     def __init__(self, master, model) -> None:
-        super().__init__(master, text= 'Race info')
+        super().__init__(master) #, text= 'Race info')
         info = {
             'Exp:': model.data['ExpModel']['name'],
             'Equ:': model.data['EquModel']['name'],
