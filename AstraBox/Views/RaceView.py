@@ -13,11 +13,6 @@ from AstraBox.Views.ExtraRaceView import ExtraRaceView
 
 
 from AstraBox.Models.RaceModel import RaceModel
-from AstraBox.Models.Const import DISTRIBUTION_PATH
-from AstraBox.Models.Const import DIFFUSION_DATA_PATH
-from AstraBox.Models.Const import MAXWELL_DATA_PATH
-from AstraBox.Models.Const import RADIAL_DATA_PATH
-from AstraBox.Models.Const import TRAJECTROY_PATH
 
 from AstraBox.ToolBox.ComboBox import ComboBox
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
@@ -182,7 +177,7 @@ class RTResultView(TabViewBasic):
 
     def init_ui(self):
         print('init RT result View')
-        self.rt_result_file_list = self.race_model.get_rt_result_list()
+        self.rt_result_file_list = self.race_model.get_file_list('RT_RESULT')
         self.rt_result_dict = {}
         n = len(self.rt_result_file_list)
         if n>0: 
@@ -257,7 +252,7 @@ class TrajectoryView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self): 
-        self.trajectory_list = self.race_model.get_data_series_file_list(TRAJECTROY_PATH)
+        self.trajectory_list = self.race_model.get_file_list('TRAJECTROY')
         self.rays_cache = {}
         n = len(self.trajectory_list)
         if n>0: 
@@ -348,7 +343,7 @@ class RadialDataView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self):   
-        self.radial_data_list = self.race_model.get_data_series_file_list(RADIAL_DATA_PATH)
+        self.radial_data_list = self.race_model.get_file_list('RADIAL_DATA')
         n = len(self.radial_data_list)
         if n>0: 
             radial_data = self.get_radial_data(0)
@@ -398,7 +393,7 @@ class DistributionView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self):   
-        self.distribution_list = self.race_model.get_data_series_file_list(DISTRIBUTION_PATH) 
+        self.distribution_list = self.race_model.get_file_list('DISTRIBUTION') 
         n = len(self.distribution_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -447,7 +442,7 @@ class MaxwellView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self): 
-        self.maxwell_list = self.race_model.get_data_series_file_list(MAXWELL_DATA_PATH)
+        self.maxwell_list = self.race_model.get_file_list('MAXWELL')
         n = len(self.maxwell_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)
@@ -497,7 +492,7 @@ class DiffusionView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self): 
-        self.file_list = self.race_model.get_data_series_file_list(DIFFUSION_DATA_PATH)
+        self.file_list = self.race_model.get_file_list('DIFFUSION')
         n = len(self.file_list)
         if n>0: 
             distribution, self.start_time  =  self.get_distribution(0)

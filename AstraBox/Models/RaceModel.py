@@ -9,9 +9,7 @@ import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
 import AstraBox.Models.TimeSeries as TimeSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
-from AstraBox.Models.Const import TRAJECTROY_PATH
-from AstraBox.Models.Const import RT_RESULT_PATH
-
+import AstraBox.Astra as Astra
 
 def float_try(str):
     try:
@@ -74,7 +72,8 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
-    def get_data_series_file_list(self, folder):
+    def get_file_list(self, folder_name):
+        folder = Astra.data_folder[folder_name]
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]
@@ -115,8 +114,6 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return DataSeries.read_original_distribution_file(file), time_stamp
 
-    def get_rt_result_list(self):
-        return self.get_data_series_file_list(RT_RESULT_PATH)
 
     def get_rt_result(self, f):
         p = pathlib.Path(f)
