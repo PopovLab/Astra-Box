@@ -90,4 +90,6 @@ class RunAstraView(ttk.Frame):
         pass
 
     def on_progress(self, pos):
+        print('RunAstraView')
+        self.master.update()
         pass
