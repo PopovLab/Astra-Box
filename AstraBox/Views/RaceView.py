@@ -64,8 +64,6 @@ class RaceView(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-
-        
         #tab_view_basic = TabViewBasic(self.notebook, model= model)
         #self.notebook.add(tab_view_basic, text="tab_view_basic", underline=0, sticky=tk.NE + tk.SW)
 
@@ -103,6 +101,8 @@ class RaceView(ttk.Frame):
         new_window.geometry("850x870")                
         model_view = RaceView(new_window, self.model)   
         model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
+        new_window.columnconfigure(0, weight=1)        
+        new_window.rowconfigure(0, weight=1)    
 
     def open_extra_race_view(self):
         new_window = tk.Toplevel(self.master)
