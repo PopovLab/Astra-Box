@@ -144,14 +144,6 @@ class RaceModel(BaseModel):
                     rt_result[direction][iteration] = values
         return time_stamp, rt_result, header
 
-    def get_trajectory_list(self):
-        tmp = TRAJECTROY_PATH
-        length = len(tmp)
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            list =  [ z.filename for z in zip.filelist if (z.filename.startswith(tmp)  and len(z.filename)>length+1 )]
-        list.sort()  
-        return list            
-
     def get_rays(self, f):
         p = pathlib.Path(f)
         if p.suffix != '.dat': return

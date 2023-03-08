@@ -17,6 +17,7 @@ from AstraBox.Models.Const import DISTRIBUTION_PATH
 from AstraBox.Models.Const import DIFFUSION_DATA_PATH
 from AstraBox.Models.Const import MAXWELL_DATA_PATH
 from AstraBox.Models.Const import RADIAL_DATA_PATH
+from AstraBox.Models.Const import TRAJECTROY_PATH
 
 from AstraBox.ToolBox.ComboBox import ComboBox
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
@@ -220,9 +221,7 @@ class RTResultView(TabViewBasic):
 
 
 #from AstraBox.Views.SpectrumPlot import Plot2D
-from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
-from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
-from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
+from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot, ScatterPlot2D3D
 
 class SpectrumView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
@@ -258,7 +257,7 @@ class TrajectoryView(TabViewBasic):
         super().__init__(master, model)  
 
     def init_ui(self): 
-        self.trajectory_list = self.race_model.get_trajectory_list()
+        self.trajectory_list = self.race_model.get_data_series_file_list(TRAJECTROY_PATH)
         self.rays_cache = {}
         n = len(self.trajectory_list)
         if n>0: 
