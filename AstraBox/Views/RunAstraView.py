@@ -60,10 +60,6 @@ class RunAstraView(ttk.Frame):
             self.astra_combo.set(last_run['astra_profile'])          
 
     def start(self):
-        #if self.grill_model == None:
-        #    return
-        #if self.imped_model == None:
-        #    return
         exp = self.exp_combo.get()
         equ = self.equ_combo.get()
         rt = self.rt_combo.get()
