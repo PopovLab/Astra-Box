@@ -23,9 +23,9 @@ class DrivenCurrentPlot(ttk.Frame):
         ax1.plot(dc_series['Time'], dc_series[keys[2]], label=keys[2])
         ax1.plot(dc_series['Time'], dc_series[keys[3]], label=keys[3])
         ax1.plot(dc_series['Time'], dc_series[keys[4]], label=keys[4])
-        ax1.plot(dc_series['Time'], dc, label='driven current')
+        ax1.plot(dc_series['Time'], dc, label='dc')
         ax1.plot(dc_series['Time'], sigma, label='sigma dc')
-        ax1.legend(loc='upper right', shadow=True)
+        ax1.legend(loc='upper right', bbox_to_anchor=(1.1, 1.2), shadow=True)
 
         ax2 = self.fig.add_subplot(gs[1, 0])
         
@@ -41,7 +41,7 @@ class DrivenCurrentPlot(ttk.Frame):
         ax1.set_ylabel('Current (MA)')
         ax2.set_ylabel('Current (MA)')
         ax3.set_ylabel('Current (MA)')        
-        ax3.set_xlabel('Time')
+        ax3.set_xlabel('Time (sec)')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
