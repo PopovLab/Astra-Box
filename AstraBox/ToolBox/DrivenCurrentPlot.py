@@ -25,18 +25,18 @@ class DrivenCurrentPlot(ttk.Frame):
         ax1.plot(dc_series['Time'], dc_series[keys[4]], label=keys[4])
         ax1.plot(dc_series['Time'], dc, label='dc')
         ax1.plot(dc_series['Time'], sigma, label='sigma dc')
-        ax1.legend(loc='upper right', bbox_to_anchor=(1.1, 1.2), shadow=True)
+        ax1.legend(loc='upper right', bbox_to_anchor=(1.1, 1.2))
 
         ax2 = self.fig.add_subplot(gs[1, 0])
         
         ax2.plot(dc_series['Time'], dc_series[keys[5]], label=keys[5])        
         ax2.plot(dc_series['Time'], dc_series[keys[6]], label=keys[6])
-        ax2.legend(loc='upper right', shadow=True)
+        ax2.legend(loc='upper right')
 
         ax3 = self.fig.add_subplot(gs[2, 0])
         ax3.plot(dc_series['Time'], dc_series[keys[7]], label=keys[7]) 
         ax3.plot(dc_series['Time'], dc_series[keys[8]], label=keys[8])
-        ax3.legend(loc='upper right', shadow=True)
+        ax3.legend(loc='upper right')
 
         ax1.set_ylabel('Current (MA)')
         ax2.set_ylabel('Current (MA)')

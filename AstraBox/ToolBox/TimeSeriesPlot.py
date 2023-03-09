@@ -16,15 +16,15 @@ class TimeSeriesPlot(ttk.Frame):
 
         ax1 = self.fig.add_subplot(gs[0, 0])
         ax1.plot(time_series['Time'], time_series[keys[0]], label=keys[0])
-        ax1.legend(loc='upper right', shadow=True)
+        ax1.legend(loc='upper right')
 
         ax2 = self.fig.add_subplot(gs[1, 0])
         ax2.plot(time_series['Time'], time_series[keys[1]], label=keys[1])
-        ax2.legend(loc='upper right', shadow=True)
+        ax2.legend(loc='upper right')
 
         ax3 = self.fig.add_subplot(gs[2, 0])
         ax3.plot(time_series['Time'], time_series[keys[2]], label=keys[2])
-        ax3.legend(loc='upper right', shadow=True)
+        ax3.legend(loc='upper right')
 
         ax3.set_xlabel('Time')
         ax1.set_ylabel(keys[0])
