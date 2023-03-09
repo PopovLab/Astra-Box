@@ -44,6 +44,16 @@ class RaceModel(BaseModel):
             "rt_model" : self.rt_model.data,
         }
 
+    def get_driven_current(self):
+        f = 'lhcd/dc_result.dat'
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(f) as file:
+                    return TimeSeries.read_data(file)       
+        except Exception as error:
+            print(error)
+            return f'не смог прочитать {f}'
+
     def get_time_series(self):
         f = 'dat/time_series.dat'
         try:
