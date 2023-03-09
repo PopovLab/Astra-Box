@@ -148,7 +148,7 @@ class DrivenCurrentView(TabViewBasic):
         if type(self.dc_series) == dict:
             self.make_plot()
         else:
-            label = tk.Label(master=self, text=self.time_series)
+            label = tk.Label(master=self, text=self.dc_series)
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	            
 
     def make_plot(self):
