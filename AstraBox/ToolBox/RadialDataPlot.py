@@ -16,25 +16,29 @@ class RadialDataPlot(ttk.Frame):
         self.axs = self.fig.subplots(2, 2)
         
         # профили токов
-        self.profile_J,    = self.axs[0,0].plot(profiles['a'], profiles['J'])
-        self.profile_Johm, = self.axs[0,0].plot(profiles['a'], profiles['Johm'])
-        self.profile_Jlh, = self.axs[0,0].plot(profiles['a'], profiles['Jlh'])
-        self.axs[0,0].set_title("J, Johm, Jlh")
+        self.profile_J,    = self.axs[0,0].plot(profiles['a'], profiles['J'], label='J')
+        self.profile_Johm, = self.axs[0,0].plot(profiles['a'], profiles['Johm'], label='Johm')
+        self.profile_Jlh, = self.axs[0,0].plot(profiles['a'], profiles['Jlh'], label='Jlh')
+        #self.axs[0,0].set_title("J, Johm, Jlh")
+        self.axs[0,0].legend(loc='upper right', shadow=True)
 
         # профили E
-        self.profile_E, = self.axs[0,1].plot(profiles['a'], profiles['E'])
-        self.profile_En, = self.axs[0,1].plot(profiles['a'], profiles['En'])
-        self.axs[0,1].set_title("E, En")
+        self.profile_E, = self.axs[0,1].plot(profiles['a'], profiles['E'], label='E')
+        self.profile_En, = self.axs[0,1].plot(profiles['a'], profiles['En'], label='En')
+        #self.axs[0,1].set_title("E, En")
+        self.axs[0,1].legend(loc='upper right', shadow=True)
     
         # профили мощности
-        self.profile_Plh, = self.axs[1,0].plot(profiles['a'], profiles['Plh'])
-        self.profile_Poh, = self.axs[1,0].plot(profiles['a'], profiles['Poh'])
-        self.axs[1,0].set_title("Plh, Poh")
+        self.profile_Plh, = self.axs[1,0].plot(profiles['a'], profiles['Plh'], label='Plh')
+        self.profile_Poh, = self.axs[1,0].plot(profiles['a'], profiles['Poh'], label='Poh')
+        #self.axs[1,0].set_title("Plh, Poh")
+        self.axs[1,0].legend(loc='upper right', shadow=True)
     
         # профили температуры
-        self.profile_Te, = self.axs[1,1].plot(profiles['a'], profiles['Te'])
+        self.profile_Te, = self.axs[1,1].plot(profiles['a'], profiles['Te'], label='Te')
         #self.profile_Poh, = self.axs[2].plot(profiles['Poh'])
-        self.axs[1,1].set_title("Te")
+        #self.axs[1,1].set_title("Te")
+        self.axs[1,1].legend(loc='upper right', shadow=True)
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
