@@ -23,6 +23,7 @@ from AstraBox.ToolBox.DistributionPlot import DistributionPlot
 from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 from AstraBox.ToolBox.DrivenCurrentPlot import DrivenCurrentPlot
+from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
 
 
 class InfoPanel(tk.Frame):
@@ -489,7 +490,7 @@ class MaxwellView(TabViewBasic):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = SeriesPlot(self, distribution, 'Maxwell', self.start_time)
+            self.plot = MaxwellPlot(self, distribution, 'Maxwell', self.start_time)
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
