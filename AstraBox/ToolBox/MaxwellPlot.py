@@ -12,7 +12,8 @@ def renorm_maxwell(maxwell):
     Y = maxwell['Y']
     vmax = abs(X[0])
     X = X / vmax
-    Y = Y * vmax / speed_of_light
+    Y = Y * vmax /1000 #Эмпирисческий коэффициент
+    #print(np.sum(Y))
     return {'X': X, 'Y': Y}
 
     #thermal_vel = vmax/speed_of_light/2
