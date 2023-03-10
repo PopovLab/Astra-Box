@@ -1,17 +1,42 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-
+import numpy as np
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
+speed_of_light = 3.0e+10
+def renorm_maxwell(maxwell):
+    X = maxwell['X']
+    Y = maxwell['Y']
+    vmax = abs(X[0])
+    X = X / vmax
+    Y = Y * vmax / speed_of_light
+    return {'X': X, 'Y': Y}
+
+    #thermal_vel = vmax/speed_of_light/2
+    #n = len(X)
+    #nl = n//2 - n//8
+    #nr = n//2 + n//8
+    #YL = Y[nl]
+    #YR = Y[nr]
+    #XL = X[nl]
+    #XR = X[nr]    
+    #return {'X': X, 'Y': Y, 'TX': [XL, XR], 'TY': [YL, YR]}
+
+def renorm_series(series):
+    new_series = []
+    for item in series:
+        new_series.append(renorm_maxwell(item))
+    return new_series
+
 class MaxwellPlot(ttk.Frame):
-    def __init__(self, master, series, title, time_stamp, уscale_log = True) -> None:
+    def __init__(self, master, m_series, title, time_stamp, уscale_log = True) -> None:
         super().__init__(master)  
         self.уscale_log = уscale_log
         self.title = title
-        self.series = series
+        self.series = renorm_series(m_series)
 
         tb = self.make_toolbar()
         tb.grid(row=0, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W) 
@@ -21,8 +46,9 @@ class MaxwellPlot(ttk.Frame):
         self.ax1 = self.fig.subplots(1, 1)
 
         #  show distribution
-        for item in series:
-            self.ax1.plot(item['X'], item['Y']);
+        for item in  self.series:
+            self.ax1.plot(item['X'], item['Y'])
+            #self.ax1.stem(item['TX'], item['TY'])
 
         if self.уscale_log:
             self.ax1.set_yscale('log')
@@ -82,8 +108,8 @@ class MaxwellPlot(ttk.Frame):
     def update_plot(self, var, indx, mode):
         self.show_series()
 
-    def update(self, series, time_stamp):
-        self.series = series
+    def update(self, m_series, time_stamp):
+        self.series = renorm_series(m_series)
         self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         self.show_series()
 
