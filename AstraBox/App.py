@@ -26,12 +26,12 @@ class App(tk.Tk):
         # стиль для кнопок
 
         style.configure('Toolbutton', 
-                        foreground='maroon', 
-                        backgound = 'red',
+                        foreground= 'black', 
+                        backgound= 'red',
                         padding= 9,  #{'padx': 5, 'pady': 10},
                         font=('Helvetica', 12))
         style.configure("Header.TLabel",
-                        foreground='royal blue',
+                        foreground='navy',
                         backgound = 'red',
                         padding=8,
                         font=('Helvetica', 12))
