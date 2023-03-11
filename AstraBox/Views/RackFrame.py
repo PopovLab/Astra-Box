@@ -18,23 +18,25 @@ class RackFrame(ttk.Frame):
 
         self.exp_explorer = Explorer(self, title='Experiments', data_source='exp')
         self.exp_explorer.on_select_item = self.on_explorer_select_item
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))   
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+
+        #ttk.Separator(self, orient='horizontal').pack(fill='x')
              
         self.exp_explorer = Explorer(self, title='Equlibrium', data_source='equ')
         self.exp_explorer.on_select_item = self.on_explorer_select_item
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))                
 
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
+        #ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.exp_explorer = Explorer(self, title='Subroutine', data_source='sbr')
         self.exp_explorer.on_select_item = self.on_explorer_select_item
-        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+        self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))                
 
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
+        #ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', new_button = True, data_source='ray_tracing')
         self.rt_explorer.on_select_item = self.on_explorer_select_item
-        self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20))                
+        self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))                
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
@@ -45,7 +47,7 @@ class RackFrame(ttk.Frame):
 
         self.race_explorer = Explorer(self, title='Race history', data_source='races', height= 10)
         self.race_explorer.on_select_item = self.on_explorer_select_item
-        self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,20)) 
+        self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10)) 
 
     def on_explorer_select_item(self, explorer, item):
         print(item)
