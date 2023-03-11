@@ -64,16 +64,19 @@ class TextView(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
-        title = f"Text View {model.name}"
+        title = f"{model.name}"
         self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
         self.model = model
+
         self.hp = HeaderPanel(self, self.header_content)
-        self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.hp.grid(row=0, column=0, columnspan=5, padx=0, sticky=tk.N + tk.S + tk.E + tk.W)
+
         self.text_box = ScrolledText(self, bg = "mint cream", wrap="none")
-        self.text_box.grid(row=2, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.text_box.grid(row=2, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.text_box.insert(tk.END, model.get_text())
+
         self.find_bat = FindToolBar(self, self.text_box)
-        self.find_bat.grid(row=1, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.find_bat.grid(row=1, column=0, columnspan=5, padx=10, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)            

@@ -25,11 +25,16 @@ class App(tk.Tk):
         style = ttk.Style()
         # стиль для кнопок
 
-        style.configure('Toolbutton', foreground='maroon', 
-                                backgound = 'red',
-                                padding= 8,  #{'padx': 5, 'pady': 10},
-                                font=('Helvetica', 12))
-        style.configure("Header.TLabel", padding=12, font=('Helvetica', 12))
+        style.configure('Toolbutton', 
+                        foreground='maroon', 
+                        backgound = 'red',
+                        padding= 9,  #{'padx': 5, 'pady': 10},
+                        font=('Helvetica', 12))
+        style.configure("Header.TLabel",
+                        foreground='royal blue',
+                        backgound = 'red',
+                        padding=8,
+                        font=('Helvetica', 12))
 
         abspath = os.path.abspath(Config.get_current_workspace_dir())
         if not os.path.exists(abspath):
