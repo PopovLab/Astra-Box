@@ -15,7 +15,7 @@ class ContentFrame(ttk.Frame):
             self.content.destroy()
        
         self.content = content
-        self.content.grid(row=0, column=0, padx=1, sticky=tk.N + tk.S + tk.E + tk.W)     
+        self.content.grid(row=0, column=0, padx=0, sticky=tk.N + tk.S + tk.E + tk.W)     
 
     def show_empty_view(self):
         self.set_content(EmptyView(self))
