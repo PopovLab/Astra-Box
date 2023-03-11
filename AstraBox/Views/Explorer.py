@@ -15,7 +15,7 @@ class Explorer(ttk.Frame):
         self.nodes = {}
         self.tree = ttk.Treeview(self,  selectmode="browse", show="tree", columns=  ( "#1"), height= height)
         self.tree.column('#0',stretch=tk.NO)
-        self.tree.column('#1', width=40, stretch=tk.NO)
+        self.tree.column('#1', width=40)
         
         
         self.update_tree()
