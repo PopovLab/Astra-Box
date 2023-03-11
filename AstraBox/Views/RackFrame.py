@@ -1,7 +1,9 @@
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.Explorer import Explorer
 import AstraBox.Models.ModelFactory as ModelFactory
+import AstraBox.WorkSpace as WorkSpace
 
 class RackFrame(ttk.Frame):
     def __init__(self, master, app) -> None:
@@ -11,9 +13,13 @@ class RackFrame(ttk.Frame):
         self.active_exlorer = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-        ttk.Radiobutton(self, text="Open Workspace", variable=self.v, value="pwf", width=25, command= self.open_folder_dialog,
-                            style = 'Toolbutton').pack(expand=0, fill=tk.X)
-
+        frame = ttk.Frame(self)
+        ttk.Radiobutton(frame, text="Open Workspace", variable=self.v, value="owp", width=20, command= self.open_folder_dialog,
+                            style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
+        ttk.Radiobutton(frame, text="Doc", variable=self.v, value="doc", width=10, command= self.open_doc,
+                            style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
+        frame.pack(expand=0, fill=tk.X)
+        
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         self.exp_explorer = Explorer(self, title='Experiments', data_source='exp')
@@ -51,6 +57,7 @@ class RackFrame(ttk.Frame):
 
     def on_explorer_select_item(self, explorer, item):
         print(item)
+        self.v.set('xxx')
         if self.active_exlorer:
             if self.active_exlorer is not explorer:
                 self.active_exlorer.selection_clear()
@@ -61,12 +68,15 @@ class RackFrame(ttk.Frame):
             model = ModelFactory.build(item)
         self.app.show_model(model)
 
+    def open_doc(self):
+        self.app.open_doc()
+        self.v.set('xxx')
 
     def open_folder_dialog(self):
         dir = tk.filedialog.askdirectory()
         if len(dir)>0:
             self.app.open_work_space(dir)
-        #Controller().open_folder_dialog()
+        self.v.set('xxx')
 
     def show_calc_view(self):
         self.app.show_calc_view()

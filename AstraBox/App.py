@@ -70,6 +70,10 @@ class App(tk.Tk):
             #Storage().close()
             self.destroy()
             
+    def open_doc(self):
+        wp = WorkSpace.getInstance().destpath
+        doc_path = wp.joinpath('doc/index.html').as_posix()
+        os.system(f'start {doc_path}/')            
 
 
 
