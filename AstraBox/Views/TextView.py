@@ -12,12 +12,12 @@ class FindToolBar(ttk.Frame):
         self.query = None
         self.query_var = tk.StringVar(master= self, value='')
         label = tk.Label(master=self, text='Find:')
-        label.pack(side = tk.LEFT, ipadx=10)		
+        label.pack(side = tk.LEFT, padx=10)		
         entry = tk.Entry(self, width=55, textvariable= self.query_var)
-        entry.pack(side = tk.LEFT, ipadx=10)
+        entry.pack(side = tk.LEFT, padx=10)
         
         btn1 = ttk.Button(self, text= 'Next', command=self.find_next)
-        btn1.pack(side = tk.LEFT, ipadx=10)   
+        btn1.pack(side = tk.LEFT, padx=10)   
     
     def find_first(self):
         #remove tag 'found' from index 1 to END
