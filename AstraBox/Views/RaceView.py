@@ -124,7 +124,6 @@ class TabViewBasic(ttk.Frame):
 
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)  
-        print('TabViewBasic View')
         self.race_model = model
 
         self.first_time = True

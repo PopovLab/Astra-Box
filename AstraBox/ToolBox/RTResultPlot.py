@@ -41,8 +41,9 @@ class RTResultPlot(ttk.Frame):
         self.rowconfigure(0, weight=1)    
 
     def plot_data(self, axis, variable_name, direction):
-        color = 'red'
-        if direction>0: color = 'blue'
+        color = 'red' if direction>0 else 'blue'
+        legend = 'pos' if direction>0 else 'neg'
+        
         X = []
         Y = []
         X0 = []
@@ -58,7 +59,8 @@ class RTResultPlot(ttk.Frame):
             Y0.append(values[variable_name])
         area = [3] * len(X)
         axis.scatter(X, Y, s=area, c= color)
-        axis.plot(X0, Y0, c= color)
+        axis.plot(X0, Y0, c= color, label= legend)
+        axis.legend(loc='upper right')
 
     def destroy(self):
         if self.fig:
