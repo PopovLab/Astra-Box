@@ -69,7 +69,7 @@ class TextView(ttk.Frame):
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text_box = ScrolledText(self, bg = "light cyan", wrap="none")
+        self.text_box = ScrolledText(self, bg = "mint cream", wrap="none")
         self.text_box.grid(row=2, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.text_box.insert(tk.END, model.get_text())
         self.find_bat = FindToolBar(self, self.text_box)
