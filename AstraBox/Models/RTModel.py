@@ -379,13 +379,13 @@ class RTModel(BaseModel):
             case 'gaussian'| 'spectrum_1D':
                 print(spect)
                 if spect.setting['parameters']['spline']['value']:
-                    spect_line = '  0     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
+                    spect_line = '  0     ! spectr type 0 - 1D + spline approximation ON'
                 else:
-                    spect_line = '  1     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
+                    spect_line = '  1     ! spectr type 1 - 1D + spline approximation OFF'
             case 'scatter_spectrum':
-                spect_line = '  3     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
+                spect_line = '  2     ! spectr type 2 - scatter spectrum'
             case 'spectrum_2D':
-                spect_line = '  2     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
+                spect_line = '  3     ! spectr type 3 - 2D for future'
 
         lines += spect_line  
         lines += spect.get_text_div_spectrum() 
