@@ -4,8 +4,9 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
 class Explorer(ttk.Frame):
-    def __init__(self, master, title = None, new_button = False, data_source = None, height= 5) -> None:
-        super().__init__(master)      
+    def __init__(self, master, title = None, new_button = False, data_source = None, height= 5, reverse_sort= False ) -> None:
+        super().__init__(master)  
+        self.reverse_sort = reverse_sort    
         self.on_select_item = None
         self.new_button = new_button
         self.data_source = WorkSpace.getDataSource(data_source)
@@ -49,7 +50,9 @@ class Explorer(ttk.Frame):
 
     def make_tree_nodes(self):
         self.data_items = self.data_source.get_items()
-        for key, item in self.data_items.items():
+        keys_list = sorted(self.data_items.keys(), reverse= self.reverse_sort) 
+        for key in keys_list:
+            item = self.data_items[key]
             status = ''
             self.tree.insert('', tk.END, text=item.title, values=(status,), tags=(key))  
 
