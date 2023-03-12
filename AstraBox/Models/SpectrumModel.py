@@ -8,9 +8,24 @@ def defaultGaussSpectrum():
         'options':{
             'x_min' : -40.0,
             'x_max' : 40.0,
-            'step'  : 0.25,
-            'bias'  : 10,
+            'step'  : 0.5,
+            'bias'  : 0.0,
             'sigma' : 2.5
+        },
+        'parameters':{
+                   "angle": { 
+                    'title' : 'Angle',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'unit'  : 'deg',
+                    'description' : "Rotation on spectrum"
+                },
+                   "spline": { 
+                    'title' : 'Spline',
+                    'value' : True, 
+                    'type'  : 'logical',
+                    'description' : "Apply spline approximation"
+                }
         }
     }
 
@@ -39,6 +54,7 @@ class SpectrumModel():
             self.spectrum_type = 'gaussian'
         self.setting = self.parent['spectrum']
         self.positive_power = 0 
+        self.check_model()
 
     def get_dest_path(self):
         #return os.path.join('lhcd', 'spectrum.dat')
@@ -47,6 +63,15 @@ class SpectrumModel():
     def get_radio_content(self):
         return [('Spectrum 2D', 'spectrum_2D'), ('Scatter Spectrum', 'scatter_spectrum'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
 
+    def check_model(self):
+        match self.setting['spectrum_type']:
+            case 'gaussian' | 'spectrum_1D':
+                if 'parameters' not in self.setting: 
+                    self.setting['parameters'] = defaultGaussSpectrum()['parameters']
+            case 'scatter_spectrum':
+                pass               
+            case 'spectrum_2D':
+                pass
 
     @property
     def spectrum_type(self):

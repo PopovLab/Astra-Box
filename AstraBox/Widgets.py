@@ -32,7 +32,27 @@ class ComboBox(ttk.Frame):
 class Checkbox(ttk.Frame):
     def __init__(self, master, item) -> None:
         super().__init__(master)
-        pass
+        self.item = item
+        #print(item)
+        label = ttk.Label(self, text=item['title'], width=10)
+        label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
+        self.tk_var = tk.IntVar(self, value= item['value'])
+        self.tk_var.trace_add('write', self.update_var)
+ 
+        #self.entry = tk.Entry(self, width=20, textvariable= self.tk_var)
+        self.entry = ttk.Checkbutton(self, text= item['title'], variable=self.tk_var, width=20)
+        self.entry.grid(row=0, column=1, columnspan=1)
+
+    def update_var(self, var, indx, mode):
+        match self.tk_var.get():
+            case 0:
+                self.item['value'] = False
+            case 1:
+                self.item['value'] = True
+            case _:
+                self.item['value'] = False
+
+           
 
 class TextBox(ttk.Frame):
     def __init__(self, master, item) -> None:

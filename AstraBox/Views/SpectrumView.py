@@ -11,6 +11,8 @@ from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
 
+import AstraBox.Widgets as Widgets
+
 class OptionsPanel(tk.Frame):
     def __init__(self, master, options) -> None:
         super().__init__(master)
@@ -18,7 +20,7 @@ class OptionsPanel(tk.Frame):
         for key, value in options.items():
             var = tk.DoubleVar(master= self, name = key, value=value)
             label = tk.Label(master=self, text=key)
-            label.pack(side = tk.LEFT, ipadx=10)		
+            label.pack(side = tk.LEFT, padx=(10, 2))		
             entry = tk.Entry(self, width=10, textvariable= var)
             entry.pack(side = tk.LEFT)
 
@@ -44,12 +46,20 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
+        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
+        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+
+        self.rowconfigure(1, weight=0)
+        self.rowconfigure(2, weight=0)
+        self.rowconfigure(3, weight=1)
 
     def generate(self):
         self.options_box.update()
         self.model.generate()
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.spectrum_plot.grid(row=1, column=0, rowspan=3,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
 class ControlPanel(tk.Frame):

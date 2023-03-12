@@ -377,11 +377,15 @@ class RTModel(BaseModel):
         spect_line = ''
         match spect.spectrum_type:
             case 'gaussian'| 'spectrum_1D':
-                spect_line = '  1     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+                print(spect)
+                if spect.setting['parameters']['spline']['value']:
+                    spect_line = '  0     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
+                else:
+                    spect_line = '  1     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
             case 'scatter_spectrum':
-                spect_line = '  3     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+                spect_line = '  3     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
             case 'spectrum_2D':
-                spect_line = '  2     ! spectr type 1 - 1D, 2 - 2D, 3 - scatter'
+                spect_line = '  2     ! spectr type 0 - 1D+spline 1 - 1D, 2 - scatter, 3 - 2D '
 
         lines += spect_line  
         lines += spect.get_text_div_spectrum() 
