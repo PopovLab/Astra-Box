@@ -7,13 +7,27 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 
+def renorm_vel(maxwell):
+    X = maxwell['X']
+    Y = maxwell['Y']
+    vmax = abs(X[0])
+    X = X / vmax
+    #Y = Y * vmax /1000 #Эмпирический коэффициент
+    #print(np.sum(Y))
+    return {'X': X, 'Y': Y}
+
+def renorm_series(series):
+    new_series = []
+    for item in series:
+        new_series.append(renorm_vel(item))
+    return new_series
 
 class SeriesPlot(ttk.Frame):
     def __init__(self, master, series, title, time_stamp, уscale_log = True) -> None:
         super().__init__(master)  
         self.уscale_log = уscale_log
         self.title = title
-        self.series = series
+        self.series = renorm_series(series)
 
         tb = self.make_toolbar()
         tb.grid(row=0, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W) 
@@ -23,7 +37,7 @@ class SeriesPlot(ttk.Frame):
         self.ax1 = self.fig.subplots(1, 1)
 
         #  show distribution
-        for item in series:
+        for item in self.series:
             self.ax1.plot(item['X'], item['Y']);
 
         if self.уscale_log:
@@ -85,7 +99,7 @@ class SeriesPlot(ttk.Frame):
         self.show_series()
 
     def update(self, series, time_stamp):
-        self.series = series
+        self.series =  renorm_series(series)
         self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         self.show_series()
 
