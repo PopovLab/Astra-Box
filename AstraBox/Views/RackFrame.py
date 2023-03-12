@@ -16,7 +16,7 @@ class RackFrame(ttk.Frame):
         frame = ttk.Frame(self)
         ttk.Radiobutton(frame, text="Open Workspace", variable=self.v, value="owp", width=20, command= self.open_folder_dialog,
                             style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
-        ttk.Radiobutton(frame, text="Doc", variable=self.v, value="doc", width=10, command= self.open_doc,
+        ttk.Radiobutton(frame, text="Doc", variable=self.v, value="doc", width=4, command= self.open_doc,
                             style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
         frame.pack(expand=0, fill=tk.X)
         
