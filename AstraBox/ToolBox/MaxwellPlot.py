@@ -12,7 +12,7 @@ def renorm_maxwell(maxwell):
     Y = maxwell['Y']
     vmax = abs(X[0])
     X = X / vmax
-    Y = Y * vmax /1000 #Эмпирисческий коэффициент
+    Y = Y * vmax /1000 #Эмпирический коэффициент
     #print(np.sum(Y))
     return {'X': X, 'Y': Y}
 
