@@ -72,8 +72,13 @@ class App(tk.Tk):
             
     def open_doc(self):
         wp = WorkSpace.getInstance().destpath
-        doc_path = wp.joinpath('doc/index.html').as_posix()
-        os.system(f'start {doc_path}/')            
+        doc_path = wp.joinpath('doc/html/publish/index.html')
+        if doc_path.exists():
+            os.system(f'start {doc_path.as_posix()}/')            
+        else:
+            if messagebox.askokcancel("Doc problems", "Can't find local documentation. Do you want to open it online?"):
+                url = 'https://temper8.github.io/FRTC_v2'
+                os.startfile(url)
 
 
 
