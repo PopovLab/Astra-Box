@@ -68,11 +68,11 @@ class ControlPanel(tk.Frame):
         self.load_file_cb = load_file_cb
         self.path_var = tk.StringVar(master= self, value=path)
         label = tk.Label(master=self, text='Source:')
-        label.pack(side = tk.LEFT, ipadx=10)		
-        entry = tk.Entry(self, width=55, textvariable= self.path_var)
-        entry.pack(side = tk.LEFT, ipadx=10)
+        label.pack(side = tk.LEFT, padx=2)		
+        entry = tk.Entry(self, width=65, textvariable= self.path_var)
+        entry.pack(side = tk.LEFT, padx=2)
         btn1 = ttk.Button(self, text= 'Select file', command=self.select_file)
-        btn1.pack(side = tk.LEFT, ipadx=10)   
+        btn1.pack(side = tk.LEFT, padx=10)   
         #btn2 = ttk.Button(self, text= 'Load', command=self.load_file)
         #btn2.pack(side = tk.LEFT, ipadx=10)
 
@@ -100,6 +100,14 @@ class Spectrum1DView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot()
+        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
+        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+
+        self.rowconfigure(1, weight=0)
+        self.rowconfigure(2, weight=0)
+        self.rowconfigure(3, weight=1)        
 
     def on_load_file(self, filename):
         print(filename)
@@ -109,7 +117,7 @@ class Spectrum1DView(tk.LabelFrame):
     def make_plot(self):
         self.model.read_spcp1D()
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.spectrum_plot.grid(row=1, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
