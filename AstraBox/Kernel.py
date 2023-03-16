@@ -68,6 +68,11 @@ async def test_logger(logger):
         logger.info('after sleep')
         print('hello')
 
+def isBlank(myString):
+    return not (myString and myString.strip())
+
+def isNotBlank(myString):
+    return bool(myString and myString.strip())
 
 class Worker:
 
@@ -86,7 +91,6 @@ class Worker:
         return logger
 
     on_progress = None
-    controller = None
 
     def __init__(self, model: RunModel) -> None:
         self.error_flag = False
@@ -99,14 +103,14 @@ class Worker:
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
-        if self.controller:
-            self.controller.update_model_status(self.run_model)
+        if self.on_progress:
+            self.on_progress(2)
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
         self.logger.log(logging.INFO, f"run_cmd: {cmd}")
         #os.chdir(self.work_folder)
-        self.logger.log(logging.INFO, f"CWD: {os.getcwd()}")
+        #self.logger.log(logging.INFO, f"CWD: {os.getcwd()}")
         if shell:
             self.proc = await asyncio.create_subprocess_shell(
                 cmd,
@@ -147,11 +151,13 @@ class Worker:
         stdout, stderr = await self.proc.communicate()
         lines = stdout.decode('ascii').split("\r\n")
         for line in lines:
-            self.logger.info(line)
+            if isNotBlank(line):
+                self.logger.info(line)
 
         lines = stderr.decode('ascii').split("\r\n")
         for line in lines:
-            self.logger.error(line)
+            if isNotBlank(line):
+                self.logger.error(line)
 
  
 
@@ -205,52 +211,60 @@ class AstraWorker(Worker):
     def WSL_Run(self, work_folder, command):
             ps_cmd = f'wsl --cd {work_folder} {command}'
             print(ps_cmd)
-            self.logger.info(f'run: {command}')
-            asyncio.run(self.run(ps_cmd, shell=True))
+            #self.logger.info(f'run: {command}')
+            with asyncio.Runner() as runner:
+                runner.run(self.run(ps_cmd, shell=True))
+            if self.on_progress:
+                self.on_progress(0)
 
-    def clear_folders(self):
+    def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
-            clear_cmd = f'rm {self.astra_profile["profile"]}/{folder}*'  
-            self.logger.info(f'run: {clear_cmd}')
+            clear_cmd = f'rm -f {self.astra_profile["profile"]}/{folder}*.*'  
             self.WSL_Run(self.astra_profile["home"], clear_cmd)
+
+    def copy_data(self):
+        zip_file = self.run_model.prepare_run_data()
+        self.logger.info(f'copy : {zip_file}')
+        dest = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}'
+        self.logger.info(f'to: {dest}')
+        copy_file_to_folder(zip_file, dest)
+        #unpack_cmd = f'unzip -o race_data.zip -d {self.astra_profile["profile"]}'
+        unpack_cmd = f'unzip -o race_data.zip'
+        wd = f'{self.astra_profile["home"]}/{self.astra_profile["profile"]}'
+        self.WSL_Run(wd, unpack_cmd)
+
+    def pack_data(self):
+        self.logger.info('pack data')
+        wd = f'{self.astra_profile["home"]}/{self.astra_profile["profile"]}'
+        pack_cmd = f'zip -r race_data.zip dat'
+        self.WSL_Run(wd, pack_cmd)
+        pack_cmd = f'zip -r race_data.zip lhcd'
+        self.WSL_Run(wd, pack_cmd)
+        #asyncio.run(self.run(pack_cmd, shell=True))
 
     def start(self):
         #if self.test_folder(): return
         #self.initialization()
         self.logger.info(f'start {self.run_model.name}')
-        zip_file = self.run_model.prepare_run_data()
-        self.logger.info(f'copy : {zip_file}')
-        self.logger.info(f'to: {self.astra_profile["dest"]}')
-        self.logger.info(f'astra: {self.astra_profile["profile"]}')
-        copy_file_to_folder(zip_file, self.astra_profile["dest"])
-        self.WSL_Run(self.astra_profile["home"], f'./unpack.sh {self.astra_profile["profile"]}')
 
-        self.clear_folders()
+        self.clear_work_folders()
+        self.copy_data()
 
         self.set_model_status('run')
         
-        match (platform.system(), platform.release()):
-            case ('Windows', '10'): 
-                astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
-            case ('Windows', '11'): 
-                astra_cmd = f'./run11.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
+        astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
         run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
         asyncio.run(self.run(run_cmd, shell=True))
         #self.WSL_Run(self.astra_profile["home"], astra_cmd)
  
         self.logger.info('finish')
-        if self.run_model.status == 'run':
-            if self.error_flag:
-                self.set_model_status('error')        
-            else:
-                self.set_model_status('calculated')          
-        self.logger.info('pack data')
-        pack_cmd = f'wsl --cd {self.astra_profile["home"]} ./pack.sh {self.astra_profile["profile"]}'
-        asyncio.run(self.run(pack_cmd, shell=True))
+
+        self.pack_data()
 
         #race_zip_file = f'Data/races/race_{self.run_model.name}.zip'
         zip_path = WorkSpace.getDataSource('races').destpath.joinpath(f'race_{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
-        copy_file(self.astra_profile["dest"] + '/race_data.zip', race_zip_file )
+        src = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}/race_data.zip'
+        copy_file(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file

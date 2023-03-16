@@ -7,5 +7,6 @@ data_folder = {
     'DISTRIBUTION' : 'lhcd/distribution/',
     'TRAJECTROY'   : 'lhcd/traj/',
     'RT_RESULT'    : 'lhcd/rt-result/',
-    'lhcd_out'     : 'lhcd/out/'
+    'lhcd_out'     : 'lhcd/out/',
+    'lhcd'         : 'lhcd/'
 }
