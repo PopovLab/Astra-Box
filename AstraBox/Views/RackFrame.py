@@ -79,4 +79,7 @@ class RackFrame(ttk.Frame):
         self.v.set('xxx')
 
     def show_calc_view(self):
+        if self.active_exlorer:
+            self.active_exlorer.selection_clear()
+            self.active_exlorer = None
         self.app.show_calc_view()
