@@ -32,7 +32,22 @@ def defaultGaussSpectrum():
 def defaulSpectrum1D():
     return {
         'spectrum_type': 'spectrum_1D',
-        'source': ''
+        'source': '',
+        'parameters':{
+                   "angle": { 
+                    'title' : 'Angle',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'unit'  : 'deg',
+                    'description' : "Rotation on spectrum"
+                },
+                   "spline": { 
+                    'title' : 'Spline',
+                    'value' : True, 
+                    'type'  : 'logical',
+                    'description' : "Apply spline approximation"
+                } 
+        }       
     }    
 
 def defaulScatterSpectrum():
@@ -182,9 +197,10 @@ class SpectrumModel():
     
     def spectrum_normalization(self):
         power = fsum(self.spectrum_data['Amp'])
-        positive_power = fsum([x[1] for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']) if x[0]>0])
-        self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
-        self.positive_power = positive_power /power
+        if power>0:
+            positive_power = fsum([x[1] for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']) if x[0]>0])
+            self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
+            self.positive_power = positive_power /power
   
 
     def generate(self):
