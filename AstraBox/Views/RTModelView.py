@@ -12,29 +12,29 @@ import AstraBox.WorkSpace as WorkSpace
 
 
 class RadioPanel(ttk.Frame):
-    def __init__(self, master, spectrum_model, on_change_spectrum) -> None:
+    def __init__(self, master, items, selected, on_change_selection) -> None:
         super().__init__(master, relief=tk.FLAT)
-        self.spectrum_model = spectrum_model
-        self.on_change_spectrum = on_change_spectrum
+        self.selected = selected
+        self.on_change_selection = on_change_selection
         # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
         padx = 20
         pady = 5
         #v, _ = content[len(content)-1]
-        self.value = tk.StringVar(self, spectrum_model.spectrum_type)  # initialize
+        self.value = tk.StringVar(self, selected) #spectrum_model.spectrum_type)  # initialize
 
-        for text, key in spectrum_model.get_radio_content():
+        for text, key in items:
             btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=15, 
                                 command= lambda x = key: self.on_radio_select(x) ,
                                 style= 'Toolbutton')
             btn.pack(side=tk.RIGHT, padx=padx, pady=pady)
     
     def on_radio_select(self, value):
-        if self.spectrum_model.spectrum_type == value: return
+        if self.selected == value: return
         if messagebox.askquestion("Spectrum", "Do you want change spectrum?") == 'yes':
-            self.spectrum_model.spectrum_type = value
-            self.on_change_spectrum()
+            self.selected = value
+            self.on_change_selection()
         else:
-            self.value.set(self.spectrum_model.spectrum_type)
+            self.value.set(self.selected)
 
 
 class RTModelView(ttk.Frame):
@@ -87,12 +87,17 @@ class RTModelView(ttk.Frame):
 
         self.spectrum_model = SpectrumModel(self.model.setting)
         
-        self.radio = RadioPanel(self, self.spectrum_model, self.make_spectum_view)
+        self.radio = RadioPanel(self, self.spectrum_model.get_radio_content(),self.spectrum_model.spectrum_type, self.on_change_spectrum_type)
         self.radio.grid(row=5, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.spectrum_view = None
         self.make_spectum_view()
         
+    def on_change_spectrum_type(self):
+        print(self.radio.selected)
+        self.spectrum_model.spectrum_type = self.radio.selected
+        #self.spectrum_model.check_model()   
+        self.make_spectum_view()
   
     def make_spectum_view(self):
         if self.spectrum_view:
