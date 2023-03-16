@@ -268,3 +268,5 @@ class AstraWorker(Worker):
         src = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}/race_data.zip'
         copy_file(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
+
+        self.logger.info('the end')
