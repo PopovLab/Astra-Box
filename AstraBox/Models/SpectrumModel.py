@@ -176,6 +176,7 @@ class SpectrumModel():
                 spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )# dtype=float, order='F')
         
             level = 0.4
+            spectrum2D['Amp'] = spectrum2D.pop('Px')
             arr = spectrum2D['Amp']
             with np.nditer(arr, op_flags=['readwrite']) as it:
                 for x in it:
