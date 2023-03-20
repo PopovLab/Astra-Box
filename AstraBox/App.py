@@ -20,7 +20,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("ASTRA Box")
-        self.minsize(1060, 750)
+        self.minsize(1080, 750)
 
         style = ttk.Style()
         # стиль для кнопок
