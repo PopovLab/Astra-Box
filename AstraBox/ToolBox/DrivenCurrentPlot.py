@@ -23,7 +23,7 @@ class DrivenCurrentPlot(ttk.Frame):
         ax1.plot(dc_series['Time'], dc_series[keys[2]], label=keys[2])
         ax1.plot(dc_series['Time'], dc_series[keys[3]], label=keys[3])
         ax1.plot(dc_series['Time'], dc_series[keys[4]], label=keys[4])
-        ax1.plot(dc_series['Time'], dc, label='dc')
+        ax1.plot(dc_series['Time'], dc, label='dcur')
         ax1.plot(dc_series['Time'], sigma, label='sigma')
         ax1.legend(loc='upper right')
 

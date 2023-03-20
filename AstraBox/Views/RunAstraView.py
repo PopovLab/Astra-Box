@@ -2,6 +2,8 @@ import datetime
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
+import pathlib as pathlib
+import os 
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
@@ -13,22 +15,30 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.ToolBox.ComboBox import ComboBox
 
+image1 = None
+IMAGE_DIR = pathlib.Path(os.path.abspath('Images'))
+ 
+def make_image_button(parent, image_file, action):
+    global image1
+    print(IMAGE_DIR)
+    image1 = tk.PhotoImage(file=IMAGE_DIR/image_file)
+    return ttk.Button(parent, image=image1, command=action).pack()
+
+
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
         self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.getDataSource('exp').get_keys_list(), width= 20)
-        self.exp_combo.grid(row=0, column=0, padx=2, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.exp_combo.pack(side=tk.LEFT)
         self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.getDataSource('equ').get_keys_list())
-        self.equ_combo.grid(row=0, column=1, padx=2, sticky=tk.N + tk.S + tk.E + tk.W)        
+        self.equ_combo.pack(side=tk.LEFT)
         self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.getDataSource('ray_tracing').get_keys_list(), width= 15)
-        self.rt_combo.grid(row=0, column=2, padx=2, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.rt_combo.pack(side=tk.LEFT)
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width= 15)
-        self.astra_combo.grid(row=0, column=3, padx=2, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(0, weight=1)  
-        self.columnconfigure(1, weight=1) 
-        self.columnconfigure(2, weight=1) 
-        self.columnconfigure(3, weight=1)         
+        self.astra_combo.pack(side=tk.LEFT)
       
+        btn = make_image_button(self, '4231901.png', self.open_config)
+
         ds = WorkSpace.getDataSource('races')
         p = ds.destpath.joinpath('last_run')
         if p.exists():
@@ -38,6 +48,9 @@ class ConfigPanel(ttk.Frame):
             self.equ_combo.set(last_run['equ'])
             self.rt_combo.set(last_run['rt'])
             self.astra_combo.set(last_run['astra_profile'])          
+    def open_config(self):
+        print('open_config')
+        os.system(f'start notepad {Config.get_config_path()}') 
 
 class RunAstraView(ttk.Frame):
     def __init__(self, master) -> None:

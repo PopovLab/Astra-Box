@@ -17,7 +17,8 @@ __instance = {
             },        
         }
     }
-
+def get_config_path():
+    return os.path.join(os.path.abspath('data'), 'config.json')
 
 def get():
     global __instance
