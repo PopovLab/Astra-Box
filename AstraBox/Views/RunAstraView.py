@@ -22,7 +22,7 @@ def make_image_button(parent, image_file, action):
     global image1
     print(IMAGE_DIR)
     image1 = tk.PhotoImage(file=IMAGE_DIR/image_file)
-    return ttk.Button(parent, image=image1, command=action).pack()
+    return ttk.Button(parent, image=image1, command=action)
 
 
 class ConfigPanel(ttk.Frame):
@@ -38,6 +38,7 @@ class ConfigPanel(ttk.Frame):
         self.astra_combo.pack(side=tk.LEFT)
       
         btn = make_image_button(self, '4231901.png', self.open_config)
+        btn.pack(side=tk.LEFT)
 
         ds = WorkSpace.getDataSource('races')
         p = ds.destpath.joinpath('last_run')
