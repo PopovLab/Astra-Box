@@ -172,7 +172,7 @@ class ExecTimeView(TabViewBasic):
             indent = ' ' * 2
             lines.append(indent + key)
             indent = ' ' * 4 
-            lines.append(indent + f' sum time: {sum(data["Y"])} ')
+            lines.append(indent + f'  sum time: {sum(data["Y"])} ')
             lines.append(indent + f'mean  time: {mean(data["Y"])} ')
             lines.append(indent + f'stdev time: {stdev(data["Y"])} ')
 
