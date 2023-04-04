@@ -139,6 +139,8 @@ class TabViewBasic(ttk.Frame):
         print('init TabViewBasic')
         pass
 
+from statistics import mean 
+from statistics import stdev
 class ExecTimeView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master, model)  
@@ -155,9 +157,27 @@ class ExecTimeView(TabViewBasic):
     def make_plot(self):
         #keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
         self.plot = ExecTimePlot(self, self.data_series )
-        self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.plot.grid(row=1, column=0,padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)
+        text_box = tk.Text(self, height = 3, width = 20)
+        text_box.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.add_text(text_box)
+        text_box.config(state='disabled')
+
+    def add_text(self, text_box):
+        lines = ['Summary:']
+        
+        for key, data in self.data_series.items():
+            indent = ' ' * 2
+            lines.append(indent + key)
+            indent = ' ' * 4 
+            lines.append(indent + f' sum time: {sum(data["Y"])} ')
+            lines.append(indent + f'mean  time: {mean(data["Y"])} ')
+            lines.append(indent + f'stdev time: {stdev(data["Y"])} ')
+
+        text_box.insert(tk.END, '\n'.join(lines))
+
 
 class DrivenCurrentView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
