@@ -12,20 +12,17 @@ class ExecTimePlot(ttk.Frame):
         super().__init__(master)  
         keys = list(data_series.keys())
 
-        self.fig = plt.figure(figsize=(10, 8), dpi=100)        
+        self.fig = plt.figure(figsize=(9, 5), dpi=100)        
         #self.fig.suptitle(f'Astra time series. ')
-        gs = self.fig.add_gridspec(1, 1)
 
-        ax1 = self.fig.add_subplot(gs[0, 0])
-        ax1.plot(data_series[keys[0]]['X'],data_series[keys[0]]['Y'], label=keys[0])
-        ax1.plot(data_series[keys[1]]['X'],data_series[keys[1]]['Y'], label=keys[1])
+        ax = self.fig.add_subplot(111)
+        ax.plot(data_series[keys[0]]['X'],data_series[keys[0]]['Y'], label=keys[0])
+        ax.plot(data_series[keys[1]]['X'],data_series[keys[1]]['Y'], label=keys[1])
         
 
-        ax1.legend(loc='upper right')
-
-        ax1.set_ylabel('CPU time')
-
-        ax1.set_xlabel('Plasma time (sec)')
+        ax.legend(loc='upper right')
+        ax.set_ylabel('System time')
+        ax.set_xlabel('Plasma time (sec)')
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
