@@ -24,7 +24,7 @@ from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 from AstraBox.ToolBox.DrivenCurrentPlot import DrivenCurrentPlot
 from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
-
+from AstraBox.ToolBox.ExecTimePlot import ExecTimePlot
 
 class InfoPanel(tk.Frame):
     def __init__(self, master, model) -> None:
@@ -93,7 +93,8 @@ class RaceView(ttk.Frame):
         dc_view = DrivenCurrentView(self.notebook, model= model)
         self.notebook.add(dc_view, text="Driven Current", underline=0, sticky=tk.NE + tk.SW)   
 
-        
+        et_view = ExecTimeView(self.notebook, model= model)
+        self.notebook.add(et_view, text="Exec time", underline=0, sticky=tk.NE + tk.SW)  
 
     def delete_model(self):
         if ModelFactory.delete_model(self.model):
@@ -137,6 +138,26 @@ class TabViewBasic(ttk.Frame):
     def init_ui(self):
         print('init TabViewBasic')
         pass
+
+class ExecTimeView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self):
+        print('init Exec Time View')
+        self.data_series = self.race_model.get_exec_time()
+        if type(self.data_series) == dict:
+            self.make_plot()
+        else:
+            label = tk.Label(master=self, text=self.data_series)
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	            
+
+    def make_plot(self):
+        #keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
+        self.plot = ExecTimePlot(self, self.data_series )
+        self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(2, weight=1)
 
 class DrivenCurrentView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:

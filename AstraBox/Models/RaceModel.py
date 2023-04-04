@@ -44,6 +44,22 @@ class RaceModel(BaseModel):
             "rt_model" : self.rt_model.data,
         }
 
+
+    def read_exec_time(self, f):
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(f) as file:
+                    return TimeSeries.read_simpleXY_data(file)       
+        except Exception as error:
+            print(error)
+            return { 'X' : [], 'Y': [] }
+        
+    def get_exec_time(self):
+        series = {}
+        series['lhcd'] = self.read_exec_time('lhcd/lhcd_time.dat')
+        series['driven current'] = self.read_exec_time('lhcd/drivencurrent_time.dat')
+        return series
+
     def get_driven_current(self):
         f = 'lhcd/dc_result.dat'
         try:

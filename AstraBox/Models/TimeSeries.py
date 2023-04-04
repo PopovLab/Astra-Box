@@ -37,3 +37,18 @@ def read_data(file):
             item.append(float_try(row[index]))
 
     return series
+
+def read_simpleXY_data(file):
+
+    series = { h: [] for h in ['X', 'Y'] }
+
+    lines = file.readlines()
+    table = []
+    for line in lines:
+        if isBlank(line):
+            break
+        XY = line.decode("utf-8").split()
+        series['X'].append(float_try(XY[0]))
+        series['Y'].append(float_try(XY[1]))
+        
+    return series
