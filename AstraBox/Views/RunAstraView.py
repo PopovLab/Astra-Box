@@ -88,10 +88,10 @@ class RunAstraView(ttk.Frame):
         rt = self.config_panel.rt_combo.get()
         ap = self.config_panel.astra_combo.get()
         
-        race_model = RunModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
+        run_model = RunModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
         
         astra_profile = Config.get_astra_profile(ap)
-        self.worker = Kernel.AstraWorker(race_model, astra_profile)
+        self.worker = Kernel.AstraWorker(run_model, astra_profile)
         self.log_console.set_logger(self.worker.logger)
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
