@@ -13,6 +13,11 @@ def getInstance():
 def getDataSource(data_source):
     return getInstance().DataSources[data_source]
     
+
+def get_location_path():
+    """get workspace location path"""
+    return getInstance().destpath
+
 class WorkSpace:
     def __init__(self) -> None:
         print('init workspace')

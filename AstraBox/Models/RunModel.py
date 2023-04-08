@@ -20,9 +20,6 @@ class RunModel(BaseModel):
         self.equ_model = ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
         self.rt_model = ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
  
-        self.data['ExpModel'] = self.exp_model.data
-        self.data['EquModel'] = self.equ_model.data
-        self.data['RTModel'] = self.rt_model.data
         self.race_zip_file = None
 
     @property
@@ -72,7 +69,7 @@ class RunModel(BaseModel):
             zip.mkdir(folder)
 
     def prepare_run_data(self):
-        zip_file = os.path.join(str(WorkSpace.getInstance().destpath), 'race_data.zip')
+        zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
         with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
             
             self.make_folders(zip)
@@ -82,8 +79,15 @@ class RunModel(BaseModel):
             self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
             for key, item in WorkSpace.getDataSource('sbr').items.items():
                 self.pack_model_to_zip(zip, ModelFactory.build(item))
+
+            models  = {
+                'ExpModel' : self.exp_model.data,
+                'EquModel' : self.equ_model.data,
+                'RTModel'  : self.rt_model.data
+                }
+            
             with zip.open( 'race_model.json' , "w" ) as json_file:
                 json_writer = encodings.utf_8.StreamWriter(json_file)
                 # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
-                json.dump(self.data, json_writer, ensure_ascii=False, indent=2)
+                json.dump(models, json_writer, ensure_ascii=False, indent=2)
         return zip_file
