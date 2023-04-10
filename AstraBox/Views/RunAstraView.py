@@ -40,15 +40,15 @@ class ConfigPanel(ttk.Frame):
         btn = make_image_button(self, '4231901.png', self.open_config)
         btn.pack(side=tk.LEFT)
 
-        ds = WorkSpace.getDataSource('races')
-        p = ds.destpath.joinpath('last_run')
+        p = WorkSpace.get_location_path('races').joinpath('last_run')
         if p.exists():
             with p.open(mode= "r") as json_file:
                 last_run = json.load(json_file)
             self.exp_combo.set(last_run['exp'])
             self.equ_combo.set(last_run['equ'])
             self.rt_combo.set(last_run['rt'])
-            self.astra_combo.set(last_run['astra_profile'])          
+            self.astra_combo.set(last_run['astra_profile'])      
+                
     def open_config(self):
         print('open_config')
         os.system(f'start notepad {Config.get_config_path()}') 
@@ -95,9 +95,8 @@ class RunAstraView(ttk.Frame):
         self.log_console.set_logger(self.worker.logger)
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
-        ds = WorkSpace.getDataSource('races')
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
-        p = ds.destpath.joinpath('last_run')
+        p = WorkSpace.get_location_path('races').destpath.joinpath('last_run')
         with p.open(mode= "w") as json_file:
             json.dump(last_run, json_file, indent=2)
 

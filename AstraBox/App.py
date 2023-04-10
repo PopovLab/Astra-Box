@@ -71,7 +71,7 @@ class App(tk.Tk):
             self.destroy()
             
     def open_doc(self):
-        wp = WorkSpace.getInstance().destpath
+        wp = WorkSpace.get_location_path()
         doc_path = wp.joinpath('doc/html/publish/index.html')
         if doc_path.exists():
             os.system(f'start {doc_path.as_posix()}/')            
