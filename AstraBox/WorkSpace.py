@@ -16,7 +16,7 @@ def getDataSource(data_source):
 
 def get_location_path():
     """get workspace location path"""
-    return getInstance().destpath
+    return getInstance().location
 
 class WorkSpace:
     def __init__(self) -> None:
@@ -27,9 +27,9 @@ class WorkSpace:
 
     def open(self, path):
         print(f'Open {path}')
-        self.destpath = Path(path)
+        self.location = Path(path)
         for key, ds in self.DataSources.items():
-            ds.open(self.destpath)
+            ds.open(self.location)
         
 
    

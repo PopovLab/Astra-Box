@@ -69,7 +69,8 @@ class RunModel(BaseModel):
             zip.mkdir(folder)
 
     def prepare_run_data(self):
-        zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
+        #zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
+        zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
         with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
             
             self.make_folders(zip)
