@@ -18,9 +18,17 @@ def get_location_path(data_source = None):
     """get workspace location path"""
     if data_source:
         ds = getInstance().DataSources[data_source]
+        print(ds.destpath)
         return ds.destpath
     else:
         return getInstance().location
+
+def refresh(name):
+    ds = getDataSource(name)
+    ds.refresh()
+
+def get_item_list(name):
+    return getDataSource(name).get_keys_list()
 
 class WorkSpace:
     def __init__(self) -> None:
@@ -36,4 +44,3 @@ class WorkSpace:
             ds.open(self.location)
         
 
-   

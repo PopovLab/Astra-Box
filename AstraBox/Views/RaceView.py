@@ -43,13 +43,14 @@ class InfoPanel(tk.Frame):
 
 class RaceView(ttk.Frame):
  
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master)        
         self.master = master
-        title = f"Race: {model.name}"
-        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('New windows', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
         self.model = model
         self.model.load_model_data()
+        title = f"Race: {self.model.name}"
+        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('New windows', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
+
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
@@ -97,8 +98,9 @@ class RaceView(ttk.Frame):
         self.notebook.add(et_view, text="Exec time", underline=0, sticky=tk.NE + tk.SW)  
 
     def delete_model(self):
-        if ModelFactory.delete_model(self.model):
-            self.master.show_empty_view()
+        if self.model:
+            if ModelFactory.delete_model(self.model):
+                self.master.show_empty_view()
         
     def open_new_windows(self):
         new_window = tk.Toplevel(self.master)

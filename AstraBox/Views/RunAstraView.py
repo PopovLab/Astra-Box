@@ -28,11 +28,11 @@ def make_image_button(parent, image_file, action):
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.getDataSource('exp').get_keys_list(), width= 20)
+        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_item_list('exp'), width= 20)
         self.exp_combo.pack(side=tk.LEFT)
-        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.getDataSource('equ').get_keys_list())
+        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_item_list('equ'))
         self.equ_combo.pack(side=tk.LEFT)
-        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.getDataSource('ray_tracing').get_keys_list(), width= 15)
+        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_item_list('ray_tracing'), width= 15)
         self.rt_combo.pack(side=tk.LEFT)
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width= 15)
         self.astra_combo.pack(side=tk.LEFT)
@@ -96,13 +96,13 @@ class RunAstraView(ttk.Frame):
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
-        p = WorkSpace.get_location_path('races').destpath.joinpath('last_run')
+        p = WorkSpace.get_location_path('races').joinpath('last_run')
         with p.open(mode= "w") as json_file:
             json.dump(last_run, json_file, indent=2)
 
         self.worker.start()
 
-        ds.refresh()
+        WorkSpace.refresh('races')
 
     def terminate(self):
         pass

@@ -84,7 +84,8 @@ class RunModel(BaseModel):
             models  = {
                 'ExpModel' : self.exp_model.data,
                 'EquModel' : self.equ_model.data,
-                'RTModel'  : self.rt_model.data
+                'RTModel'  : self.rt_model.data,
+                'name' : self.name
                 }
             
             with zip.open( 'race_model.json' , "w" ) as json_file:
