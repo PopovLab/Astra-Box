@@ -325,7 +325,7 @@ class RTModel(BaseModel):
         self.changed = False
 
     @property
-    def model_name(self):
+    def model_kind(self):
         return 'RTModel'   
 
     @property

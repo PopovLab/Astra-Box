@@ -28,7 +28,7 @@ class RaceModel(BaseModel):
 
 
     @property
-    def model_name(self):
+    def model_kind(self):
         return 'RaceModel'   
 
     def load_model_data(self):

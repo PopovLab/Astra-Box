@@ -37,19 +37,19 @@ def build(data_item):
 
 
 
-def create_model(model_type, model_name=None, file=None):
+def create_model(model_type, model_kind=None, file=None):
     match model_type:
         case 'exp':
-            print(f'create exp - {model_name}')
-            model = ExpModel(model_name)        
+            print(f'create exp - {model_kind}')
+            model = ExpModel(model_kind)        
         case 'equ':
-            print(f'create equ - {model_name}')
-            model = EquModel(model_name)        
+            print(f'create equ - {model_kind}')
+            model = EquModel(model_kind)        
         case 'sbr':
-            print(f'create sbr - {model_name}')
-            model = SbrModel(model_name)        
+            print(f'create sbr - {model_kind}')
+            model = SbrModel(model_kind)        
         case 'ray_tracing':
-            print(f'create rt - {model_name}')
+            print(f'create rt - {model_kind}')
             ds = WorkSpace.getDataSource('ray_tracing')
             path = ds.get_item_path(f'{get_new_name()}.rt')
             model = RTModel(path= path)
@@ -64,7 +64,7 @@ def delete_model(model)  -> bool:
     ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {model.name}?', icon ='warning')
     deleted = False
     if ans == 'yes':
-        match model.model_name:
+        match model.model_kind:
             case 'RaceModel':
                 os.remove(model.race_zip_file)
                 WorkSpace.getDataSource('races').refresh()
@@ -99,7 +99,7 @@ def delete_model(model)  -> bool:
 
 def refresh(model)  -> None:
     print(f'refresh {model.name}')
-    match model.model_name:
+    match model.model_kind:
         case 'RaceModel':
             WorkSpace.getDataSource('races').refresh()
 

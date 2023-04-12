@@ -23,7 +23,7 @@ class RunModel(BaseModel):
         self.race_zip_file = None
 
     @property
-    def model_name(self):
+    def model_kind(self):
         return 'RunModel'   
 
     def get_work_folder(self):

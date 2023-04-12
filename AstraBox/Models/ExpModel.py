@@ -16,7 +16,7 @@ class ExpModel(BaseModel):
 
 
     @property
-    def model_name(self):
+    def model_kind(self):
         return 'ExpModel'
 
 

@@ -87,7 +87,7 @@ class App(tk.Tk):
         if model is None:
             return
         print(f'show {model.name}')
-        match model.model_name:
+        match model.model_kind:
             case 'RTModel':
                 model_view = RTModelView(self.content_frame, model)     
             case 'ExpModel':

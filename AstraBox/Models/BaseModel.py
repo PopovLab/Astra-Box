@@ -24,7 +24,7 @@ class BaseModel:
         self.data['name'] = value
 
     @property
-    def model_name(self):
+    def model_kind(self):
         return 'BaseModel'
 
     def get_text(self):
