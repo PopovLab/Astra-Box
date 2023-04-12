@@ -37,8 +37,8 @@ def build(data_item):
 
 
 
-def create_model(model_type, model_kind=None, file=None):
-    match model_type:
+def create_model(model_kind=None ):
+    match model_kind:
         case 'exp':
             print(f'create exp - {model_kind}')
             model = ExpModel(model_kind)        
