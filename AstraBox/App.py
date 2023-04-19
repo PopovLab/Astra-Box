@@ -103,7 +103,7 @@ class App(tk.Tk):
                 model_view = EmptyView(self.content_frame, model)  
         self.content_frame.set_content(model_view)
 
-    def show_calc_view(self):
+    def show_RunAstraView(self):
         print('show_calc_view')
-        calc_view = RunAstraView(self.content_frame)  
-        self.content_frame.set_content(calc_view)
+        view = RunAstraView(self.content_frame)  
+        self.content_frame.set_content(view)

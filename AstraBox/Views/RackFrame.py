@@ -46,7 +46,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ttk.Radiobutton(self, text="Run ASTRA", variable=self.v, value="imped", width=25, command= self.show_calc_view,
+        ttk.Radiobutton(self, text="Run ASTRA", variable=self.v, value="imped", width=25, command= self.show_RunAstraView,
                             style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
@@ -78,8 +78,8 @@ class RackFrame(ttk.Frame):
             self.app.open_work_space(dir)
         self.v.set('xxx')
 
-    def show_calc_view(self):
+    def show_RunAstraView(self):
         if self.active_exlorer:
             self.active_exlorer.selection_clear()
             self.active_exlorer = None
-        self.app.show_calc_view()
+        self.app.show_RunAstraView()
