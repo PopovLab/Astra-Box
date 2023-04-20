@@ -24,33 +24,11 @@ class RackFrame(ttk.Frame):
         
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-
         ListView(self,'ExpModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'EquModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'SbrModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'RTModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
-        #self.exp_explorer = Explorer(self, title='Experiments', data_source='exp')
-        #self.exp_explorer.on_select_item = self.on_explorer_select_item
-        #self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
-
-        #ttk.Separator(self, orient='horizontal').pack(fill='x')
-             
-        #self.exp_explorer = Explorer(self, title='Equlibrium', data_source='equ')
-        #self.exp_explorer.on_select_item = self.on_explorer_select_item
-        #self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))                
-
-        #ttk.Separator(self, orient='horizontal').pack(fill='x')
-
-        #self.exp_explorer = Explorer(self, title='Subroutine', data_source='sbr')
-        #self.exp_explorer.on_select_item = self.on_explorer_select_item
-        #self.exp_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))                
-
-        #ttk.Separator(self, orient='horizontal').pack(fill='x')
-
-        #self.rt_explorer = Explorer(self, title='Ray Tracing Configurations', new_button = True, data_source='ray_tracing')
-        #self.rt_explorer.on_select_item = self.on_explorer_select_item
-        #self.rt_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))                
-
+ 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         ttk.Radiobutton(self, text="Run ASTRA", variable=self.v, value="imped", width=25, command= self.show_RunAstraView,
@@ -59,9 +37,6 @@ class RackFrame(ttk.Frame):
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
         ListView(self,'RaceModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
-        #self.race_explorer = Explorer(self, title='Race history', data_source='races', height= 10, reverse_sort=True)
-        #self.race_explorer.on_select_item = self.on_explorer_select_item
-        #self.race_explorer.pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10)) 
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')
@@ -70,19 +45,6 @@ class RackFrame(ttk.Frame):
                 self.active_view.selection_clear()
         self.active_view = sender
         model = ModelFactory.do(action)
-        self.app.show_model(model)
-
-    def on_explorer_select_item(self, explorer, item):
-        print(item)
-        self.v.set('xxx')
-        if self.active_exlorer:
-            if self.active_exlorer is not explorer:
-                self.active_exlorer.selection_clear()
-        self.active_exlorer = explorer
-        if item == 'new_model':
-            model = ModelFactory.create_model('ray_tracing')
-        else:
-            model = ModelFactory.build(item)
         self.app.show_model(model)
 
     def open_doc(self):
