@@ -35,7 +35,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ListView(self,'RaceModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
+        ListView(self,'RaceModel', height= 8, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')
