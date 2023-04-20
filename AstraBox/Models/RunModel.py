@@ -16,6 +16,11 @@ class RunModel(BaseModel):
         super().__init__(name)
         self._setting = None
         self.changed = False
+        self.collection = {
+            "ExpModel" : exp_name,
+            "EquModel" : equ_name,
+            "RTModel" : rt_name,
+        }
         self.exp_model = ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
         self.equ_model = ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
         self.rt_model = ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
@@ -32,7 +37,7 @@ class RunModel(BaseModel):
     def prepare_model_data(self, model):
         file_name = model.get_dest_path()        
         dest_folder = self.get_work_folder()
-        dest = os.path.join(dest_folder, file_name)
+        dest = os.path.join(dest_folder, file_name) 
         data = model.get_text()
         f = open(dest, "w")
         f.write(data)

@@ -10,10 +10,23 @@ from AstraBox.Models.RTModel import RTModel
 from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.WorkSpace as WorkSpace
 
+def do(action:dict):
+    print(action)
+    model = None
+    match action['action']:
+        case 'new_model':
+            model = create_model(action['model_kind'])
+        case 'show':
+            model = load(action['data'])
+    return model
+
 def build(data_item):
     p = data_item.path
     print(p)
     print(p.suffix)
+    return load(p)
+
+def load(p):
     match p.suffix:
         case '.exp':
             print(f'build exp - {p.name}')
@@ -33,8 +46,7 @@ def build(data_item):
         case _:
             print("Это другое")
             model = None
-    return model    
-
+    return model 
 
 
 def create_model(model_kind=None ):
@@ -48,7 +60,7 @@ def create_model(model_kind=None ):
         case 'sbr':
             print(f'create sbr - {model_kind}')
             model = SbrModel(model_kind)        
-        case 'ray_tracing':
+        case 'RTModel':
             print(f'create rt - {model_kind}')
             ds = WorkSpace.getDataSource('ray_tracing')
             path = ds.get_item_path(f'{get_new_name()}.rt')

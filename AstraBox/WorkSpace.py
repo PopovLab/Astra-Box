@@ -30,6 +30,63 @@ def refresh(name):
 def get_item_list(name):
     return getDataSource(name).get_keys_list()
 
+def get_item_location(model_kind, model_name):
+    loc = get_location_path()
+    return Path(loc).joinpath(model_name)
+
+def refresh2(name):
+    obj = schema[name].get('binding')
+    if obj:  obj.refersh()
+
+def set_binding(name, object):
+    schema[name]['binding'] = object
+
+def get_title(name):
+    return schema[name]['title']
+
+def get_shema(model_kind):
+    return schema[model_kind]
+
+catalog = {}
+
+def get_models_dict(model_kind):
+    global catalog
+    if model_kind not in catalog:
+        loc = schema[model_kind]['location']
+        destpath = get_location_path().joinpath(loc)
+        catalog[model_kind] = {p.name: p for p in destpath.glob('*.*')}
+    return catalog[model_kind]
+
+schema = {
+    "ExpModel"  : {
+        'title'   : 'Experiments xyz',
+        'location': 'exp',
+        'binding' : None
+    },
+    "EquModel"  : {
+        'title'   : 'Equlibrium',
+        'location': 'equ',
+        'binding' : None
+    },
+    "SbrModel"  : {
+        'title'   : 'Subroutine',
+        'location': 'sbr',
+        'binding' : None
+    },
+    "RTModel"   : {
+        'title'   : 'Ray Tracing Configurations',
+        'location': 'ray_tracing',
+        'new_btn' : True,
+        'binding' : None
+    },
+    "RaceModel" : {
+        'title'   : 'Race history',
+        'location': 'races',
+        'binding' : None,
+        'reverse_sort' : True
+    }
+}
+
 class WorkSpace:
     def __init__(self) -> None:
         print('init workspace')
