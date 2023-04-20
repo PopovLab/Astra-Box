@@ -21,9 +21,12 @@ class RunModel(BaseModel):
             "EquModel" : equ_name,
             "RTModel" : rt_name,
         }
-        self.exp_model = ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
-        self.equ_model = ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
-        self.rt_model = ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
+        self.exp_model = ModelFactory.get('ExpModel', exp_name)
+        #ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
+        self.equ_model =  ModelFactory.get('EquModel', equ_name)
+        #ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
+        self.rt_model =  ModelFactory.get('RTModel', rt_name)
+        #ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
  
         self.race_zip_file = None
 

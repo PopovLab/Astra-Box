@@ -23,7 +23,7 @@ def get_location_path(data_source = None):
     else:
         return getInstance().location
 
-def refresh(name):
+def refresh_old(name):
     ds = getDataSource(name)
     ds.refresh()
 
@@ -34,9 +34,10 @@ def get_item_location(model_kind, model_name):
     loc = get_location_path()
     return Path(loc).joinpath(model_name)
 
-def refresh2(name):
+def refresh(name):
+    del catalog[name]
     obj = schema[name].get('binding')
-    if obj:  obj.refersh()
+    if obj:  obj.refresh()
 
 def set_binding(name, object):
     schema[name]['binding'] = object

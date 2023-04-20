@@ -124,7 +124,7 @@ class RTModelView(ttk.Frame):
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
         self.model.path = self.model.path.with_stem(self.model.name)
         self.model.save_to_json()
-        WorkSpace.getDataSource('ray_tracing').refresh() 
+        WorkSpace.refresh('RTModel') 
         
     def save_model(self):
         old_path = self.model.path
@@ -134,7 +134,7 @@ class RTModelView(ttk.Frame):
         self.model.save_to_json()
         if (self.model.path != old_path):
             old_path.unlink(missing_ok = True)
-        WorkSpace.getDataSource('ray_tracing').refresh() 
+        WorkSpace.refresh('RTModel') 
     
     def delete_model(self):
         if ModelFactory.delete_model(self.model):

@@ -48,6 +48,10 @@ def load(p):
             model = None
     return model 
 
+def get(model_kind= None, model_name= None):
+    d = WorkSpace.get_models_dict(model_kind)
+    p = d[model_name]
+    return load(p)
 
 def create_model(model_kind=None ):
     match model_kind:
@@ -79,27 +83,27 @@ def delete_model(model)  -> bool:
         match model.model_kind:
             case 'RaceModel':
                 os.remove(model.race_zip_file)
-                WorkSpace.getDataSource('races').refresh()
+                WorkSpace.refresh('RaceModel')
                 deleted = True
 
             case 'RTModel':
                 model.path.unlink()
-                WorkSpace.getDataSource('ray_tracing').refresh()                
+                WorkSpace.refresh('RTModel')                
                 deleted = True
 
             case 'ExpModel':
                 model.path.unlink()
-                WorkSpace.getDataSource('exp').refresh()                
+                WorkSpace.refresh('ExpModel')                
                 deleted = True   
 
             case 'EquModel':
                 model.path.unlink()
-                WorkSpace.getDataSource('equ').refresh()                
+                WorkSpace.refresh('EquModel')                
                 deleted = True   
 
             case 'SbrModel':
                 model.path.unlink()
-                WorkSpace.getDataSource('sbr').refresh()                
+                WorkSpace.refresh('SbrModel')                
                 deleted = True                
             case _:
 
@@ -108,23 +112,4 @@ def delete_model(model)  -> bool:
     return deleted
 
 
-
-def refresh(model)  -> None:
-    print(f'refresh {model.name}')
-    match model.model_kind:
-        case 'RaceModel':
-            WorkSpace.getDataSource('races').refresh()
-
-        case 'RTModel':
-            WorkSpace.getDataSource('ray_tracing').refresh()                
-
-        case 'ExpModel':
-            WorkSpace.getDataSource('exp').refresh()                
-
-        case 'EquModel':
-            WorkSpace.getDataSource('equ').refresh()                
-        case 'SbrModel':
-            WorkSpace.getDataSource('sbr').refresh()                
-        case _:
-            pass
 

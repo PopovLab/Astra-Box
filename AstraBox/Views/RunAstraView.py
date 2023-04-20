@@ -102,13 +102,13 @@ class RunAstraView(ttk.Frame):
 
         self.worker.start()
 
-        WorkSpace.refresh('races')
+        WorkSpace.refresh('RaceModel')
 
     def terminate(self):
         pass
 
     def on_progress(self, pos):
-        print('RunAstraView')
+        #print('RunAstraView')
         self.master.master.update()
         self.master.master.update_idletasks()
         pass

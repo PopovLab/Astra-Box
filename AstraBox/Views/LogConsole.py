@@ -27,7 +27,7 @@ class QueueHandler(logging.Handler):
         self.log_queue = log_queue
 
     def emit(self, record):
-        print('emit')
+        #print('emit')
         self.log_queue.put(record)
 
 

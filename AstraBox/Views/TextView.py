@@ -90,7 +90,7 @@ class TextView(ttk.Frame):
             self.model.name = answer
             self.model.path = self.model.path.with_stem(self.model.name)
             self.save()
-            ModelFactory.refresh(self.model)
+            ModelFactory.refresh(self.model.model_kind)
 
 
     def delete(self):

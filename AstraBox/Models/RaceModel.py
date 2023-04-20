@@ -32,9 +32,12 @@ class RaceModel(BaseModel):
         return 'RaceModel'   
 
     def load_model_data(self):
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            with zip.open( 'race_model.json' , "r" ) as json_file:
-                self.data |= json.load(json_file)
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open( 'race_model.json' , "r" ) as json_file:
+                    self.data |= json.load(json_file)
+        except:
+            print('error')
 
     def get_models_dict(self):
         return {
