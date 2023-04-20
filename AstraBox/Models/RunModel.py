@@ -22,11 +22,8 @@ class RunModel(BaseModel):
             "RTModel" : rt_name,
         }
         self.exp_model = ModelFactory.get('ExpModel', exp_name)
-        #ModelFactory.build(WorkSpace.getDataSource('exp').items[exp_name])
         self.equ_model =  ModelFactory.get('EquModel', equ_name)
-        #ModelFactory.build(WorkSpace.getDataSource('equ').items[equ_name])
         self.rt_model =  ModelFactory.get('RTModel', rt_name)
-        #ModelFactory.build(WorkSpace.getDataSource('ray_tracing').items[rt_name])            
  
         self.race_zip_file = None
 
@@ -86,8 +83,8 @@ class RunModel(BaseModel):
             self.pack_model_to_zip(zip, self.equ_model)
             self.pack_model_to_zip(zip, self.rt_model)
             self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
-            for key, item in WorkSpace.getDataSource('sbr').items.items():
-                self.pack_model_to_zip(zip, ModelFactory.build(item))
+            for key, item in WorkSpace.get_models_dict('SbrModel').items():
+                self.pack_model_to_zip(zip, ModelFactory.load(item))
 
             models  = {
                 'ExpModel' : self.exp_model.data,

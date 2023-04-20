@@ -10,25 +10,17 @@ def getInstance():
         _instance = WorkSpace()
     return _instance
 
-def getDataSource(data_source):
-    return getInstance().DataSources[data_source]
-    
 
-def get_location_path(data_source = None):
+def get_location_path(model_kind = None):
     """get workspace location path"""
-    if data_source:
-        ds = getInstance().DataSources[data_source]
-        print(ds.destpath)
-        return ds.destpath
+    if model_kind:
+        loc = getInstance().location.joinpath(schema[model_kind]['location'])
+        print(loc)
+        return loc
     else:
         return getInstance().location
 
-def refresh_old(name):
-    ds = getDataSource(name)
-    ds.refresh()
 
-def get_item_list(name):
-    return getDataSource(name).get_keys_list()
 
 def get_item_location(model_kind, model_name):
     loc = get_location_path()
@@ -49,6 +41,9 @@ def get_shema(model_kind):
     return schema[model_kind]
 
 catalog = {}
+
+def get_item_list(model_kind):
+    return list(get_models_dict(model_kind).keys())
 
 def get_models_dict(model_kind):
     global catalog

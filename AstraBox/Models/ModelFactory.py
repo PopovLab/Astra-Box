@@ -66,8 +66,8 @@ def create_model(model_kind=None ):
             model = SbrModel(model_kind)        
         case 'RTModel':
             print(f'create rt - {model_kind}')
-            ds = WorkSpace.getDataSource('ray_tracing')
-            path = ds.get_item_path(f'{get_new_name()}.rt')
+            p = WorkSpace.get_location_path('RTModel')
+            path = p.joinpath(f'{get_new_name()}.rt')
             model = RTModel(path= path)
         case _:
             print("Это другое")
