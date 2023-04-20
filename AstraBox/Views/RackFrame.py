@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
-from AstraBox.Views.Explorer import Explorer
 from AstraBox.Views.ListView import ListView
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
