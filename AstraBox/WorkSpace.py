@@ -1,22 +1,16 @@
 from pathlib import Path
 
-_instance = None
-
-def getInstance():
-    global _instance
-    if _instance is None:
-        _instance = WorkSpace()
-    return _instance
+_location = None
 
 
 def get_location_path(model_kind = None):
     """get workspace location path"""
     if model_kind:
-        loc = getInstance().location.joinpath(schema[model_kind]['location'])
+        loc = _location.joinpath(schema[model_kind]['location'])
         print(loc)
         return loc
     else:
-        return getInstance().location
+        return _location
 
 
 
@@ -82,15 +76,12 @@ schema = {
     }
 }
 
-class WorkSpace:
-    def __init__(self) -> None:
-        print('init workspace')
 
-
-    def open(self, path):
-        print(f'Open {path}')
-        self.location = Path(path)
-        for key, _ in schema.items():
-            refresh(key)
+def open(path):
+    global _location
+    print(f'Open {path}')
+    _location = Path(path)
+    for key, _ in schema.items():
+        refresh(key)
         
 

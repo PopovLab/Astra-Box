@@ -60,7 +60,7 @@ class App(tk.Tk):
 
 
     def open_work_space(self, path):
-        WorkSpace.getInstance().open(path)
+        WorkSpace.open(path)
         self.title(f"ASTRA Box in {path}")
         Config.set_current_workspace_dir(path)        
 
