@@ -7,6 +7,7 @@ authors = ["Alex <temper8@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 matplotlib = "^3.6.1"
+pandas = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 
