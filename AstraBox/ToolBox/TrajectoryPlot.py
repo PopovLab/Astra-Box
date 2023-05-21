@@ -10,13 +10,13 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 class TrajectoryPlot(ttk.Frame):
     def __init__(self, master, rays, time_stamp, plasma_bound) -> None:
         super().__init__(master)  
-        self.R, self.Z = plasma_bound
+        self.plasma_bound = plasma_bound
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title(time_stamp)
         self.ax.axis('equal')
-        self.ax.plot(self.R, self.Z)
+        self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
 
@@ -34,7 +34,7 @@ class TrajectoryPlot(ttk.Frame):
     def update(self, rays, time_stamp):
         self.ax.clear()
         self.ax.set_title(time_stamp)
-        self.ax.plot(self.R, self.Z)
+        self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
             self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
         self.canvas.draw()

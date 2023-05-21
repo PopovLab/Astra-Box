@@ -209,7 +209,7 @@ class RaceModel(BaseModel):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(Icms_path) as file:
                 lcms = pd.read_csv(file, delim_whitespace=True)
-        return lcms['R(m)'], lcms['Z(m)']
+        return lcms.rename(columns={"R(m)": "R", "Z(m)": "Z"})
 
     def read_plasma_bound2(self):
         Icms_path = 'lhcd/out/lcms.dat'
