@@ -4,6 +4,7 @@ import encodings
 import pathlib 
 import zipfile
 import numpy as np
+import pandas as pd
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
@@ -203,8 +204,14 @@ class RaceModel(BaseModel):
                 np_rays_list.append(np_ray)
         return np_rays_list, time_stamp        
 
-
     def read_plasma_bound(self):
+        Icms_path = 'lhcd/out/lcms.dat'
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(Icms_path) as file:
+                lcms = pd.read_csv(file, delim_whitespace=True)
+        return lcms['R(m)'], lcms['Z(m)']
+
+    def read_plasma_bound2(self):
         Icms_path = 'lhcd/out/lcms.dat'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(Icms_path) as file:
