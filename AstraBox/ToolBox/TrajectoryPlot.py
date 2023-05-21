@@ -18,7 +18,7 @@ class TrajectoryPlot(ttk.Frame):
         self.ax.axis('equal')
         self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
-            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
+            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -36,7 +36,7 @@ class TrajectoryPlot(ttk.Frame):
         self.ax.set_title(time_stamp)
         self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
-            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=1)
+            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
         self.canvas.draw()
 
     def destroy(self):

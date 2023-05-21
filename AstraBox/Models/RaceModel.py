@@ -179,6 +179,22 @@ class RaceModel(BaseModel):
         print(time_stamp)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
+                traj = pd.read_csv(file, delim_whitespace=True)
+                n_traj_list = np.unique(traj['N_traj'])
+                rays = []
+                for nt in n_traj_list:
+                    ray = traj[traj['N_traj'] == nt]
+                    rays.append(ray)
+        return rays, time_stamp  
+
+    def get_rays2(self, f):
+        p = pathlib.Path(f)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
+        #time_stamp = float(f[13:20])
+        print(time_stamp)
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(f) as file:
                 header = file.readline().decode("utf-8").replace('=', '_').split()
 
                 lines = file.readlines()
