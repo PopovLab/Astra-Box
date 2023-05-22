@@ -22,14 +22,17 @@ class TimeSeriesPlot(ttk.Frame):
         ax2.plot(time_series['Time'], time_series[keys[1]], label=keys[1])
         ax2.legend(loc='upper right')
 
+        key2 = 'V'
+        key3 = 'Vexp'
         ax3 = self.fig.add_subplot(gs[2, 0])
-        ax3.plot(time_series['Time'], time_series[keys[2]], label=keys[2])
+        ax3.plot(time_series['Time'], time_series[key2], label=key2)
+        ax3.plot(time_series['Time'], time_series[key3], label=key3, linestyle='--')
         ax3.legend(loc='upper right')
 
         ax3.set_xlabel('Time')
         ax1.set_ylabel(keys[0])
         ax2.set_ylabel(keys[1])
-        ax3.set_ylabel(keys[2])
+        ax3.set_ylabel("V")
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
