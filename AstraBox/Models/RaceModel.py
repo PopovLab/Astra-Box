@@ -8,7 +8,6 @@ import pandas as pd
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
-import AstraBox.Models.TimeSeries as TimeSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
 import AstraBox.Astra as Astra
 
@@ -53,7 +52,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return TimeSeries.read_simpleXY_data(file)       
+                    return pd.read_csv(file, delim_whitespace=True, names=['X', 'Y'])     
         except Exception as error:
             print(error)
             return { 'X' : [], 'Y': [] }
@@ -69,7 +68,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return TimeSeries.read_data(file)       
+                    return pd.read_csv(file, delim_whitespace=True)           
         except Exception as error:
             print(error)
             return f'не смог прочитать {f}'
@@ -188,38 +187,6 @@ class RaceModel(BaseModel):
                     rays.append(ray)
         return rays, time_stamp  
 
-    def get_rays2(self, f):
-        p = pathlib.Path(f)
-        if p.suffix != '.dat': return
-        time_stamp = float(p.stem)
-        #time_stamp = float(f[13:20])
-        print(time_stamp)
-        with zipfile.ZipFile(self.race_zip_file) as zip:
-            with zip.open(f) as file:
-                header = file.readline().decode("utf-8").replace('=', '_').split()
-
-                lines = file.readlines()
-                table = [line.decode("utf-8").split() for line in lines]
-                table = list(filter(None, table))
-
-                rays = []
-                N_traj = 0
-                np_rays_list = []
-                for row in table:
-                    if N_traj != int(row[12]):
-                        N_traj = int(row[12])
-                        ray = dict([ (h, []) for h in header ])
-                        rays.append(ray)
-                    for index, (p, item) in enumerate(ray.items()):
-                        item.append(float_try(row[index]))
-        print(f'numbers of rays : {len(rays)}')
-        for ray in rays:
-            np_ray = {}
-            for key, item in ray.items():
-                np_ray[key] = np.asarray(item)
-            if np_ray['N_traj'].size>2:
-                np_rays_list.append(np_ray)
-        return np_rays_list, time_stamp        
 
     def read_plasma_bound(self):
         Icms_path = 'lhcd/out/lcms.dat'

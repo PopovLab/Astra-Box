@@ -187,16 +187,16 @@ class DrivenCurrentView(TabViewBasic):
 
     def init_ui(self):
         print('init Time Series View')
-        self.dc_series = self.race_model.get_driven_current()
-        if type(self.dc_series) == dict:
+        self.data_frame = self.race_model.get_driven_current()
+        if type(self.data_frame) == pd.DataFrame:
             self.make_plot()
         else:
-            label = tk.Label(master=self, text=self.dc_series)
+            label = tk.Label(master=self, text=self.data_frame)
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	            
 
     def make_plot(self):
         #keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
-        self.plot = DrivenCurrentPlot(self, self.dc_series )
+        self.plot = DrivenCurrentPlot(self, self.data_frame )
         self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)
