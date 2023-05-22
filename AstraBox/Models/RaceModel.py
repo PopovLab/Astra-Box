@@ -172,6 +172,7 @@ class RaceModel(BaseModel):
         return time_stamp, rt_result, header
 
     def get_rays(self, f):
+        ''' читаю лучи из файла и собираю их в список'''
         p = pathlib.Path(f)
         if p.suffix != '.dat': return
         time_stamp = float(p.stem)
