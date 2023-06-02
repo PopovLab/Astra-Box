@@ -50,8 +50,11 @@ def load(p):
 
 def get(model_kind= None, model_name= None):
     d = WorkSpace.get_models_dict(model_kind)
-    p = d[model_name]
-    return load(p)
+    try:
+        p = d[model_name]
+        return load(p)
+    except:
+        return None
 
 def create_model(model_kind=None ):
     match model_kind:

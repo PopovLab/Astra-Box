@@ -44,12 +44,10 @@ class RunModel(BaseModel):
         f.close()
 
     def pack_model_to_zip(self, zip, model):
-        file_name = model.get_dest_path()        
-        data = model.get_text()
-        zip.writestr(file_name,data)
-        #with zip.open(file_name, mode='w') as f:
-        #    f.writestr(data)
-        #    f.close
+        if model:
+            file_name = model.get_dest_path()        
+            data = model.get_text()
+            zip.writestr(file_name,data)
 
     def generate_race_name(self, prefix):
         dt_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -82,17 +80,19 @@ class RunModel(BaseModel):
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)
             self.pack_model_to_zip(zip, self.rt_model)
-            self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
+            if self.rt_model:
+                self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
             for key, item in WorkSpace.get_models_dict('SbrModel').items():
                 self.pack_model_to_zip(zip, ModelFactory.load(item))
 
             models  = {
                 'ExpModel' : self.exp_model.data,
                 'EquModel' : self.equ_model.data,
-                'RTModel'  : self.rt_model.data,
                 'name' : self.name
                 }
-            
+            if self.rt_model:
+                models['RTModel'] = self.rt_model.data
+                
             with zip.open( 'race_model.json' , "w" ) as json_file:
                 json_writer = encodings.utf_8.StreamWriter(json_file)
                 # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
