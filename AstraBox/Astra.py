@@ -8,5 +8,6 @@ data_folder = {
     'TRAJECTROY'   : 'lhcd/traj/',
     'RT_RESULT'    : 'lhcd/rt-result/',
     'lhcd_out'     : 'lhcd/out/',
+    'plasma'       : 'lhcd/plasma/',
     'lhcd'         : 'lhcd/'
 }
