@@ -14,12 +14,12 @@ def isBlank (myString):
 def read_radial_data(file):
     header = []
     for i in range(8):
-        header.append(file.readline().decode("utf-8").split())
+        header.append(file.readline().decode("utf-8"))
     
     #print(header[1])
     #print(header[7])
 
-    radial_data = { h: [] for h in header[7] }
+    radial_data = { h: [] for h in header[7].split() }
 
     lines = file.readlines()
     table = []
@@ -34,7 +34,11 @@ def read_radial_data(file):
         for index, (p, item) in enumerate(radial_data.items()):
             #print(p, item, index)
             item.append(float_try(row[index]))
-    time_str = header[1][9]
-    print(time_str)
-    radial_data['Time'] = float_try(time_str[5:])
+    i = header[1].find("Time=")
+    if i>0:
+        time_str = header[1][i+5:].split()[0]
+    else:
+        time_str = '0.0'
+    print(f'time str = {time_str}')
+    radial_data['Time'] = float_try(time_str)
     return radial_data
