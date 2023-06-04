@@ -240,7 +240,7 @@ class TimeSeriesView(TabViewBasic):
         self.plot = TimeSeriesPlot(self, self.time_series, keys )
         self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(1, weight=1)
 
 
 class RTResultView(TabViewBasic):
@@ -416,12 +416,14 @@ class RadialDataView(TabViewBasic):
     def init_ui(self):   
         self.radial_data_list = self.race_model.get_file_list('RADIAL_DATA')
         n = len(self.radial_data_list)
+        print(f'n= {n}')
         if n>0: 
             radial_data = self.get_radial_data(0)
             self.start_time = radial_data["Time"]
             self.finish_time = self.get_radial_data(n-1)["Time"]
+            print(f'{self.start_time} - {self.finish_time}')
             self.n = n
-
+            
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
             self.time_var.trace_add('write', self.update_time_var)
 
