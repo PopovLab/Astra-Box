@@ -1,79 +1,106 @@
+import json
 import tkinter as tk
+import tkinter
 import tkinter.ttk as ttk
+import AstraBox.WorkSpace as WorkSpace
 
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
+from AstraBox.Views.PlotSettingWindows import PlotSettingWindows
+
+
+def default_radial_setting():
+    # настройки по умолчанию для рейтрейсинга
+    # профили токов
+    # профили E
+    # профили мощности
+    # профили температуры  
+    return {
+        'shape' : '2x2',
+        'title' : 'Astra radial data',
+        'plots'  : {
+            'ax1' : ['J', 'Johm', 'Jlh'],
+            'ax2' : ['E', 'En'],
+            'ax3' : ['Plh', 'Poh'],
+            'ax4' : ['Te']
+            }
+        }
 
 
 class RadialDataPlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
+        self.data = profiles
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
+        self.ps = PlotSettingWindows(self, 
+                                     terms= profiles.keys(), 
+                                     file_name= 'RadialPlotSetting.json', 
+                                     default_data= default_radial_setting(),
+                                     on_update_setting= self.on_update_setting )
         self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
-        self.axs = self.fig.subplots(2, 2)
-        
-        # профили токов
-        self.profile_J,    = self.axs[0,0].plot(profiles['a'], profiles['J'], label='J')
-        self.profile_Johm, = self.axs[0,0].plot(profiles['a'], profiles['Johm'], label='Johm')
-        self.profile_Jlh, = self.axs[0,0].plot(profiles['a'], profiles['Jlh'], label='Jlh')
-        #self.axs[0,0].set_title("J, Johm, Jlh")
-        self.axs[0,0].legend(loc='upper right')
-
-        # профили E
-        self.profile_E, = self.axs[0,1].plot(profiles['a'], profiles['E'], label='E')
-        self.profile_En, = self.axs[0,1].plot(profiles['a'], profiles['En'], label='En')
-        #self.axs[0,1].set_title("E, En")
-        self.axs[0,1].legend(loc='upper right')
-    
-        # профили мощности
-        self.profile_Plh, = self.axs[1,0].plot(profiles['a'], profiles['Plh'], label='Plh')
-        self.profile_Poh, = self.axs[1,0].plot(profiles['a'], profiles['Poh'], label='Poh')
-        #self.axs[1,0].set_title("Plh, Poh")
-        self.axs[1,0].legend(loc='upper right')
-    
-        # профили температуры
-        self.profile_Te, = self.axs[1,1].plot(profiles['a'], profiles['Te'], label='Te')
-        #self.profile_Poh, = self.axs[2].plot(profiles['Poh'])
-        #self.axs[1,1].set_title("Te")
-        self.axs[1,1].legend(loc='upper right')
+        self.make_all_charts()
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
 
         #toobar = NavigationToolbar2Tk(self.canvas, frame)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)        
+        tb.grid(row=0, column=0, sticky=tk.N)
         
+        btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
+        btn.grid(row=1, column=0, sticky=tk.N)        
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+    def option_windows(self):
+        self.ps.show()
+
+
+    def on_update_setting(self):
+        print('on_update_setting')
+        print(self.ps.data['plots'])
+        for ax in self.axs.flat:
+            ax.remove()
+        self.make_all_charts()
+        self.canvas.draw()    
+
+
+    def make_all_charts(self):
+            self.axs = self.fig.subplots(2, 2)  
+            self.charts_list = {}
+      
+            plots = self.ps.data['plots']
+            for (key, terms), ax in zip(plots.items(), self.axs.flat):
+                self.charts_list[key] = self.make_charts(ax, key)
+                ax.legend(loc='upper right')
+
+    def make_charts(self, axis, plot_name):
+        charts = {}
+        terms = self.ps.data['plots'][plot_name]
+        for term in terms:
+            if term in self.data.keys():
+                chart, = axis.plot(self.data['a'], self.data[term], label= term)
+                charts[term] = (chart)
+
+        return charts
+
     def update(self, profiles):
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
+        self.data = profiles
+        plots = self.ps.data['plots']
+        for key, terms in plots.items():
+            charts = self.charts_list[key]
+            for key, chart in charts.items():
+                chart.set_ydata(profiles[key]) 
 
-        self.profile_J.set_ydata(profiles['J']) 
-        self.profile_Johm.set_ydata(profiles['Johm']) 
-        self.profile_Jlh.set_ydata(profiles['Jlh']) 
-        self.axs[0,0].relim()
-        self.axs[0,0].autoscale_view(True,True,True)        
-
-        self.profile_E.set_ydata(profiles['E']) 
-        self.profile_En.set_ydata(profiles['En']) 
-        self.axs[0,1].relim()
-        self.axs[0,1].autoscale_view(True,True,True) 
-
-        self.profile_Plh.set_ydata(profiles['Plh']) 
-        self.profile_Poh.set_ydata(profiles['Poh']) 
-        self.axs[1,0].relim()
-        self.axs[1,0].autoscale_view(True,True,True) 
-        
-        self.profile_Te.set_ydata(profiles['Te']) 
-        self.axs[1,1].relim()
-        self.axs[1,1].autoscale_view(True,True,True)         
+        for ax in self.axs.flat:
+            ax.relim()
+            ax.autoscale_view(True,True,True)        
 
         self.canvas.draw()
 
