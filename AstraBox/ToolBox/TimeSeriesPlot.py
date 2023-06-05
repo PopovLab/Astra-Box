@@ -19,7 +19,7 @@ def default_time_plot_setting():
         }
 
 class TimeSeriesPlot(ttk.Frame):
-    def __init__(self, master, time_series, keys) -> None:
+    def __init__(self, master, time_series) -> None:
         super().__init__(master)  
         self.fig = plt.figure(figsize=(10, 7), dpi=100)        
         #self.fig.suptitle(f'Astra time series. ')

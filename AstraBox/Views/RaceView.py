@@ -212,36 +212,17 @@ class TimeSeriesView(TabViewBasic):
         #self.race_model = model
         self.time_series = self.race_model.get_time_series()
         if type(self.time_series) == pd.core.frame.DataFrame:
-            keys = list(self.time_series.keys())
-            print(keys)
-            self.combo1 = ComboBox(self, 'Plot 1', keys)
-            self.combo2 = ComboBox(self, 'Plot 2', keys)
-            #self.combo3 = ComboBox(self, 'View 3', keys)
 
-            self.combo1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            self.combo2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            #self.combo3.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
-
-            self.combo1.set(keys[3])
-            self.combo2.set(keys[4])
-            #self.combo3.set(keys[5])
-
-            self.combo1.on_combo_selected = self.make_plot
-            self.combo2.on_combo_selected = self.make_plot
-            #self.combo3.on_combo_selected = self.make_plot            
+            self.plot = TimeSeriesPlot(self, self.time_series)
+            self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.columnconfigure(1, weight=1)
+            self.rowconfigure(1, weight=1)
 
             self.make_plot()
         else:
             label = tk.Label(master=self, text=self.time_series)
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
         
-    def make_plot(self):
-        keys = [self.combo1.get(), self.combo2.get()]
-        self.plot = TimeSeriesPlot(self, self.time_series, keys )
-        self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(1, weight=1)
-
 
 class RTResultView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
