@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 import json
 import pathlib as pathlib
 import os 
+from pathlib import Path
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
@@ -28,7 +29,7 @@ def make_image_button(parent, image_file, action):
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_item_list('ExpModel'), width= 20)
+        self.exp_combo = ComboBox(self, 'Exp:', ['All exp'] + WorkSpace.get_item_list('ExpModel'), width= 20)
         self.exp_combo.pack(side=tk.LEFT)
         self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_item_list('EquModel'))
         self.equ_combo.pack(side=tk.LEFT)
@@ -80,15 +81,26 @@ class RunAstraView(ttk.Frame):
         runframe.grid(row=3, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
         self.rowconfigure(3, weight=1)
 
-
-
     def start(self):
         exp = self.config_panel.exp_combo.get()
+        equ = self.config_panel.equ_combo.get()
+        if exp == 'All exp':
+            exp_list =  WorkSpace.get_item_list('ExpModel')
+            for exp in exp_list:
+                rn = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
+                print(rn)
+                self.single_run(rn, exp)
+                #self.batch_run()
+        else:
+            self.single_run(self.race_name['value'], exp)
+
+    def single_run(self, race_name, exp):
+        
         equ = self.config_panel.equ_combo.get()
         rt = self.config_panel.rt_combo.get()
         ap = self.config_panel.astra_combo.get()
         
-        run_model = RunModel(name= self.race_name['value'], exp_name= exp, equ_name= equ, rt_name= rt ) 
+        run_model = RunModel(name= race_name, exp_name= exp, equ_name= equ, rt_name= rt ) 
         
         astra_profile = Config.get_astra_profile(ap)
         self.worker = Kernel.AstraWorker(run_model, astra_profile)
