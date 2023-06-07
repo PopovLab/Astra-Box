@@ -4,6 +4,7 @@ from tkinter.scrolledtext import ScrolledText
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Models.BaseModel as BaseModel
+import AstraBox.WorkSpace as WorkSpace
 
 class FindToolBar(ttk.Frame):
     def __init__(self, master, text_box) -> None:
@@ -90,7 +91,7 @@ class TextView(ttk.Frame):
             self.model.name = answer
             self.model.path = self.model.path.with_stem(self.model.name)
             self.save()
-            ModelFactory.refresh(self.model.model_kind)
+            WorkSpace.refresh(self.model.model_kind)
 
 
     def delete(self):
