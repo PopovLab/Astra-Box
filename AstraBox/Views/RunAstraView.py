@@ -55,6 +55,7 @@ class ConfigPanel(ttk.Frame):
         os.system(f'start notepad {Config.get_config_path()}') 
 
 class RunAstraView(ttk.Frame):
+    terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
         self.header_content =  { "title": "Run ASTRA", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate)]}
@@ -87,6 +88,7 @@ class RunAstraView(ttk.Frame):
         if exp == 'All exp':
             exp_list =  WorkSpace.get_item_list('ExpModel')
             for exp in exp_list:
+                if self.terminated: break
                 rn = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
                 print(rn)
                 self.single_run(rn, exp)
@@ -117,7 +119,7 @@ class RunAstraView(ttk.Frame):
         WorkSpace.refresh('RaceModel')
 
     def terminate(self):
-        pass
+        self.terminated = True
 
     def on_progress(self, pos):
         #print('RunAstraView')
