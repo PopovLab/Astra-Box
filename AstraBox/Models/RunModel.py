@@ -34,14 +34,6 @@ class RunModel(BaseModel):
     def get_work_folder(self):
         return "data\\races"
 
-    def prepare_model_data(self, model):
-        file_name = model.get_dest_path()        
-        dest_folder = self.get_work_folder()
-        dest = os.path.join(dest_folder, file_name) 
-        data = model.get_text()
-        f = open(dest, "w")
-        f.write(data)
-        f.close()
 
     def pack_model_to_zip(self, zip, model):
         if model:
