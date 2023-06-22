@@ -81,13 +81,16 @@ class Worker:
         while logger.hasHandlers():
             logger.removeHandler(logger.handlers[0])
         logger.setLevel(logging.DEBUG) 
-        log_file = os.path.join(self.work_folder, f'{logger_name}.log')
+        loc = WorkSpace.get_location_path()
+        log_file = os.path.join(loc, f'{logger_name}.log')
         formatter = logging.Formatter('%(asctime)s: %(message)s', datefmt='%H:%M:%S')
         file_handler = logging.FileHandler(log_file, mode='w')
         file_handler.setFormatter(formatter)        
         logger.addHandler(file_handler)
         # with this pattern, it's rarely necessary to propagate the error up to parent
         logger.propagate = False
+        logger.info( type(self)) 
+        logger.log(logging.INFO, f'folder: {loc}' ) 
         return logger
 
     on_progress = None
@@ -96,10 +99,10 @@ class Worker:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
-        self.work_folder = self.run_model.get_work_folder()
+        #self.work_folder = self.run_model.get_work_folder()
+        #self.work_folder = get_location_path
         self.logger = self.get_logger('kernel')
-        self.logger.info( type(self)) 
-        self.logger.log(logging.INFO, 'folder: ' + self.work_folder) 
+
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
