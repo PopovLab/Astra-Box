@@ -87,8 +87,8 @@ def init_logger(logger_name):
     logger.addHandler(file_handler)
     # with this pattern, it's rarely necessary to propagate the error up to parent
     logger.propagate = False
-    # logger.info( type(self)) 
-    logger.log(logging.INFO, f'folder: {loc}' ) 
+    logger.info('Init logger') 
+    logger.info(f'folder: {loc}') 
     return logger
 
 class Worker:
@@ -99,10 +99,7 @@ class Worker:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
-        #self.work_folder = self.run_model.get_work_folder()
-        #self.work_folder = get_location_path
         self.logger = init_logger('kernel')
-
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
@@ -112,8 +109,7 @@ class Worker:
     async def run(self, cmd, shell = False):
         self.error_flag = False
         self.logger.log(logging.INFO, f"run_cmd: {cmd}")
-        #os.chdir(self.work_folder)
-        #self.logger.log(logging.INFO, f"CWD: {os.getcwd()}")
+
         if shell:
             self.proc = await asyncio.create_subprocess_shell(
                 cmd,
