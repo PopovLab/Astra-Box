@@ -74,6 +74,13 @@ def isBlank(myString):
 def isNotBlank(myString):
     return bool(myString and myString.strip())
 
+_logger = None
+
+def get_logger():
+    global _logger
+    _logger = init_logger('kernel')
+    return _logger
+    
 def init_logger(logger_name):
     logger = logging.getLogger(logger_name)
     while logger.hasHandlers():
@@ -99,7 +106,7 @@ class Worker:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
-        self.logger = init_logger('kernel')
+        #self.logger = init_logger('kernel')
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
@@ -108,7 +115,7 @@ class Worker:
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
-        self.logger.log(logging.INFO, f"run_cmd: {cmd}")
+        _logger.log(logging.INFO, f"run_cmd: {cmd}")
 
         if shell:
             self.proc = await asyncio.create_subprocess_shell(
@@ -145,24 +152,24 @@ class Worker:
                 continue
             if 'FATAL ERROR' in line:
                 self.error_flag = True
-            self.logger.info(line)
+            _logger.info(line)
 
         stdout, stderr = await self.proc.communicate()
         lines = stdout.decode('ascii').split("\r\n")
         for line in lines:
             if isNotBlank(line):
-                self.logger.info(line)
+                _logger.info(line)
 
         lines = stderr.decode('ascii').split("\r\n")
         for line in lines:
             if isNotBlank(line):
-                self.logger.error(line)
+                _logger.error(line)
 
  
 
     def terminate(self):
         self.proc.terminate()
-        self.logger.info(f'Termitate')
+        _logger.info(f'Termitate')
         self.set_model_status('term')
 
 def copy_file(src, dst):
@@ -210,7 +217,7 @@ class AstraWorker(Worker):
     def WSL_Run(self, work_folder, command):
             ps_cmd = f'wsl --cd {work_folder} {command}'
             print(ps_cmd)
-            #self.logger.info(f'run: {command}')
+            #_logger.info(f'run: {command}')
             with asyncio.Runner() as runner:
                 runner.run(self.run(ps_cmd, shell=True))
             if self.on_progress:
@@ -223,9 +230,9 @@ class AstraWorker(Worker):
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
-        self.logger.info(f'copy : {zip_file}')
+        _logger.info(f'copy : {zip_file}')
         dest = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}'
-        self.logger.info(f'to: {dest}')
+        _logger.info(f'to: {dest}')
         copy_file_to_folder(zip_file, dest)
         #unpack_cmd = f'unzip -o race_data.zip -d {self.astra_profile["profile"]}'
         unpack_cmd = f'unzip -o race_data.zip'
@@ -233,7 +240,7 @@ class AstraWorker(Worker):
         self.WSL_Run(wd, unpack_cmd)
 
     def pack_data(self):
-        self.logger.info('pack data')
+        _logger.info('pack data')
         wd = f'{self.astra_profile["home"]}/{self.astra_profile["profile"]}'
         pack_cmd = f'zip -r race_data.zip dat'
         self.WSL_Run(wd, pack_cmd)
@@ -244,7 +251,7 @@ class AstraWorker(Worker):
     def start(self):
         #if self.test_folder(): return
         #self.initialization()
-        self.logger.info(f'start {self.run_model.name}')
+        _logger.info(f'start {self.run_model.name}')
 
         self.clear_work_folders()
         self.copy_data()
@@ -257,7 +264,7 @@ class AstraWorker(Worker):
         asyncio.run(self.run(run_cmd, shell=True))
         #self.WSL_Run(self.astra_profile["home"], astra_cmd)
  
-        self.logger.info('finish')
+        _logger.info('finish')
 
         self.pack_data()
 
@@ -268,4 +275,4 @@ class AstraWorker(Worker):
         copy_file(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
 
-        self.logger.info('the end')
+        _logger.info('the end')

@@ -104,9 +104,9 @@ class RunAstraView(ttk.Frame):
         
         run_model = RunModel(name= race_name, exp_name= exp, equ_name= equ, rt_name= rt ) 
         
+        self.log_console.set_logger(Kernel.get_logger())
         astra_profile = Config.get_astra_profile(ap)
         self.worker = Kernel.AstraWorker(run_model, astra_profile)
-        self.log_console.set_logger(self.worker.logger)
         self.worker.on_progress = self.on_progress
         self.on_progress(0)
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
