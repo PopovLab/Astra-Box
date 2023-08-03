@@ -74,24 +74,24 @@ def isBlank(myString):
 def isNotBlank(myString):
     return bool(myString and myString.strip())
 
-class Worker:
+def init_logger(logger_name):
+    logger = logging.getLogger(logger_name)
+    while logger.hasHandlers():
+        logger.removeHandler(logger.handlers[0])
+    logger.setLevel(logging.DEBUG) 
+    loc = WorkSpace.get_location_path()
+    log_file = os.path.join(loc, f'{logger_name}.log')
+    formatter = logging.Formatter('%(asctime)s: %(message)s', datefmt='%H:%M:%S')
+    file_handler = logging.FileHandler(log_file, mode='w')
+    file_handler.setFormatter(formatter)        
+    logger.addHandler(file_handler)
+    # with this pattern, it's rarely necessary to propagate the error up to parent
+    logger.propagate = False
+    # logger.info( type(self)) 
+    logger.log(logging.INFO, f'folder: {loc}' ) 
+    return logger
 
-    def get_logger(self, logger_name):
-        logger = logging.getLogger(logger_name)
-        while logger.hasHandlers():
-            logger.removeHandler(logger.handlers[0])
-        logger.setLevel(logging.DEBUG) 
-        loc = WorkSpace.get_location_path()
-        log_file = os.path.join(loc, f'{logger_name}.log')
-        formatter = logging.Formatter('%(asctime)s: %(message)s', datefmt='%H:%M:%S')
-        file_handler = logging.FileHandler(log_file, mode='w')
-        file_handler.setFormatter(formatter)        
-        logger.addHandler(file_handler)
-        # with this pattern, it's rarely necessary to propagate the error up to parent
-        logger.propagate = False
-        logger.info( type(self)) 
-        logger.log(logging.INFO, f'folder: {loc}' ) 
-        return logger
+class Worker:
 
     on_progress = None
 
@@ -101,7 +101,7 @@ class Worker:
         self.run_model = model
         #self.work_folder = self.run_model.get_work_folder()
         #self.work_folder = get_location_path
-        self.logger = self.get_logger('kernel')
+        self.logger = init_logger('kernel')
 
 
     def set_model_status(self, status):
