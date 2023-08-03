@@ -94,24 +94,24 @@ def init_logger(logger_name):
     logger.addHandler(file_handler)
     # with this pattern, it's rarely necessary to propagate the error up to parent
     logger.propagate = False
-    logger.info('Init logger') 
-    logger.info(f'folder: {loc}') 
+    #logger.info('Init logger') 
+    #logger.info(f'folder: {loc}') 
     return logger
 
 class Worker:
 
-    on_progress = None
+    cb_progress = None
 
     def __init__(self, model: RunModel) -> None:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
-        #self.logger = init_logger('kernel')
+
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
-        if self.on_progress:
-            self.on_progress(2)
+        if self.cb_progress:
+            self.cb_progress(2)
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
@@ -142,13 +142,13 @@ class Worker:
             line = data.decode('ascii').rstrip()
 
             if self.proc.stdout.at_eof(): break
-            if self.on_progress:
-                self.on_progress(2)
+            if self.cb_progress:
+                self.cb_progress(2)
                 
             if line.startswith(' done'):
                 progress = float(line[10:])
-                if self.on_progress:
-                    self.on_progress(progress)
+                if self.cb_progress:
+                    self.cb_progress(progress)
                 continue
             if 'FATAL ERROR' in line:
                 self.error_flag = True
@@ -210,9 +210,11 @@ def copy_file_to_folder(src, dst):
    
 
 class AstraWorker(Worker):
-    def __init__(self, model: RunModel, astra_profile) -> None:
+    def __init__(self, model: RunModel, astra_profile, cb_progress) -> None:
         super().__init__(model)
         self.astra_profile = astra_profile
+        self.cb_progress = cb_progress
+        _logger.info('create AstraWorker')
 
     def WSL_Run(self, work_folder, command):
             ps_cmd = f'wsl --cd {work_folder} {command}'
@@ -220,8 +222,8 @@ class AstraWorker(Worker):
             #_logger.info(f'run: {command}')
             with asyncio.Runner() as runner:
                 runner.run(self.run(ps_cmd, shell=True))
-            if self.on_progress:
-                self.on_progress(0)
+            if self.cb_progress:
+                self.cb_progress(0)
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():

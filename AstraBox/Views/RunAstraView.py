@@ -106,8 +106,8 @@ class RunAstraView(ttk.Frame):
         
         self.log_console.set_logger(Kernel.get_logger())
         astra_profile = Config.get_astra_profile(ap)
-        self.worker = Kernel.AstraWorker(run_model, astra_profile)
-        self.worker.on_progress = self.on_progress
+        self.worker = Kernel.AstraWorker(run_model, astra_profile, self.on_progress)
+        #self.worker.on_progress = 
         self.on_progress(0)
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
         p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
