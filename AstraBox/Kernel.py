@@ -11,6 +11,7 @@ import platform
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.RunModel import RunModel
 import AstraBox.Astra as Astra
+import AstraBox.Config as Config
 
 proc = NULL
 
@@ -94,9 +95,24 @@ def init_logger(logger_name):
     logger.addHandler(file_handler)
     # with this pattern, it's rarely necessary to propagate the error up to parent
     logger.propagate = False
-    #logger.info('Init logger') 
-    #logger.info(f'folder: {loc}') 
     return logger
+
+def log_info(info):
+    _logger.info(info)
+
+_progress_callback = None
+def set_progress_callback(cb):
+    global _progress_callback
+    _progress_callback = cb
+
+def call_progress_callback(progress = 0):
+    if _progress_callback:
+        _progress_callback(progress)
+
+_astra_profile = None
+def set_astra_profile(astra_porfile_name):
+    global _astra_profile
+    _astra_profile = Config.get_astra_profile(astra_porfile_name)
 
 class Worker:
 
@@ -110,8 +126,7 @@ class Worker:
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
-        if self.cb_progress:
-            self.cb_progress(2)
+        call_progress_callback()
 
     async def run(self, cmd, shell = False):
         self.error_flag = False
@@ -142,13 +157,11 @@ class Worker:
             line = data.decode('ascii').rstrip()
 
             if self.proc.stdout.at_eof(): break
-            if self.cb_progress:
-                self.cb_progress(2)
+            call_progress_callback()
                 
             if line.startswith(' done'):
                 progress = float(line[10:])
-                if self.cb_progress:
-                    self.cb_progress(progress)
+                call_progress_callback()
                 continue
             if 'FATAL ERROR' in line:
                 self.error_flag = True
@@ -210,10 +223,8 @@ def copy_file_to_folder(src, dst):
    
 
 class AstraWorker(Worker):
-    def __init__(self, model: RunModel, astra_profile, cb_progress) -> None:
+    def __init__(self, model: RunModel) -> None:
         super().__init__(model)
-        self.astra_profile = astra_profile
-        self.cb_progress = cb_progress
         _logger.info('create AstraWorker')
 
     def WSL_Run(self, work_folder, command):
@@ -222,28 +233,27 @@ class AstraWorker(Worker):
             #_logger.info(f'run: {command}')
             with asyncio.Runner() as runner:
                 runner.run(self.run(ps_cmd, shell=True))
-            if self.cb_progress:
-                self.cb_progress(0)
+            call_progress_callback()
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
-            clear_cmd = f'rm -f {self.astra_profile["profile"]}/{folder}*.*'  
-            self.WSL_Run(self.astra_profile["home"], clear_cmd)
+            clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}*.*'  
+            self.WSL_Run(_astra_profile["home"], clear_cmd)
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
         _logger.info(f'copy : {zip_file}')
-        dest = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}'
+        dest = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}'
         _logger.info(f'to: {dest}')
         copy_file_to_folder(zip_file, dest)
-        #unpack_cmd = f'unzip -o race_data.zip -d {self.astra_profile["profile"]}'
+        #unpack_cmd = f'unzip -o race_data.zip -d {_astra_profile["profile"]}'
         unpack_cmd = f'unzip -o race_data.zip'
-        wd = f'{self.astra_profile["home"]}/{self.astra_profile["profile"]}'
+        wd = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
         self.WSL_Run(wd, unpack_cmd)
 
     def pack_data(self):
         _logger.info('pack data')
-        wd = f'{self.astra_profile["home"]}/{self.astra_profile["profile"]}'
+        wd = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
         pack_cmd = f'zip -r race_data.zip dat'
         self.WSL_Run(wd, pack_cmd)
         pack_cmd = f'zip -r race_data.zip lhcd'
@@ -260,11 +270,11 @@ class AstraWorker(Worker):
 
         self.set_model_status('run')
         
-        astra_cmd = f'./run10.sh {self.astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
+        astra_cmd = f'./run10.sh {_astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
-        run_cmd = f'start wsl  --cd {self.astra_profile["home"]} {astra_cmd}'
+        run_cmd = f'start wsl  --cd {_astra_profile["home"]} {astra_cmd}'
         asyncio.run(self.run(run_cmd, shell=True))
-        #self.WSL_Run(self.astra_profile["home"], astra_cmd)
+        #self.WSL_Run(_astra_profile["home"], astra_cmd)
  
         _logger.info('finish')
 
@@ -273,7 +283,7 @@ class AstraWorker(Worker):
         #race_zip_file = f'Data/races/race_{self.run_model.name}.zip'
         zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
-        src = f'{self.astra_profile["dest"]}/{self.astra_profile["profile"]}/race_data.zip'
+        src = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}/race_data.zip'
         copy_file(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
 

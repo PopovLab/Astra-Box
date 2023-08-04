@@ -89,9 +89,9 @@ class RunAstraView(ttk.Frame):
             exp_list =  WorkSpace.get_item_list('ExpModel')
             for exp in exp_list:
                 if self.terminated: break
-                rn = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
-                print(rn)
-                self.single_run(rn, exp)
+                race_name = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
+                print(race_name)
+                self.single_run(race_name, exp)
                 #self.batch_run()
         else:
             self.single_run(self.race_name['value'], exp)
@@ -102,21 +102,23 @@ class RunAstraView(ttk.Frame):
         rt = self.config_panel.rt_combo.get()
         ap = self.config_panel.astra_combo.get()
         
-        run_model = RunModel(name= race_name, exp_name= exp, equ_name= equ, rt_name= rt ) 
-        
         self.log_console.set_logger(Kernel.get_logger())
-        astra_profile = Config.get_astra_profile(ap)
-        self.worker = Kernel.AstraWorker(run_model, astra_profile, self.on_progress)
-        #self.worker.on_progress = 
+        Kernel.set_progress_callback(self.on_progress)
+        Kernel.set_astra_profile(ap)
+        run_model = RunModel(name= race_name, exp_name= exp, equ_name= equ, rt_name= rt ) 
+        worker = Kernel.AstraWorker(run_model)
+   
+        Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {ap}")
         self.on_progress(0)
+        self.save_last_run(exp, equ, rt, ap)
+        worker.start()
+        WorkSpace.refresh('RaceModel')
+
+    def save_last_run(exp, equ, rt, ap):
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
         p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
         with p.open(mode= "w") as json_file:
             json.dump(last_run, json_file, indent=2)
-
-        self.worker.start()
-
-        WorkSpace.refresh('RaceModel')
 
     def terminate(self):
         self.terminated = True
