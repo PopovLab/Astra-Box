@@ -209,16 +209,12 @@ class TimeSeriesView(TabViewBasic):
 
     def init_ui(self):
         print('init Time Series View')
-        #self.race_model = model
         self.time_series = self.race_model.get_time_series()
         if type(self.time_series) == pd.core.frame.DataFrame:
-
             self.plot = TimeSeriesPlot(self, self.time_series)
             self.plot.grid(row=1, column=0, columnspan=3, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
             self.columnconfigure(1, weight=1)
             self.rowconfigure(1, weight=1)
-
-            self.make_plot()
         else:
             label = tk.Label(master=self, text=self.time_series)
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)	
