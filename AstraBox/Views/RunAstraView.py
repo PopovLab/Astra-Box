@@ -114,7 +114,7 @@ class RunAstraView(ttk.Frame):
         worker.start()
         WorkSpace.refresh('RaceModel')
 
-    def save_last_run(exp, equ, rt, ap):
+    def save_last_run(self, exp, equ, rt, ap):
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
         p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
         with p.open(mode= "w") as json_file:
