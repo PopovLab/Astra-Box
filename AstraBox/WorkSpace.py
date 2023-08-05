@@ -7,7 +7,9 @@ def get_location_path(model_kind = None):
     """get workspace location path"""
     if model_kind:
         loc = _location.joinpath(schema[model_kind]['location'])
-        print(loc)
+        if not loc.exists():
+            print(f"make dir {loc}")
+            loc.mkdir()
         return loc
     else:
         return _location
