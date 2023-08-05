@@ -54,6 +54,7 @@ class RTResultPlot(ttk.Frame):
                 if key > iteration: iteration= key
                 X.append(time_stamp)
                 Y.append(values[variable_name])
+            if iteration == 0: continue
             values = rt_result[direction][iteration]
             X0.append(time_stamp)
             Y0.append(values[variable_name])
