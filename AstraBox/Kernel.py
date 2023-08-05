@@ -116,13 +116,10 @@ def set_astra_profile(astra_porfile_name):
 
 class Worker:
 
-    cb_progress = None
-
     def __init__(self, model: RunModel) -> None:
         self.error_flag = False
         self.stdinput = None
         self.run_model = model
-
 
     def set_model_status(self, status):
         self.run_model.data['status'] = status
@@ -228,12 +225,10 @@ class AstraWorker(Worker):
         _logger.info('create AstraWorker')
 
     def WSL_Run(self, work_folder, command):
-            ps_cmd = f'wsl --cd {work_folder} {command}'
-            print(ps_cmd)
-            #_logger.info(f'run: {command}')
-            with asyncio.Runner() as runner:
-                runner.run(self.run(ps_cmd, shell=True))
-            call_progress_callback()
+        ps_cmd = f'wsl --cd {work_folder} {command}'
+        with asyncio.Runner() as runner:
+            runner.run(self.run(ps_cmd, shell=True))
+        call_progress_callback()
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
@@ -258,11 +253,8 @@ class AstraWorker(Worker):
         self.WSL_Run(wd, pack_cmd)
         pack_cmd = f'zip -r race_data.zip lhcd'
         self.WSL_Run(wd, pack_cmd)
-        #asyncio.run(self.run(pack_cmd, shell=True))
 
     def start(self):
-        #if self.test_folder(): return
-        #self.initialization()
         _logger.info(f'start {self.run_model.name}')
 
         self.clear_work_folders()
@@ -280,7 +272,6 @@ class AstraWorker(Worker):
 
         self.pack_data()
 
-        #race_zip_file = f'Data/races/race_{self.run_model.name}.zip'
         zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
         src = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}/race_data.zip'
