@@ -16,15 +16,7 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.ToolBox.ComboBox import ComboBox
 
-image1 = None
-IMAGE_DIR = pathlib.Path(os.path.abspath('Images'))
- 
-def make_image_button(parent, image_file, action):
-    global image1
-    print(IMAGE_DIR)
-    image1 = tk.PhotoImage(file=IMAGE_DIR/image_file)
-    return ttk.Button(parent, image=image1, command=action)
-
+import AstraBox.ToolBox.ImageButton as ImageButton
 
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
@@ -38,7 +30,7 @@ class ConfigPanel(ttk.Frame):
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width= 15)
         self.astra_combo.pack(side=tk.LEFT)
       
-        btn = make_image_button(self, '4231901.png', self.open_config)
+        btn = ImageButton.create(self, '4231901.png', self.open_config)
         btn.pack(side=tk.LEFT)
 
         p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
