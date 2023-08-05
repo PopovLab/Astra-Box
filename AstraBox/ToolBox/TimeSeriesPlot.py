@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 from AstraBox.Views.PlotSettingWindows import PlotSettingWindows
+import AstraBox.ToolBox.ImageButton as ImageButton
 
 def default_time_plot_setting():
     return {
@@ -39,7 +40,8 @@ class TimeSeriesPlot(ttk.Frame):
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)        
 
-        btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
+        #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
+        btn = ImageButton.create(self, '4231901.png', self.option_windows)
         btn.grid(row=1, column=0, sticky=tk.N) 
 
         self.columnconfigure(1, weight=1)
