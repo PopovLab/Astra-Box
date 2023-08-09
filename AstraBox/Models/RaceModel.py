@@ -101,12 +101,25 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
+    def children_files_exists(self, folder_name):
+        list= self.get_children_files(folder_name)
+        return True if len(list)>0 else False
+
+    def get_children_files(self, folder_name):
+        folder = Astra.data_folder[folder_name]
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            p = zipfile.Path(zip, folder)
+            list = [folder + x.name for x in p.iterdir() if x.is_file()]
+        return list
+    
     def get_file_list(self, folder_name):
         folder = Astra.data_folder[folder_name]
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]
         list.sort()  
+        for l in list:
+            print(l)        
         return list
 
     def read_diffusion(self, f):

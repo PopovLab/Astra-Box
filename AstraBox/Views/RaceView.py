@@ -75,8 +75,17 @@ class RaceView(ttk.Frame):
         radial_data_view = RadialDataView(self.notebook, model= model)
         self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
         
-        trajectory_view = TrajectoryView(self.notebook, model= model)
-        self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
+        if model.children_files_exists('TRAJECTROY'):
+            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJECTROY')
+            self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
+
+        if model.children_files_exists('TRAJ_POS'):
+            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJ_POS')
+            self.notebook.add(trajectory_view, text="Traj pos", underline=0, sticky=tk.NE + tk.SW)
+
+        if model.children_files_exists('TRAJ_NEG'):
+            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJ_NEG')
+            self.notebook.add(trajectory_view, text="Traj neg", underline=0, sticky=tk.NE + tk.SW)
 
         distrib_view = DistributionView(self.notebook, model= model)
         self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
@@ -296,11 +305,12 @@ class SpectrumView(TabViewBasic):
 
 
 class TrajectoryView(TabViewBasic):
-    def __init__(self, master, model: RaceModel) -> None:
+    def __init__(self, master, model: RaceModel, folder_name: str) -> None:
         super().__init__(master, model)  
+        self.folder_name = folder_name
 
     def init_ui(self): 
-        self.trajectory_list = self.race_model.get_file_list('TRAJECTROY')
+        self.trajectory_list = self.race_model.get_children_files(self.folder_name)
         self.rays_cache = {}
         n = len(self.trajectory_list)
         if n>0: 
