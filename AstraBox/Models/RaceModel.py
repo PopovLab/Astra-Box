@@ -110,6 +110,7 @@ class RaceModel(BaseModel):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             p = zipfile.Path(zip, folder)
             list = [folder + x.name for x in p.iterdir() if x.is_file()]
+            list.sort()  
         return list
     
     def get_file_list(self, folder_name):
@@ -117,9 +118,7 @@ class RaceModel(BaseModel):
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]
-        list.sort()  
-        for l in list:
-            print(l)        
+            list.sort()       
         return list
 
     def read_diffusion(self, f):
