@@ -21,10 +21,8 @@ class TextPage(ttk.Frame):
         self.text_view = TextView(self, model)
         self.text_view.grid(row=1, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)            
+        self.columnconfigure(0, weight=1)             
         self.rowconfigure(1, weight=1)            
-        #self.InitUI(model)
 
     def clone(self):
         new_name = f'{self.model.name}_clone_{BaseModel.get_uuid_id()[0:4]}'
