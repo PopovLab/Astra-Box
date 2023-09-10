@@ -24,7 +24,7 @@ def read_XY_series(file):
             x_table.append(np.array(row))
 
     for x,y in zip(x_table, y_table):
-        data.append({'X':x , 'Y':y})
+        data.append({'X': np.array(x) , 'Y':np.array(y)})
     return  data
 
 

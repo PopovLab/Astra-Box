@@ -7,12 +7,17 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 speed_of_light = 3.0e+10
-def renorm_maxwell(maxwell):
+def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False):
     X = maxwell['X']
     Y = maxwell['Y']
     vmax = abs(X[0])
-    X = X / vmax
-    Y = Y * vmax /1000 #Эмпирический коэффициент
+    print(f'min: {X.min()} max: {X.max()} vmax: {vmax}')
+    #print(type(X))
+    if norm_vt_flag:
+        X = X / vmax
+    if energy_scale:
+        X = X * np.abs(X)
+    #Y = Y * vmax /1000 #Эмпирический коэффициент
     #print(np.sum(Y))
     return {'X': X, 'Y': Y}
 
@@ -26,16 +31,19 @@ def renorm_maxwell(maxwell):
     #XR = X[nr]    
     #return {'X': X, 'Y': Y, 'TX': [XL, XR], 'TY': [YL, YR]}
 
-def renorm_series(series):
+def renorm_series(series, norm_vt_flag = False, energy_scale = False):
     new_series = []
     for item in series:
-        new_series.append(renorm_maxwell(item))
+        new_series.append(renorm_maxwell(item, norm_vt_flag, energy_scale))
     return new_series
 
 class MaxwellPlot(ttk.Frame):
     def __init__(self, master, m_series, title, time_stamp, уscale_log = True) -> None:
         super().__init__(master)  
+        self.my_series = m_series
         self.уscale_log = уscale_log
+        self.norm_vt_flag = False
+        self.energy_scale = False
         self.title = title
         self.series = renorm_series(m_series)
 
@@ -69,9 +77,15 @@ class MaxwellPlot(ttk.Frame):
         frame = ttk.Frame(self)
   
         self.chk_var = tk.IntVar(master = self, value=self.уscale_log)
+        self.norm_vt_var = tk.IntVar(master = self, value=self.norm_vt_flag)
+        self.eng_scale_var = tk.IntVar(master = self, value=self.energy_scale)
   
         self.checkbtn = ttk.Checkbutton(master=  frame, text="Log scale", variable=self.chk_var, command=self.checkbtn_changed )
-        self.checkbtn.pack(side=tk.LEFT, expand=1, fill=tk.X, padx=5) 
+        self.checkbtn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
+        vt_btn = ttk.Checkbutton(master=  frame, text="VT norm", variable=self.norm_vt_var, command=self.checkbtn_changed2 )
+        vt_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
+        eng_btn = ttk.Checkbutton(master=  frame, text="Eng scale", variable=self.eng_scale_var, command=self.checkbtn_changed2 )
+        eng_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
         ns= len(self.series)
         self.index_1 = tk.IntVar(master = self, value=0)
         self.index_1.trace_add('write', self.update_plot)
@@ -104,13 +118,21 @@ class MaxwellPlot(ttk.Frame):
             self.уscale_log = True
         else:
             self.уscale_log = False
+
+        self.show_series(save_lim = False) 
+
+    def checkbtn_changed2(self):
+        self.norm_vt_flag = True if self.norm_vt_var.get() ==1 else False
+        self.energy_scale = True if self.eng_scale_var.get() ==1 else False
+        self.series = renorm_series(self.my_series, self.norm_vt_flag, self.energy_scale)
         self.show_series(save_lim = False) 
 
     def update_plot(self, var, indx, mode):
         self.show_series()
 
     def update(self, m_series, time_stamp):
-        self.series = renorm_series(m_series)
+        self.my_series = m_series
+        self.series = renorm_series(m_series, self.norm_vt_flag, self.energy_scale)
         self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         self.show_series()
 
