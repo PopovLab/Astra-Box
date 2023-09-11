@@ -7,7 +7,7 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 speed_of_light = 3.0e+10
-def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False):
+def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False, diff = False):
     X = maxwell['X']
     Y = maxwell['Y']
     vmax = abs(X[0])
@@ -19,6 +19,12 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False):
         X = X * np.abs(X)
     #Y = Y * vmax /1000 #Эмпирический коэффициент
     #print(np.sum(Y))
+    if diff:
+        n2 = int(len(X)/2)
+        #print(f' {X[n2-3]}  {X[n2-2]}  {X[n2-1]}  {X[n2]}  {X[n2+1]}  {X[n2+2]} ')
+        diff_Y = np.abs(np.array([Y[n2-i]-Y[n2+i] for i in range(n2-1)]))
+        X = X[n2:n2+n2-1]
+        return {'X': X, 'Y': diff_Y}
     n4 = int(len(X)/4)
     n3 = int(3*n4)+2
     return {'X': X[n4:n3], 'Y': Y[n4:n3]}
@@ -33,10 +39,10 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False):
     #XR = X[nr]    
     #return {'X': X, 'Y': Y, 'TX': [XL, XR], 'TY': [YL, YR]}
 
-def renorm_series(series, norm_vt_flag = False, energy_scale = False):
+def renorm_series(series, norm_vt_flag = False, energy_scale = False,  diff = False):
     new_series = []
     for item in series:
-        new_series.append(renorm_maxwell(item, norm_vt_flag, energy_scale))
+        new_series.append(renorm_maxwell(item, norm_vt_flag, energy_scale, diff))
     return new_series
 
 class MaxwellPlot(ttk.Frame):
@@ -46,6 +52,7 @@ class MaxwellPlot(ttk.Frame):
         self.уscale_log = уscale_log
         self.norm_vt_flag = False
         self.energy_scale = False
+        self.diff = False
         self.title = title
         self.series = renorm_series(m_series)
 
@@ -81,13 +88,16 @@ class MaxwellPlot(ttk.Frame):
         self.chk_var = tk.IntVar(master = self, value=self.уscale_log)
         self.norm_vt_var = tk.IntVar(master = self, value=self.norm_vt_flag)
         self.eng_scale_var = tk.IntVar(master = self, value=self.energy_scale)
+        self.diff_var = tk.IntVar(master = self, value=self.energy_scale)
   
         self.checkbtn = ttk.Checkbutton(master=  frame, text="Log scale", variable=self.chk_var, command=self.checkbtn_changed )
         self.checkbtn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
         vt_btn = ttk.Checkbutton(master=  frame, text="VT norm", variable=self.norm_vt_var, command=self.checkbtn_changed2 )
         vt_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
-        eng_btn = ttk.Checkbutton(master=  frame, text="Eng scale", variable=self.eng_scale_var, command=self.checkbtn_changed2 )
+        eng_btn = ttk.Checkbutton(master=  frame, text="Engery", variable=self.eng_scale_var, command=self.checkbtn_changed2 )
         eng_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
+        diff_btn = ttk.Checkbutton(master=  frame, text="Diff", variable=self.diff_var, command=self.checkbtn_changed2 )
+        diff_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
         ns= len(self.series)
         self.index_1 = tk.IntVar(master = self, value=0)
         self.index_1.trace_add('write', self.update_plot)
@@ -126,7 +136,8 @@ class MaxwellPlot(ttk.Frame):
     def checkbtn_changed2(self):
         self.norm_vt_flag = True if self.norm_vt_var.get() ==1 else False
         self.energy_scale = True if self.eng_scale_var.get() ==1 else False
-        self.series = renorm_series(self.my_series, self.norm_vt_flag, self.energy_scale)
+        self.diff = True if self.diff_var.get() ==1 else False
+        self.series = renorm_series(self.my_series, self.norm_vt_flag, self.energy_scale, self.diff)
         self.show_series(save_lim = False) 
 
     def update_plot(self, var, indx, mode):
@@ -134,7 +145,7 @@ class MaxwellPlot(ttk.Frame):
 
     def update(self, m_series, time_stamp):
         self.my_series = m_series
-        self.series = renorm_series(m_series, self.norm_vt_flag, self.energy_scale)
+        self.series = renorm_series(m_series, self.norm_vt_flag, self.energy_scale, self.diff)
         self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         self.show_series()
 
