@@ -14,12 +14,14 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False):
     print(f'min: {X.min()} max: {X.max()} vmax: {vmax}')
     #print(type(X))
     if norm_vt_flag:
-        X = X / vmax
+        X = 2*X / vmax
     if energy_scale:
         X = X * np.abs(X)
     #Y = Y * vmax /1000 #Эмпирический коэффициент
     #print(np.sum(Y))
-    return {'X': X, 'Y': Y}
+    n4 = int(len(X)/4)
+    n3 = int(3*n4)+2
+    return {'X': X[n4:n3], 'Y': Y[n4:n3]}
 
     #thermal_vel = vmax/speed_of_light/2
     #n = len(X)
