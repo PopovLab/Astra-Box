@@ -13,7 +13,7 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False, diff = F
     vmax = abs(X[0])
     #print(f'min: {X.min()} max: {X.max()} vmax: {vmax}')
     #print(type(X))
-    if norm_vt_flag:
+    if not norm_vt_flag:
         X = 2*X / vmax
     if energy_scale:
         X = X * np.abs(X)
@@ -21,6 +21,7 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False, diff = F
     #print(np.sum(Y))
     if diff:
         n2 = int(len(X)/2)
+        print(f'n2 = {n2}')
         #print(f' {X[n2-3]}  {X[n2-2]}  {X[n2-1]}  {X[n2]}  {X[n2+1]}  {X[n2+2]} ')
         diff_Y = np.abs(np.array([Y[n2-i]-Y[n2+i] for i in range(n2-1)]))
         X = X[n2:n2+n2-1]
@@ -53,7 +54,10 @@ class MaxwellPlot(ttk.Frame):
         self.norm_vt_flag = False
         self.energy_scale = False
         self.diff = False
+        self.cross = False
+        self.selected_v =  0
         self.title = title
+
         self.series = renorm_series(m_series)
 
         tb = self.make_toolbar()
@@ -62,7 +66,7 @@ class MaxwellPlot(ttk.Frame):
         self.fig = plt.figure(figsize=(8, 5))
         self.fig.suptitle(f'{self.title} Time={time_stamp}')
         self.ax1 = self.fig.subplots(1, 1)
-
+        self.ax2 = None
         #  show distribution
         for item in  self.series:
             self.ax1.plot(item['X'], item['Y'])
@@ -81,6 +85,30 @@ class MaxwellPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         #self.rowconfigure(0, weight=1)        
         self.rowconfigure(1, weight=1)
+        #self.fig.canvas.mpl_connect('pick_event', self.on_pick)
+        self.fig.canvas.mpl_connect('button_press_event', self.on_click)
+
+
+    def on_click(self, event):
+        print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+            ('double' if event.dblclick else 'single', event.button,
+            event.x, event.y, event.xdata, event.ydata))
+        if self.cross:
+            self.selected_v = event.xdata
+            self.v_cross.set_xdata([self.selected_v,self.selected_v]) 
+            self.show_cross(event.xdata)
+    
+    def on_pick(self, event):
+        thisline = event.artist
+        xdata = thisline.get_xdata()
+        ydata = thisline.get_ydata()
+        ind = event.ind
+        points = tuple(zip(xdata[ind], ydata[ind]))
+        print('onpick points:', points[0])
+        if self.cross:
+            self.show_cross(points[0][0])
+
+   
 
     def make_toolbar(self):
         frame = ttk.Frame(self)
@@ -88,7 +116,8 @@ class MaxwellPlot(ttk.Frame):
         self.chk_var = tk.IntVar(master = self, value=self.уscale_log)
         self.norm_vt_var = tk.IntVar(master = self, value=self.norm_vt_flag)
         self.eng_scale_var = tk.IntVar(master = self, value=self.energy_scale)
-        self.diff_var = tk.IntVar(master = self, value=self.energy_scale)
+        self.diff_var = tk.IntVar(master = self, value=self.diff)
+        self.cross_var = tk.IntVar(master = self, value=self.cross)
   
         self.checkbtn = ttk.Checkbutton(master=  frame, text="Log scale", variable=self.chk_var, command=self.checkbtn_changed )
         self.checkbtn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
@@ -98,6 +127,9 @@ class MaxwellPlot(ttk.Frame):
         eng_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
         diff_btn = ttk.Checkbutton(master=  frame, text="Diff", variable=self.diff_var, command=self.checkbtn_changed2 )
         diff_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
+        cross_btn = ttk.Checkbutton(master=  frame, text="Cross", variable=self.cross_var, command=self.checkbtn_changed2 )
+        cross_btn.pack(side=tk.LEFT,  fill=tk.X, padx=2) 
+        
         ns= len(self.series)
         self.index_1 = tk.IntVar(master = self, value=0)
         self.index_1.trace_add('write', self.update_plot)
@@ -132,40 +164,93 @@ class MaxwellPlot(ttk.Frame):
             self.уscale_log = False
 
         self.show_series(save_lim = False) 
+        if self.cross:
+            self.show_cross()
 
     def checkbtn_changed2(self):
-        self.norm_vt_flag = True if self.norm_vt_var.get() ==1 else False
-        self.energy_scale = True if self.eng_scale_var.get() ==1 else False
-        self.diff = True if self.diff_var.get() ==1 else False
+        self.norm_vt_flag = True if self.norm_vt_var.get() == 1 else False
+        self.energy_scale = True if self.eng_scale_var.get() == 1 else False
+        self.diff = True if self.diff_var.get() == 1 else False
+        self.cross = True if self.cross_var.get() == 1 else False
         self.series = renorm_series(self.my_series, self.norm_vt_flag, self.energy_scale, self.diff)
+        if self.cross:
+            self.selected_v =  0
+            self.ax1.remove()
+            if self.ax2:
+                self.ax2.remove()
+            self.ax1, self.ax2 = self.fig.subplots(2, 1)
+            self.show_cross()
+        else:
+            self.ax1.remove()
+            self.ax2.remove()           
+            self.ax1 = self.fig.subplots(1, 1)
         self.show_series(save_lim = False) 
 
     def update_plot(self, var, indx, mode):
         self.show_series()
+        if self.cross:
+            self.show_cross()
+
+    def show_cross(self, v = 0):
+        sx = self.series[0]['X']
+        index = np.abs(sx - v).argmin()
+        
+        print(v)    
+        print(index)
+        self.ax2.clear()
+        self.canvas.draw()
+        i1 = self.index_1.get()
+        i2 = i1 + self.index_2.get()
+        if i2>len(self.series):
+            i2 = len(self.series)
+        #print(f'{i1} {i2}')
+        cross = []
+        
+        for ser in self.series[i1:i2]:
+            if self.norm_vt_flag:
+                index = np.abs(ser['X'] - v).argmin()
+            cross += [ser['Y'][index]]
+        #print(cross)
+        legend=f"v ={sx[index]:.5f}"            
+        print(legend)
+        self.ax2.plot(range(i1,i2), cross, label= legend);        
+        if self.уscale_log:
+            self.ax2.set_yscale('log')
+        else:
+            self.ax2.set_yscale('linear')
+        self.ax2.legend(loc='upper right')
+
+        self.canvas.draw()
 
     def update(self, m_series, time_stamp):
         self.my_series = m_series
         self.series = renorm_series(m_series, self.norm_vt_flag, self.energy_scale, self.diff)
         self.fig.suptitle(f'{self.title}. Time={time_stamp}')
         self.show_series()
+        if self.cross:
+            self.show_cross(self.selected_v)
 
     def show_series(self, save_lim = True):
-        if save_lim:
-            bottom, top = self.ax1.get_ylim()
-            left, right = self.ax1.get_xlim()        
+        bottom, top = self.ax1.get_ylim()
+        left, right = self.ax1.get_xlim()        
+
         self.ax1.clear()
+        
         i1 = self.index_1.get()
         i2 = i1 + self.index_2.get()
         if i2>len(self.series):
             i2 = len(self.series)
         print(f'{i1} {i2}')
         for item in self.series[i1:i2]:
-            self.ax1.plot(item['X'], item['Y']);
+            self.ax1.plot(item['X'], item['Y'])
         if self.уscale_log:
             self.ax1.set_yscale('log')
         if save_lim:
             self.ax1.set_ylim(bottom, top)
             self.ax1.set_xlim(left, right)            
+        if self.cross:
+            bottom, top = self.ax1.get_ylim()
+            self.v_cross,  = self.ax1.plot([self.selected_v, self.selected_v], [bottom, top])            
         self.canvas.draw()
 
     def destroy(self):
