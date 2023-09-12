@@ -182,7 +182,8 @@ class MaxwellPlot(ttk.Frame):
             self.show_cross()
         else:
             self.ax1.remove()
-            self.ax2.remove()           
+            self.ax2.remove()       
+            self.ax2 = None    
             self.ax1 = self.fig.subplots(1, 1)
         self.show_series(save_lim = False) 
 
