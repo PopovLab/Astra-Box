@@ -113,6 +113,12 @@ class RaceModel(BaseModel):
             list.sort()  
         return list
     
+    def read_maxwell_data(self, folder_name):
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.bin': return
+
     def get_file_list(self, folder_name):
         folder = Astra.data_folder[folder_name]
         length = len(folder)
@@ -196,7 +202,7 @@ class RaceModel(BaseModel):
                 rays = []
                 for nt in n_traj_list:
                     ray = traj[traj['N_traj'] == nt]
-                    rays.append(ray)
+                    rays.append(ray.reset_index(drop=True))
         return rays, time_stamp  
 
 
