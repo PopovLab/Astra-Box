@@ -4,6 +4,7 @@ data_folder = {
     'RADIAL_DATA'  : "dat/XData/",
     'DIFFUSION'    : 'lhcd/diffusion/',
     'MAXWELL'      : 'lhcd/maxwell/',
+    'MAXWELL_fij0' : 'lhcd/maxwell_fij0/',
     'DISTRIBUTION' : 'lhcd/distribution/',
     'TRAJECTROY'   : 'lhcd/traj/',
     'TRAJ_POS'     : 'lhcd/traj/pos/',
