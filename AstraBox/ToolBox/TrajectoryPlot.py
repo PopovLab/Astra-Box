@@ -13,12 +13,17 @@ class TrajectoryPlot(ttk.Frame):
         self.plasma_bound = plasma_bound
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_title(time_stamp)
-        self.ax.axis('equal')
-        self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        self.ax1, self.ax2 = self.fig.subplots(2, 1)
+        self.ax1.set_title(time_stamp, fontsize=12)
+        self.ax1.axis('equal')
+        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
-            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
+            self.ax1.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
+
+        self.ax2.set_title('N_par', fontsize=12)
+        self.ax2.set_xlabel('theta', fontsize=12)
+        for ray in rays:
+            self.ax2.plot(ray['theta'], ray['N_par'], alpha=0.5, linewidth=0.5)
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -32,11 +37,19 @@ class TrajectoryPlot(ttk.Frame):
         self.rowconfigure(0, weight=1)
 
     def update(self, rays, time_stamp):
-        self.ax.clear()
-        self.ax.set_title(time_stamp)
-        self.ax.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        self.ax1.clear()
+        self.ax1.set_title(time_stamp, fontsize=12)
+        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         for ray in rays:
-            self.ax.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
+            self.ax1.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
+        
+        self.ax2.clear()
+        self.ax2.set_title('N_par', fontsize=12)
+        self.ax2.set_xlabel('theta', fontsize=12)
+        for ray in rays:
+            #print(ray)
+            #self.ax2.plot(ray['N_par'], alpha=0.5, linewidth=0.5)   
+            self.ax2.plot(ray['theta'], ray['N_par'], alpha=0.5, linewidth=0.5)         
         self.canvas.draw()
 
     def destroy(self):
