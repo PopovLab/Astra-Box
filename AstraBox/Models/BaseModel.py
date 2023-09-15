@@ -28,12 +28,12 @@ class BaseModel:
         return 'BaseModel'
 
     def get_text(self):
-        with self.path.open('r', encoding='utf-8',) as f:
+        with self.path.open('r', encoding='utf-8') as f:
             lines = f.read()
         return lines
 
     def save_text(self, text):
-        with self.path.open(mode='w') as f:
+        with self.path.open(mode='w', encoding='utf-8') as f:
             f.write(text)
 
     def read(self, folder= None, path= None):
