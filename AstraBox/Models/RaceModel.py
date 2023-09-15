@@ -203,6 +203,7 @@ class RaceModel(BaseModel):
                 for nt in n_traj_list:
                     ray = traj[traj['N_traj'] == nt]
                     rays.append(ray.reset_index(drop=True))
+                    #rays.append(ray)
         return rays, time_stamp  
 
 
