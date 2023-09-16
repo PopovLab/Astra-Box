@@ -22,8 +22,8 @@ class TrajectoryPlotOptionWindows():
         win.title("Settings")
         win.geometry("220x400")
 
-        var = tk.IntVar(name= 'show ax2', value= self.plot_options['axis2'])
-        chkbtn = tk.Checkbutton(win, text='show ax2', variable=var, command= self.check_clicked )
+        var = tk.IntVar(name= 'show graph', value= self.plot_options['axis2'])
+        chkbtn = tk.Checkbutton(win, text='show graph', variable=var, command= self.check_clicked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
         fr1 = tk.Frame(win)
@@ -104,8 +104,8 @@ class TrajectoryPlot(ttk.Frame):
         for ray in rays:
             self.ax1.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
 
-        self.ax2.set_title('N_par', fontsize=12)
-        self.ax2.set_xlabel('theta', fontsize=12)
+        self.ax2.set_title('N_par', fontsize=10)
+        self.ax2.set_xlabel('theta', fontsize=10)
         for ray in rays:
             self.ax2.plot(ray['theta'], ray['N_par'], alpha=0.5, linewidth=0.5)
 
