@@ -92,7 +92,8 @@ class TrajectoryPlot(ttk.Frame):
         self.rays = rays
         self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
         self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
-                    
+        # Make a list of colors cycling through the default series.
+        self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         self.option_windows = TrajectoryPlotOptionWindows(self, self.plot_options, self.update_plot_options)
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
@@ -126,49 +127,59 @@ class TrajectoryPlot(ttk.Frame):
 
     def update_plot_options(self):
         self.update_rays()
-        self.update_axis2()
+        self.update_graph()
         self.canvas.draw()
 
 
-    def update_axis2(self):
+    def update_graph(self):
         self.ax2.clear()
         x_axis = self.plot_options['x_axis']
         y_axis = self.plot_options['y_axis']
         cut_index = self.plot_options['cut_index']
-        self.ax2.set_ylabel(y_axis, fontsize=12)
-        self.ax2.set_xlabel(x_axis, fontsize=12)
+        self.ax2.set_ylabel(y_axis, fontsize=10)
+        self.ax2.set_xlabel(x_axis, fontsize=10)
+        segs = []
         match x_axis:
             case 'ray_index':
                 rl = len(self.rays)
                 for id, ray in enumerate(self.rays):
                     ci = len(ray[y_axis][0:cut_index])
                     ri = np.full((ci), id)
-                    #print(ri)
-                    #print(ray[y_axis][0:cut_index])
-                    if cut_index>3:
-                        self.ax2.plot(ri, ray[y_axis][0:cut_index], alpha=0.5, linewidth=1.5)         
-                    else:
-                        self.ax2.plot(ri, ray[y_axis][0:cut_index], marker='o', markersize= 1, alpha=0.5, linewidth=1.5)         
+                    curve = np.column_stack([ri, ray[y_axis][0:cut_index]])
+                    segs.append(curve)         
             case 'index':
                 for ray in self.rays:
-                    if cut_index>3:
-                        self.ax2.plot(ray[y_axis][0:cut_index], alpha=0.5, linewidth=0.5)         
-                    else:
-                        self.ax2.plot(ray[y_axis][0:cut_index], marker='o', markersize= 1, alpha=0.5, linewidth=0.5)         
+                    curve = np.column_stack([ray[y_axis].index[0:cut_index], ray[y_axis][0:cut_index]])
+                    segs.append(curve)  
             case _:
                 for ray in self.rays:
-                    if cut_index>3:
-                        self.ax2.plot(ray[x_axis][0:cut_index], ray[y_axis][0:cut_index], alpha=0.5, linewidth=0.5)
-                    else:
-                        self.ax2.plot(ray[x_axis][0:cut_index], ray[y_axis][0:cut_index], marker='o', markersize= 1, alpha=0.5, linewidth=0.5)         
-        self.canvas.draw()
+                    curve = np.column_stack([ray[x_axis][0:cut_index], ray[y_axis][0:cut_index]])
+                    segs.append(curve) 
+         
+        col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
+        self.ax2.add_collection(col, autolim=True)     
+
+        if cut_index<5:
+            cl = len(self.colors)
+            for id, sg in enumerate(segs):
+                clr = self.colors[id % cl]
+                stars = collections.RegularPolyCollection(
+                                                    numsides=5, # a pentagon
+                                                    sizes=(5,),
+                                                    facecolors= (clr,),
+                                                    edgecolors= (clr,),
+                                                    linewidths= (1,),
+                                                    offsets= sg,
+                                                    offset_transform=self.ax2.transData,
+                                                    )
+                self.ax2.add_collection(stars, autolim=True)  
+                self.ax2.autoscale_view()   
+        self.ax2.autoscale_view()                           
 
     def update_rays(self):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
 
-        # Make a list of colors cycling through the default series.
-        colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         self.ax1.clear()
         self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         cut_index = self.plot_options['cut_index']
@@ -176,15 +187,24 @@ class TrajectoryPlot(ttk.Frame):
         for ray in self.rays:
             curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
             segs.append(curve)
-        col = collections.LineCollection(segs, colors=colors, alpha=0.5, linewidth=0.5)
+        col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
-        #if cut_index>3:
-        #    for ray in self.rays:
-        #        self.ax1.plot(ray['R'][0:cut_index], ray['Z'][0:cut_index], alpha=0.5, linewidth=0.5)        
-        #else:
-        #    for ray in self.rays:
-        #        self.ax1.plot(ray['R'][0:cut_index], ray['Z'][0:cut_index], marker='o', markersize= 1,  alpha=0.5, linewidth=0.5)     
+        if cut_index<5:
+            cl = len(self.colors)
+            for id, sg in enumerate(segs):
+                clr = self.colors[id % cl]
+                stars = collections.RegularPolyCollection(
+                                                    numsides=5, # a pentagon
+                                                    sizes=(5,),
+                                                    facecolors= (clr,),
+                                                    edgecolors= (clr,),
+                                                    linewidths= (1,),
+                                                    offsets= sg,
+                                                    offset_transform=self.ax1.transData,
+                                                    )
+                self.ax1.add_collection(stars, autolim=True)  
+                self.ax1.autoscale_view()   
         self.ax1.set_ylim(bottom, top)
         self.ax1.set_xlim(left, right)                      
 
@@ -192,9 +212,8 @@ class TrajectoryPlot(ttk.Frame):
         self.rays = rays
         self.update_rays()
         self.ax1.set_title(time_stamp, fontsize=12)
-    
-        self.update_axis2()
-
+        self.update_graph()
+        self.canvas.draw()
 
 
     def destroy(self):
