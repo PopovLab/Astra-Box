@@ -349,7 +349,7 @@ class TrajectoryView(TabViewBasic):
                                     resolution=1 )
             self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-            self.index_2 = tk.IntVar(master = self, value=len(rays)-1)
+            self.index_2 = tk.IntVar(master = self, value= len(rays)-1 if len(rays)<500 else 500)
             self.index_2.trace_add('write', self.update_plot)
             self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL,
                                     sliderlength = 20,
