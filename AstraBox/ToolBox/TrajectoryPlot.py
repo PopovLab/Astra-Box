@@ -3,6 +3,8 @@ import tkinter.ttk as ttk
 import numpy as np
 from matplotlib import cm
 import matplotlib.pyplot as plt
+from matplotlib import collections, transforms
+
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 import AstraBox.ToolBox.ImageButton as ImageButton
@@ -123,7 +125,9 @@ class TrajectoryPlot(ttk.Frame):
         self.option_windows.show()
 
     def update_plot_options(self):
+        self.update_rays()
         self.update_axis2()
+        self.canvas.draw()
 
 
     def update_axis2(self):
@@ -159,15 +163,38 @@ class TrajectoryPlot(ttk.Frame):
                         self.ax2.plot(ray[x_axis][0:cut_index], ray[y_axis][0:cut_index], marker='o', markersize= 1, alpha=0.5, linewidth=0.5)         
         self.canvas.draw()
 
+    def update_rays(self):
+        bottom, top = self.ax1.get_ylim()
+        left, right = self.ax1.get_xlim()        
+
+        # Make a list of colors cycling through the default series.
+        colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        self.ax1.clear()
+        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        cut_index = self.plot_options['cut_index']
+        segs = []
+        for ray in self.rays:
+            curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
+            segs.append(curve)
+        col = collections.LineCollection(segs, colors=colors, alpha=0.5, linewidth=0.5)
+        self.ax1.add_collection(col, autolim=True)
+        
+        #if cut_index>3:
+        #    for ray in self.rays:
+        #        self.ax1.plot(ray['R'][0:cut_index], ray['Z'][0:cut_index], alpha=0.5, linewidth=0.5)        
+        #else:
+        #    for ray in self.rays:
+        #        self.ax1.plot(ray['R'][0:cut_index], ray['Z'][0:cut_index], marker='o', markersize= 1,  alpha=0.5, linewidth=0.5)     
+        self.ax1.set_ylim(bottom, top)
+        self.ax1.set_xlim(left, right)                      
+
     def update(self, rays, time_stamp):
         self.rays = rays
-        self.ax1.clear()
+        self.update_rays()
         self.ax1.set_title(time_stamp, fontsize=12)
-        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
-        for ray in rays:
-            self.ax1.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
-        
+    
         self.update_axis2()
+
 
 
     def destroy(self):
