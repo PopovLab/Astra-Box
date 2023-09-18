@@ -66,11 +66,11 @@ class TextView(ttk.Frame):
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"{model.name}"
-        self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
+        #self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
         self.model = model
 
-        self.hp = HeaderPanel(self, self.header_content)
-        self.hp.grid(row=0, column=0, columnspan=5, padx=0, sticky=tk.N + tk.S + tk.E + tk.W)
+        #self.hp = HeaderPanel(self, self.header_content)
+        #self.hp.grid(row=0, column=0, columnspan=5, padx=0, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.text_box = ScrolledText(self, bg = "mint cream", wrap="none")
         self.text_box.grid(row=2, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)

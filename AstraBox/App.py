@@ -9,6 +9,8 @@ from AstraBox.Views.ContentFrame import ContentFrame
 from AstraBox.Views.EmptyView import EmptyView
 from AstraBox.Views.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
+from AstraBox.Pages.ExpPage import ExpPage
+from AstraBox.Pages.TextPage import TextPage
 from AstraBox.Views.RaceView import RaceView
 from AstraBox.Views.RunAstraView import RunAstraView
 
@@ -91,11 +93,11 @@ class App(tk.Tk):
             case 'RTModel':
                 model_view = RTModelView(self.content_frame, model)     
             case 'ExpModel':
-                model_view = TextView(self.content_frame, model)                     
+                model_view = ExpPage(self.content_frame, model)                     
             case 'EquModel':
-                model_view = TextView(self.content_frame, model)     
+                model_view = TextPage(self.content_frame, model)     
             case 'SbrModel':
-                model_view = TextView(self.content_frame, model)                   
+                model_view = TextPage(self.content_frame, model)                   
             case 'RaceModel':
                 model_view = RaceView(self.content_frame, model)                 
             case _:
