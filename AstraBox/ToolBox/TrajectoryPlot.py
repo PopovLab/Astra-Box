@@ -22,8 +22,8 @@ class TrajectoryPlotOptionWindows():
         win.title("Settings")
         win.geometry("220x400")
 
-        var = tk.IntVar(name= 'show graph', value= self.plot_options['axis2'])
-        chkbtn = tk.Checkbutton(win, text='show graph', variable=var, command= self.check_clicked )
+        self.chkvar = tk.IntVar(name= 'show graph', value= self.plot_options['show_graph'])
+        chkbtn = tk.Checkbutton(win, text='show graph', variable= self.chkvar, command= self.check_clicked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
         fr1 = tk.Frame(win)
@@ -55,9 +55,14 @@ class TrajectoryPlotOptionWindows():
                        from_= 1, 
                        to= self.plot_options['max_index'] )
         self.hs.pack(padx=5, pady=5, fill=tk.X)
+        win.grab_set()
+        win.focus_set()
+        win.wait_window()
 
     def check_clicked(self):
-        pass
+        self.plot_options['show_graph'] = True if self.chkvar.get() == 1 else False
+        if self.on_update_options:
+            self.on_update_options()
 
     def combo_selected1(self, *args):
         print(self.combo1.get())
@@ -79,8 +84,8 @@ class TrajectoryPlotOptionWindows():
 
 class TrajectoryPlot(ttk.Frame):
     plot_options = { 
-        'axis2' : 0 ,
-        'term_list' : ['ab','cd'],
+        'show_graph' : False,
+        'term_list' : [],
         'x_axis' : 'theta',
         'y_axis' : 'N_par',
         'cut_index' : 10,
@@ -89,25 +94,21 @@ class TrajectoryPlot(ttk.Frame):
     def __init__(self, master, rays, time_stamp, plasma_bound) -> None:
         super().__init__(master)  
         self.plasma_bound = plasma_bound
+        self.time_stamp = time_stamp
         self.rays = rays
         self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
         self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
+        self.plot_options['cut_index'] = self.plot_options['max_index']
+        self.show_graph = self.plot_options['show_graph']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-        self.option_windows = TrajectoryPlotOptionWindows(self, self.plot_options, self.update_plot_options)
+       
+
+        self.ax1 = None
+        self.ax2 = None
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
-        self.ax1, self.ax2 = self.fig.subplots(2, 1)
-        self.ax1.set_title(time_stamp, fontsize=12)
-        self.ax1.axis('equal')
-        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
-        for ray in rays:
-            self.ax1.plot(ray['R'], ray['Z'], alpha=0.5, linewidth=0.5)
-
-        self.ax2.set_title('N_par', fontsize=10)
-        self.ax2.set_xlabel('theta', fontsize=10)
-        for ray in rays:
-            self.ax2.plot(ray['theta'], ray['N_par'], alpha=0.5, linewidth=0.5)
+        self.init_axis()
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -122,12 +123,39 @@ class TrajectoryPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+    def init_axis(self):
+        if self.show_graph:
+            self.ax1, self.ax2 = self.fig.subplots(2, 1)
+            self.ax1.set_title(self.time_stamp, fontsize=10)
+            self.ax1.axis('equal')
+            self.update_graph()
+        else:
+            self.ax1 = self.fig.subplots(1, 1)
+            self.ax1.set_title(self.time_stamp, fontsize=10)
+            self.ax1.axis('equal')
+        self.update_rays()
+
+
+    def clear_axis(self):
+        if self.ax1:
+            self.ax1.remove()
+            self.ax1 = None
+        if self.ax2:
+            self.ax2.remove()
+            self.ax2 = None
+
     def show_option_windows(self):
+        self.option_windows = TrajectoryPlotOptionWindows(self, self.plot_options, self.update_plot_options)
         self.option_windows.show()
 
     def update_plot_options(self):
-        self.update_rays()
-        self.update_graph()
+        if self.show_graph != self.plot_options['show_graph']:
+            self.clear_axis()
+            self.show_graph = self.plot_options['show_graph']
+            self.init_axis()
+        self.update_rays(save_lim= True)
+        if self.show_graph:
+            self.update_graph()
         self.canvas.draw()
 
 
@@ -176,7 +204,7 @@ class TrajectoryPlot(ttk.Frame):
                 self.ax2.autoscale_view()   
         self.ax2.autoscale_view()                           
 
-    def update_rays(self):
+    def update_rays(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
 
@@ -204,15 +232,18 @@ class TrajectoryPlot(ttk.Frame):
                                                     offset_transform=self.ax1.transData,
                                                     )
                 self.ax1.add_collection(stars, autolim=True)  
-                self.ax1.autoscale_view()   
-        self.ax1.set_ylim(bottom, top)
-        self.ax1.set_xlim(left, right)                      
+        if save_lim:
+            self.ax1.set_ylim(bottom, top)
+            self.ax1.set_xlim(left, right)                      
+        else:
+            self.ax1.autoscale_view()
 
     def update(self, rays, time_stamp):
         self.rays = rays
-        self.update_rays()
+        self.update_rays(save_lim= True)
         self.ax1.set_title(time_stamp, fontsize=12)
-        self.update_graph()
+        if self.show_graph:
+            self.update_graph()
         self.canvas.draw()
 
 
