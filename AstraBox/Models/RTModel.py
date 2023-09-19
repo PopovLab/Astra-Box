@@ -362,12 +362,7 @@ class RTModel(BaseModel):
         for section_name, items in self.setting.items():
             if 'value' in items:
                 continue
-            if section_name == "spectrum":
-                print('prepare: '+ section_name)      
-                #lines += prepare_spectrum()
-            else:
-                #print('section: '+ section_name)  
-                #print(items)
+            if section_name != "spectrum":
                 lines.append("!"*15 + " "+ section_name + " "+ "!"*(60-len(section_name)) + "\n")
                 lines += [ item_to_line(item) for name, item in items.items() if name !='total_power']
                 
