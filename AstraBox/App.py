@@ -12,7 +12,7 @@ from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
 from AstraBox.Pages.RacePage import RacePage
-from AstraBox.Views.RunAstraView import RunAstraView
+from AstraBox.Pages.RunAstraPage import RunAstraPage
 
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
@@ -105,7 +105,7 @@ class App(tk.Tk):
                 page = EmptyPage(self.content_frame, model)  
         self.content_frame.set_content(page)
 
-    def show_RunAstraView(self):
+    def show_RunAstraPage(self):
         print('show_calc_view')
-        view = RunAstraView(self.content_frame)  
+        view = RunAstraPage(self.content_frame)  
         self.content_frame.set_content(view)

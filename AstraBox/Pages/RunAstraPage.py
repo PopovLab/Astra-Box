@@ -46,7 +46,7 @@ class ConfigPanel(ttk.Frame):
         print('open_config')
         os.system(f'start notepad {Config.get_config_path()}') 
 
-class RunAstraView(ttk.Frame):
+class RunAstraPage(ttk.Frame):
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
