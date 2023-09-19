@@ -91,19 +91,19 @@ class App(tk.Tk):
         print(f'show {model.name}')
         match model.model_kind:
             case 'RTModel':
-                model_view = RayTracingPage(self.content_frame, model)     
+                page = RayTracingPage(self.content_frame, model)     
             case 'ExpModel':
-                model_view = ExpPage(self.content_frame, model)                     
+                page = ExpPage(self.content_frame, model)                     
             case 'EquModel':
-                model_view = TextPage(self.content_frame, model)     
+                page = TextPage(self.content_frame, model)     
             case 'SbrModel':
-                model_view = TextPage(self.content_frame, model)                   
+                page = TextPage(self.content_frame, model)                   
             case 'RaceModel':
-                model_view = RacePage(self.content_frame, model)                 
+                page = RacePage(self.content_frame, model)                 
             case _:
                 print('create Emptyview')
-                model_view = EmptyPage(self.content_frame, model)  
-        self.content_frame.set_content(model_view)
+                page = EmptyPage(self.content_frame, model)  
+        self.content_frame.set_content(page)
 
     def show_RunAstraView(self):
         print('show_calc_view')
