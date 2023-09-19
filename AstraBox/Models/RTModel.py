@@ -356,11 +356,9 @@ class RTModel(BaseModel):
     def prepare_dat_file(self):
         lines = []
         def item_to_line(item):
-            name = item['title']
-            vs = str(item['value'])
-            v2 = item['description']
-            return '  ' + vs + ' '*(9-len(vs)) + "  ! " + name + ' '*(15-len(name)) + v2 + '\n'
-
+            val = str(item['value'])
+            return f" {val:10} ! {item['title']:15} {item['description']}\n" 
+        
         for section_name, items in self.setting.items():
             if 'value' in items:
                 continue
