@@ -11,7 +11,7 @@ from AstraBox.Views.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
-from AstraBox.Views.RaceView import RaceView
+from AstraBox.Pages.RacePage import RacePage
 from AstraBox.Views.RunAstraView import RunAstraView
 
 import AstraBox.Models.ModelFactory as ModelFactory
@@ -99,7 +99,7 @@ class App(tk.Tk):
             case 'SbrModel':
                 model_view = TextPage(self.content_frame, model)                   
             case 'RaceModel':
-                model_view = RaceView(self.content_frame, model)                 
+                model_view = RacePage(self.content_frame, model)                 
             case _:
                 print('create Emptyview')
                 model_view = EmptyView(self.content_frame, model)  
