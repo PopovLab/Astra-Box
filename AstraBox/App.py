@@ -7,7 +7,7 @@ from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
 from AstraBox.Views.EmptyView import EmptyView
-from AstraBox.Views.RTModelView import RTModelView
+from AstraBox.Pages.RTModelView import RTModelView
 from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
