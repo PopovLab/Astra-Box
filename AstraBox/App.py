@@ -6,7 +6,7 @@ import tkinter.messagebox as messagebox
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
-from AstraBox.Views.EmptyView import EmptyView
+from AstraBox.Pages.EmptyPage import EmptyPage
 from AstraBox.Pages.RayTracingPage import RayTracingPage
 from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
@@ -102,7 +102,7 @@ class App(tk.Tk):
                 model_view = RacePage(self.content_frame, model)                 
             case _:
                 print('create Emptyview')
-                model_view = EmptyView(self.content_frame, model)  
+                model_view = EmptyPage(self.content_frame, model)  
         self.content_frame.set_content(model_view)
 
     def show_RunAstraView(self):
