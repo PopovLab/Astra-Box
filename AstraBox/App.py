@@ -7,7 +7,7 @@ from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
 from AstraBox.Views.EmptyView import EmptyView
-from AstraBox.Pages.RTPage import RTPage
+from AstraBox.Pages.RayTracingPage import RayTracingPage
 from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
@@ -91,7 +91,7 @@ class App(tk.Tk):
         print(f'show {model.name}')
         match model.model_kind:
             case 'RTModel':
-                model_view = RTPage(self.content_frame, model)     
+                model_view = RayTracingPage(self.content_frame, model)     
             case 'ExpModel':
                 model_view = ExpPage(self.content_frame, model)                     
             case 'EquModel':

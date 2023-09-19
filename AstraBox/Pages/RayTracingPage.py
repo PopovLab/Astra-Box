@@ -37,7 +37,7 @@ class RadioPanel(ttk.Frame):
             self.value.set(self.selected)
 
 
-class RTPage(ttk.Frame):
+class RayTracingPage(ttk.Frame):
     def __init__(self, master, model) -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
