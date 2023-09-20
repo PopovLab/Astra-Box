@@ -93,6 +93,7 @@ class ScalarVarsView(TabViewBasic):
                     s =  scalar_list[index]
                     e.insert(tk.END, s)
                     e.value_key = key_list[index]
+                    e.saved_bg= e['bg']
                     e.bind("<1>", self.handle_click)
                 
                 #e.insert(tk.END, '%d.%d' % (i, j))
@@ -102,10 +103,19 @@ class ScalarVarsView(TabViewBasic):
 
     def handle_click(self, event):
         print(event.widget.value_key)
+
         exp = self.model.get_experiment()
         var = exp.scalars[event.widget.value_key]
         if type(var) is not list:
             return
+        
+        bg = event.widget['bg']
+        if event.widget.saved_bg == bg:
+           event.widget.configure(bg="deepskyblue")
+        else:
+            event.widget.configure(bg=event.widget.saved_bg)
+
+
         if event.widget.value_key in self.visible_series.keys():
             del self.visible_series[event.widget.value_key]
         else:
