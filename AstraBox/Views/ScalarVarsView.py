@@ -1,5 +1,10 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
+
 from AstraBox.Models.ExpModel import Experiment
 
 class TabViewBasic(ttk.Frame):
@@ -21,18 +26,51 @@ class TabViewBasic(ttk.Frame):
         print('init TabViewBasic')
         pass
 
+class ScalarPlot(ttk.Frame):
+    def __init__(self, master, time_series) -> None:
+        super().__init__(master)  
+        self.fig = plt.figure(figsize=(7, 5), dpi=100)        
+        #self.fig.suptitle(f'Astra time series. ')
+        
+        
+        self.ax1 = self.fig.subplots(1, 1)
+        self.canvas = FigureCanvasTkAgg(self.fig, self)   
+        self.show_series(time_series)
+
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan=2)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)        
+
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+    def show_series(self, time_series):
+        self.ax1.clear()
+        for key, serie in time_series.items():
+            self.ax1.plot(serie['time'], serie['values'], label= key)
+        self.ax1.legend(loc='upper right')
+        self.canvas.draw()
+
+    def destroy(self):
+        print("ScalarPlot destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()       
+
 class ScalarVarsView(TabViewBasic):
     def __init__(self, master, model) -> None:
         super().__init__(master, model)        
         title = f"{model.name}"
+        self.visible_series = {}
         self.model = model
-
+        self.scalar_plot = None 
 
     def init_ui(self):
         print('init ScalarVarsView')
         exp = self.model.get_experiment()
         sheet = self.make_sheet(exp)
-        sheet.pack()
+        sheet.pack(pady= 5)
 
     def make_sheet(self, exp: Experiment):
         frame = tk.Frame(self)
@@ -64,3 +102,18 @@ class ScalarVarsView(TabViewBasic):
 
     def handle_click(self, event):
         print(event.widget.value_key)
+        exp = self.model.get_experiment()
+        var = exp.scalars[event.widget.value_key]
+        if type(var) is not list:
+            return
+        if event.widget.value_key in self.visible_series.keys():
+            del self.visible_series[event.widget.value_key]
+        else:
+            time = [t for t, _ in var]
+            value =[v for t, v in var]
+            self.visible_series[event.widget.value_key] = {'time': time,  "values": value}
+        if self.scalar_plot is None:
+            self.scalar_plot = ScalarPlot(self, self.visible_series)
+            self.scalar_plot.pack(pady= 5)
+        else:
+            self.scalar_plot.show_series(self.visible_series)
