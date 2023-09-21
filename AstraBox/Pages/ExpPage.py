@@ -22,8 +22,8 @@ class ExpPage(ttk.Frame):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        text_view = TextView(self, model)
-        self.notebook.add(text_view, text="text view", underline=0, sticky=tk.NE + tk.SW)
+        self.text_view = TextView(self, model)
+        self.notebook.add(self.text_view, text="text view", underline=0, sticky=tk.NE + tk.SW)
 
         scalar_view = ScalarVarsView(self, model)
         self.notebook.add(scalar_view, text="scalar view", underline=0, sticky=tk.NE + tk.SW)
@@ -46,6 +46,4 @@ class ExpPage(ttk.Frame):
             self.master.show_empty_view()
 
     def save(self):
-        input = self.text_box.get("1.0",tk.END)
-        self.model.save_text(input)
-        #print(input)            
+        self.text_view.save()

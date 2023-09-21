@@ -39,6 +39,4 @@ class TextPage(ttk.Frame):
             self.master.show_empty_view()
 
     def save(self):
-        input = self.text_box.get("1.0",tk.END)
-        self.model.save_text(input)
-        #print(input)            
+        self.text_view.save()      
