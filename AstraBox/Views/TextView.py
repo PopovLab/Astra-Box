@@ -100,6 +100,6 @@ class TextView(ttk.Frame):
 
 
     def save(self):
-        input = self.text_box.get("1.0",tk.END)
+        input = self.text_box.get("1.0","end-1c")
         self.model.save_text(input)
         #print(input)
