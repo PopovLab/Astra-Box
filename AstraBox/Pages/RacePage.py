@@ -56,17 +56,12 @@ class RacePage(ttk.Frame):
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(3, weight=1)    
-        #self.label = ttk.Label(self,  text=f'name: {model.name}')
-        #self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
         ip = InfoPanel(self, model)
         ip.grid(row=2, column=0, columnspan=5, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
-        #tab_view_basic = TabViewBasic(self.notebook, model= model)
-        #self.notebook.add(tab_view_basic, text="tab_view_basic", underline=0, sticky=tk.NE + tk.SW)
 
         time_series_view = TimeSeriesView(self.notebook, model= model)
         self.notebook.add(time_series_view, text="Time Series", underline=0, sticky=tk.NE + tk.SW)
