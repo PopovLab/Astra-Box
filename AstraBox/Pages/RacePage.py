@@ -33,8 +33,8 @@ class InfoPanel(tk.Frame):
             'Equ:': model.data['EquModel']['name'],
             
             }
-        if 'RTModel' in  model.data.keys():
-            info['Ray tracing:'] : model.data['RTModel']['name']
+        if 'RTModel' in  model.data:
+            info['Ray tracing:'] = model.data['RTModel']['name']
         for key, value in info.items():
             var = tk.StringVar(master= self, value=value)
             label = tk.Label(master=self, text=key)
