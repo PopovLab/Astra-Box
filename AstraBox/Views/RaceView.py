@@ -194,25 +194,31 @@ class SpectrumView(TabViewBasic):
         print('create SpectrumView')
         self.spectrum_model = self.race_model.get_spectrum()
         print(self.spectrum_model.get_dest_path())
+        summary = self.make_summary()
+        summary.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        plot = self.make_spectrum_plot()
+        plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    def make_summary(self):
+        summ = tk.Label(master=self, text='Место для RT model')
+        return summ
+    
+    def make_spectrum_plot(self):
         if type(self.spectrum_model.spectrum_data) is dict:
             print('загрузил спектр')
             print(len(self.spectrum_model.spectrum_data['Ntor']))
-            self.make_plot()
+            match self.spectrum_model.spectrum_type:
+                case 'gaussian'|'spectrum_1D':
+                    plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
+                case 'scatter_spectrum':
+                    plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
+                case 'spectrum_2D':
+                    pass       
         else:
             print(self.spectrum_model.spectrum_data)
-            label = tk.Label(master=self, text='Нет данных')
-            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
-    def make_plot(self):
-        match self.spectrum_model.spectrum_type:
-            case 'gaussian'|'spectrum_1D':
-                self.spectrum_plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
-            case 'scatter_spectrum':
-                self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
-            case 'spectrum_2D':
-                pass       
+            plot = tk.Label(master=self, text='Нет данных')
         
-        self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        return plot
 
 
 class TrajectoryView(TabViewBasic):
