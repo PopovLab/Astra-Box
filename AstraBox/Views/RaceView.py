@@ -185,6 +185,7 @@ class RTResultView(TabViewBasic):
 
 
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot, ScatterPlot2D3D
+from AstraBox.Views.SheetView import SheetView
 
 class SpectrumView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
@@ -193,14 +194,31 @@ class SpectrumView(TabViewBasic):
     def init_ui(self):
         print('create SpectrumView')
         self.spectrum_model = self.race_model.get_spectrum()
+        self.rt = self.race_model.data['RTModel']['setting']
         print(self.spectrum_model.get_dest_path())
         summary = self.make_summary()
-        summary.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
         plot = self.make_spectrum_plot()
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        
+    def item_str(self, k1, k2):
+        print(self.rt)
+        item = self.rt[k1][k2]
+        return f"{item['title']}:  {item['value']}"
 
     def make_summary(self):
-        summ = tk.Label(master=self, text='Место для RT model')
+        #summ = tk.Label(master=self, text='Место для RT model')
+        values = []
+        values.append(self.item_str('Physical parameters', 'Freq'))
+        values.append(self.item_str('Numerical parameters', 'nr'))
+        values.append(self.item_str('Numerical parameters', 'eps'))
+        values.append(self.item_str('Options', 'inew'))
+        values.append(self.item_str('grill parameters', 'Zplus'))
+        values.append(self.item_str('grill parameters', 'Zminus'))
+        values.append(self.item_str('grill parameters', 'ntet'))
+        values.append(self.item_str('grill parameters', 'nnz'))
+        
+        summ = SheetView(self, values)
         return summ
     
     def make_spectrum_plot(self):
