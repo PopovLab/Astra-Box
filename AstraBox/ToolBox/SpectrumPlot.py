@@ -272,10 +272,16 @@ class Plot2DArray(ttk.Frame):
         super().destroy()   
 
 class SpectrumPlot(ttk.Frame):
-    def __init__(self, master, X, Y) -> None:
+    def __init__(self, master, X= None, Y= None, spectrum_list = None) -> None:
         super().__init__(master)  
         self.fig = plt.figure(figsize=(5, 3), dpi=100)
-        self.fig.add_subplot(111).plot(X, Y)
+        ax = self.fig.add_subplot(111)
+        if spectrum_list:
+            for sp in spectrum_list:
+                if sp is not None:
+                    ax.plot(sp['Ntor'], sp['Amp'])    
+        else:
+            ax.plot(X, Y)
         canvas = FigureCanvasTkAgg(self.fig, self)
         canvas.draw()
         canvas.get_tk_widget().grid(row=0, column=1)
@@ -283,6 +289,60 @@ class SpectrumPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
+
+    def destroy(self):
+        print("SpectrumPlot destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()       
+
+
+class SpectrumChart(ttk.Frame):
+    def __init__(self, master, spectrums: dict) -> None:
+        super().__init__(master)  
+        self.spectrums = spectrums
+        p = self.make_check_panel()
+        p.grid(row=0, column=2, sticky=tk.N)
+
+        self.fig = plt.figure(figsize=(5, 3), dpi=100)
+        self.ax = self.fig.add_subplot(111)
+
+
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
+        self.make_plots()
+        
+        self.canvas.get_tk_widget().grid(row=0, column=1)
+        #toobar = NavigationToolbar2Tk(canvas, frame)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)
+
+
+    def make_plots(self):
+        self.ax.clear()
+        for key, s in self.spectrums.items():
+            if s is not None:
+                if self.check_vars[key].get() == 1:
+                    print(key)
+                    self.ax.plot(s['Ntor'], s['Amp'])    
+        self.canvas.draw()
+
+    def make_check_panel(self):
+        panel = tk.Frame(self)
+        self.check_vars = {}
+        for key, s in self.spectrums.items():
+            if s is not None:
+                v = tk.IntVar(value=1)
+                b = ttk.Checkbutton(panel, text=key, variable=v, command=self.checkbutton_changed)
+                b.pack(padx=6, pady=6, anchor=tk.NW)
+                self.check_vars[key] = v
+        return panel
+    
+    def checkbutton_changed(self):
+        for key, s in self.spectrums.items():
+            if s is not None:
+                print(f'{key} {self.check_vars[key].get()}')
+        self.make_plots()
 
     def destroy(self):
         print("SpectrumPlot destroy")

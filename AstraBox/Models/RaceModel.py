@@ -63,6 +63,16 @@ class RaceModel(BaseModel):
         series['driven current'] = self.read_exec_time('lhcd/drivencurrent_time.dat')
         return series
 
+    def read_dat(self, fn) -> pd.DataFrame:
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(fn) as file:
+                    return pd.read_csv(file, delim_whitespace=True)           
+        except Exception as error:
+            print(error)
+            #return f'не смог прочитать {f}'
+            return None
+
     def get_driven_current(self):
         f = 'lhcd/dc_result.dat'
         try:

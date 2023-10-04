@@ -184,7 +184,7 @@ class RTResultView(TabViewBasic):
         self.rowconfigure(2, weight=1)
 
 
-from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot, ScatterPlot2D3D
+from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
 from AstraBox.Views.SheetView import SheetView
 
 class SpectrumView(TabViewBasic):
@@ -195,14 +195,28 @@ class SpectrumView(TabViewBasic):
         print('create SpectrumView')
         self.spectrum_model = self.race_model.get_spectrum()
         self.rt = self.race_model.data['RTModel']['setting']
-        print(self.spectrum_model.get_dest_path())
+        #print(self.spectrum_model.get_dest_path())
+        self.spectrums = {}
+        self.spectrums['origin'] = self.spectrum_model.spectrum_data
+        self.spectrums['full_spectrum'] = self.read_spectrum('full_spectrum.dat')        
+        self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
+        self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
+
         summary = self.make_summary()
         summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
         plot = self.make_spectrum_plot()
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    
+    def read_spectrum(self, fname):
+        spectr = self.race_model.read_dat(f'lhcd/{fname}')
+        if spectr is not None:
+            return spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
+        else:
+            return None
         
     def item_str(self, k1, k2):
-        print(self.rt)
+        #print(self.rt)
         item = self.rt[k1][k2]
         return f"{item['title']}:  {item['value']}"
 
@@ -227,7 +241,9 @@ class SpectrumView(TabViewBasic):
             print(len(self.spectrum_model.spectrum_data['Ntor']))
             match self.spectrum_model.spectrum_type:
                 case 'gaussian'|'spectrum_1D':
-                    plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
+                    #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
+                    #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
+                    plot = SpectrumChart(self, self.spectrums)
                 case 'scatter_spectrum':
                     plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
                 case 'spectrum_2D':
