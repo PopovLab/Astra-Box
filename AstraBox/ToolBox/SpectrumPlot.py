@@ -324,11 +324,24 @@ class SpectrumChart(ttk.Frame):
             if s is not None:
                 if self.check_vars[key].get() == 1:
                     print(key)
-                    self.ax.plot(s['Ntor'], s['Amp'])    
+                    if self.spectrum_view.get() == 1:
+                        self.ax.plot(s['Ntor'], np.cumsum(s['Amp']))
+                    else:
+                        self.ax.plot(s['Ntor'], s['Amp'])    
         self.canvas.draw()
 
     def make_check_panel(self):
         panel = tk.Frame(self)
+        self.spectrum_view = tk.IntVar(value=0) 
+        btn1 = ttk.Radiobutton(panel, text='spectrum', value= 0, variable=self.spectrum_view, command=self.checkbutton_changed)
+        btn1.pack(padx=6, pady=6, anchor=tk.NW)
+  
+        btn2 = ttk.Radiobutton(panel, text='cumsum', value= 1, variable=self.spectrum_view, command=self.checkbutton_changed)
+        btn2.pack(padx=6, pady=6, anchor=tk.NW)
+
+        sep = ttk.Separator(panel,orient='horizontal')
+        sep.pack(padx=6, pady=6, fill='x')
+
         self.check_vars = {}
         for key, s in self.spectrums.items():
             if s is not None:
@@ -342,6 +355,7 @@ class SpectrumChart(ttk.Frame):
         for key, s in self.spectrums.items():
             if s is not None:
                 print(f'{key} {self.check_vars[key].get()}')
+        print(f'spectrum_view: {self.spectrum_view.get()}')
         self.make_plots()
 
     def destroy(self):

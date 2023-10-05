@@ -211,7 +211,11 @@ class SpectrumView(TabViewBasic):
     def read_spectrum(self, fname):
         spectr = self.race_model.read_dat(f'lhcd/{fname}')
         if spectr is not None:
-            return spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
+            spectr=  spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
+            if spectr['Ntor'][0] > spectr['Ntor'].iat[-1]:
+                spectr = spectr.iloc[::-1]
+                
+            return spectr
         else:
             return None
         
