@@ -317,6 +317,22 @@ class SpectrumChart(ttk.Frame):
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
 
+        txt = self.make_summary()
+        txt.grid(row=1, column=1, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    def make_summary(self):
+        text_box = tk.Text(self, height = 10, width = 50)
+        lines = ['Summary:']
+        indent = ' '
+        for key, s in self.spectrums.items():
+            if s is not None:
+                p = np.sum(s["Amp"])
+                l = len(key)
+                lines.append(indent + f'{key}: {p} ')
+                lines.append(indent + " "*l + f': {p/1e6} ')
+        text_box.insert(tk.END, '\n'.join(lines))
+        text_box.config(state='disabled')
+        return text_box
 
     def make_plots(self):
         self.ax.clear()
