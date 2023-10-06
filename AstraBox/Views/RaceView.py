@@ -201,6 +201,7 @@ class SpectrumView(TabViewBasic):
         self.spectrums['full_spectrum'] = self.read_spectrum('full_spectrum.dat')        
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
+        self.spectrums['nteta'] = self.rt['grill parameters']['ntet']['value']
 
         summary = self.make_summary()
         summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)

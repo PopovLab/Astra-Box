@@ -300,7 +300,11 @@ class SpectrumPlot(ttk.Frame):
 class SpectrumChart(ttk.Frame):
     def __init__(self, master, spectrums: dict) -> None:
         super().__init__(master)  
+
         self.spectrums = spectrums
+        if 'nteta' in self.spectrums:
+            self.nteta = self.spectrums['nteta']
+            del self.spectrums['nteta']
         p = self.make_check_panel()
         p.grid(row=0, column=2, sticky=tk.N)
 
@@ -321,15 +325,19 @@ class SpectrumChart(ttk.Frame):
         txt.grid(row=1, column=1, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
 
     def make_summary(self):
-        text_box = tk.Text(self, height = 10, width = 50)
-        lines = ['Summary:']
+        xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
+        text_box = tk.Text(self, height = 15, width = 50)
+        lines = [f'nteta: {self.nteta}']
         indent = ' '
         for key, s in self.spectrums.items():
             if s is not None:
                 p = np.sum(s["Amp"])
                 l = len(key)
                 lines.append(indent + f'{key}: {p} ')
-                lines.append(indent + " "*l + f': {p/1e6} ')
+                lines.append(indent + " "*(l-4)  +'beam' + f': {p/xsgs:.4f} MW')
+                lines.append(indent + " "*(l-5)  +'total' + f': {self.nteta*p/xsgs:.4f} MW ')
+                lines.append(indent + " "*(l-3)  +'len' + f': {len(s["Amp"])} ')
+                
         text_box.insert(tk.END, '\n'.join(lines))
         text_box.config(state='disabled')
         return text_box
@@ -340,8 +348,9 @@ class SpectrumChart(ttk.Frame):
             if s is not None:
                 if self.check_vars[key].get() == 1:
                     print(key)
+                    #kwargs = 
                     if self.spectrum_view.get() == 1:
-                        self.ax.plot(s['Ntor'], np.cumsum(s['Amp']))
+                        self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), )
                     else:
                         self.ax.plot(s['Ntor'], s['Amp'])    
         self.canvas.draw()
