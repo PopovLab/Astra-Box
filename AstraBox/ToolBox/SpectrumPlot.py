@@ -331,12 +331,13 @@ class SpectrumChart(ttk.Frame):
         indent = ' '
         for key, s in self.spectrums.items():
             if s is not None:
-                p = np.sum(s["Amp"])
+                #p = np.sum(s["Amp"])
+                p = np.trapz(s["Amp"], s['Ntor'])
                 l = len(key)
                 lines.append(indent + f'{key}: {p} ')
                 lines.append(indent + " "*(l-4)  +'beam' + f': {p/xsgs:.4f} MW')
                 lines.append(indent + " "*(l-5)  +'total' + f': {self.nteta*p/xsgs:.4f} MW ')
-                lines.append(indent + " "*(l-3)  +'len' + f': {len(s["Amp"])} ')
+                lines.append(indent + " "*(l-4)  +'size' + f': {len(s["Amp"])} ')
                 
         text_box.insert(tk.END, '\n'.join(lines))
         text_box.config(state='disabled')
@@ -361,7 +362,7 @@ class SpectrumChart(ttk.Frame):
         btn1 = ttk.Radiobutton(panel, text='spectrum', value= 0, variable=self.spectrum_view, command=self.checkbutton_changed)
         btn1.pack(padx=6, pady=6, anchor=tk.NW)
   
-        btn2 = ttk.Radiobutton(panel, text='cumsum', value= 1, variable=self.spectrum_view, command=self.checkbutton_changed)
+        btn2 = ttk.Radiobutton(panel, text='integral', value= 1, variable=self.spectrum_view, command=self.checkbutton_changed)
         btn2.pack(padx=6, pady=6, anchor=tk.NW)
 
         sep = ttk.Separator(panel,orient='horizontal')
