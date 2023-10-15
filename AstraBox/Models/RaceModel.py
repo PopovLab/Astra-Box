@@ -73,6 +73,17 @@ class RaceModel(BaseModel):
             #return f'не смог прочитать {f}'
             return None
 
+
+    def read_dat_no_header(self, fn) -> pd.DataFrame:
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(fn) as file:
+                    return pd.read_csv(file, delim_whitespace=True, header=None)           
+        except Exception as error:
+            print(error)
+            #return f'не смог прочитать {f}'
+            return None
+
     def get_driven_current(self):
         f = 'lhcd/dc_result.dat'
         try:
