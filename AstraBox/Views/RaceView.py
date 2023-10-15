@@ -198,6 +198,7 @@ class SpectrumView(TabViewBasic):
         #print(self.spectrum_model.get_dest_path())
         self.spectrums = {}
         self.spectrums['origin'] = self.spectrum_model.spectrum_data
+        #self.spectrums['origin2'] = self.read_spectrum('spectrum.dat')
         self.spectrums['full_spectrum'] = self.read_spectrum('full_spectrum.dat')        
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
@@ -210,7 +211,7 @@ class SpectrumView(TabViewBasic):
 
     
     def read_spectrum(self, fname):
-        spectr = self.race_model.read_dat(f'lhcd/{fname}')
+        spectr = self.race_model.read_dat_no_header(f'lhcd/{fname}')
         if spectr is not None:
             spectr=  spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
             if spectr['Ntor'][0] > spectr['Ntor'].iat[-1]:
