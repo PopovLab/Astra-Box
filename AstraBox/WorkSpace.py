@@ -45,7 +45,7 @@ def get_models_dict(model_kind):
     if model_kind not in catalog:
         loc = schema[model_kind]['location']
         destpath = get_location_path().joinpath(loc)
-        catalog[model_kind] = {p.name: p for p in destpath.glob('*.*')}
+        catalog[model_kind] = {p.name: p for p in destpath.glob('*.*') if p.name !='.gitignore'}
     return catalog[model_kind]
 
 schema = {
