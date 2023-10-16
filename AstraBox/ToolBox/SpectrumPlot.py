@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
 from matplotlib import cm
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -296,6 +297,20 @@ class SpectrumPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()       
 
+def cumtrapz(x,y):
+    # аналог scipy.integrate.cumtrapz
+    # что бы не подключать scipy
+    y1 = np.roll(y, -1)
+    x1 = np.roll(x, -1)
+    xy= (y+y1)*(x1-x)/2
+    r = np.cumsum(xy)
+    print(type(r))
+    if type(r) == pd.Series:
+        r.iloc[-1] = r.iloc[-2]
+    else: # numpy.ndarray
+        r[-1] = r.take(-2)
+    return r
+
 
 class SpectrumChart(ttk.Frame):
     def __init__(self, master, spectrums: dict) -> None:
@@ -326,18 +341,29 @@ class SpectrumChart(ttk.Frame):
 
     def make_summary(self):
         xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
-        text_box = tk.Text(self, height = 15, width = 50)
+        text_box = tk.Text(self, height = 20, width = 50)
         lines = [f'nteta: {self.nteta}']
         indent = ' '
         for key, s in self.spectrums.items():
             if s is not None:
-                #p = np.sum(s["Amp"])
-                p = np.trapz(s["Amp"], s['Ntor'])
+                p = np.sum(s["Amp"])
+                #p = np.trapz(s["Amp"], s['Ntor'])
+                r = s['trapz']
+                if type(r) == pd.Series:
+                    p2 = r.iloc[-1]
+                    size = r.size
+                    v = s['Ntor'].iloc[-1]
+                else: # numpy.ndarray
+                    p2 = r[-1]
+                    size = len(r)
+                    v = s['Ntor'][-1]
                 l = len(key)
                 lines.append(indent + f'{key}: {p} ')
+                #lines.append(indent + f'{key}: {p2} ')
                 lines.append(indent + " "*(l-4)  +'beam' + f': {p/xsgs:.4f} MW')
+                #lines.append(indent + " "*(l-4)  +'beam' + f': {p2/xsgs:.4f} MW')
                 lines.append(indent + " "*(l-5)  +'total' + f': {self.nteta*p/xsgs:.4f} MW ')
-                lines.append(indent + " "*(l-4)  +'size' + f': {len(s["Amp"])} ')
+                lines.append(indent + " "*(l-4)  +'size' + f': {size} ')
                 
         text_box.insert(tk.END, '\n'.join(lines))
         text_box.config(state='disabled')
@@ -350,20 +376,29 @@ class SpectrumChart(ttk.Frame):
                 if self.check_vars[key].get() == 1:
                     print(key)
                     #kwargs = 
-                    if self.spectrum_view.get() == 1:
-                        self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), )
-                    else:
-                        self.ax.plot(s['Ntor'], s['Amp'])    
+                    marker=None if len(s['Ntor']) >300 else '|'
+                    
+                    match self.spectrum_view.get():
+                        case 'spectrum':
+                            self.ax.plot(s['Ntor'], s['Amp'], marker=marker)
+                        case 'cumsum':
+                            self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), marker=marker)
+                        case 'integral':
+                            self.ax.plot(s['Ntor'], s['trapz'], marker=marker), 
+                        
         self.canvas.draw()
 
     def make_check_panel(self):
         panel = tk.Frame(self)
-        self.spectrum_view = tk.IntVar(value=0) 
-        btn1 = ttk.Radiobutton(panel, text='spectrum', value= 0, variable=self.spectrum_view, command=self.checkbutton_changed)
+        self.spectrum_view = tk.StringVar(value='spectrum') 
+        btn1 = ttk.Radiobutton(panel, text='spectrum', value= 'spectrum', variable=self.spectrum_view, command=self.checkbutton_changed)
         btn1.pack(padx=6, pady=6, anchor=tk.NW)
-  
-        btn2 = ttk.Radiobutton(panel, text='integral', value= 1, variable=self.spectrum_view, command=self.checkbutton_changed)
+
+        btn2 = ttk.Radiobutton(panel, text='cumsum', value= 'cumsum', variable=self.spectrum_view, command=self.checkbutton_changed)
         btn2.pack(padx=6, pady=6, anchor=tk.NW)
+
+        btn3 = ttk.Radiobutton(panel, text='integral', value= 'integral', variable=self.spectrum_view, command=self.checkbutton_changed)
+        btn3.pack(padx=6, pady=6, anchor=tk.NW)
 
         sep = ttk.Separator(panel,orient='horizontal')
         sep.pack(padx=6, pady=6, fill='x')
@@ -375,6 +410,8 @@ class SpectrumChart(ttk.Frame):
                 b = ttk.Checkbutton(panel, text=key, variable=v, command=self.checkbutton_changed)
                 b.pack(padx=6, pady=6, anchor=tk.NW)
                 self.check_vars[key] = v
+                print(f'--- {key} ----')
+                s['trapz'] = cumtrapz(s['Ntor'], s['Amp'])
         return panel
     
     def checkbutton_changed(self):
