@@ -81,13 +81,15 @@ class ExecTimeView(TabViewBasic):
     def make_plot(self):
         #keys = [self.combo1.get(), self.combo2.get(), self.combo3.get()]
         self.plot = ExecTimePlot(self, self.data_series )
-        self.plot.grid(row=1, column=0,padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(2, weight=1)
-        text_box = tk.Text(self, height = 3, width = 20)
+        self.plot.grid(row=1, column=0, padx=4, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        text_box = tk.Text(self, height = 10, width = 20)
         text_box.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.add_text(text_box)
         text_box.config(state='disabled')
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
     def add_text(self, text_box):
         lines = ['Summary:']
@@ -208,7 +210,8 @@ class SpectrumView(TabViewBasic):
         summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
         plot = self.make_spectrum_plot()
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
     
     def read_spectrum(self, fname):
         spectr = self.race_model.read_dat_no_header(f'lhcd/{fname}')

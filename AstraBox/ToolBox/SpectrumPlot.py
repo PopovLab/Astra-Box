@@ -330,7 +330,7 @@ class SpectrumChart(ttk.Frame):
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.make_plots()
         
-        self.canvas.get_tk_widget().grid(row=0, column=1)
+        self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
         #toobar = NavigationToolbar2Tk(canvas, frame)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
@@ -338,10 +338,13 @@ class SpectrumChart(ttk.Frame):
 
         txt = self.make_summary()
         txt.grid(row=1, column=1, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
     def make_summary(self):
         xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
-        text_box = tk.Text(self, height = 20, width = 50)
+        text_box = tk.Text(self, height = 15, width = 50)
         lines = [f'nteta: {self.nteta}']
         indent = ' '
         for key, s in self.spectrums.items():

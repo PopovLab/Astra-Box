@@ -45,7 +45,7 @@ class DrivenCurrentPlot(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1)
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)        
