@@ -22,23 +22,31 @@ class TrajectoryPlotOptionWindows():
         win.title("Settings")
         win.geometry("220x400")
 
-        self.chkvar = tk.IntVar(name= 'show graph', value= self.plot_options['show_graph'])
-        chkbtn = tk.Checkbutton(win, text='show graph', variable= self.chkvar, command= self.check_clicked )
-        chkbtn.pack(padx=5, pady=5, fill=tk.X)
+        frame = tk.Frame(win)
+        frame.pack(padx=5, pady=1, fill=tk.X)
+        self.chkvar1 = tk.IntVar(name= 'show marker', value= self.plot_options['show_marker'])
+        chkbtn = tk.Checkbutton(frame, text='show marker', variable= self.chkvar1, command= self.check_clicked )
+        chkbtn.pack( pady=5, side=tk.LEFT)
 
-        fr1 = tk.Frame(win)
-        fr1.pack(padx=5, pady=1, fill=tk.X)
-        tk.Label(fr1, text =f"x axis" ).pack(padx=5, pady=5, side=tk.LEFT)
-        self.combo1 = ttk.Combobox(fr1, width= 20 )# command=lambda x=self: self.update(x))  
+        frame = tk.Frame(win)
+        frame.pack(padx=5, pady=1, fill=tk.X)
+        self.chkvar2 = tk.IntVar(name= 'show graph', value= self.plot_options['show_graph'])
+        chkbtn = tk.Checkbutton(frame, text='show graph', variable= self.chkvar2, command= self.check_clicked )
+        chkbtn.pack( pady=5, side=tk.LEFT)
+
+        frame = tk.Frame(win)
+        frame.pack(padx=5, pady=1, fill=tk.X)
+        tk.Label(frame, text =f"x axis" ).pack(pady=5, side=tk.LEFT)
+        self.combo1 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo1.bind("<<ComboboxSelected>>", self.combo_selected1)
         self.combo1['values'] =  self.plot_options['term_list']
         self.combo1.current(self.plot_options['term_list'].index('theta'))
         self.combo1.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
 
-        fr2 = tk.Frame(win)
-        fr2.pack(padx=5, pady=1, fill=tk.X)
-        tk.Label(fr2, text =f"y axis" ).pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
-        self.combo2 = ttk.Combobox(fr2, width= 20 )# command=lambda x=self: self.update(x))  
+        frame = tk.Frame(win)
+        frame.pack(padx=5, pady=1, fill=tk.X)
+        tk.Label(frame, text =f"y axis" ).pack(pady=5, side=tk.LEFT, fill=tk.X)
+        self.combo2 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo2.bind("<<ComboboxSelected>>", self.combo_selected2)
         self.combo2['values'] =  self.plot_options['term_list']
         self.combo2.current(self.plot_options['term_list'].index('N_par'))
@@ -60,7 +68,8 @@ class TrajectoryPlotOptionWindows():
         win.wait_window()
 
     def check_clicked(self):
-        self.plot_options['show_graph'] = True if self.chkvar.get() == 1 else False
+        self.plot_options['show_marker'] = True if self.chkvar1.get() == 1 else False
+        self.plot_options['show_graph'] = True if self.chkvar2.get() == 1 else False
         if self.on_update_options:
             self.on_update_options()
 
@@ -84,6 +93,7 @@ class TrajectoryPlotOptionWindows():
 
 class TrajectoryPlot(ttk.Frame):
     plot_options = { 
+        'show_marker' : False,
         'show_graph' : False,
         'term_list' : [],
         'x_axis' : 'theta',
@@ -187,7 +197,7 @@ class TrajectoryPlot(ttk.Frame):
         col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
         self.ax2.add_collection(col, autolim=True)     
 
-        if cut_index<5:
+        if cut_index<5 or self.plot_options['show_marker']:
             cl = len(self.colors)
             for id, sg in enumerate(segs):
                 clr = self.colors[id % cl]
@@ -218,7 +228,7 @@ class TrajectoryPlot(ttk.Frame):
         col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
-        if cut_index<5:
+        if cut_index<5 or self.plot_options['show_marker']:
             cl = len(self.colors)
             for id, sg in enumerate(segs):
                 clr = self.colors[id % cl]
