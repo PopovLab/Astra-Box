@@ -128,7 +128,7 @@ class TrajectoryPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)    
-        btn = ImageButton.create(self, '4231901.png', self.show_option_windows)
+        btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
         btn.grid(row=1, column=0, sticky=tk.N) 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
