@@ -154,6 +154,7 @@ class SpectrumModel():
   
     def read_spcp2D(self, file_path):
         #file_path = self.setting['source']
+        print(file_path)
         if os.path.exists(file_path):
             file = open(file_path)
             table = []
@@ -164,9 +165,13 @@ class SpectrumModel():
             for line in lines:
                 table.append(line.split())
             for row in table:
+                #print(row)
                 for index, (p, item) in enumerate(spectrum1D.items()):
-                    item.append(float(row[index]))
-    
+                    try:
+                        item.append(float(row[index]))
+                    except ValueError:
+                        print(f'error in {index}: {row}')
+                        item.append(0.0)
             Nz_v = spectrum1D['Nz'][0]
             Ny_v = spectrum1D['Ny'][0]
             spectrum_shape = (spectrum1D['Nz'].count(Nz_v),spectrum1D['Ny'].count(Ny_v) )
