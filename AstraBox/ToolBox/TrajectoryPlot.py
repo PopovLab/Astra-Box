@@ -122,14 +122,16 @@ class TrajectoryPlot(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
         #toobar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         #toobar.grid(row=0, column=0, sticky=tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)    
+        lbl = tk.Label(master=self, text='v1')
+        lbl.grid(row=1, column=0, sticky=tk.N) 
         btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
-        btn.grid(row=1, column=0, sticky=tk.N) 
+        btn.grid(row=2, column=0, sticky=tk.N) 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 

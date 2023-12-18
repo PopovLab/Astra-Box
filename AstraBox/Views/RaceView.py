@@ -1,6 +1,8 @@
 from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
+from typing import Any
+from typing_extensions import Literal
 import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
@@ -262,24 +264,100 @@ class SpectrumView(TabViewBasic):
             plot = tk.Label(master=self, text='Нет данных')
         
         return plot
+    
 
+class TrajectoryModel:
+    def __init__(self, race_model:RaceModel, folder_name: str) -> None:
+        self.race_model = race_model
+        self.folder_name = folder_name
+        self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)
+        self.rays_cache = {}
+        self.num_traj = len(self.trajectory_series_list)
+        if self.num_traj>0: 
+            self.rays, self.start_time  = self.get_rays(0)
+            _, self.finish_time  = self.get_rays(self.num_traj-1)
 
-class TrajectoryView(TabViewBasic):
+    def get_rays(self, index):
+        if not index in self.rays_cache:
+            print(f'{index} not in cache')
+            self.rays_cache[index] = self.race_model.get_rays(self.trajectory_series_list[index])
+        rays, time_stamp = self.rays_cache[index]        
+        return rays, time_stamp
+
+class TrajectoryView_v1(tk.Frame):
+    def __init__(self, master, traj_model: TrajectoryModel) ->None:
+        super().__init__(master)  
+        self.traj_model = traj_model
+        self.rays = traj_model.rays
+        self.time_stamp = traj_model.start_time
+        plasma_bound = self.traj_model.race_model.read_plasma_bound()
+        self.index_1 = tk.IntVar(master = self, value=0)
+        self.index_1.trace_add('write', self.update_plot)
+        self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, 
+                                sliderlength = 20,
+                                width = 10,            
+                                label='start ray',
+                                tickinterval= len(self.rays)/4,
+                                from_=0, 
+                                to=len(self.rays)-1, 
+                                resolution=1 )
+        self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.index_2 = tk.IntVar(master = self, value= len(self.rays)-1 if len(self.rays)<500 else 500)
+        self.index_2.trace_add('write', self.update_plot)
+        self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL,
+                                sliderlength = 20,
+                                width = 10,            
+                                label='numbers of ray',
+                                tickinterval= len(self.rays)/4,
+                                from_=0, 
+                                to=len(self.rays)-1, 
+                                resolution=1 )
+        self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.plot = TrajectoryPlot(self, self.rays, self.time_stamp, plasma_bound)
+        self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(2, weight=1)
+        
+        self.len_rays = len(self.rays)
+
+    def update_plot(self, var, indx, mode):
+        self.update_view()
+
+    def update_view(self):
+        i1 = self.index_1.get()
+        i2 = i1 + self.index_2.get()
+        if self.len_rays != len(self.rays):
+            self.len_rays = len(self.rays)
+            print(f'update sliders {self.len_rays}')
+            self.slider_1.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
+            self.slider_2.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
+        if i2>self.len_rays: i2 = self.len_rays
+        if i1>self.len_rays: i1 = self.len_rays
+        self.plot.update(self.rays[i1:i2], self.time_stamp)
+
+    def set_index(self, index):
+        self.rays, self.time_stamp = self.traj_model.get_rays(index)
+        self.update_view()
+
+class TrajectoryTab(TabViewBasic):
     def __init__(self, master, model: RaceModel, folder_name: str) -> None:
         super().__init__(master, model)  
         self.folder_name = folder_name
+        self.race_model = model
 
     def init_ui(self): 
-        self.trajectory_list = self.race_model.get_children_files(self.folder_name)
-        self.rays_cache = {}
-        n = len(self.trajectory_list)
-        if n>0: 
-            plasma_bound = self.race_model.read_plasma_bound()
 
-            rays, self.start_time  = self.get_rays(0)
-            _, self.finish_time  = self.get_rays(n-1)
+        self.traj_model = TrajectoryModel(self.race_model, self.folder_name)
+        if self.traj_model.num_traj>0: 
 
-            self.n = n
+            rays = self.traj_model.rays
+            self.start_time  = self.traj_model.start_time
+            self.finish_time  = self.traj_model.finish_time
+
+            n = self.traj_model.num_traj
 
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
             self.time_var.trace_add('write', self.update_plot)
@@ -294,66 +372,23 @@ class TrajectoryView(TabViewBasic):
                                    from_= self.start_time,
                                    to= self.finish_time, 
                                    resolution= (self.finish_time-self.start_time)/n )
-            self.time_slider.grid(row=0, column=0, columnspan=2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+            self.time_slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
+            self.traj_view = TrajectoryView_v1(self, self.traj_model)
+            self.traj_view.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
-            self.index_1 = tk.IntVar(master = self, value=0)
-            self.index_1.trace_add('write', self.update_plot)
-            self.slider_1 = tk.Scale(master=  self, variable = self.index_1, orient = tk.HORIZONTAL, 
-                                    sliderlength = 20,
-                                    width = 10,            
-                                    label='start ray',
-                                    tickinterval= len(rays)/4,
-                                    from_=0, 
-                                    to=len(rays)-1, 
-                                    resolution=1 )
-            self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-
-            self.index_2 = tk.IntVar(master = self, value= len(rays)-1 if len(rays)<500 else 500)
-            self.index_2.trace_add('write', self.update_plot)
-            self.slider_2 = tk.Scale(master=  self, variable = self.index_2, orient = tk.HORIZONTAL,
-                                    sliderlength = 20,
-                                    width = 10,            
-                                    label='numbers of ray',
-                                    tickinterval= len(rays)/4,
-                                    from_=0, 
-                                    to=len(rays)-1, 
-                                    resolution=1 )
-            self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-
-            self.plot = TrajectoryPlot(self, rays, self.start_time, plasma_bound)
-            self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.columnconfigure(1, weight=1)
-            self.rowconfigure(2, weight=1)
-            self.len_rays = len(rays)
+            self.rowconfigure(1, weight=1)
+
         else:
             label = tk.Label(master=self, text='Нет данных')
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
-    def get_rays(self, index):
-        if not index in self.rays_cache:
-            print(f'{index} not in cache')
-            self.rays_cache[index] = self.race_model.get_rays(self.trajectory_list[index])
-        rays, time_stamp = self.rays_cache[index]        
-        return rays, time_stamp
-
     def update_plot(self, var, indx, mode):
-        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
-        i1 = self.index_1.get()
-        i2 = i1 + self.index_2.get()
+        index = int((self.traj_model.num_traj-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
+        self.traj_view.set_index(index)
 
-        rays, time_stamp = self.get_rays(index)
-
-        if self.len_rays != len(rays):
-            self.len_rays = len(rays)
-            print(f'update sliders {self.len_rays}')
-            self.slider_1.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
-            self.slider_2.configure(tickinterval= self.len_rays/4, to=self.len_rays-1)
-        if i2>self.len_rays: i2 = self.len_rays
-        if i1>self.len_rays: i1 = self.len_rays
-        self.plot.update(rays[i1:i2], time_stamp)
-        pass
 
 
 class RadialDataView(TabViewBasic):

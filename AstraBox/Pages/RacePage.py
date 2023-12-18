@@ -16,7 +16,7 @@ from AstraBox.Models.RaceModel import RaceModel
 
 from AstraBox.Views.RaceView import TimeSeriesView
 from AstraBox.Views.RaceView import RadialDataView
-from AstraBox.Views.RaceView import TrajectoryView
+from AstraBox.Views.RaceView import TrajectoryTab
 from AstraBox.Views.RaceView import DistributionView
 from AstraBox.Views.RaceView import MaxwellView
 from AstraBox.Views.RaceView import DiffusionView
@@ -70,15 +70,15 @@ class RacePage(ttk.Frame):
         self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
         
         if model.children_files_exists('TRAJECTROY'):
-            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJECTROY')
+            trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJECTROY')
             self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
 
         if model.children_files_exists('TRAJ_POS'):
-            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJ_POS')
+            trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJ_POS')
             self.notebook.add(trajectory_view, text="Traj pos", underline=0, sticky=tk.NE + tk.SW)
 
         if model.children_files_exists('TRAJ_NEG'):
-            trajectory_view = TrajectoryView(self.notebook, model= model, folder_name= 'TRAJ_NEG')
+            trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJ_NEG')
             self.notebook.add(trajectory_view, text="Traj neg", underline=0, sticky=tk.NE + tk.SW)
 
         distrib_view = DistributionView(self.notebook, model= model)
