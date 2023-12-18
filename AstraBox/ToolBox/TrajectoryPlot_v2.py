@@ -220,6 +220,9 @@ class TrajectoryPlot_v2(ttk.Frame):
     def check_theta_lim(self, theta):
         return (self.traj_model.min_theta < theta) and (theta < self.traj_model.max_theta)
     
+    def check_spectrum_lim(self, index):
+        return (self.traj_model.min_spectrum_index < index) and (index < self.traj_model.max_spectrum_index)
+
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
@@ -230,11 +233,12 @@ class TrajectoryPlot_v2(ttk.Frame):
         segs = []
         for series in self.traj_model.traj_series:
             if self.check_theta_lim(series['theta']):
-                if not series['traj'] is None:
-                    ray = series['traj']
-                    #print(len(ray['R']))
-                    curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
-                    segs.append(curve)
+                if self.check_spectrum_lim(series['index']):
+                    if not series['traj'] is None:
+                        ray = series['traj']
+                        #print(len(ray['R']))
+                        curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
+                        segs.append(curve)
         col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         

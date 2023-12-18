@@ -42,6 +42,10 @@ class TrajectoryModel:
         self.max_theta = max(self.traj_series, key=lambda x:x['theta'])['theta']
         self.min_theta = min(self.traj_series, key=lambda x:x['theta'])['theta']
 
+    def update_spectrum_interval(self):
+        self.max_spectrum_index = max(self.traj_series, key=lambda x:x['index'])['index']
+        self.min_spectrum_index = min(self.traj_series, key=lambda x:x['index'])['index']
+
     def select_series(self, index):
         self.time_stamp = path_to_time(self.trajectory_series_list[index])
         
