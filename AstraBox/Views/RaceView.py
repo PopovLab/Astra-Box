@@ -303,43 +303,59 @@ class TrajectoryModel:
         rays, time_stamp = self.rays_cache[index]        
         return rays, time_stamp
 
-    def get_series(self, index):
+    def update_theta_interval(self):
+        self.max_theta = max(self.traj_series, key=lambda x:x['theta'])['theta']
+        self.min_theta = min(self.traj_series, key=lambda x:x['theta'])['theta']
+
+    def select_series(self, index):
+        self.time_stamp = path_to_time(self.trajectory_series_list[index])
+        
         if not index in self.traj_cache:
             self.traj_cache[index] = self.race_model.read_trajectory_series(self.trajectory_series_list[index])
-        return self.traj_cache[index]
-        
+        self.traj_series = self.traj_cache[index]
+
+
+from AstraBox.Views.tkSliderWidget import Slider
+
+def print_traj_series(ts, time):
+    print(f"len = {len(ts)} time={time}")
+    print(f"Theta= {ts[0]['theta']}, index = {ts[0]['index']}, mbad= {ts[0]['mbad']}")
 
 class TrajectoryView_v2(tk.Frame):
     def __init__(self, master, traj_model: TrajectoryModel) ->None:
         super().__init__(master)  
         self.traj_model = traj_model
-        self.slider_1 = tk.Scale(master=  self, orient = tk.HORIZONTAL, 
-                                sliderlength = 20,
-                                width = 10,            
-                                label='start ray',
-                                from_=0, 
-                                to=100-1, 
-                                resolution=1 )
-        self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        self.slider_2 = tk.Scale(master=  self, orient = tk.HORIZONTAL,
-                                sliderlength = 20,
-                                width = 10,            
-                                label='numbers of ray',
-                                from_=0, 
-                                to=100-1, 
-                                resolution=1 )
-        self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.traj_model.select_series(0)
+        self.traj_model.update_theta_interval()
+
+        label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        label1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        mt = self.traj_model.min_theta
+        gt = self.traj_model.max_theta
+        slider1 = Slider(self, height = 35, min_val = mt, max_val = gt, init_lis = [mt,gt], show_value = True)
+        slider1.grid(row=1, column=0,  sticky=tk.N + tk.S + tk.E + tk.W) 
+        slider1.setValueChageCallback(self.update_theta)
+
+        label2 = tk.Label(master=self, text='Spectrum')
+        label2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+        slider1 = Slider(self, height = 35, min_val = 1, max_val = 100, init_lis = [1,75], show_value = True)
+        slider1.grid(row=1, column=1, sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(3, weight=1)
 
-    def set_index(self, index):
+    def update_theta(self, vals):
+        print(vals)
+    
+
+    def select_moment(self, index):
         print(index)
         self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
-        print(self.time_stamp)
         traj_series = self.traj_model.get_series(index)
-        print(traj_series[0]['info'])
-        #self.rays, self.time_stamp = self.traj_model.get_rays(index)
+        #traj_series['time'] = time_stamp
+        print_traj_series(traj_series, self.time_stamp)
+        
         #self.update_view()
 
 class TrajectoryView_v1(tk.Frame):
@@ -396,7 +412,7 @@ class TrajectoryView_v1(tk.Frame):
         if i1>self.len_rays: i1 = self.len_rays
         self.plot.update(self.rays[i1:i2], self.time_stamp)
 
-    def set_index(self, index):
+    def select_moment(self, index):
         self.rays, self.time_stamp = self.traj_model.get_rays(index)
         self.update_view()
 
@@ -446,7 +462,7 @@ class TrajectoryTab(TabViewBasic):
 
     def update_plot(self, var, indx, mode):
         index = int((self.traj_model.num_traj-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
-        self.traj_view.set_index(index)
+        self.traj_view.select_moment(index)
 
 
 
