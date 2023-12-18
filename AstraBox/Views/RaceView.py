@@ -268,6 +268,7 @@ class SpectrumView(TabViewBasic):
 
 from AstraBox.Models.TrajectoryModel import TrajectoryModel
 from AstraBox.Models.TrajectoryModel import path_to_time
+from AstraBox.ToolBox.TrajectoryPlot_v2 import TrajectoryPlot_v2
 
 from AstraBox.Views.tkSliderWidget import Slider
 
@@ -282,9 +283,10 @@ class TrajectoryView_v2(tk.Frame):
         self.traj_model = traj_model
         self.traj_model.select_series(0)
         self.traj_model.update_theta_interval()
+        plasma_bound = self.traj_model.race_model.read_plasma_bound()
 
-        label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
-        label1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.label1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
 
         mt = self.traj_model.min_theta
         gt = self.traj_model.max_theta
@@ -296,20 +298,28 @@ class TrajectoryView_v2(tk.Frame):
         label2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
         slider1 = Slider(self, height = 35, min_val = 1, max_val = 100, init_lis = [1,75], show_value = True)
         slider1.grid(row=1, column=1, sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.plot = TrajectoryPlot_v2(self, self.traj_model, plasma_bound)
+        self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(2, weight=1)
 
     def update_theta(self, vals):
         print(vals)
+        self.traj_model.min_theta = vals[0]
+        self.traj_model.max_theta = vals[1]
+        self.label1.config(text = f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.plot.update()
     
 
     def select_moment(self, index):
         print(index)
         self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
-        traj_series = self.traj_model.get_series(index)
+        self.traj_model.select_series(index)
         #traj_series['time'] = time_stamp
-        print_traj_series(traj_series, self.time_stamp)
+        print_traj_series(self.traj_model.traj_series, self.time_stamp)
         
         #self.update_view()
 

@@ -8,6 +8,7 @@ from matplotlib import collections, transforms
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 import AstraBox.ToolBox.ImageButton as ImageButton
+from AstraBox.Models.TrajectoryModel import TrajectoryModel
 
 class TrajectoryPlotOptionWindows():
     def __init__(self, master, plot_options, on_update_options= None) -> None:
@@ -91,23 +92,23 @@ class TrajectoryPlotOptionWindows():
         if self.on_update_options:
             self.on_update_options()
 
-class TrajectoryPlot(ttk.Frame):
+class TrajectoryPlot_v2(ttk.Frame):
     plot_options = { 
         'show_marker' : False,
         'show_graph' : False,
         'term_list' : [],
         'x_axis' : 'theta',
         'y_axis' : 'N_par',
-        'cut_index' : 10,
-        'max_index' : 200
+        'cut_index' : 1000,
+        'max_index' : 2000
     }
-    def __init__(self, master, rays, time_stamp, plasma_bound) -> None:
+    def __init__(self, master, traj_model: TrajectoryModel, plasma_bound) -> None:
         super().__init__(master)  
         self.plasma_bound = plasma_bound
-        self.time_stamp = time_stamp
-        self.rays = rays
-        self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
-        self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
+        self.time_stamp = traj_model.time_stamp
+        self.traj_model = traj_model
+        #self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
+        #self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
         self.plot_options['cut_index'] = self.plot_options['max_index']
         self.show_graph = self.plot_options['show_graph']
         # Make a list of colors cycling through the default series.
@@ -128,7 +129,7 @@ class TrajectoryPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)    
-        lbl = tk.Label(master=self, text='v1')
+        lbl = tk.Label(master=self, text='v2')
         lbl.grid(row=1, column=0, sticky=tk.N) 
         btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
         btn.grid(row=2, column=0, sticky=tk.N) 
@@ -145,7 +146,7 @@ class TrajectoryPlot(ttk.Frame):
             self.ax1 = self.fig.subplots(1, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
             self.ax1.axis('equal')
-        self.update_rays()
+        self.update_traj()
 
 
     def clear_axis(self):
@@ -216,7 +217,10 @@ class TrajectoryPlot(ttk.Frame):
                 self.ax2.autoscale_view()   
         self.ax2.autoscale_view()                           
 
-    def update_rays(self, save_lim= False):
+    def check_theta_lim(self, theta):
+        return (self.traj_model.min_theta < theta) and (theta < self.traj_model.max_theta)
+    
+    def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
 
@@ -224,10 +228,13 @@ class TrajectoryPlot(ttk.Frame):
         self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         cut_index = self.plot_options['cut_index']
         segs = []
-        for ray in self.rays:
-            #print(len(ray['R']))
-            curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
-            segs.append(curve)
+        for series in self.traj_model.traj_series:
+            if self.check_theta_lim(series['theta']):
+                if not series['traj'] is None:
+                    ray = series['traj']
+                    #print(len(ray['R']))
+                    curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
+                    segs.append(curve)
         col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
@@ -251,10 +258,10 @@ class TrajectoryPlot(ttk.Frame):
         else:
             self.ax1.autoscale_view()
 
-    def update(self, rays, time_stamp):
-        self.rays = rays
-        self.update_rays(save_lim= True)
-        self.ax1.set_title(time_stamp, fontsize=12)
+    def update(self):
+        #self.rays = rays
+        self.update_traj(save_lim= True)
+        self.ax1.set_title(self.traj_model.time_stamp, fontsize=12)
         if self.show_graph:
             self.update_graph()
         self.canvas.draw()
