@@ -313,6 +313,25 @@ class TrajectoryView_v2(tk.Frame):
     def __init__(self, master, traj_model: TrajectoryModel) ->None:
         super().__init__(master)  
         self.traj_model = traj_model
+        self.slider_1 = tk.Scale(master=  self, orient = tk.HORIZONTAL, 
+                                sliderlength = 20,
+                                width = 10,            
+                                label='start ray',
+                                from_=0, 
+                                to=100-1, 
+                                resolution=1 )
+        self.slider_1.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.slider_2 = tk.Scale(master=  self, orient = tk.HORIZONTAL,
+                                sliderlength = 20,
+                                width = 10,            
+                                label='numbers of ray',
+                                from_=0, 
+                                to=100-1, 
+                                resolution=1 )
+        self.slider_2.grid(row=1, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(2, weight=1)
 
     def set_index(self, index):
         print(index)
@@ -419,7 +438,6 @@ class TrajectoryTab(TabViewBasic):
             self.traj_view.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
             self.columnconfigure(0, weight=1)
-            self.columnconfigure(1, weight=1)
             self.rowconfigure(1, weight=1)
 
         else:
