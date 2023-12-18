@@ -265,17 +265,35 @@ class SpectrumView(TabViewBasic):
         
         return plot
     
+import pathlib 
+def path_to_time(p):
+    p = pathlib.Path(p)
+    if p.suffix != '.dat': return 0.0
+    return float(p.stem)
 
 class TrajectoryModel:
     def __init__(self, race_model:RaceModel, folder_name: str) -> None:
         self.race_model = race_model
         self.folder_name = folder_name
-        self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)
-        self.rays_cache = {}
-        self.num_traj = len(self.trajectory_series_list)
-        if self.num_traj>0: 
-            self.rays, self.start_time  = self.get_rays(0)
-            _, self.finish_time  = self.get_rays(self.num_traj-1)
+        self.version = 1
+        
+        if self.race_model.check_v2_file(self.folder_name):
+            self.version = 2 
+            self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)[:-1]
+            self.start_time, self.finish_time = self.get_interval()
+            self.num_traj = len(self.trajectory_series_list)
+        else:
+            self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)
+            self.rays_cache = {}
+            self.num_traj = len(self.trajectory_series_list)
+            if self.num_traj>0: 
+                self.rays, self.start_time  = self.get_rays(0)
+                _, self.finish_time  = self.get_rays(self.num_traj-1)
+
+    def get_interval(self):
+        start = path_to_time(self.trajectory_series_list[0])
+        finish = path_to_time(self.trajectory_series_list[-1])
+        return start, finish
 
     def get_rays(self, index):
         if not index in self.rays_cache:
@@ -283,6 +301,19 @@ class TrajectoryModel:
             self.rays_cache[index] = self.race_model.get_rays(self.trajectory_series_list[index])
         rays, time_stamp = self.rays_cache[index]        
         return rays, time_stamp
+
+
+class TrajectoryView_v2(tk.Frame):
+    def __init__(self, master, traj_model: TrajectoryModel) ->None:
+        super().__init__(master)  
+        self.traj_model = traj_model
+
+    def set_index(self, index):
+        print(index)
+        self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
+        print(self.time_stamp)
+        #self.rays, self.time_stamp = self.traj_model.get_rays(index)
+        #self.update_view()
 
 class TrajectoryView_v1(tk.Frame):
     def __init__(self, master, traj_model: TrajectoryModel) ->None:
@@ -353,7 +384,6 @@ class TrajectoryTab(TabViewBasic):
         self.traj_model = TrajectoryModel(self.race_model, self.folder_name)
         if self.traj_model.num_traj>0: 
 
-            rays = self.traj_model.rays
             self.start_time  = self.traj_model.start_time
             self.finish_time  = self.traj_model.finish_time
 
@@ -374,7 +404,10 @@ class TrajectoryTab(TabViewBasic):
                                    resolution= (self.finish_time-self.start_time)/n )
             self.time_slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
-            self.traj_view = TrajectoryView_v1(self, self.traj_model)
+            match self.traj_model.version:
+                case 2: self.traj_view = TrajectoryView_v2(self, self.traj_model)
+                case 1: self.traj_view = TrajectoryView_v1(self, self.traj_model)
+
             self.traj_view.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
             self.columnconfigure(0, weight=1)

@@ -126,6 +126,12 @@ class RaceModel(BaseModel):
         list= self.get_children_files(folder_name)
         return True if len(list)>0 else False
 
+    def check_v2_file(self, folder_name):
+        folder = Astra.data_folder[folder_name]
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            p = zipfile.Path(zip, folder + 'v2')
+            return p.exists()
+
     def get_children_files(self, folder_name):
         folder = Astra.data_folder[folder_name]
         with zipfile.ZipFile(self.race_zip_file) as zip:
