@@ -232,10 +232,11 @@ class RaceModel(BaseModel):
                         if series is None:
                             #print(buffer)
                             series = {}
-                            series['info'] = pd.read_csv(BytesIO(buffer), delim_whitespace=True)
+                            di= pd.read_csv(BytesIO(buffer), delim_whitespace=True).to_dict(orient='index')
+                            series = di[0]
                             #print(series['info'])
                             series['traj'] = None
-                            if series['info']['mbad'][0] == 1:
+                            if series['mbad'] == 1:
                                 traj_series.append(series)
                                 series = None
                             buffer = bytearray()
