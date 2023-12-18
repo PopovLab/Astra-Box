@@ -267,8 +267,10 @@ class SpectrumView(TabViewBasic):
     
 
 from AstraBox.Models.TrajectoryModel import TrajectoryModel
+from AstraBox.Models.TrajectoryModel import path_to_time
 
 from AstraBox.Views.tkSliderWidget import Slider
+
 
 def print_traj_series(ts, time):
     print(f"len = {len(ts)} time={time}")
