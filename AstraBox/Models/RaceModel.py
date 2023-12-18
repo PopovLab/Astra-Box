@@ -5,6 +5,7 @@ import pathlib
 import zipfile
 import numpy as np
 import pandas as pd
+from io import BytesIO
 from AstraBox.Models.BaseModel import BaseModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
@@ -214,6 +215,37 @@ class RaceModel(BaseModel):
                     direction = int(row[1])
                     rt_result[direction][iteration] = values
         return time_stamp, rt_result, header
+
+    def read_trajectory_series(self, fn):
+        p = pathlib.Path(fn)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
+        print(time_stamp)     
+        traj_series = []
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(fn) as file:
+                buffer = bytearray()
+                series = None
+                for item in file:
+                    buffer += item
+                    if len(item)<3:
+                        if series is None:
+                            #print(buffer)
+                            series = {}
+                            series['info'] = pd.read_csv(BytesIO(buffer), delim_whitespace=True)
+                            #print(series['info'])
+                            series['traj'] = None
+                            if series['info']['mbad'][0] == 1:
+                                traj_series.append(series)
+                                series = None
+                            buffer = bytearray()
+                        else:
+                            series['traj'] = pd.read_csv(BytesIO(buffer), delim_whitespace=True)
+                            traj_series.append(series)
+                            series = None
+                            buffer = bytearray()
+        print(len(traj_series))
+        return traj_series
 
     def get_rays(self, f):
         ''' читаю лучи из файла и собираю их в список'''

@@ -279,6 +279,7 @@ class TrajectoryModel:
         
         if self.race_model.check_v2_file(self.folder_name):
             self.version = 2 
+            self.traj_cache = {}
             self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)[:-1]
             self.start_time, self.finish_time = self.get_interval()
             self.num_traj = len(self.trajectory_series_list)
@@ -302,6 +303,11 @@ class TrajectoryModel:
         rays, time_stamp = self.rays_cache[index]        
         return rays, time_stamp
 
+    def get_series(self, index):
+        if not index in self.traj_cache:
+            self.traj_cache[index] = self.race_model.read_trajectory_series(self.trajectory_series_list[index])
+        return self.traj_cache[index]
+        
 
 class TrajectoryView_v2(tk.Frame):
     def __init__(self, master, traj_model: TrajectoryModel) ->None:
@@ -312,6 +318,8 @@ class TrajectoryView_v2(tk.Frame):
         print(index)
         self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
         print(self.time_stamp)
+        traj_series = self.traj_model.get_series(index)
+        print(traj_series[0]['info'])
         #self.rays, self.time_stamp = self.traj_model.get_rays(index)
         #self.update_view()
 
