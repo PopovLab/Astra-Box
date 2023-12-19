@@ -282,47 +282,16 @@ class TrajectoryView_v2(tk.Frame):
         super().__init__(master)  
         self.traj_model = traj_model
         self.traj_model.select_series(0)
-        self.traj_model.update_theta_interval()
-        self.traj_model.update_spectrum_interval()
+
         plasma_bound = self.traj_model.race_model.read_plasma_bound()
 
-        self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
-        self.label1.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
-
-        mt = self.traj_model.min_theta
-        gt = self.traj_model.max_theta
-        slider1 = Slider(self, height = 35, min_val = mt, max_val = gt, init_lis = [mt,gt], show_value = True)
-        slider1.grid(row=1, column=0,  sticky=tk.N + tk.S + tk.E + tk.W) 
-        slider1.setValueChageCallback(self.update_theta)
-
-        ms = self.traj_model.min_spectrum_index
-        gs = self.traj_model.max_spectrum_index
-        self.label2 = tk.Label(master=self, text='Spectrum {ms}, {gs}')
-        self.label2.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
-        slider2 = Slider(self, height = 35, min_val = ms, max_val = gs, init_lis = [ms,gs], show_value = True)
-        slider2.grid(row=1, column=1, sticky=tk.N + tk.S + tk.E + tk.W) 
-        slider2.setValueChageCallback(self.update_spectrum_index)
-
         self.plot = TrajectoryPlot_v2(self, self.traj_model, plasma_bound)
-        self.plot.grid(row=2, column=0, columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+        self.plot.grid(row=0, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
 
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(0, weight=1)
 
-    def update_spectrum_index(self, vals):
-        print(vals)
-        self.traj_model.min_spectrum_index = vals[0]
-        self.traj_model.max_spectrum_index = vals[1]
-        self.label2.config(text = f'Spectrum {self.traj_model.min_spectrum_index}, {self.traj_model.max_spectrum_index}')
-        self.plot.update()
 
-    def update_theta(self, vals):
-        print(vals)
-        self.traj_model.min_theta = vals[0]
-        self.traj_model.max_theta = vals[1]
-        self.label1.config(text = f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
-        self.plot.update()
     
 
     def select_moment(self, index):

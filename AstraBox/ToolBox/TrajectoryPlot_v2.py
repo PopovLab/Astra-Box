@@ -10,6 +10,8 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 import AstraBox.ToolBox.ImageButton as ImageButton
 from AstraBox.Models.TrajectoryModel import TrajectoryModel
 
+from AstraBox.Views.tkSliderWidget import Slider
+
 class TrajectoryPlotOptionWindows():
     def __init__(self, master, plot_options, on_update_options= None) -> None:
         self.master = master
@@ -107,6 +109,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.plasma_bound = plasma_bound
         self.time_stamp = traj_model.time_stamp
         self.traj_model = traj_model
+
+        self.traj_model.update_theta_interval()
+        self.traj_model.update_spectrum_interval()
+        self.min_theta = self.traj_model.min_theta
+        self.max_theta = self.traj_model.max_theta
+        self.min_spectrum_index = self.traj_model.min_spectrum_index
+        self.max_spectrum_index = self.traj_model.max_spectrum_index
+
         #self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
         #self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
         self.plot_options['cut_index'] = self.plot_options['max_index']
@@ -114,6 +124,26 @@ class TrajectoryPlot_v2(ttk.Frame):
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
        
+
+        self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.label1.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        slider1 = Slider(self, height = 35, width=350,
+                         min_val = self.min_theta, 
+                         max_val =  self.max_theta, 
+                         init_lis = [self.min_theta, self.max_theta], 
+                         show_value = True)
+        slider1.grid(row=1, column=1,  sticky=tk.N + tk.S + tk.E + tk.W) 
+        slider1.setValueChageCallback(self.update_theta)
+
+        ms = self.traj_model.min_spectrum_index
+        gs = self.traj_model.max_spectrum_index
+        self.label2 = tk.Label(master=self, text='Spectrum {ms}, {gs}')
+        self.label2.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+        slider2 = Slider(self, height = 35, min_val = ms, max_val = gs, init_lis = [ms,gs], show_value = True)
+        slider2.grid(row=1, column=2, sticky=tk.N + tk.S + tk.E + tk.W) 
+        slider2.setValueChageCallback(self.update_spectrum_index)
+
 
         self.ax1 = None
         self.ax2 = None
@@ -123,18 +153,34 @@ class TrajectoryPlot_v2(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.canvas.get_tk_widget().grid(row=2, column=1,columnspan=2, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
         #toobar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         #toobar.grid(row=0, column=0, sticky=tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)    
+        tb.grid(row=2, column=0, sticky=tk.N)    
         lbl = tk.Label(master=self, text='v2')
-        lbl.grid(row=1, column=0, sticky=tk.N) 
+        lbl.grid(row=3, column=0, sticky=tk.N) 
         btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
-        btn.grid(row=2, column=0, sticky=tk.N) 
+        btn.grid(row=4, column=0, sticky=tk.N) 
         self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure(2, weight=1)
+
+
+    def update_spectrum_index(self, vals):
+        print(vals)
+        self.traj_model.min_spectrum_index = vals[0]
+        self.traj_model.max_spectrum_index = vals[1]
+        self.label2.config(text = f'Spectrum {self.traj_model.min_spectrum_index}, {self.traj_model.max_spectrum_index}')
+        self.update()
+
+    def update_theta(self, vals):
+        print(vals)
+        self.traj_model.min_theta = vals[0]
+        self.traj_model.max_theta = vals[1]
+        self.label1.config(text = f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.update()
 
     def init_axis(self):
         if self.show_graph:
@@ -231,6 +277,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         cut_index = self.plot_options['cut_index']
         segs = []
+        segs_colors = []
         for series in self.traj_model.traj_series:
             if self.check_theta_lim(series['theta']):
                 if self.check_spectrum_lim(series['index']):
