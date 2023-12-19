@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
+import matplotlib as mpl
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib import collections, transforms
@@ -123,7 +125,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.show_graph = self.plot_options['show_graph']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-       
+        self.colormaps = mpl.colormaps['rainbow'] # plasma, tab20, gist_rainbow, rainbow
 
         self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
         self.label1.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
@@ -170,16 +172,16 @@ class TrajectoryPlot_v2(ttk.Frame):
 
     def update_spectrum_index(self, vals):
         print(vals)
-        self.traj_model.min_spectrum_index = vals[0]
-        self.traj_model.max_spectrum_index = vals[1]
-        self.label2.config(text = f'Spectrum {self.traj_model.min_spectrum_index}, {self.traj_model.max_spectrum_index}')
+        self.min_spectrum_index = vals[0]
+        self.max_spectrum_index = vals[1]
+        self.label2.config(text = f'Spectrum {self.min_spectrum_index}, {self.max_spectrum_index}')
         self.update()
 
     def update_theta(self, vals):
         print(vals)
-        self.traj_model.min_theta = vals[0]
-        self.traj_model.max_theta = vals[1]
-        self.label1.config(text = f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.min_theta = vals[0]
+        self.max_theta = vals[1]
+        self.label1.config(text = f'Theta ({self.min_theta}, {self.max_theta}')
         self.update()
 
     def init_axis(self):
@@ -264,11 +266,17 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax2.autoscale_view()                           
 
     def check_theta_lim(self, theta):
-        return (self.traj_model.min_theta < theta) and (theta < self.traj_model.max_theta)
+        return (self.min_theta < theta) and (theta < self.max_theta)
     
     def check_spectrum_lim(self, index):
-        return (self.traj_model.min_spectrum_index < index) and (index < self.traj_model.max_spectrum_index)
+        return (self.min_spectrum_index < index) and (index < self.max_spectrum_index)
 
+    def theta_color(self, theta):
+        t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
+        return self.colormaps(t)
+        #lc = len(self.colors)
+        #return self.colors[int(t*lc)]
+    
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
@@ -286,7 +294,8 @@ class TrajectoryPlot_v2(ttk.Frame):
                         #print(len(ray['R']))
                         curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
                         segs.append(curve)
-        col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
+                        segs_colors.append(self.theta_color(series['theta']))
+        col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
         if cut_index<5 or self.plot_options['show_marker']:
