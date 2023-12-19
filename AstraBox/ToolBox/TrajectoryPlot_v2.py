@@ -125,7 +125,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.show_graph = self.plot_options['show_graph']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-        self.colormaps = mpl.colormaps['rainbow'] # plasma, tab20, gist_rainbow, rainbow
+        self.colormaps = mpl.colormaps['nipy_spectral'] # plasma, tab20, gist_rainbow, rainbow
 
         self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
         self.label1.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
