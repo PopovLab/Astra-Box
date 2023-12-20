@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
+import pandas as pd
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib import cm
@@ -214,7 +215,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.clear_axis()
             self.show_graph = self.plot_options['show_graph']
             self.init_axis()
-        self.update_rays(save_lim= True)
+        self.update_traj(save_lim= True)
         if self.show_graph:
             self.update_graph()
         self.canvas.draw()
@@ -277,6 +278,19 @@ class TrajectoryPlot_v2(ttk.Frame):
         #lc = len(self.colors)
         #return self.colors[int(t*lc)]
     
+    def divider(self, ray_df: pd.DataFrame, cut_index):
+        ray = ray_df.iloc[:cut_index]
+        curve = np.column_stack([ray['R'], ray['Z']])
+        if 'driver' in ray.columns:
+            ray2 = ray[ray['driver'] == 2]
+            ray4 = ray[ray['driver'] == 4]
+            driver4_points = np.column_stack([ray4['R'], ray4['Z']])
+            driver2_points = np.column_stack([ray2['R'], ray2['Z']])
+        else:
+            driver4_points = np.empty([0, 2], dtype=float)
+            driver2_points = curve
+        return curve, driver2_points, driver4_points
+
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
@@ -286,32 +300,44 @@ class TrajectoryPlot_v2(ttk.Frame):
         cut_index = self.plot_options['cut_index']
         segs = []
         segs_colors = []
+        driver2_list = []
+        driver4_list = []
         for series in self.traj_model.traj_series:
             if self.check_theta_lim(series['theta']):
                 if self.check_spectrum_lim(series['index']):
                     if not series['traj'] is None:
-                        ray = series['traj']
-                        #print(len(ray['R']))
-                        curve = np.column_stack([ray['R'][0:cut_index], ray['Z'][0:cut_index]])
+                        curve, driver2_points, driver4_points= self.divider(series['traj'], cut_index)
                         segs.append(curve)
+                        driver2_list.append(driver2_points)
+                        driver4_list.append(driver4_points)
                         segs_colors.append(self.theta_color(series['theta']))
+
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
         if cut_index<5 or self.plot_options['show_marker']:
             cl = len(self.colors)
-            for id, sg in enumerate(segs):
-                clr = self.colors[id % cl]
+            for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
                 stars = collections.RegularPolyCollection(
                                                     numsides=5, # a pentagon
                                                     sizes=(5,),
                                                     facecolors= (clr,),
                                                     edgecolors= (clr,),
                                                     linewidths= (1,),
-                                                    offsets= sg,
+                                                    offsets= dr2,
                                                     offset_transform=self.ax1.transData,
                                                     )
-                self.ax1.add_collection(stars, autolim=True)  
+                self.ax1.add_collection(stars, autolim=True)
+                tri = collections.RegularPolyCollection(
+                                                    numsides=3, # a pentagon
+                                                    sizes=(15,),
+                                                    facecolors= (clr,),
+                                                    edgecolors= (clr,),
+                                                    linewidths= (1,),
+                                                    offsets= dr4,
+                                                    offset_transform=self.ax1.transData,
+                                                    )
+                self.ax1.add_collection(tri, autolim=True)  
         if save_lim:
             self.ax1.set_ylim(bottom, top)
             self.ax1.set_xlim(left, right)                      
