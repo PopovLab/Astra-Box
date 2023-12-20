@@ -277,14 +277,18 @@ class TrajectoryPlot_v2(ttk.Frame):
     
     def divider(self, ray: pd.DataFrame):
         curve = np.column_stack([ray['R'], ray['Z']])
-        if 'driver' in ray.columns:
-            ray2 = ray[ray['driver'] == 2]
-            ray4 = ray[ray['driver'] == 4]
-            driver4_points = np.column_stack([ray4['R'], ray4['Z']])
-            driver2_points = np.column_stack([ray2['R'], ray2['Z']])
+        if self.plot_options['show_marker']:
+            if 'driver' in ray.columns:
+                ray2 = ray[ray['driver'] == 2]
+                ray4 = ray[ray['driver'] == 4]
+                driver4_points = np.column_stack([ray4['R'], ray4['Z']])
+                driver2_points = np.column_stack([ray2['R'], ray2['Z']])
+            else:
+                driver4_points = np.empty([0, 2], dtype=float)
+                driver2_points = curve
         else:
             driver4_points = np.empty([0, 2], dtype=float)
-            driver2_points = curve
+            driver2_points = np.empty([0, 2], dtype=float)
         return curve, driver2_points, driver4_points
 
     def get_good_traj(self):
@@ -314,28 +318,27 @@ class TrajectoryPlot_v2(ttk.Frame):
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
-        if self.plot_options['show_marker']:
-            for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-                stars = collections.RegularPolyCollection(
-                                                    numsides=5, # a pentagon
-                                                    sizes=(5,),
-                                                    facecolors= (clr,),
-                                                    edgecolors= (clr,),
-                                                    linewidths= (1,),
-                                                    offsets= dr2,
-                                                    offset_transform=self.ax1.transData,
-                                                    )
-                self.ax1.add_collection(stars, autolim=True)
-                tri = collections.RegularPolyCollection(
-                                                    numsides=3, # a triangle
-                                                    sizes=(15,),
-                                                    facecolors= (clr,),
-                                                    edgecolors= (clr,),
-                                                    linewidths= (1,),
-                                                    offsets= dr4,
-                                                    offset_transform=self.ax1.transData,
-                                                    )
-                self.ax1.add_collection(tri, autolim=True)  
+        for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
+            stars = collections.RegularPolyCollection(
+                                                numsides=5, # a pentagon
+                                                sizes=(5,),
+                                                facecolors= (clr,),
+                                                edgecolors= (clr,),
+                                                linewidths= (1,),
+                                                offsets= dr2,
+                                                offset_transform=self.ax1.transData,
+                                                )
+            self.ax1.add_collection(stars, autolim=True)
+            tri = collections.RegularPolyCollection(
+                                                numsides=3, # a triangle
+                                                sizes=(15,),
+                                                facecolors= (clr,),
+                                                edgecolors= (clr,),
+                                                linewidths= (1,),
+                                                offsets= dr4,
+                                                offset_transform=self.ax1.transData,
+                                                )
+            self.ax1.add_collection(tri, autolim=True)  
         if save_lim:
             self.ax1.set_ylim(bottom, top)
             self.ax1.set_xlim(left, right)                      
