@@ -223,8 +223,25 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.update_graph()
         self.canvas.draw()
 
-
-    def update_graph(self):
+    def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
+        curve = np.column_stack([ray[x_axis], ray[y_axis]])
+        if self.plot_options['show_marker']:
+            if 'driver' in ray.columns:
+                ray2 = ray[ray['driver'] == 2]
+                ray4 = ray[ray['driver'] == 4]
+                driver4_points = np.column_stack([ray4[x_axis], ray4[y_axis]])
+                driver2_points = np.column_stack([ray2[x_axis], ray2[y_axis]])
+            else:
+                driver4_points = np.empty([0, 2], dtype=float)
+                driver2_points = curve
+        else:
+            driver4_points = np.empty([0, 2], dtype=float)
+            driver2_points = np.empty([0, 2], dtype=float)
+        return curve, driver2_points, driver4_points
+    
+    def update_graph(self, save_lim= False):
+        bottom, top = self.ax2.get_ylim()
+        left, right = self.ax2.get_xlim()  
         self.ax2.clear()
         x_axis = self.plot_options['x_axis']
         y_axis = self.plot_options['y_axis']
@@ -233,6 +250,8 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax2.set_xlabel(x_axis, fontsize=10)
         segs = []
         segs_colors = []
+        driver2_list = []
+        driver4_list = []
         match x_axis:
             case 'index':
                 for series in self.get_good_traj():
@@ -242,26 +261,26 @@ class TrajectoryPlot_v2(ttk.Frame):
             case _:
                 for series in self.get_good_traj():
                     curve = np.column_stack([series['traj'][x_axis][0:cut_index], series['traj'][y_axis][0:cut_index]])
+                    curve, driver2_points, driver4_points= self.divider2(series['traj'].iloc[:cut_index], x_axis, y_axis)
+                    segs.append(curve)
+                    driver2_list.append(driver2_points)
+                    driver4_list.append(driver4_points)                    
                     segs_colors.append(self.theta_color(series['theta']))
                     segs.append(curve) 
          
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax2.add_collection(col, autolim=True)     
 
-        if self.plot_options['show_marker']:
-            for sg, clr in zip(segs, segs_colors):
-                stars = collections.RegularPolyCollection(
-                                                    numsides=5, # a pentagon
-                                                    sizes=(5,),
-                                                    facecolors= (clr,),
-                                                    edgecolors= (clr,),
-                                                    linewidths= (1,),
-                                                    offsets= sg,
-                                                    offset_transform=self.ax2.transData,
-                                                    )
-                self.ax2.add_collection(stars, autolim=True)  
-                self.ax2.autoscale_view()   
-        self.ax2.autoscale_view()                           
+        for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
+            stars, tri = self.create_markers(dr2, dr4, clr, self.ax2.transData)
+            self.ax2.add_collection(stars, autolim=True)            
+            self.ax2.add_collection(tri, autolim=True)  
+
+        if save_lim:
+            self.ax2.set_ylim(bottom, top)
+            self.ax2.set_xlim(left, right)                      
+        else: 
+            self.ax2.autoscale_view()                           
 
     def check_theta_lim(self, theta):
         return (self.min_theta < theta) and (theta < self.max_theta)
@@ -297,7 +316,7 @@ class TrajectoryPlot_v2(ttk.Frame):
                 if self.check_spectrum_lim(series['index'])   
                 if not series['traj'] is None )
     
-    def create_markers(self, dr2, dr4, clr):
+    def create_markers(self, dr2, dr4, clr, offset_transform):
         stars = collections.RegularPolyCollection(
                                             numsides=5, # a pentagon
                                             sizes=(5,),
@@ -305,7 +324,7 @@ class TrajectoryPlot_v2(ttk.Frame):
                                             edgecolors= (clr,),
                                             linewidths= (1,),
                                             offsets= dr2,
-                                            offset_transform=self.ax1.transData,
+                                            offset_transform=offset_transform,
                                             )
 
         tri = collections.RegularPolyCollection(
@@ -315,7 +334,7 @@ class TrajectoryPlot_v2(ttk.Frame):
                                             edgecolors= (clr,),
                                             linewidths= (1,),
                                             offsets= dr4,
-                                            offset_transform=self.ax1.transData,
+                                            offset_transform=offset_transform,
                                             )   
         return stars, tri
     def update_traj(self, save_lim= False):
@@ -340,9 +359,10 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax1.add_collection(col, autolim=True)
         
         for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-            stars, tri = self.create_markers(dr2, dr4, clr)
+            stars, tri = self.create_markers(dr2, dr4, clr, self.ax1.transData)
             self.ax1.add_collection(stars, autolim=True)            
             self.ax1.add_collection(tri, autolim=True)  
+
         if save_lim:
             self.ax1.set_ylim(bottom, top)
             self.ax1.set_xlim(left, right)                      
