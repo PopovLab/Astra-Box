@@ -232,24 +232,24 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax2.set_ylabel(y_axis, fontsize=10)
         self.ax2.set_xlabel(x_axis, fontsize=10)
         segs = []
+        segs_colors = []
         match x_axis:
- 
             case 'index':
                 for series in self.get_good_traj():
                     curve = np.column_stack([series['traj'][y_axis].index[0:cut_index], series['traj'][y_axis][0:cut_index]])
+                    segs_colors.append(self.theta_color(series['theta']))
                     segs.append(curve)  
             case _:
                 for series in self.get_good_traj():
                     curve = np.column_stack([series['traj'][x_axis][0:cut_index], series['traj'][y_axis][0:cut_index]])
+                    segs_colors.append(self.theta_color(series['theta']))
                     segs.append(curve) 
          
-        col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
+        col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax2.add_collection(col, autolim=True)     
 
-        if cut_index<5 or self.plot_options['show_marker']:
-            cl = len(self.colors)
-            for id, sg in enumerate(segs):
-                clr = self.colors[id % cl]
+        if self.plot_options['show_marker']:
+            for sg, clr in zip(segs, segs_colors):
                 stars = collections.RegularPolyCollection(
                                                     numsides=5, # a pentagon
                                                     sizes=(5,),
@@ -314,7 +314,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
-        if cut_index<5 or self.plot_options['show_marker']:
+        if self.plot_options['show_marker']:
             for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
                 stars = collections.RegularPolyCollection(
                                                     numsides=5, # a pentagon
