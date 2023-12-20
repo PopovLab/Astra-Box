@@ -271,10 +271,11 @@ class TrajectoryPlot_v2(ttk.Frame):
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax2.add_collection(col, autolim=True)     
 
-        for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-            stars, tri = self.create_markers(dr2, dr4, clr, self.ax2.transData)
-            self.ax2.add_collection(stars, autolim=True)            
-            self.ax2.add_collection(tri, autolim=True)  
+        if self.plot_options['show_marker']:
+            for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
+                stars, tri = self.create_markers(dr2, dr4, clr, self.ax2.transData)
+                self.ax2.add_collection(stars, autolim=True)            
+                self.ax2.add_collection(tri, autolim=True)  
 
         if save_lim:
             self.ax2.set_ylim(bottom, top)
@@ -358,10 +359,11 @@ class TrajectoryPlot_v2(ttk.Frame):
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
-        for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-            stars, tri = self.create_markers(dr2, dr4, clr, self.ax1.transData)
-            self.ax1.add_collection(stars, autolim=True)            
-            self.ax1.add_collection(tri, autolim=True)  
+        if self.plot_options['show_marker']:
+            for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
+                stars, tri = self.create_markers(dr2, dr4, clr, self.ax1.transData)
+                self.ax1.add_collection(stars, autolim=True)            
+                self.ax1.add_collection(tri, autolim=True)  
 
         if save_lim:
             self.ax1.set_ylim(bottom, top)
