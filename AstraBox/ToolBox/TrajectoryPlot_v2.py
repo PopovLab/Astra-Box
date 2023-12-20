@@ -278,8 +278,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         #lc = len(self.colors)
         #return self.colors[int(t*lc)]
     
-    def divider(self, ray_df: pd.DataFrame, cut_index):
-        ray = ray_df.iloc[:cut_index]
+    def divider(self, ray: pd.DataFrame):
         curve = np.column_stack([ray['R'], ray['Z']])
         if 'driver' in ray.columns:
             ray2 = ray[ray['driver'] == 2]
@@ -306,7 +305,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             if self.check_theta_lim(series['theta']):
                 if self.check_spectrum_lim(series['index']):
                     if not series['traj'] is None:
-                        curve, driver2_points, driver4_points= self.divider(series['traj'], cut_index)
+                        curve, driver2_points, driver4_points= self.divider(series['traj'].iloc[:cut_index])
                         segs.append(curve)
                         driver2_list.append(driver2_points)
                         driver4_list.append(driver4_points)
