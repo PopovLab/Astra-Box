@@ -328,7 +328,7 @@ class TrajectoryPlot_v2(ttk.Frame):
                                                     )
                 self.ax1.add_collection(stars, autolim=True)
                 tri = collections.RegularPolyCollection(
-                                                    numsides=3, # a pentagon
+                                                    numsides=3, # a triangle
                                                     sizes=(15,),
                                                     facecolors= (clr,),
                                                     edgecolors= (clr,),
