@@ -260,7 +260,6 @@ class TrajectoryPlot_v2(ttk.Frame):
                     segs.append(curve)  
             case _:
                 for series in self.get_good_traj():
-                    curve = np.column_stack([series['traj'][x_axis][0:cut_index], series['traj'][y_axis][0:cut_index]])
                     curve, driver2_points, driver4_points= self.divider2(series['traj'].iloc[:cut_index], x_axis, y_axis)
                     segs.append(curve)
                     driver2_list.append(driver2_points)
