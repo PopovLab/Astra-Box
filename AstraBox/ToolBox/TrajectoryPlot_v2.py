@@ -46,7 +46,7 @@ class TrajectoryPlotOptionWindows():
         self.combo1 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo1.bind("<<ComboboxSelected>>", self.combo_selected1)
         self.combo1['values'] =  self.plot_options['term_list']
-        self.combo1.current(self.plot_options['term_list'].index('theta'))
+        self.combo1.current(self.plot_options['term_list'].index(self.plot_options['x_axis']))
         self.combo1.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
 
         frame = tk.Frame(win)
@@ -55,7 +55,7 @@ class TrajectoryPlotOptionWindows():
         self.combo2 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo2.bind("<<ComboboxSelected>>", self.combo_selected2)
         self.combo2['values'] =  self.plot_options['term_list']
-        self.combo2.current(self.plot_options['term_list'].index('N_par'))
+        self.combo2.current(self.plot_options['term_list'].index(self.plot_options['y_axis']))
         self.combo2.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
 
         self.cut_index_var = tk.IntVar(value= self.plot_options['cut_index'])
@@ -97,8 +97,8 @@ class TrajectoryPlotOptionWindows():
         if self.on_update_options:
             self.on_update_options()
 
-class TrajectoryPlot_v2(ttk.Frame):
-    plot_options = { 
+def default_plot_options():
+    return { 
         'show_marker' : False,
         'show_graph' : False,
         'term_list' : [],
@@ -107,12 +107,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         'cut_index' : 1000,
         'max_index' : 2000
     }
+class TrajectoryPlot_v2(ttk.Frame):
+
     def __init__(self, master, traj_model: TrajectoryModel, plasma_bound) -> None:
         super().__init__(master)  
         self.plasma_bound = plasma_bound
         self.time_stamp = traj_model.time_stamp
         self.traj_model = traj_model
-
+        self.plot_options = default_plot_options()
         self.traj_model.update_theta_interval()
         self.traj_model.update_spectrum_interval()
         self.min_theta = self.traj_model.min_theta
@@ -207,6 +209,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.ax2 = None
 
     def show_option_windows(self):
+        print(self.plot_options)
         self.option_windows = TrajectoryPlotOptionWindows(self, self.plot_options, self.update_plot_options)
         self.option_windows.show()
 
@@ -230,20 +233,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax2.set_xlabel(x_axis, fontsize=10)
         segs = []
         match x_axis:
-            case 'ray_index':
-                rl = len(self.rays)
-                for id, ray in enumerate(self.rays):
-                    ci = len(ray[y_axis][0:cut_index])
-                    ri = np.full((ci), id)
-                    curve = np.column_stack([ri, ray[y_axis][0:cut_index]])
-                    segs.append(curve)         
+ 
             case 'index':
-                for ray in self.rays:
-                    curve = np.column_stack([ray[y_axis].index[0:cut_index], ray[y_axis][0:cut_index]])
+                for series in self.get_good_traj():
+                    curve = np.column_stack([series['traj'][y_axis].index[0:cut_index], series['traj'][y_axis][0:cut_index]])
                     segs.append(curve)  
             case _:
-                for ray in self.rays:
-                    curve = np.column_stack([ray[x_axis][0:cut_index], ray[y_axis][0:cut_index]])
+                for series in self.get_good_traj():
+                    curve = np.column_stack([series['traj'][x_axis][0:cut_index], series['traj'][y_axis][0:cut_index]])
                     segs.append(curve) 
          
         col = collections.LineCollection(segs, colors=self.colors, alpha=0.5, linewidth=0.5)
@@ -290,6 +287,12 @@ class TrajectoryPlot_v2(ttk.Frame):
             driver2_points = curve
         return curve, driver2_points, driver4_points
 
+    def get_good_traj(self):
+        return ( series for series in self.traj_model.traj_series 
+                if self.check_theta_lim(series['theta'])
+                if self.check_spectrum_lim(series['index'])   
+                if not series['traj'] is None )
+    
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
@@ -301,21 +304,17 @@ class TrajectoryPlot_v2(ttk.Frame):
         segs_colors = []
         driver2_list = []
         driver4_list = []
-        for series in self.traj_model.traj_series:
-            if self.check_theta_lim(series['theta']):
-                if self.check_spectrum_lim(series['index']):
-                    if not series['traj'] is None:
-                        curve, driver2_points, driver4_points= self.divider(series['traj'].iloc[:cut_index])
-                        segs.append(curve)
-                        driver2_list.append(driver2_points)
-                        driver4_list.append(driver4_points)
-                        segs_colors.append(self.theta_color(series['theta']))
+        for series in self.get_good_traj():
+            curve, driver2_points, driver4_points= self.divider(series['traj'].iloc[:cut_index])
+            segs.append(curve)
+            driver2_list.append(driver2_points)
+            driver4_list.append(driver4_points)
+            segs_colors.append(self.theta_color(series['theta']))
 
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax1.add_collection(col, autolim=True)
         
         if cut_index<5 or self.plot_options['show_marker']:
-            cl = len(self.colors)
             for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
                 stars = collections.RegularPolyCollection(
                                                     numsides=5, # a pentagon

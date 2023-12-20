@@ -58,4 +58,4 @@ class TrajectoryModel:
             if not series['traj'] is None:
                 traj = series['traj']
                 break
-        return  ['ray_index', 'index'] + list(traj.columns)
+        return  ['index'] + list(traj.columns)
