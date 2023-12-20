@@ -297,6 +297,27 @@ class TrajectoryPlot_v2(ttk.Frame):
                 if self.check_spectrum_lim(series['index'])   
                 if not series['traj'] is None )
     
+    def create_markers(self, dr2, dr4, clr):
+        stars = collections.RegularPolyCollection(
+                                            numsides=5, # a pentagon
+                                            sizes=(5,),
+                                            facecolors= (clr,),
+                                            edgecolors= (clr,),
+                                            linewidths= (1,),
+                                            offsets= dr2,
+                                            offset_transform=self.ax1.transData,
+                                            )
+
+        tri = collections.RegularPolyCollection(
+                                            numsides=3, # a triangle
+                                            sizes=(15,),
+                                            facecolors= (clr,),
+                                            edgecolors= (clr,),
+                                            linewidths= (1,),
+                                            offsets= dr4,
+                                            offset_transform=self.ax1.transData,
+                                            )   
+        return stars, tri
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
@@ -319,25 +340,8 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.ax1.add_collection(col, autolim=True)
         
         for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-            stars = collections.RegularPolyCollection(
-                                                numsides=5, # a pentagon
-                                                sizes=(5,),
-                                                facecolors= (clr,),
-                                                edgecolors= (clr,),
-                                                linewidths= (1,),
-                                                offsets= dr2,
-                                                offset_transform=self.ax1.transData,
-                                                )
-            self.ax1.add_collection(stars, autolim=True)
-            tri = collections.RegularPolyCollection(
-                                                numsides=3, # a triangle
-                                                sizes=(15,),
-                                                facecolors= (clr,),
-                                                edgecolors= (clr,),
-                                                linewidths= (1,),
-                                                offsets= dr4,
-                                                offset_transform=self.ax1.transData,
-                                                )
+            stars, tri = self.create_markers(dr2, dr4, clr)
+            self.ax1.add_collection(stars, autolim=True)            
             self.ax1.add_collection(tri, autolim=True)  
         if save_lim:
             self.ax1.set_ylim(bottom, top)
