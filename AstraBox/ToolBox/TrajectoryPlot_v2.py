@@ -120,7 +120,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.min_spectrum_index = self.traj_model.min_spectrum_index
         self.max_spectrum_index = self.traj_model.max_spectrum_index
 
-        #self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
+        self.plot_options['term_list'] =  self.traj_model.get_term_list()
         #self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
         self.plot_options['cut_index'] = self.plot_options['max_index']
         self.show_graph = self.plot_options['show_graph']

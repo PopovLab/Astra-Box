@@ -52,3 +52,10 @@ class TrajectoryModel:
         if not index in self.traj_cache:
             self.traj_cache[index] = self.race_model.read_trajectory_series(self.trajectory_series_list[index])
         self.traj_series = self.traj_cache[index]
+
+    def get_term_list(self):
+        for series in self.traj_series:
+            if not series['traj'] is None:
+                traj = series['traj']
+                break
+        return  ['ray_index', 'index'] + list(traj.columns)
