@@ -224,19 +224,35 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.canvas.draw()
 
     def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
-        curve = np.column_stack([ray[x_axis], ray[y_axis]])
-        if self.plot_options['show_marker']:
-            if 'driver' in ray.columns:
-                ray2 = ray[ray['driver'] == 2]
-                ray4 = ray[ray['driver'] == 4]
-                driver4_points = np.column_stack([ray4[x_axis], ray4[y_axis]])
-                driver2_points = np.column_stack([ray2[x_axis], ray2[y_axis]])
-            else:
-                driver4_points = np.empty([0, 2], dtype=float)
-                driver2_points = curve
-        else:
-            driver4_points = np.empty([0, 2], dtype=float)
-            driver2_points = np.empty([0, 2], dtype=float)
+        match x_axis:
+            case 'index':
+                curve = np.column_stack([ray.index, ray[y_axis]])
+                if self.plot_options['show_marker']:
+                    if 'driver' in ray.columns:
+                        ray2 = ray[ray['driver'] == 2]
+                        ray4 = ray[ray['driver'] == 4]
+                        driver4_points = np.column_stack([ray4.index, ray4[y_axis]])
+                        driver2_points = np.column_stack([ray2.index, ray2[y_axis]])
+                    else:
+                        driver4_points = np.empty([0, 2], dtype=float)
+                        driver2_points = curve
+                else:
+                    driver4_points = np.empty([0, 2], dtype=float)
+                    driver2_points = np.empty([0, 2], dtype=float)
+            case _:
+                curve = np.column_stack([ray[x_axis], ray[y_axis]])
+                if self.plot_options['show_marker']:
+                    if 'driver' in ray.columns:
+                        ray2 = ray[ray['driver'] == 2]
+                        ray4 = ray[ray['driver'] == 4]
+                        driver4_points = np.column_stack([ray4[x_axis], ray4[y_axis]])
+                        driver2_points = np.column_stack([ray2[x_axis], ray2[y_axis]])
+                    else:
+                        driver4_points = np.empty([0, 2], dtype=float)
+                        driver2_points = curve
+                else:
+                    driver4_points = np.empty([0, 2], dtype=float)
+                    driver2_points = np.empty([0, 2], dtype=float)
         return curve, driver2_points, driver4_points
     
     def update_graph(self, save_lim= False):
@@ -252,20 +268,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         segs_colors = []
         driver2_list = []
         driver4_list = []
-        match x_axis:
-            case 'index':
-                for series in self.get_good_traj():
-                    curve = np.column_stack([series['traj'][y_axis].index[0:cut_index], series['traj'][y_axis][0:cut_index]])
-                    segs_colors.append(self.theta_color(series['theta']))
-                    segs.append(curve)  
-            case _:
-                for series in self.get_good_traj():
-                    curve, driver2_points, driver4_points= self.divider2(series['traj'].iloc[:cut_index], x_axis, y_axis)
-                    segs.append(curve)
-                    driver2_list.append(driver2_points)
-                    driver4_list.append(driver4_points)                    
-                    segs_colors.append(self.theta_color(series['theta']))
-                    segs.append(curve) 
+
+        for series in self.get_good_traj():
+            curve, driver2_points, driver4_points= self.divider2(series['traj'].iloc[:cut_index], x_axis, y_axis)
+            segs.append(curve)
+            driver2_list.append(driver2_points)
+            driver4_list.append(driver4_points)                    
+            segs_colors.append(self.theta_color(series['theta']))
+            segs.append(curve) 
          
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
         self.ax2.add_collection(col, autolim=True)     
