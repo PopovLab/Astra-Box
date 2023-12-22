@@ -142,7 +142,7 @@ class RaceModel(BaseModel):
         return list
     
     def read_maxwell_data(self, folder_name):
-        p = pathlib.Path(f)
+        p = pathlib.Path(Astra.data_folder[folder_name])
         print(p.suffix)
         print(p.stem)
         if p.suffix != '.bin': return
