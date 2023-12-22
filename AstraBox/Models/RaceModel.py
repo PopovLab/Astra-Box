@@ -123,8 +123,8 @@ class RaceModel(BaseModel):
             with zip.open(f) as file:
                 return RadialData.read_radial_data(file)        
 
-    def children_files_exists(self, folder_name):
-        list= self.get_children_files(folder_name)
+    def data_files_exists(self, folder_name):
+        list= self.get_data_files(folder_name)
         return True if len(list)>0 else False
 
     def check_v2_file(self, folder_name):
@@ -133,11 +133,11 @@ class RaceModel(BaseModel):
             p = zipfile.Path(zip, folder + 'v2')
             return p.exists()
 
-    def get_children_files(self, folder_name):
+    def get_data_files(self, folder_name):
         folder = Astra.data_folder[folder_name]
         with zipfile.ZipFile(self.race_zip_file) as zip:
             p = zipfile.Path(zip, folder)
-            list = [folder + x.name for x in p.iterdir() if x.is_file()]
+            list = [folder + x.name for x in p.iterdir() if x.is_file() and x.suffix == '.dat']
             list.sort()  
         return list
     

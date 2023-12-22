@@ -69,15 +69,15 @@ class RacePage(ttk.Frame):
         radial_data_view = RadialDataView(self.notebook, model= model)
         self.notebook.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
         
-        if model.children_files_exists('TRAJECTROY'):
+        if model.data_files_exists('TRAJECTROY'):
             trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJECTROY')
             self.notebook.add(trajectory_view, text="Trajectory", underline=0, sticky=tk.NE + tk.SW)
 
-        if model.children_files_exists('TRAJ_POS'):
+        if model.data_files_exists('TRAJ_POS'):
             trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJ_POS')
             self.notebook.add(trajectory_view, text="Traj pos", underline=0, sticky=tk.NE + tk.SW)
 
-        if model.children_files_exists('TRAJ_NEG'):
+        if model.data_files_exists('TRAJ_NEG'):
             trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJ_NEG')
             self.notebook.add(trajectory_view, text="Traj neg", underline=0, sticky=tk.NE + tk.SW)
 

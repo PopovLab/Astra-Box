@@ -15,11 +15,11 @@ class TrajectoryModel:
         if self.race_model.check_v2_file(self.folder_name):
             self.version = 2 
             self.traj_cache = {}
-            self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)[:-1]
+            self.trajectory_series_list = self.race_model.get_data_files(self.folder_name)
             self.start_time, self.finish_time = self.get_interval()
             self.num_traj = len(self.trajectory_series_list)
         else:
-            self.trajectory_series_list = self.race_model.get_children_files(self.folder_name)
+            self.trajectory_series_list = self.race_model.get_data_files(self.folder_name)
             self.rays_cache = {}
             self.num_traj = len(self.trajectory_series_list)
             if self.num_traj>0: 
