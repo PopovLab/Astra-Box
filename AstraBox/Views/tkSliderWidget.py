@@ -14,9 +14,9 @@ class Slider(Frame):
     LINE_WIDTH = 3
     BAR_COLOR_INNER = "#5c8a8a"
     BAR_COLOR_OUTTER = "#c2d6d6"
-    BAR_RADIUS = 10
+    BAR_RADIUS = 9
     BAR_RADIUS_INNER = BAR_RADIUS - 5
-    DIGIT_PRECISION = ".1f"  # for showing in the canvas
+    DIGIT_PRECISION = ".3f"  # for showing in the canvas
 
     # relative step size in 0 to 1, set to 0 for no step size restiction
     # may be override by the step_size argument in __init__
@@ -56,10 +56,10 @@ class Slider(Frame):
         self.W = width
         self.canv_H = self.H
         self.canv_W = self.W
-        if not show_value:
-            self.slider_y = self.canv_H / 2  # y pos of the slider
-        else:
-            self.slider_y = self.canv_H * 2 / 5
+        #if not show_value:
+        self.slider_y = self.canv_H / 2  +  Slider.BAR_RADIUS # y pos of the slider
+        #else:
+        #    self.slider_y = self.canv_H * 2 / 5
         self.slider_x = Slider.BAR_RADIUS  # x pos of the slider (left side)
 
         self._val_change_callback = lambda lis: None
@@ -181,7 +181,7 @@ class Slider(Frame):
             x - r, y - r, x + r, y + r, fill=Slider.BAR_COLOR_INNER, outline=""
         )
         if self.show_value:
-            y_value = y + Slider.BAR_RADIUS + 8
+            y_value = y - Slider.BAR_RADIUS - 8
             value = pos * (self.max_val - self.min_val) + self.min_val
             id_value = self.canv.create_text(
                 x, y_value, text=format(value, Slider.DIGIT_PRECISION)
