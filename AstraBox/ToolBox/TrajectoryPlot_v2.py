@@ -130,10 +130,10 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         self.colormaps = mpl.colormaps['nipy_spectral'] # plasma, tab20, gist_rainbow, rainbow
 
-        self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta}')
+        self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta})')
         self.label1.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        slider1 = Slider(self, height = 35, width=350,
+        slider1 = Slider(self, height = 35, width=330,
                          min_val = self.min_theta, 
                          max_val =  self.max_theta, 
                          init_lis = [self.min_theta, self.max_theta], 
@@ -143,9 +143,9 @@ class TrajectoryPlot_v2(ttk.Frame):
 
         ms = self.traj_model.min_spectrum_index
         gs = self.traj_model.max_spectrum_index
-        self.label2 = tk.Label(master=self, text='Spectrum {ms}, {gs}')
+        self.label2 = tk.Label(master=self, text=f'Spectrum ({ms}, {gs})')
         self.label2.grid(row=0, column=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
-        slider2 = Slider(self, height = 35, min_val = ms, max_val = gs, init_lis = [ms,gs], show_value = True)
+        slider2 = Slider(self, height = 35, width=330, min_val = ms, max_val = gs, init_lis = [ms,gs], show_value = True)
         slider2.grid(row=1, column=2, sticky=tk.N + tk.S + tk.E + tk.W) 
         slider2.setValueChageCallback(self.update_spectrum_index)
 
@@ -177,14 +177,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         print(vals)
         self.min_spectrum_index = vals[0]
         self.max_spectrum_index = vals[1]
-        self.label2.config(text = f'Spectrum {self.min_spectrum_index}, {self.max_spectrum_index}')
+        #self.label2.config(text = f'Spectrum {self.min_spectrum_index}, {self.max_spectrum_index}')
         self.update()
 
     def update_theta(self, vals):
         print(vals)
         self.min_theta = vals[0]
         self.max_theta = vals[1]
-        self.label1.config(text = f'Theta ({self.min_theta}, {self.max_theta}')
+        #self.label1.config(text = f'Theta ({self.min_theta}, {self.max_theta}')
         self.update()
 
     def init_axis(self):
