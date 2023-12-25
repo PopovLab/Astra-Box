@@ -2,7 +2,7 @@ from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
-from typing_extensions import Literal
+#from typing_extensions import Literal
 import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
