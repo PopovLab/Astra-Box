@@ -293,10 +293,10 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.ax2.autoscale_view()                           
 
     def check_theta_lim(self, theta):
-        return (self.min_theta < theta) and (theta < self.max_theta)
+        return (self.min_theta <= theta) and (theta <= self.max_theta)
     
     def check_spectrum_lim(self, index):
-        return (self.min_spectrum_index < index) and (index < self.max_spectrum_index)
+        return (self.min_spectrum_index <= index) and (index <= self.max_spectrum_index)
 
     def theta_color(self, theta):
         t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
