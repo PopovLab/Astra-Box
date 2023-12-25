@@ -298,8 +298,9 @@ class TrajectoryView_v2(tk.Frame):
         print(index)
         self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
         self.traj_model.select_series(index)
+        self.plot.update()
         #traj_series['time'] = time_stamp
-        print_traj_series(self.traj_model.traj_series, self.time_stamp)
+        #print_traj_series(self.traj_model.traj_series, self.time_stamp)
         
         #self.update_view()
 
