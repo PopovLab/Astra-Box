@@ -40,7 +40,7 @@ class TrajectoryPlotOptionWindows():
         self.combo1 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo1.bind("<<ComboboxSelected>>", self.combo_selected1)
         self.combo1['values'] =  self.plot_options['term_list']
-        self.combo1.current(self.plot_options['term_list'].index('theta'))
+        self.combo1.current(self.plot_options['term_list'].index(self.plot_options['x_axis']))
         self.combo1.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
 
         frame = tk.Frame(win)
@@ -49,7 +49,7 @@ class TrajectoryPlotOptionWindows():
         self.combo2 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo2.bind("<<ComboboxSelected>>", self.combo_selected2)
         self.combo2['values'] =  self.plot_options['term_list']
-        self.combo2.current(self.plot_options['term_list'].index('N_par'))
+        self.combo2.current(self.plot_options['term_list'].index(self.plot_options['y_axis']))
         self.combo2.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.X)
 
         self.cut_index_var = tk.IntVar(value= self.plot_options['cut_index'])
@@ -91,21 +91,25 @@ class TrajectoryPlotOptionWindows():
         if self.on_update_options:
             self.on_update_options()
 
-class TrajectoryPlot(ttk.Frame):
-    plot_options = { 
+def default_plot_options():
+    return { 
         'show_marker' : False,
         'show_graph' : False,
         'term_list' : [],
         'x_axis' : 'theta',
         'y_axis' : 'N_par',
-        'cut_index' : 10,
-        'max_index' : 200
+        'cut_index' : 1000,
+        'max_index' : 2000
     }
+
+class TrajectoryPlot(ttk.Frame):
+
     def __init__(self, master, rays, time_stamp, plasma_bound) -> None:
         super().__init__(master)  
         self.plasma_bound = plasma_bound
         self.time_stamp = time_stamp
         self.rays = rays
+        self.plot_options = default_plot_options()
         self.plot_options['term_list'] = ['ray_index', 'index'] + list(rays[0].keys())
         self.plot_options['max_index'] =  max([len(ray['theta']) for ray in self.rays])
         self.plot_options['cut_index'] = self.plot_options['max_index']
