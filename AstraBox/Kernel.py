@@ -232,7 +232,7 @@ class AstraWorker(Worker):
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
-            clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}*.*'  
+            clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}' + '{v?, *.*}'
             self.WSL_Run(_astra_profile["home"], clear_cmd)
 
     def copy_data(self):
