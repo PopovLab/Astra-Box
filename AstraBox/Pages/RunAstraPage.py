@@ -21,17 +21,23 @@ import AstraBox.ToolBox.ImageButton as ImageButton
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', ['All exp'] + WorkSpace.get_item_list('ExpModel'), width= 20)
-        self.exp_combo.pack(side=tk.LEFT)
+        self.exp_combo = ComboBox(self, 'Exp:', ['All exp'] + WorkSpace.get_item_list('ExpModel'))
+        self.exp_combo.grid(row=0, column=0,  padx=2, sticky= tk.E + tk.W)
         self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_item_list('EquModel'))
-        self.equ_combo.pack(side=tk.LEFT)
-        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_item_list('RTModel'), width= 15)
-        self.rt_combo.pack(side=tk.LEFT)
-        self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width= 15)
-        self.astra_combo.pack(side=tk.LEFT)
+        self.equ_combo.grid(row=0, column=1,  padx=2, sticky=tk.E + tk.W)
+        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_item_list('RTModel'))
+        self.rt_combo.grid(row=0, column=2,  padx=2, sticky= tk.E + tk.W)
+        self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width=15)
+        self.astra_combo.grid(row=0, column=3,  padx=2, sticky= tk.E + tk.W)
       
-        btn = ImageButton.create(self, '4231901.png', self.open_config)
-        btn.pack(side=tk.LEFT)
+        self.btn = ImageButton.create(self, '4231901.png', self.open_config)
+        self.btn.grid(row=0, column=4,  padx=5, sticky= tk.E + tk.W)
+
+        self.columnconfigure(0, weight=1)    
+        self.columnconfigure(1, weight=1)    
+        self.columnconfigure(2, weight=1)    
+        #self.columnconfigure(3, weight=1)    
+  
 
         p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
         if p.exists():
@@ -52,18 +58,17 @@ class RunAstraPage(ttk.Frame):
         super().__init__(master)        
         self.header_content =  { "title": "Run ASTRA", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate)]}
         self.astra_profiles = AstraBox.Models.AstraProfiles.default()
+
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0,  padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
-
+ 
         self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
         self.rn_wdg = StringBox(self, self.race_name, width=40)
         self.rn_wdg.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.config_panel = ConfigPanel(self)
         self.config_panel.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
+        
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
         self.log_console = LogConsole(runframe)
         self.log_console.grid(row=1, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -73,6 +78,8 @@ class RunAstraPage(ttk.Frame):
         #self.bind('<Visibility>', self.visibilityChanged)
         runframe.grid(row=3, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
         self.rowconfigure(3, weight=1)
+        self.columnconfigure(0, weight=1)        
+        
 
     def start(self):
         exp = self.config_panel.exp_combo.get()
