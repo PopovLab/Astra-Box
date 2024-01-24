@@ -11,10 +11,18 @@ def renorm_vel(maxwell):
     X = maxwell['X']
     Y = maxwell['Y']
     vmax = abs(X[0])
-    X = X / vmax
+    X = 2* X / vmax
     #Y = Y * vmax /1000 #Эмпирический коэффициент
     #print(np.sum(Y))
-    return {'X': X, 'Y': Y}
+    print('renorm')
+    XX = []
+    YY = []
+    for xv, yv in zip(X,Y):
+        if abs(xv)<=1:
+            XX.append(xv)
+            YY.append(yv)
+
+    return {'X': XX, 'Y': YY}
 
 def renorm_series(series):
     new_series = []
@@ -25,6 +33,7 @@ def renorm_series(series):
 class SeriesPlot(ttk.Frame):
     def __init__(self, master, series, title, time_stamp, уscale_log = True) -> None:
         super().__init__(master)  
+        print('SeriesPlot')
         self.уscale_log = уscale_log
         self.title = title
         self.series = renorm_series(series)
