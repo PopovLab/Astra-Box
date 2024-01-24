@@ -12,17 +12,11 @@ def renorm_vel(maxwell):
     Y = maxwell['Y']
     vmax = abs(X[0])
     X = 2* X / vmax
-    #Y = Y * vmax /1000 #Эмпирический коэффициент
-    #print(np.sum(Y))
-    print('renorm')
-    XX = []
-    YY = []
-    for xv, yv in zip(X,Y):
-        if abs(xv)<=1:
-            XX.append(xv)
-            YY.append(yv)
-
-    return {'X': XX, 'Y': YY}
+    # X  нормаировка на 2 скорости света
+    # обрезаю лишние элементы с v > c
+    n4 = int(len(X)/4)
+    n3 = int(3*n4)+2
+    return {'X': X[n4:n3], 'Y': Y[n4:n3]}
 
 def renorm_series(series):
     new_series = []
