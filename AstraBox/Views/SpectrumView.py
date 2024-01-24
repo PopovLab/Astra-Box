@@ -10,6 +10,7 @@ from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
+from AstraBox.Models.SpectrumModel import SpectrumModel
 
 import AstraBox.Widgets as Widgets
 
@@ -89,7 +90,7 @@ class ControlPanel(tk.Frame):
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
+    def __init__(self, master, model: SpectrumModel) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
