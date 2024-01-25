@@ -64,16 +64,11 @@ class GaussianSpectrumView(tk.LabelFrame):
 class RotatedGaussianView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Rotated Gaussian Spectrum')        
-
-        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
-        #self.label = ttk.Label(self,  text=f'Spectrum View')
-        #self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
         btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
+
         self.generate()
         for r,(key, value) in enumerate(self.model.setting['parameters'].items()):
             wg = Widgets.create_widget(self, value)
@@ -82,7 +77,6 @@ class RotatedGaussianView(tk.LabelFrame):
         self.rowconfigure(9, weight=1)
 
     def generate(self):
-        #self.options_box.update()
         self.model.generate()
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
