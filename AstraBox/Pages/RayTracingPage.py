@@ -17,16 +17,18 @@ class RadioPanel(ttk.Frame):
         self.selected = selected
         self.on_change_selection = on_change_selection
         # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
-        padx = 20
+        padx = 10
         pady = 5
         #v, _ = content[len(content)-1]
         self.value = tk.StringVar(self, selected) #spectrum_model.spectrum_type)  # initialize
 
-        for text, key in items:
-            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=15, 
+        for col,(text, key) in enumerate(items):
+            btn = ttk.Radiobutton(self, text=text, variable=self.value, value=key, width=10, 
                                 command= lambda x = key: self.on_radio_select(x) ,
                                 style= 'Toolbutton')
-            btn.pack(side=tk.RIGHT, padx=padx, pady=pady)
+            btn.grid(row=0, column=col, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+            self.columnconfigure(col, weight=1)  
+            #btn.pack(side=tk.RIGHT, padx=padx, pady=pady)
     
     def on_radio_select(self, value):
         if self.selected == value: return
@@ -90,32 +92,33 @@ class RayTracingPage(ttk.Frame):
         self.radio = RadioPanel(self, self.spectrum_model.get_radio_content(),self.spectrum_model.spectrum_type, self.on_change_spectrum_type)
         self.radio.grid(row=5, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.spectrum_view = None
-        self.make_spectum_view()
+        self.spectrum_view = self.make_spectum_view()
+        self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.rowconfigure(6, weight=1)
         
     def on_change_spectrum_type(self):
         print(self.radio.selected)
         self.spectrum_model.spectrum_type = self.radio.selected
         #self.spectrum_model.check_model()   
-        self.make_spectum_view()
-  
-    def make_spectum_view(self):
         if self.spectrum_view:
             self.spectrum_view.destroy()
+        self.spectrum_view = self.make_spectum_view()
+        self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)  
+
+    def make_spectum_view(self):
         print(self.spectrum_model.spectrum_type)
         match self.spectrum_model.spectrum_type:
             case 'gaussian':
-                self.spectrum_view = SpectrumView.GaussianSpectrumView(self, self.spectrum_model)
-                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
+                return SpectrumView.GaussianSpectrumView(self, self.spectrum_model)          
+            case 'rotated_gaussian':
+                return SpectrumView.RotatedGaussianView(self, self.spectrum_model)
             case 'spectrum_1D':
-                self.spectrum_view = SpectrumView.Spectrum1DView(self, self.spectrum_model)
-                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+                return SpectrumView.Spectrum1DView(self, self.spectrum_model)
             case 'scatter_spectrum':
-                self.spectrum_view = SpectrumView.ScatterSpectrumView(self, self.spectrum_model)
-                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)                 
+                return SpectrumView.ScatterSpectrumView(self, self.spectrum_model)
             case 'spectrum_2D':
-                self.spectrum_view = SpectrumView.Spectrum2DView(self, self.spectrum_model)
-                self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
+                return SpectrumView.Spectrum2DView(self, self.spectrum_model)
+                 
         
     def clone_model(self):
         name = self.var_name.get()

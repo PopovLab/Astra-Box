@@ -2,6 +2,58 @@ import numpy as np
 import os
 from math import fsum
 
+def defaultRotatedGaussian():
+    return {
+        'spectrum_type': 'rotated_gaussian',
+        'parameters':
+                {
+                "N_width": { 
+                    'title' : 'N Width',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'unit'  : 'deg',
+                    'description' : "Width of spectrum"
+                },
+                "N_tor": { 
+                    'title' : 'N tor',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'description' : "N tor of spectrum centr"
+                },
+                "N_pol": { 
+                    'title' : 'N pol',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'description' : "N pol of spectrum centr"
+                },
+                "N_sigma": { 
+                    'title' : 'N sigma',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'description' : "N sigma"
+                },                
+                "num": { 
+                    'title' : ' num samples',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'description' : "num evenly spaced samples,"
+                },                  
+                "angle": { 
+                    'title' : 'Angle',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'unit'  : 'deg',
+                    'description' : "Rotation on spectrum"
+                },
+                   "spline": { 
+                    'title' : 'Spline',
+                    'value' : True, 
+                    'type'  : 'logical',
+                    'description' : "Apply spline approximation"
+                }
+        }
+    }
+
 def defaultGaussSpectrum():
     return {
         'spectrum_type': 'gaussian',
@@ -12,8 +64,9 @@ def defaultGaussSpectrum():
             'bias'  : 0.0,
             'sigma' : 2.5
         },
-        'parameters':{
-                   "angle": { 
+        'parameters':
+                {
+                "angle": { 
                     'title' : 'Angle',
                     'value' : 0.0, 
                     'type'  : 'float',
@@ -76,7 +129,12 @@ class SpectrumModel():
         return 'lhcd/spectrum.dat'
 
     def get_radio_content(self):
-        return [('Spectrum 2D', 'spectrum_2D'), ('Scatter Spectrum', 'scatter_spectrum'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
+        return [  ('Gaussian', 'gaussian'),
+                  ('Rotated Gauss', 'rotated_gaussian'),
+                  ('Spectrum 1D', 'spectrum_1D'),
+                  ('Scatter Spectrum', 'scatter_spectrum'),
+                  ('Spectrum 2D', 'spectrum_2D')
+                ]
 
     def check_model(self):
         match self.setting['spectrum_type']:
@@ -97,6 +155,8 @@ class SpectrumModel():
         match value:
             case 'gaussian':
                 self.parent['spectrum'] = defaultGaussSpectrum()
+            case 'rotated_gaussian':
+                self.parent['spectrum'] = defaultRotatedGaussian()                
             case 'spectrum_1D':
                 self.parent['spectrum'] = defaulSpectrum1D()
             case 'scatter_spectrum':

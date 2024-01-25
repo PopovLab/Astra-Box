@@ -52,15 +52,40 @@ class GaussianSpectrumView(tk.LabelFrame):
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
         wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
 
-        self.rowconfigure(1, weight=0)
-        self.rowconfigure(2, weight=0)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(2, weight=1)
 
     def generate(self):
         self.options_box.update()
         self.model.generate()
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0, rowspan=3,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+
+class RotatedGaussianView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Rotated Gaussian Spectrum')        
+
+        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
+        self.model = model
+        #self.label = ttk.Label(self,  text=f'Spectrum View')
+        #self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+        btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.generate()
+        for r,(key, value) in enumerate(self.model.setting['parameters'].items()):
+            wg = Widgets.create_widget(self, value)
+            wg.grid(row=r+1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        self.rowconfigure(9, weight=1)
+
+    def generate(self):
+        #self.options_box.update()
+        self.model.generate()
+        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
 class ControlPanel(tk.Frame):
