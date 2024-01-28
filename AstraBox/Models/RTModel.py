@@ -375,6 +375,8 @@ class RTModel(BaseModel):
                     spect_line = '  0     ! spectr type 0 - 1D + spline approximation ON'
                 else:
                     spect_line = '  1     ! spectr type 1 - 1D + spline approximation OFF'
+            case 'rotated_gaussian':
+                spect_line = '  2     ! spectr type 2 - scatter spectrum'
             case 'scatter_spectrum':
                 spect_line = '  2     ! spectr type 2 - scatter spectrum'
             case 'spectrum_2D':

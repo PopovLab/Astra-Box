@@ -7,16 +7,15 @@ def defaultRotatedGaussian():
         'spectrum_type': 'rotated_gaussian',
         'parameters':
                 {
-                "N_width": { 
-                    'title' : 'N Width',
-                    'value' : 0.0, 
+                "N_frame": { 
+                    'title' : 'N Frame',
+                    'value' : 10.0, 
                     'type'  : 'float',
-                    'unit'  : 'deg',
                     'description' : "Width of spectrum"
                 },
                 "N_tor": { 
                     'title' : 'N tor',
-                    'value' : 0.0, 
+                    'value' : 5.0, 
                     'type'  : 'float',
                     'description' : "N tor of spectrum centr"
                 },
@@ -28,29 +27,23 @@ def defaultRotatedGaussian():
                 },
                 "N_sigma": { 
                     'title' : 'N sigma',
-                    'value' : 0.0, 
+                    'value' : 2.0, 
                     'type'  : 'float',
                     'description' : "N sigma"
                 },                
                 "num": { 
                     'title' : ' num samples',
-                    'value' : 0.0, 
-                    'type'  : 'float',
+                    'value' : 100, 
+                    'type'  : 'int',
                     'description' : "num evenly spaced samples,"
                 },                  
                 "angle": { 
                     'title' : 'Angle',
-                    'value' : 0.0, 
+                    'value' : 45.0, 
                     'type'  : 'float',
                     'unit'  : 'deg',
                     'description' : "Rotation on spectrum"
                 },
-                   "spline": { 
-                    'title' : 'Spline',
-                    'value' : True, 
-                    'type'  : 'logical',
-                    'description' : "Apply spline approximation"
-                }
         }
     }
 
@@ -261,6 +254,25 @@ class SpectrumModel():
         self.spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }        
         self.spectrum_normalization()
     
+    def make_rotated_gauss_data(self):
+        pars = self.setting['parameters']
+        w = pars['N_frame']['value']/2
+        angle =  pars['angle']['value']*np.pi/180
+        num = pars['num']['value']
+        x_min = pars['N_tor']['value'] - pars['N_frame']['value']/2 
+        x_max = pars['N_tor']['value'] + pars['N_frame']['value']/2 
+        x = np.linspace(-w , w, num = num)
+        y = 0# np.linspace(-w , w, num = num)
+        xx =   x*np.cos(angle) + y*np.sin(angle) + pars['N_tor']['value']
+        yy = - x*np.sin(angle) + y*np.cos(angle) + pars['N_pol']['value']
+
+        bias = pars['N_tor']['value']
+        sigma = pars['N_sigma']['value']
+        v = np.exp(-0.5*(x/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
+        self.spectrum_data = { 'Ntor': xx.tolist(),  'Npol': yy.tolist(), 'Amp': v.tolist()  }        
+        self.spectrum_normalization()
+
+
     def spectrum_normalization(self):
         power = fsum(self.spectrum_data['Amp'])
         if power>0:
@@ -273,6 +285,8 @@ class SpectrumModel():
         match self.spectrum_type:
             case 'gaussian':
                 self.make_gauss_data()
+            case 'rotated_gaussian':
+                self.make_rotated_gauss_data()                
             case 'spectrum_1D':
                 self.read_spcp1D()
             case 'scatter_spectrum':
@@ -293,6 +307,8 @@ class SpectrumModel():
         match self.spectrum_type:
             case 'gaussian'| 'spectrum_1D':
                 sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
+            case 'rotated_gaussian':
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Amp'])]                                                
             case 'scatter_spectrum':
                 sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Amp'])]                                
             case 'spectrum_2D':

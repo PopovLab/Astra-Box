@@ -6,6 +6,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
+from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
@@ -68,17 +69,15 @@ class RotatedGaussianView(tk.LabelFrame):
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
         btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
-
-        self.generate()
         for r,(key, value) in enumerate(self.model.setting['parameters'].items()):
             wg = Widgets.create_widget(self, value)
             wg.grid(row=r+1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
+        self.generate()
         self.rowconfigure(9, weight=1)
 
     def generate(self):
         self.model.generate()
-        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        self.spectrum_plot = RotatedSpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Npol'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 

@@ -255,7 +255,7 @@ class SpectrumView(TabViewBasic):
                     #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
                     #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
                     plot = SpectrumChart(self, self.spectrums)
-                case 'scatter_spectrum':
+                case 'scatter_spectrum'|'rotated_gaussian':
                     plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
                 case 'spectrum_2D':
                     pass       

@@ -297,6 +297,35 @@ class SpectrumPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()       
 
+class RotatedSpectrumPlot(ttk.Frame):
+    def __init__(self, master, X= None, Y= None, V = None) -> None:
+        super().__init__(master)  
+        #self.fig = plt.figure(figsize=(5, 3), dpi=100)
+        #ax = self.fig.add_subplot(111)
+        self.fig, axs = plt.subplots(2, 2, layout='constrained')
+        axs[0,0].plot(X, V)
+        axs[0,0].set_xlabel('N tor')
+        axs[0,1].plot(Y, V)
+        axs[0,1].set_xlabel('N pol')
+        axs[1,0].scatter(X, Y, c=V, cmap='RdBu_r')
+        axs[1,0].set_ylabel('N pol')
+        axs[1,0].set_xlabel('N tor')
+        axs[1,0].axis('equal')
+
+        canvas = FigureCanvasTkAgg(self.fig, self)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=0, column=1)
+        #toobar = NavigationToolbar2Tk(canvas, frame)
+        tb = VerticalNavigationToolbar2Tk(canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)
+
+    def destroy(self):
+        print("SpectrumPlot destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()   
+
 def cumtrapz(x,y):
     # аналог scipy.integrate.cumtrapz
     # что бы не подключать scipy
