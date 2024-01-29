@@ -8,19 +8,19 @@ def defaultRotatedGaussian():
         'parameters':
                 {
                 "N_frame": { 
-                    'title' : 'N Frame',
+                    'title' : 'Frame Size',
                     'value' : 10.0, 
                     'type'  : 'float',
                     'description' : "Width of spectrum"
                 },
                 "N_tor": { 
-                    'title' : 'N tor',
+                    'title' : 'N tor center',
                     'value' : 5.0, 
                     'type'  : 'float',
                     'description' : "N tor of spectrum centr"
                 },
                 "N_pol": { 
-                    'title' : 'N pol',
+                    'title' : 'N pol center',
                     'value' : 0.0, 
                     'type'  : 'float',
                     'description' : "N pol of spectrum centr"
