@@ -48,10 +48,10 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
-        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
 
         self.rowconfigure(2, weight=1)
 
@@ -119,10 +119,10 @@ class Spectrum1DView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot()
-        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
 
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=0)
