@@ -81,7 +81,7 @@ class RotatedGaussianView(tk.LabelFrame):
         self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
-class ControlPanel(tk.Frame):
+class FileSourcePanel(tk.Frame):
     def __init__(self, master, path, load_file_cb = None) -> None:
         super().__init__(master)
         self.load_file_cb = load_file_cb
@@ -114,7 +114,7 @@ class Spectrum1DView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
@@ -145,7 +145,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         radio_selector = self.make_radio_selector()
         radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
@@ -206,7 +206,7 @@ class Spectrum2DView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
