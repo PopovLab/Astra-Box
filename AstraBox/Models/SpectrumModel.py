@@ -1,7 +1,8 @@
 import numpy as np
 import os
 from math import fsum
-
+from pathlib import Path
+import AstraBox.WorkSpace as WorkSpace
 def defaultRotatedGaussian():
     return {
         'spectrum_type': 'rotated_gaussian',
@@ -159,9 +160,14 @@ class SpectrumModel():
         self.setting = self.parent['spectrum']
 
     def read_scatter(self, filepath):
-        if os.path.exists(filepath):
-            with open(filepath) as file:
-                self.read_data(file)
+        p = self.get_file_path(filepath)
+        if p:
+            try:
+                with p.open() as file:
+                    self.read_data(file)
+            except:
+                print(f"Couldn't open {p}")
+                self.spectrum_data = None
         else:
             self.spectrum_data = None
 
@@ -186,21 +192,31 @@ class SpectrumModel():
                     item.append(0.0)
         self.spectrum_data = data
 
+    def get_file_path(self, fn):
+        if len(fn) < 1 : return None
+        p = Path(fn)
+        if not p.is_absolute():
+            p =  WorkSpace.get_location_path() / 'spectrum_data' / p
+        if p.exists():
+            return p
+        else: 
+            return None
+        
     def read_spcp1D(self):        
-        file_path = self.setting['source']
-        if os.path.exists(file_path):
-            file = open(file_path)
-            header = ['Ntor', 'Amp']
-            print(header)
-            spectrum = { h: [] for h in header }
-            lines = file.readlines()
-            table = []
-            for line in lines:
-                table.append(line.split())
-            for row in table:
-                for index, (p, item) in enumerate(spectrum.items()):
-                    item.append(float(row[index]))
-            self.spectrum_data = spectrum 
+        p = self.get_file_path(self.setting['source'])
+        if p:
+            with p.open() as file:
+                header = ['Ntor', 'Amp']
+                print(header)
+                spectrum = { h: [] for h in header }
+                lines = file.readlines()
+                table = []
+                for line in lines:
+                    table.append(line.split())
+                for row in table:
+                    for index, (p, item) in enumerate(spectrum.items()):
+                        item.append(float(row[index]))
+                self.spectrum_data = spectrum 
         else:
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
         self.spectrum_normalization()            

@@ -80,10 +80,14 @@ class RotatedGaussianView(tk.LabelFrame):
         self.spectrum_plot = RotatedSpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Npol'], self.model.spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
+from pathlib import Path
+import AstraBox.WorkSpace as WorkSpace
 
 class FileSourcePanel(tk.Frame):
     def __init__(self, master, path, load_file_cb = None) -> None:
         super().__init__(master)
+        self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
+        print(self.spectrum_folder)
         self.load_file_cb = load_file_cb
         self.path_var = tk.StringVar(master= self, value=path)
         label = tk.Label(master=self, text='Source:')
@@ -92,15 +96,17 @@ class FileSourcePanel(tk.Frame):
         entry.pack(side = tk.LEFT, padx=2)
         btn1 = ttk.Button(self, text= 'Select file', command=self.select_file)
         btn1.pack(side = tk.LEFT, padx=10)   
-        #btn2 = ttk.Button(self, text= 'Load', command=self.load_file)
-        #btn2.pack(side = tk.LEFT, ipadx=10)
 
     def load_file(self):
         if self.load_file_cb:
             self.load_file_cb(self.path_var.get())
 
     def select_file(self):
-        filename = fd.askopenfilename()
+        filename = fd.askopenfilename(initialdir= self.spectrum_folder)
+        if len(filename) < 1 : return
+        fp = Path(filename)
+        if fp.is_relative_to(self.spectrum_folder):
+            filename = fp.name
         self.path_var.set(filename)
         if self.load_file_cb:
             self.load_file_cb(filename)
