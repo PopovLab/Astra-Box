@@ -27,6 +27,7 @@ from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 from AstraBox.ToolBox.DrivenCurrentPlot import DrivenCurrentPlot
 from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
 from AstraBox.ToolBox.ExecTimePlot import ExecTimePlot
+from AstraBox.ToolBox.RadialDCPlot import RadialDCPlot
 
 class InfoPanel(tk.Frame):
     def __init__(self, master, model) -> None:
@@ -411,6 +412,56 @@ class TrajectoryTab(TabViewBasic):
         self.traj_view.select_moment(index)
 
 
+class RadialDrivenCurrentView(TabViewBasic):
+    def __init__(self, master, model: RaceModel) -> None:
+        super().__init__(master, model)  
+
+    def init_ui(self):   
+        self.dc_list = self.race_model.get_file_list('DC')
+        n = len(self.dc_list)
+        print(f'n= {n}')
+        if n>0: 
+            dc_data = self.get_dc_data(0)
+            self.start_time = dc_data["Time"]
+            self.finish_time = self.get_dc_data(n-1)["Time"]
+            print(f'{self.start_time} - {self.finish_time}')
+            self.n = n
+            
+            self.time_var = tk.DoubleVar(master = self, value=self.start_time)
+            self.time_var.trace_add('write', self.update_time_var)
+
+            self.time_slider = tk.Scale(master=  self, 
+                                   variable = self.time_var,
+                                   orient = tk.HORIZONTAL,
+                                   label='Time scale',
+                                   tickinterval= (self.finish_time-self.start_time)/7,
+                                   from_= self.start_time,
+                                   to= self.finish_time, 
+                                   resolution= (self.finish_time-self.start_time)/n, 
+                                   length = 250 )
+            self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            
+            self.plot = RadialDCPlot(self, dc_data)
+            self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+            self.columnconfigure(0, weight=1)
+            self.rowconfigure(2, weight=1)
+        else:
+            label = tk.Label(master=self, text='Нет данных')
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+    def get_dc_data(self, index):
+        file = self.dc_list[index]
+        print(f'{file} {index}')
+        return self.race_model.read_dc_data(file)
+
+    def update_time_var(self, var, indx, mode):
+        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
+        dc_data = self.get_dc_data(index)
+        self.plot.update(dc_data)
+
+    def update_var(self, var, indx, mode):
+        radial_data = self.get_dc_data(self.index_var.get())
+        #self.plot.update(radial_data)
 
 class RadialDataView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:

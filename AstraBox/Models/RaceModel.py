@@ -118,6 +118,19 @@ class RaceModel(BaseModel):
             spectrum_model.spectrum_data = 'не смог прочитать спектр'
         return spectrum_model
 
+    def read_dc_data(self, fn:str):
+        p = pathlib.Path(fn)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
+        print(time_stamp) 
+        res = {'Time': time_stamp}
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(fn) as file:
+                res['Data'] = pd.read_csv(file, delim_whitespace=True)
+        return res
+        
+
+            
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
