@@ -20,6 +20,9 @@ def default_radial_setting():
     return {
         'shape' : '2x2',
         'title' : 'Radial Data setting',
+        'show grid': True,
+        'x axis' : 'rho',
+        'x axis terms' : ['index', 'ameter', 'rho'],
         'plots'  : {
             'ax1' : ['J', 'Johm', 'Jlh'],
             'ax2' : ['E', 'En'],
