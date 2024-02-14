@@ -8,7 +8,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
-from AstraBox.Views.PlotSettingWindows import PlotSettingWindows
+from AstraBox.Views.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
 
 def default_radial_setting():
@@ -19,7 +19,7 @@ def default_radial_setting():
     # профили температуры  
     return {
         'shape' : '2x2',
-        'title' : 'Astra radial data',
+        'title' : 'Radial Data setting',
         'plots'  : {
             'ax1' : ['J', 'Johm', 'Jlh'],
             'ax2' : ['E', 'En'],
@@ -34,7 +34,7 @@ class RadialDataPlot(ttk.Frame):
         super().__init__(master)  
         self.data = profiles
         #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.ps = PlotSettingWindows(self, 
+        self.ps = PlotSettingDialog(self, 
                                      terms= profiles.keys(), 
                                      file_name= 'RadialPlotSetting.json', 
                                      default_data= default_radial_setting(),
