@@ -81,8 +81,8 @@ class RacePage(ttk.Frame):
             trajectory_view = TrajectoryTab(self.notebook, model= model, folder_name= 'TRAJ_NEG')
             self.notebook.add(trajectory_view, text="Traj neg", underline=0, sticky=tk.NE + tk.SW)
 
-        distrib_view = DistributionView(self.notebook, model= model)
-        self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
+        #distrib_view = DistributionView(self.notebook, model= model)
+        #self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
 
         maxwell_view = MaxwellView(self.notebook, model= model)
         self.notebook.add(maxwell_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
