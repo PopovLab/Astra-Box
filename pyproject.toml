@@ -8,6 +8,7 @@ authors = ["Alex <temper8@gmail.com>"]
 python = "^3.11"
 matplotlib = "^3.6.1"
 pandas = "^2.0.1"
+pydantic = "^2.6.2"
 
 [tool.poetry.dev-dependencies]
 
