@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter
 import tkinter.ttk as ttk
 import AstraBox.WorkSpace as WorkSpace
+from AstraBox.Dialogs.Setting import PlotSetting
 
 class CheckPanel(ttk.Frame):
     num_cols = 3
@@ -18,7 +19,7 @@ class CheckPanel(ttk.Frame):
         for index, term in enumerate(self.terms):
             col = index % self.num_cols
             row = index // self.num_cols
-            print(f'create var: {term}')
+            #print(f'create var: {term}')
             var = tk.IntVar(name= term, value=1 if term in checked else 0)
             checkbutton = tk.Checkbutton(self, text=term, variable=var, command= self.check_clicked )
             self.vars[term] = var
@@ -51,11 +52,6 @@ class CheckPanel(ttk.Frame):
 
     def destroy(self):
         print("CheckPanel destroy")
-        #for key, (var, tid) in self.vars.items():
-            #print(f'delete var: {key}')
-            #var.trace_remove('write', tid)
-            #del var
-        #gc.collect()    
         super().destroy() 
 
 
@@ -75,52 +71,34 @@ class CheckPanel(ttk.Frame):
 
 
 class PlotSettingDialog():
-    def __init__(self, master, terms: list, file_name: str, default_data= None, on_update_setting= None) -> None:
+    def __init__(self, master, plot_setting: PlotSetting, on_update_setting= None) -> None:
         self.master = master
-        self.terms = terms
-        self.file_name = file_name
         self.on_update_setting = on_update_setting
-        if default_data:
-            self.data = default_data
-        else:
-            self.data = {}
-        loc = WorkSpace.get_location_path().joinpath(file_name)
-        if loc.exists():
-            with open(loc) as json_file:
-                self.data = json.load(json_file)
-
-
-    def save(self):
-        loc = WorkSpace.get_location_path().joinpath(self.file_name)
-        with open(loc, "w" ) as json_file:
-            json.dump(self.data , json_file, indent = 2 )
+        self.plot_setting = plot_setting
 
     def show(self):
         win = tk.Toplevel(self.master)
         win.title("Settings")
         win.geometry("220x400")
 
-
+        tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
         var = tk.IntVar(name= 'show grid', value=1)
         chkbtn = tk.Checkbutton(win, text='show grid', variable=var, command= self.update_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
-        x_axis_list = ['index', 'ameter', 'rho']
-        self.x_axis = tk.StringVar(win, value=x_axis_list[0]) 
-        combo = ttk.Combobox(win,  textvariable= self.x_axis, values=x_axis_list)
+        self.x_axis = tk.StringVar(win, value=self.plot_setting.x_axis) 
+        combo = ttk.Combobox(win,  textvariable= self.x_axis, values=self.plot_setting.x_axis_list)
         combo.pack(padx=5, pady=5, fill=tk.X)
-        #!self.vars[term] = var
-        #checkbutton.grid(row= row, column=col, sticky=tk.W)
-        tk.Label(win, text =f"Shape {self.data['shape']}" ).pack(padx=5, pady=5, fill=tk.X)
         
-        plot_names = list(self.data['plots'].keys())
+        plot_names = self.plot_setting.get_sub_plots_names()
         self.plot_var = tk.StringVar(win, value=plot_names[0])   
         self.combo = ttk.Combobox(win,  textvariable= self.plot_var, values=plot_names)
         self.combo.pack(padx=5, pady=5, fill=tk.X)
         self.combo.bind("<<ComboboxSelected>>", self.selected)
         plot = self.plot_var.get()
-        self.check_panel = CheckPanel(win, self.terms, self.data['plots'][plot], self.update_checked)
+
+        self.check_panel = CheckPanel(win, self.plot_setting.data_terms, self.plot_setting.sub_plots[0].data, self.update_checked)
         self.check_panel.pack(padx=5, pady=5, fill=tk.X)
-        self.selected(123)
+
         win.transient(self.master)
         #win.protocol("WM_DELETE_WINDOW", self.on_closing)
         #self.win = win        
@@ -130,18 +108,16 @@ class PlotSettingDialog():
 
 
     def selected(self, event):
-        plot = self.plot_var.get()
-        plot_terms = self.data['plots'][plot]
-        self.check_panel.set_checked(plot_terms)    
+        plot_name = self.plot_var.get()
+        sub_plot = self.plot_setting.get_sub_plot(plot_name)
+        self.check_panel.set_checked(sub_plot.data)    
 
     def update_checked(self):
-        plot = self.plot_var.get()
-        self.data['plots'][plot] = self.check_panel.checked
-        self.save()
+        plot_name = self.plot_var.get()
+        sub_plot = self.plot_setting.get_sub_plot(plot_name)
+        sub_plot.data = self.check_panel.checked
         if self.on_update_setting:
             self.on_update_setting()
-        #print(self.data['plots'][plot])
-
 
     def on_closing(self):
         pass

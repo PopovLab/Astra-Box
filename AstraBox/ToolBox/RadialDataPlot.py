@@ -11,37 +11,47 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
 
-def default_radial_setting():
-    # настройки по умолчанию для рейтрейсинга
-    # профили токов
-    # профили E
-    # профили мощности
-    # профили температуры  
-    return {
-        'shape' : '2x2',
-        'title' : 'Radial Data setting',
-        'show grid': True,
-        'x axis' : 'rho',
-        'x axis terms' : ['index', 'ameter', 'rho'],
-        'plots'  : {
-            'ax1' : ['J', 'Johm', 'Jlh'],
-            'ax2' : ['E', 'En'],
-            'ax3' : ['Plh', 'Poh'],
-            'ax4' : ['Te']
-            }
-        }
+from AstraBox.Dialogs.Setting import PlotSetting, SubPlot
+
+from rich import print 
+
+def load(fn:str):
+    loc = WorkSpace.get_location_path().joinpath(fn)
+    if loc.exists():
+        with open(loc) as file:
+            data = file.read()
+        return PlotSetting.model_validate_json(data)
+    else:
+        return PlotSetting(
+            title= 'Radial Data setting',
+            shape= '2x2',
+            x_axis= 'rho',
+            sub_plots= [
+                SubPlot(name = 'ax1', title= 'профили токов', data= ['J', 'Johm', 'Jlh']), 
+                SubPlot(name = 'ax2', title= 'профили E', data= ['E', 'En']), 
+                SubPlot(name = 'ax3', title= 'профили мощности', data= ['Plh', 'Poh']), 
+                SubPlot(name = 'ax4', title= 'профили температуры', data= ['Te'])
+            ]
+            )
+
+    
+def save(ps:PlotSetting, fn:str):
+    loc = WorkSpace.get_location_path().joinpath(fn)
+    with open(loc, "w" ) as file:
+        file.write(ps.model_dump_json(indent= 2))
 
 
 class RadialDataPlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
         self.data = profiles
-        #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.ps = PlotSettingDialog(self, 
-                                     terms= profiles.keys(), 
-                                     file_name= 'RadialPlotSetting.json', 
-                                     default_data= default_radial_setting(),
-                                     on_update_setting= self.on_update_setting )
+
+        self.setting = load('RadialPlot.setting')
+        self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
+        self.setting.data_terms.extend(profiles.keys())
+
+        print(self.setting)
+
         self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
         self.make_all_charts()
@@ -62,12 +72,14 @@ class RadialDataPlot(ttk.Frame):
         self.rowconfigure(0, weight=1)
 
     def option_windows(self):
+        self.ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
         self.ps.show()
 
 
     def on_update_setting(self):
         print('on_update_setting')
-        print(self.ps.data['plots'])
+        print(self.setting)
+        save(self.setting, 'RadialPlot.setting')
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
@@ -78,14 +90,14 @@ class RadialDataPlot(ttk.Frame):
             self.axs = self.fig.subplots(2, 2)  
             self.charts_list = {}
       
-            plots = self.ps.data['plots']
-            for (key, terms), ax in zip(plots.items(), self.axs.flat):
-                self.charts_list[key] = self.make_charts(ax, key)
+            sub_plots = self.setting.sub_plots
+            for sub_plot, ax in zip(sub_plots, self.axs.flat):
+                self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
                 ax.legend(loc='upper right')
 
-    def make_charts(self, axis, plot_name):
+    def make_charts(self, axis, sub_plot):
         charts = {}
-        terms = self.ps.data['plots'][plot_name]
+        terms = sub_plot.data
         for term in terms:
             if term in self.data.keys():
                 chart, = axis.plot(self.data['a'], self.data[term], label= term)
@@ -96,9 +108,9 @@ class RadialDataPlot(ttk.Frame):
     def update(self, profiles):
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
         self.data = profiles
-        plots = self.ps.data['plots']
-        for key, terms in plots.items():
-            charts = self.charts_list[key]
+        sub_plots = self.setting.sub_plots
+        for sub_plot in sub_plots:
+            charts = self.charts_list[sub_plot.name]
             for key, chart in charts.items():
                 chart.set_ydata(profiles[key]) 
 
