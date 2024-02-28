@@ -82,9 +82,11 @@ class PlotSettingDialog():
         win.geometry("220x400")
 
         tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
-        var = tk.IntVar(name= 'show grid', value=1)
-        chkbtn = tk.Checkbutton(win, text='show grid', variable=var, command= self.update_checked )
+
+        self.show_grid_var = tk.IntVar(name= 'show grid', value=1)
+        chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
+
         self.x_axis = tk.StringVar(win, value=self.plot_setting.x_axis) 
         combo = ttk.Combobox(win,  textvariable= self.x_axis, values=self.plot_setting.x_axis_list)
         combo.pack(padx=5, pady=5, fill=tk.X)
@@ -95,8 +97,10 @@ class PlotSettingDialog():
         self.combo.pack(padx=5, pady=5, fill=tk.X)
         self.combo.bind("<<ComboboxSelected>>", self.selected)
         plot = self.plot_var.get()
-
-        self.check_panel = CheckPanel(win, self.plot_setting.data_terms, self.plot_setting.sub_plots[0].data, self.update_checked)
+        sub_plot_0 = self.plot_setting.sub_plots[0]
+        self.sub_plot_title = tk.Label(win, text =sub_plot_0.title )
+        self.sub_plot_title.pack(padx=5, pady=5, fill=tk.X)
+        self.check_panel = CheckPanel(win, self.plot_setting.data_terms, sub_plot_0.data, self.update_checked)
         self.check_panel.pack(padx=5, pady=5, fill=tk.X)
 
         win.transient(self.master)
@@ -106,10 +110,15 @@ class PlotSettingDialog():
         win.focus_set()
         win.wait_window()
 
+    def show_grid_checked(self):
+        self.plot_setting.show_grid = True if self.show_grid_var.get() == 1 else False
+        if self.on_update_setting:
+            self.on_update_setting()
 
     def selected(self, event):
         plot_name = self.plot_var.get()
         sub_plot = self.plot_setting.get_sub_plot(plot_name)
+        self.sub_plot_title.config(text = sub_plot.title )
         self.check_panel.set_checked(sub_plot.data)    
 
     def update_checked(self):

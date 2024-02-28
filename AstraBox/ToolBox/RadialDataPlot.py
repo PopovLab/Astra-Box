@@ -86,6 +86,8 @@ class RadialDataPlot(ttk.Frame):
             for sub_plot, ax in zip(sub_plots, self.axs.flat):
                 self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
                 ax.legend(loc='upper right')
+                if self.setting.show_grid:
+                    ax.grid(visible= True)
 
     def make_charts(self, axis, sub_plot):
         charts = {}
