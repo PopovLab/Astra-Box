@@ -83,7 +83,7 @@ class PlotSettingDialog():
 
         tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
 
-        self.show_grid_var = tk.IntVar(name= 'show grid', value=1)
+        self.show_grid_var = tk.IntVar(name= 'show grid', value=1 if self.plot_setting.show_grid else 0)
         chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
