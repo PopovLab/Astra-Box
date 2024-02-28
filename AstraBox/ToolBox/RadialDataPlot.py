@@ -11,34 +11,9 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
 
-from AstraBox.Dialogs.Setting import PlotSetting, SubPlot
+from AstraBox.Dialogs.Setting import PlotSetting, SubPlot, load, save
 
 from rich import print 
-
-def load(fn:str):
-    loc = WorkSpace.get_location_path().joinpath(fn)
-    if loc.exists():
-        with open(loc) as file:
-            data = file.read()
-        return PlotSetting.model_validate_json(data)
-    else:
-        return PlotSetting(
-            title= 'Radial Data setting',
-            shape= '2x2',
-            x_axis= 'rho',
-            sub_plots= [
-                SubPlot(name = 'ax1', title= 'профили токов', data= ['J', 'Johm', 'Jlh']), 
-                SubPlot(name = 'ax2', title= 'профили E', data= ['E', 'En']), 
-                SubPlot(name = 'ax3', title= 'профили мощности', data= ['Plh', 'Poh']), 
-                SubPlot(name = 'ax4', title= 'профили температуры', data= ['Te'])
-            ]
-            )
-
-    
-def save(ps:PlotSetting, fn:str):
-    loc = WorkSpace.get_location_path().joinpath(fn)
-    with open(loc, "w" ) as file:
-        file.write(ps.model_dump_json(indent= 2))
 
 
 class RadialDataPlot(ttk.Frame):
@@ -46,11 +21,7 @@ class RadialDataPlot(ttk.Frame):
         super().__init__(master)  
         self.data = profiles
 
-        self.setting = load('RadialPlot.setting')
-        self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
-        self.setting.data_terms.extend(profiles.keys())
-
-        print(self.setting)
+        self.init_setting()
 
         self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
@@ -70,6 +41,27 @@ class RadialDataPlot(ttk.Frame):
         btn.grid(row=1, column=0, sticky=tk.N)        
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
+
+    def init_setting(self):
+        self.setting = load('RadialPlot.setting')
+        if self.setting is None:
+            self.setting = PlotSetting(
+            title= 'Radial Data setting',
+            shape= '2x2',
+            x_axis= 'rho',
+            sub_plots= [
+                SubPlot(name = 'ax1', title= 'профили токов', data= ['J', 'Johm', 'Jlh']), 
+                SubPlot(name = 'ax2', title= 'профили E', data= ['E', 'En']), 
+                SubPlot(name = 'ax3', title= 'профили мощности', data= ['Plh', 'Poh']), 
+                SubPlot(name = 'ax4', title= 'профили температуры', data= ['Te'])
+            ]
+            )
+
+        self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
+        self.setting.data_terms.extend(self.data.keys())
+
+        print(self.setting)
+
 
     def option_windows(self):
         self.ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
