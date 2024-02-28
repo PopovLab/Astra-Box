@@ -1,6 +1,52 @@
 import numpy as np
 import os
 from math import fsum
+from pathlib import Path
+import AstraBox.WorkSpace as WorkSpace
+def defaultRotatedGaussian():
+    return {
+        'spectrum_type': 'rotated_gaussian',
+        'parameters':
+                {
+                "N_frame": { 
+                    'title' : 'Frame Size',
+                    'value' : 10.0, 
+                    'type'  : 'float',
+                    'description' : "Width of spectrum"
+                },
+                "N_tor": { 
+                    'title' : 'N tor center',
+                    'value' : 5.0, 
+                    'type'  : 'float',
+                    'description' : "N tor of spectrum centr"
+                },
+                "N_pol": { 
+                    'title' : 'N pol center',
+                    'value' : 0.0, 
+                    'type'  : 'float',
+                    'description' : "N pol of spectrum centr"
+                },
+                "N_sigma": { 
+                    'title' : 'N sigma',
+                    'value' : 2.0, 
+                    'type'  : 'float',
+                    'description' : "N sigma"
+                },                
+                "num": { 
+                    'title' : ' num samples',
+                    'value' : 100, 
+                    'type'  : 'int',
+                    'description' : "num evenly spaced samples,"
+                },                  
+                "angle": { 
+                    'title' : 'Angle',
+                    'value' : 45.0, 
+                    'type'  : 'float',
+                    'unit'  : 'deg',
+                    'description' : "Rotation on spectrum"
+                },
+        }
+    }
 
 def defaultGaussSpectrum():
     return {
@@ -12,8 +58,9 @@ def defaultGaussSpectrum():
             'bias'  : 0.0,
             'sigma' : 2.5
         },
-        'parameters':{
-                   "angle": { 
+        'parameters':
+                {
+                "angle": { 
                     'title' : 'Angle',
                     'value' : 0.0, 
                     'type'  : 'float',
@@ -76,7 +123,12 @@ class SpectrumModel():
         return 'lhcd/spectrum.dat'
 
     def get_radio_content(self):
-        return [('Spectrum 2D', 'spectrum_2D'), ('Scatter Spectrum', 'scatter_spectrum'), ('Spectrum 1D', 'spectrum_1D'), ('Gaussian spectrum', 'gaussian')]
+        return [  ('Gaussian', 'gaussian'),
+                  ('Rotated Gauss', 'rotated_gaussian'),
+                  ('Spectrum 1D', 'spectrum_1D'),
+                  ('Scatter Spectrum', 'scatter_spectrum'),
+                  ('Spectrum 2D', 'spectrum_2D')
+                ]
 
     def check_model(self):
         match self.setting['spectrum_type']:
@@ -97,6 +149,8 @@ class SpectrumModel():
         match value:
             case 'gaussian':
                 self.parent['spectrum'] = defaultGaussSpectrum()
+            case 'rotated_gaussian':
+                self.parent['spectrum'] = defaultRotatedGaussian()                
             case 'spectrum_1D':
                 self.parent['spectrum'] = defaulSpectrum1D()
             case 'scatter_spectrum':
@@ -106,9 +160,14 @@ class SpectrumModel():
         self.setting = self.parent['spectrum']
 
     def read_scatter(self, filepath):
-        if os.path.exists(filepath):
-            with open(filepath) as file:
-                self.read_data(file)
+        p = self.get_file_path(filepath)
+        if p:
+            try:
+                with p.open() as file:
+                    self.read_data(file)
+            except:
+                print(f"Couldn't open {p}")
+                self.spectrum_data = None
         else:
             self.spectrum_data = None
 
@@ -133,21 +192,31 @@ class SpectrumModel():
                     item.append(0.0)
         self.spectrum_data = data
 
+    def get_file_path(self, fn):
+        if len(fn) < 1 : return None
+        p = Path(fn)
+        if not p.is_absolute():
+            p =  WorkSpace.get_location_path() / 'spectrum_data' / p
+        if p.exists():
+            return p
+        else: 
+            return None
+        
     def read_spcp1D(self):        
-        file_path = self.setting['source']
-        if os.path.exists(file_path):
-            file = open(file_path)
-            header = ['Ntor', 'Amp']
-            print(header)
-            spectrum = { h: [] for h in header }
-            lines = file.readlines()
-            table = []
-            for line in lines:
-                table.append(line.split())
-            for row in table:
-                for index, (p, item) in enumerate(spectrum.items()):
-                    item.append(float(row[index]))
-            self.spectrum_data = spectrum 
+        p = self.get_file_path(self.setting['source'])
+        if p:
+            with p.open() as file:
+                header = ['Ntor', 'Amp']
+                print(header)
+                spectrum = { h: [] for h in header }
+                lines = file.readlines()
+                table = []
+                for line in lines:
+                    table.append(line.split())
+                for row in table:
+                    for index, (p, item) in enumerate(spectrum.items()):
+                        item.append(float(row[index]))
+                self.spectrum_data = spectrum 
         else:
             self.spectrum_data = { 'Ntor': [], 'Amp': []  }
         self.spectrum_normalization()            
@@ -201,6 +270,25 @@ class SpectrumModel():
         self.spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }        
         self.spectrum_normalization()
     
+    def make_rotated_gauss_data(self):
+        pars = self.setting['parameters']
+        w = pars['N_frame']['value']/2
+        angle =  pars['angle']['value']*np.pi/180
+        num = pars['num']['value']
+        x_min = pars['N_tor']['value'] - pars['N_frame']['value']/2 
+        x_max = pars['N_tor']['value'] + pars['N_frame']['value']/2 
+        x = np.linspace(-w , w, num = num)
+        y = 0# np.linspace(-w , w, num = num)
+        xx =   x*np.cos(angle) + y*np.sin(angle) + pars['N_tor']['value']
+        yy = - x*np.sin(angle) + y*np.cos(angle) + pars['N_pol']['value']
+
+        bias = pars['N_tor']['value']
+        sigma = pars['N_sigma']['value']
+        v = np.exp(-0.5*(x/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
+        self.spectrum_data = { 'Ntor': xx.tolist(),  'Npol': yy.tolist(), 'Amp': v.tolist()  }        
+        self.spectrum_normalization()
+
+
     def spectrum_normalization(self):
         power = fsum(self.spectrum_data['Amp'])
         if power>0:
@@ -213,6 +301,8 @@ class SpectrumModel():
         match self.spectrum_type:
             case 'gaussian':
                 self.make_gauss_data()
+            case 'rotated_gaussian':
+                self.make_rotated_gauss_data()                
             case 'spectrum_1D':
                 self.read_spcp1D()
             case 'scatter_spectrum':
@@ -233,6 +323,8 @@ class SpectrumModel():
         match self.spectrum_type:
             case 'gaussian'| 'spectrum_1D':
                 sp = [(x,0,p) for x, p in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
+            case 'rotated_gaussian':
+                sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Amp'])]                                                
             case 'scatter_spectrum':
                 sp = [(x,y,p) for x, y, p  in zip(self.spectrum_data['Ntor'], self.spectrum_data['Npol'], self.spectrum_data['Amp'])]                                
             case 'spectrum_2D':

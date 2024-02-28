@@ -4,6 +4,8 @@ import tkinter.ttk as ttk
 from turtle import width
 from idlelib.tooltip import Hovertip
 
+LABEL_WIDTH = 12
+
 def create_widget(frame, item):
     #return StringBox(frame, item)  
 
@@ -34,7 +36,7 @@ class Checkbox(ttk.Frame):
         super().__init__(master)
         self.item = item
         #print(item)
-        label = ttk.Label(self, text=item['title'], width=10)
+        label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
         self.tk_var = tk.IntVar(self, value= item['value'])
         self.tk_var.trace_add('write', self.update_var)
@@ -64,7 +66,7 @@ class StringBox(ttk.Frame):
         super().__init__(master)
         self.item = item
         #print(item)
-        label = ttk.Label(self, text=item['title'], width=10)
+        label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
         #Hovertip(label, item['description'], hover_delay=100)
         self.tk_var = tk.StringVar(self, value=item['value'])
@@ -87,7 +89,7 @@ class IntTextBox(ttk.Frame):
         super().__init__(master)
         self.item = item
         #print(item)
-        label = ttk.Label(self, text=item['title'], width=10)
+        label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
         Hovertip(label, item['description'], hover_delay=100)
         self.tk_var = tk.IntVar(self, value=item['value'])
@@ -109,7 +111,7 @@ class FloatTextBox(ttk.Frame):
         super().__init__(master)
         self.item = item
         #print(item)
-        label = ttk.Label(self, text=item['title'], width=10)
+        label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
         Hovertip(label, item['description'], hover_delay=100)
         self.tk_var = tk.DoubleVar(self, value=item['value'])

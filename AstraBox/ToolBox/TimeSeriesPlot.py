@@ -5,7 +5,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
-from AstraBox.Views.PlotSettingWindows import PlotSettingWindows
+from AstraBox.Dialogs.PlotSettingWindows import PlotSettingWindows
 import AstraBox.ToolBox.ImageButton as ImageButton
 
 def default_time_plot_setting():

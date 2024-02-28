@@ -8,37 +8,21 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
-from AstraBox.Views.PlotSettingWindows import PlotSettingWindows
+from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
 
-def default_radial_setting():
-    # настройки по умолчанию для рейтрейсинга
-    # профили токов
-    # профили E
-    # профили мощности
-    # профили температуры  
-    return {
-        'shape' : '2x2',
-        'title' : 'Astra radial data',
-        'plots'  : {
-            'ax1' : ['J', 'Johm', 'Jlh'],
-            'ax2' : ['E', 'En'],
-            'ax3' : ['Plh', 'Poh'],
-            'ax4' : ['Te']
-            }
-        }
+from AstraBox.Dialogs.Setting import PlotSetting, SubPlot, load, save
+
+from rich import print 
 
 
 class RadialDataPlot(ttk.Frame):
     def __init__(self, master, profiles) -> None:
         super().__init__(master)  
         self.data = profiles
-        #self.fig, self.axs = plt.subplots(2, 2, figsize=(7, 6))
-        self.ps = PlotSettingWindows(self, 
-                                     terms= profiles.keys(), 
-                                     file_name= 'RadialPlotSetting.json', 
-                                     default_data= default_radial_setting(),
-                                     on_update_setting= self.on_update_setting )
+
+        self.init_setting()
+
         self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
         self.make_all_charts()
@@ -58,34 +42,69 @@ class RadialDataPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+    def init_setting(self):
+        self.setting = load('RadialPlot.setting')
+        if self.setting is None:
+            self.setting = PlotSetting(
+            title= 'Radial Data setting',
+            shape= '2x2',
+            x_axis= 'rho',
+            sub_plots= [
+                SubPlot(name = 'ax1', title= 'профили токов', data= ['J', 'Johm', 'Jlh']), 
+                SubPlot(name = 'ax2', title= 'профили E', data= ['E', 'En']), 
+                SubPlot(name = 'ax3', title= 'профили мощности', data= ['Plh', 'Poh']), 
+                SubPlot(name = 'ax4', title= 'профили температуры', data= ['Te'])
+            ]
+            )
+
+        self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
+        self.setting.data_terms.extend(self.data.keys())
+
+        print(self.setting)
+
+
     def option_windows(self):
+        self.ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
         self.ps.show()
 
 
     def on_update_setting(self):
         print('on_update_setting')
-        print(self.ps.data['plots'])
+        print(self.setting)
+        save(self.setting, 'RadialPlot.setting')
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
         self.canvas.draw()    
 
+    def get_x_axis_data(self):
+        match self.setting.x_axis:
+            case 'index': 
+                return [i for i in range(len(self.data['a']))]
+            case 'rho' :
+                x_max= max(self.data['a']) 
+                return [x/x_max for x in self.data['a']]
+            case 'ameter':  
+                return self.data['a']
+    
 
     def make_all_charts(self):
             self.axs = self.fig.subplots(2, 2)  
             self.charts_list = {}
-      
-            plots = self.ps.data['plots']
-            for (key, terms), ax in zip(plots.items(), self.axs.flat):
-                self.charts_list[key] = self.make_charts(ax, key)
+            x_axis_data = self.get_x_axis_data()
+            sub_plots = self.setting.sub_plots
+            for sub_plot, ax in zip(sub_plots, self.axs.flat):
+                self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot, x_axis_data)
                 ax.legend(loc='upper right')
+                if self.setting.show_grid:
+                    ax.grid(visible= True)
 
-    def make_charts(self, axis, plot_name):
+    def make_charts(self, axis, sub_plot, x_axis_data):
         charts = {}
-        terms = self.ps.data['plots'][plot_name]
+        terms = sub_plot.data
         for term in terms:
             if term in self.data.keys():
-                chart, = axis.plot(self.data['a'], self.data[term], label= term)
+                chart, = axis.plot(x_axis_data, self.data[term], label= term)
                 charts[term] = (chart)
 
         return charts
@@ -93,9 +112,9 @@ class RadialDataPlot(ttk.Frame):
     def update(self, profiles):
         self.fig.suptitle(f'Astra radial data. Time={profiles["Time"]}')
         self.data = profiles
-        plots = self.ps.data['plots']
-        for key, terms in plots.items():
-            charts = self.charts_list[key]
+        sub_plots = self.setting.sub_plots
+        for sub_plot in sub_plots:
+            charts = self.charts_list[sub_plot.name]
             for key, chart in charts.items():
                 chart.set_ydata(profiles[key]) 
 

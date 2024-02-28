@@ -53,7 +53,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, delim_whitespace=True, names=['X', 'Y'])     
+                    return pd.read_csv(file, sep="\s+", names=['X', 'Y'])     
         except Exception as error:
             print(error)
             return { 'X' : [], 'Y': [] }
@@ -68,7 +68,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(fn) as file:
-                    return pd.read_csv(file, delim_whitespace=True)           
+                    return pd.read_csv(file, sep="\s+")           
         except Exception as error:
             print(error)
             #return f'не смог прочитать {f}'
@@ -79,7 +79,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(fn) as file:
-                    return pd.read_csv(file, delim_whitespace=True, header=None)           
+                    return pd.read_csv(file, sep="\s+", header=None)           
         except Exception as error:
             print(error)
             #return f'не смог прочитать {f}'
@@ -90,7 +90,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, delim_whitespace=True)           
+                    return pd.read_csv(file, sep="\s+")           
         except Exception as error:
             print(error)
             return f'не смог прочитать {f}'
@@ -100,7 +100,7 @@ class RaceModel(BaseModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, delim_whitespace=True)     
+                    return pd.read_csv(file, sep="\s+")     
         except Exception as error:
             print(error)
             return f'не смог прочитать {f}'
@@ -118,6 +118,19 @@ class RaceModel(BaseModel):
             spectrum_model.spectrum_data = 'не смог прочитать спектр'
         return spectrum_model
 
+    def read_dc_data(self, fn:str):
+        p = pathlib.Path(fn)
+        if p.suffix != '.dat': return
+        time_stamp = float(p.stem)
+        print(time_stamp) 
+        res = {'Time': time_stamp}
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(fn) as file:
+                res['Data'] = pd.read_csv(file, sep="\s+")
+        return res
+        
+
+            
     def read_radial_data(self,f):
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
@@ -232,7 +245,7 @@ class RaceModel(BaseModel):
                         if series is None:
                             #print(buffer)
                             series = {}
-                            di= pd.read_csv(BytesIO(buffer), delim_whitespace=True).to_dict(orient='index')
+                            di= pd.read_csv(BytesIO(buffer), sep="\s+").to_dict(orient='index')
                             series = di[0]
                             #print(series['info'])
                             series['traj'] = None
@@ -241,7 +254,7 @@ class RaceModel(BaseModel):
                                 series = None
                             buffer = bytearray()
                         else:
-                            series['traj'] = pd.read_csv(BytesIO(buffer), delim_whitespace=True)
+                            series['traj'] = pd.read_csv(BytesIO(buffer), sep="\s+")
                             traj_series.append(series)
                             series = None
                             buffer = bytearray()
@@ -257,7 +270,7 @@ class RaceModel(BaseModel):
         print(time_stamp)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
-                traj = pd.read_csv(file, delim_whitespace=True)
+                traj = pd.read_csv(file, sep="\s+")
                 n_traj_list = np.unique(traj['N_traj'])
                 rays = []
                 for nt in n_traj_list:
@@ -271,6 +284,6 @@ class RaceModel(BaseModel):
         Icms_path = 'lhcd/out/lcms.dat'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(Icms_path) as file:
-                lcms = pd.read_csv(file, delim_whitespace=True)
+                lcms = pd.read_csv(file, sep="\s+")
         return lcms.rename(columns={"R(m)": "R", "Z(m)": "Z"})
 

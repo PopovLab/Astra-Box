@@ -10,6 +10,7 @@ data_folder = {
     'TRAJ_POS'     : 'lhcd/traj/pos/',
     'TRAJ_NEG'     : 'lhcd/traj/neg/',
     'RT_RESULT'    : 'lhcd/rt-result/',
+    'DC'           : 'lhcd/driven_current/',
     'lhcd_out'     : 'lhcd/out/',
     'plasma'       : 'lhcd/plasma/',
     'lhcd'         : 'lhcd/'

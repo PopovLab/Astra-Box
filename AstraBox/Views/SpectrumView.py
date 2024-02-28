@@ -6,6 +6,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
+from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
@@ -47,25 +48,46 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
-        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
 
-        self.rowconfigure(1, weight=0)
-        self.rowconfigure(2, weight=0)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(2, weight=1)
 
     def generate(self):
         self.options_box.update()
         self.model.generate()
         self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0, rowspan=3,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
-class ControlPanel(tk.Frame):
+class RotatedGaussianView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Rotated Gaussian Spectrum')        
+        self.model = model
+        btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.columnconfigure(0, weight=1)        
+        for r,(key, value) in enumerate(self.model.setting['parameters'].items()):
+            wg = Widgets.create_widget(self, value)
+            wg.grid(row=r+1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.generate()
+        self.rowconfigure(9, weight=1)
+
+    def generate(self):
+        self.model.generate()
+        self.spectrum_plot = RotatedSpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Npol'], self.model.spectrum_data['Amp']  )
+        self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+from pathlib import Path
+import AstraBox.WorkSpace as WorkSpace
+
+class FileSourcePanel(tk.Frame):
     def __init__(self, master, path, load_file_cb = None) -> None:
         super().__init__(master)
+        self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
+        print(self.spectrum_folder)
         self.load_file_cb = load_file_cb
         self.path_var = tk.StringVar(master= self, value=path)
         label = tk.Label(master=self, text='Source:')
@@ -74,15 +96,17 @@ class ControlPanel(tk.Frame):
         entry.pack(side = tk.LEFT, padx=2)
         btn1 = ttk.Button(self, text= 'Select file', command=self.select_file)
         btn1.pack(side = tk.LEFT, padx=10)   
-        #btn2 = ttk.Button(self, text= 'Load', command=self.load_file)
-        #btn2.pack(side = tk.LEFT, ipadx=10)
 
     def load_file(self):
         if self.load_file_cb:
             self.load_file_cb(self.path_var.get())
 
     def select_file(self):
-        filename = fd.askopenfilename()
+        filename = fd.askopenfilename(initialdir= self.spectrum_folder)
+        if len(filename) < 1 : return
+        fp = Path(filename)
+        if fp.is_relative_to(self.spectrum_folder):
+            filename = fp.name
         self.path_var.set(filename)
         if self.load_file_cb:
             self.load_file_cb(filename)
@@ -96,15 +120,15 @@ class Spectrum1DView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot()
-        wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
+        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=2, column=1, padx=5, sticky=tk.N)
+        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
 
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=0)
@@ -127,7 +151,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         radio_selector = self.make_radio_selector()
         radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
@@ -188,7 +212,7 @@ class Spectrum2DView(tk.LabelFrame):
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
 
-        self.control_panel = ControlPanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
