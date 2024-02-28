@@ -77,24 +77,34 @@ class RadialDataPlot(ttk.Frame):
         self.make_all_charts()
         self.canvas.draw()    
 
+    def get_x_axis_data(self):
+        match self.setting.x_axis:
+            case 'index': 
+                return [i for i in range(len(self.data['a']))]
+            case 'rho' :
+                x_max= max(self.data['a']) 
+                return [x/x_max for x in self.data['a']]
+            case 'ameter':  
+                return self.data['a']
+    
 
     def make_all_charts(self):
             self.axs = self.fig.subplots(2, 2)  
             self.charts_list = {}
-      
+            x_axis_data = self.get_x_axis_data()
             sub_plots = self.setting.sub_plots
             for sub_plot, ax in zip(sub_plots, self.axs.flat):
-                self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
+                self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot, x_axis_data)
                 ax.legend(loc='upper right')
                 if self.setting.show_grid:
                     ax.grid(visible= True)
 
-    def make_charts(self, axis, sub_plot):
+    def make_charts(self, axis, sub_plot, x_axis_data):
         charts = {}
         terms = sub_plot.data
         for term in terms:
             if term in self.data.keys():
-                chart, = axis.plot(self.data['a'], self.data[term], label= term)
+                chart, = axis.plot(x_axis_data, self.data[term], label= term)
                 charts[term] = (chart)
 
         return charts
