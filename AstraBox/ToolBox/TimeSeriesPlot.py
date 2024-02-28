@@ -36,11 +36,11 @@ class TimeSeriesPlot(ttk.Frame):
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)        
 
-        #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
         btn = ImageButton.create(self, 'gear.png', self.option_windows)
         btn.grid(row=1, column=0, sticky=tk.N) 
 
