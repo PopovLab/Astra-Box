@@ -31,12 +31,10 @@ class RadialDataPlot(ttk.Frame):
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        #toobar = NavigationToolbar2Tk(self.canvas, frame)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
         
-        #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
         btn = ImageButton.create(self, 'gear.png', self.option_windows)
         btn.grid(row=1, column=0, sticky=tk.N)        
         self.columnconfigure(1, weight=1)
@@ -46,7 +44,7 @@ class RadialDataPlot(ttk.Frame):
         self.setting = load('RadialPlot.setting')
         if self.setting is None:
             self.setting = PlotSetting(
-            title= 'Radial Data setting',
+            title= 'Radial Data',
             shape= '2x2',
             x_axis= 'rho',
             sub_plots= [
