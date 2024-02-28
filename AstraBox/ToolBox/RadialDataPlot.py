@@ -60,7 +60,7 @@ class RadialDataPlot(ttk.Frame):
         self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
         self.setting.data_terms.extend(self.data.keys())
 
-        print(self.setting)
+        #print(self.setting)
 
 
     def option_windows(self):
