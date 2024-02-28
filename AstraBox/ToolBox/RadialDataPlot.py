@@ -68,7 +68,7 @@ class RadialDataPlot(ttk.Frame):
 
     def on_update_setting(self):
         print('on_update_setting')
-        print(self.setting)
+        #print(self.setting)
         save(self.setting, 'RadialPlot.setting')
         for ax in self.axs.flat:
             ax.remove()
