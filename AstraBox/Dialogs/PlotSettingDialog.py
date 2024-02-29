@@ -87,10 +87,11 @@ class PlotSettingDialog():
         chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
-        self.x_axis_var = tk.StringVar(win, value=self.plot_setting.x_axis) 
-        combo = ttk.Combobox(win,  textvariable= self.x_axis_var, values=self.plot_setting.x_axis_list)
-        combo.pack(padx=5, pady=5, fill=tk.X)
-        combo.bind("<<ComboboxSelected>>", self.x_axis_changed)
+        if len(self.plot_setting.x_axis_list)>0:
+            self.x_axis_var = tk.StringVar(win, value=self.plot_setting.x_axis) 
+            combo = ttk.Combobox(win,  textvariable= self.x_axis_var, values=self.plot_setting.x_axis_list)
+            combo.pack(padx=5, pady=5, fill=tk.X)
+            combo.bind("<<ComboboxSelected>>", self.x_axis_changed)
         
         plot_names = self.plot_setting.get_sub_plots_names()
         self.plot_var = tk.StringVar(win, value=plot_names[0])   

@@ -5,8 +5,13 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
-from AstraBox.Dialogs.PlotSettingWindows import PlotSettingWindows
+#from AstraBox.Dialogs.PlotSettingWindows import PlotSettingWindows
+from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
+
+from AstraBox.Dialogs.Setting import PlotSetting, SubPlot, load, save
+
+from rich import print 
 
 def default_time_plot_setting():
     return {
@@ -25,12 +30,9 @@ class TimeSeriesPlot(ttk.Frame):
         self.fig = plt.figure(figsize=(10, 7), dpi=100)        
         #self.fig.suptitle(f'Astra time series. ')
         self.data = time_series
-        self.ps = PlotSettingWindows(self, 
-                                     terms= time_series.keys(), 
-                                     file_name= 'TimeSeriesPlotSetting.json', 
-                                     default_data= default_time_plot_setting(),
-                                     on_update_setting= self.on_update_setting )
-                
+
+        self.init_setting()
+
         self.make_all_charts()
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
@@ -47,12 +49,34 @@ class TimeSeriesPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+
+    def init_setting(self):
+        self.setting = load('TimeSeriesPlot.setting')
+        if self.setting is None:
+            self.setting = PlotSetting(
+            title= 'Time Series',
+            shape= '1x3',
+            x_axis= 'time',
+            sub_plots= [
+                SubPlot(name = 'ax1', title= 'Chart 1', data= ['L']), 
+                SubPlot(name = 'ax2', title= 'Chart 2', data= ['Iohm']), 
+                SubPlot(name = 'ax3', title= 'Chart 3', data= ['V', 'Vexp']), 
+            ]
+            )
+
+        #self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
+        self.setting.data_terms.extend(self.data.keys())
+
+        print(self.setting)
+
     def option_windows(self):
-        self.ps.show()
+        ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
+        ps.show()
+
 
     def on_update_setting(self):
         print('on_update_setting')
-        print(self.ps.data['plots'])
+        save(self.setting, 'TimeSeriesPlot.setting')
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
@@ -68,20 +92,21 @@ class TimeSeriesPlot(ttk.Frame):
     def make_all_charts(self):
         self.axs = self.fig.subplots(3, 1)  
         self.charts_list = {}
-    
-        plots = self.ps.data['plots']
-        for (key, terms), ax in zip(plots.items(), self.axs.flat):
-            self.charts_list[key] = self.make_charts(ax, key)
-            ax.legend(loc='upper right')
 
+        sub_plots = self.setting.sub_plots
+        for sub_plot, ax in zip(sub_plots, self.axs.flat):
+            self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
+            ax.legend(loc='upper right')
+            if self.setting.show_grid:
+                ax.grid(visible= True)
         self.axs.flat[2].set_xlabel('Time')
         #ax1.set_ylabel(keys[0])
         #ax2.set_ylabel(keys[1])
         #ax3.set_ylabel("V")                
 
-    def make_charts(self, axis, plot_name):
+    def make_charts(self, axis, sub_plot):
         charts = {}
-        terms = self.ps.data['plots'][plot_name]
+        terms = sub_plot.data
         for term in terms:
             if term in self.data.keys():
                 chart, = axis.plot(self.data['Time'], self.data[term], label= term)
