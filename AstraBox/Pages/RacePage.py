@@ -24,6 +24,7 @@ from AstraBox.Views.RaceView import SpectrumView
 from AstraBox.Views.RaceView import RTResultView
 from AstraBox.Views.RaceView import DrivenCurrentView
 from AstraBox.Views.RaceView import ExecTimeView
+from AstraBox.Views.SummaryView import SummaryView
 
 class InfoPanel(tk.Frame):
     def __init__(self, master, model) -> None:
@@ -62,6 +63,10 @@ class RacePage(ttk.Frame):
 
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        summary_view = SummaryView(self.notebook, model= model)
+        self.notebook.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
+
 
         time_series_view = TimeSeriesView(self.notebook, model= model)
         self.notebook.add(time_series_view, text="Time Series", underline=0, sticky=tk.NE + tk.SW)
