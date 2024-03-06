@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.BaseModel import RootModel
 from AstraBox.Models.SpectrumModel import SpectrumModel
 
 def default_rt_setting():
@@ -312,7 +312,7 @@ def default_rt_setting():
         }
 
     
-class RTModel(BaseModel):
+class RTModel(RootModel):
     """Ray tracing model"""
     def __init__(self, name= None, path= None) -> None:
         if name:

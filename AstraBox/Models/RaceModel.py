@@ -6,7 +6,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 from io import BytesIO
-from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.BaseModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel
@@ -18,7 +18,7 @@ def float_try(str):
     except ValueError:
         return 0.0
 
-class RaceModel(BaseModel):
+class RaceModel(RootModel):
 
     def __init__(self, path = None) -> None:
         super().__init__('default_name')

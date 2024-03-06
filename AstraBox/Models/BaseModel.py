@@ -9,7 +9,7 @@ def get_uuid_id():
 def get_new_name():
     return f'new_model_{get_uuid_id()[0:4]}'
 
-class BaseModel:
+class RootModel:
     def __init__(self, name = None) -> None:
         self.data = {}
         if name:

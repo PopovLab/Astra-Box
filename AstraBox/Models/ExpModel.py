@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 import pyparsing as pp
-from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.BaseModel import RootModel
 
 
 class Experiment:
@@ -93,7 +93,7 @@ class Experiment:
             print(f'{key}: {v}')
 
 
-class ExpModel(BaseModel):
+class ExpModel(RootModel):
 
     def __init__(self, name= None, path= None) -> None:
         if name:

@@ -1,9 +1,9 @@
 import os
 import json
 import pathlib 
-from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.BaseModel import RootModel
 
-class EquModel(BaseModel):
+class EquModel(RootModel):
 
     def __init__(self, name= None, path= None) -> None:
         if name:

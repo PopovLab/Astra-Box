@@ -5,12 +5,12 @@ import pathlib
 import zipfile
 from zipfile import ZipFile
 import datetime
-from AstraBox.Models.BaseModel import BaseModel
+from AstraBox.Models.BaseModel import RootModel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Astra as Astra
 
-class RunModel(BaseModel):
+class RunModel(RootModel):
 
     def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None) -> None:
         super().__init__(name)
