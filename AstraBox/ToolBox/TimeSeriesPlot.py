@@ -13,17 +13,6 @@ from AstraBox.Dialogs.Setting import PlotSetting, SubPlot, load, save
 
 from rich import print 
 
-def default_time_plot_setting():
-    return {
-        'shape' : '1x3',
-        'title' : 'Time Series data',
-        'plots'  : {
-            'ax1' : ['L'],
-            'ax2' : ['Iohm'],
-            'ax3' : ['V', 'Vexp'],
-            }
-        }
-
 class TimeSeriesPlot(ttk.Frame):
     def __init__(self, master, time_series) -> None:
         super().__init__(master)  
@@ -67,7 +56,7 @@ class TimeSeriesPlot(ttk.Frame):
         #self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
         self.setting.data_terms.extend(self.data.keys())
 
-        print(self.setting)
+        #print(self.setting)
 
     def option_windows(self):
         ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
