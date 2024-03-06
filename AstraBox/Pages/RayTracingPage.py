@@ -4,6 +4,7 @@ import tkinter.messagebox as messagebox
 
 import AstraBox.Models.RootModel as RootModel
 from AstraBox.Models.SpectrumModel import SpectrumModel
+from AstraBox.Models.RTModel import RTModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
 import AstraBox.Views.SpectrumView as SpectrumView
@@ -40,7 +41,7 @@ class RadioPanel(ttk.Frame):
 
 
 class RayTracingPage(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model:RTModel) -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"RT Configuration View {model.name}"
