@@ -36,5 +36,8 @@ class SummaryView(ttk.Frame):
         df = self.model.get_driven_current()
         print(df)
         #pd.set_option('display.max_rows', 5)
-        return df.to_string(max_rows = 5) 
+        if type(df) is str:
+            return df
+        else:
+            return df.to_string(max_rows = 5) 
         #return df.head(3).to_string() + '\n' + df.tail(3).to_string()

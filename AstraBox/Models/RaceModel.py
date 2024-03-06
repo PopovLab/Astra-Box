@@ -92,8 +92,7 @@ class RaceModel(BaseModel):
                 with zip.open(f) as file:
                     return pd.read_csv(file, sep="\s+")           
         except Exception as error:
-            print(error)
-            return f'не смог прочитать {f}'
+            return str(error)
 
     def get_time_series(self):
         f = 'dat/time_series.dat'
@@ -102,8 +101,7 @@ class RaceModel(BaseModel):
                 with zip.open(f) as file:
                     return pd.read_csv(file, sep="\s+")     
         except Exception as error:
-            print(error)
-            return f'не смог прочитать {f}'
+            return str(error)
      
 
     def get_spectrum(self):
