@@ -40,7 +40,7 @@ class InfoPanel(tk.Frame):
             var = tk.StringVar(master= self, value=value)
             label = tk.Label(master=self, text=key)
             label.pack(side = tk.LEFT, ipadx=10)		
-            entry = tk.Entry(self, width=15, textvariable= var, state='disabled')
+            entry = tk.Entry(self, width=20, textvariable= var, state='disabled')
             entry.pack(side = tk.LEFT)
 
 class RacePage(ttk.Frame):
