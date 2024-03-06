@@ -6,7 +6,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 from io import BytesIO
-from AstraBox.Models.BaseModel import RootModel
+from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
 from AstraBox.Models.SpectrumModel import SpectrumModel

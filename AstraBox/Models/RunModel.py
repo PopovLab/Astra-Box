@@ -5,7 +5,7 @@ import pathlib
 import zipfile
 from zipfile import ZipFile
 import datetime
-from AstraBox.Models.BaseModel import RootModel
+from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Astra as Astra

@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 
-import AstraBox.Models.BaseModel as BaseModel
+import AstraBox.Models.RootModel as RootModel
 from AstraBox.Models.SpectrumModel import SpectrumModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
@@ -122,7 +122,7 @@ class RayTracingPage(ttk.Frame):
         
     def clone_model(self):
         name = self.var_name.get()
-        self.var_name.set(f'{name}_clone_{BaseModel.get_uuid_id()[0:4]}')
+        self.var_name.set(f'{name}_clone_{RootModel.get_uuid_id()[0:4]}')
         self.model.name = self.var_name.get()
         self.model.setting['Comments']['value'] = self.comment_text.get("1.0",tk.END)
         self.model.path = self.model.path.with_stem(self.model.name)

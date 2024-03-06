@@ -5,7 +5,7 @@ import pandas as pd
 from tkinter.scrolledtext import ScrolledText
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
-import AstraBox.Models.BaseModel as BaseModel
+import AstraBox.Models.RootModel as RootModel
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.RaceModel import RaceModel
 

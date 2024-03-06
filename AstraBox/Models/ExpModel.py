@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 import pyparsing as pp
-from AstraBox.Models.BaseModel import RootModel
+from AstraBox.Models.RootModel import RootModel
 
 
 class Experiment:

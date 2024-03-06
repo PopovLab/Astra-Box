@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 from tkinter.scrolledtext import ScrolledText
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Models.ModelFactory as ModelFactory
-import AstraBox.Models.BaseModel as BaseModel
+import AstraBox.Models.RootModel as RootModel
 import AstraBox.WorkSpace as WorkSpace
 
 class FindToolBar(ttk.Frame):
@@ -85,7 +85,7 @@ class TextView(ttk.Frame):
         #self.InitUI(model)
 
     def clone(self):
-        new_name = f'{self.model.name}_clone_{BaseModel.get_uuid_id()[0:4]}'
+        new_name = f'{self.model.name}_clone_{RootModel.get_uuid_id()[0:4]}'
         answer = tk.simpledialog.askstring("Clone", "Enter new name", initialvalue= new_name) #,  parent=application_window)
         if answer is not None and answer != '':
             self.model.name = answer

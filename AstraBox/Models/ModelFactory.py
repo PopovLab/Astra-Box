@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import tkinter as tk
 
-from AstraBox.Models.BaseModel import get_new_name
+from AstraBox.Models.RootModel import get_new_name
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel

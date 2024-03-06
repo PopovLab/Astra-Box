@@ -1,7 +1,7 @@
 import os
 import json
 import pathlib 
-from AstraBox.Models.BaseModel import RootModel
+from AstraBox.Models.RootModel import RootModel
 
 class SbrModel(RootModel):
 
