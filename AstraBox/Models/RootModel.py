@@ -25,7 +25,7 @@ class RootModel:
 
     @property
     def model_kind(self):
-        return 'BaseModel'
+        return 'RootModel'
 
     def get_text(self):
         with self.path.open('r', encoding='utf-8') as f:
