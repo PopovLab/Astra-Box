@@ -24,17 +24,18 @@ class PlotSetting(BaseModel):
     def get_sub_plot(self, name: str):
         return [x for x in self.sub_plots if x.name == name][0]
     
+    @classmethod
+    def load(cls, fn:str):
+        loc = WorkSpace.get_location_path().joinpath(fn)
+        if loc.exists():
+            with open(loc) as file:
+                data = file.read()
+            return cls.model_validate_json(data)
+        else:
+            return None
 
-def save(ps:PlotSetting, fn:str):
-    loc = WorkSpace.get_location_path().joinpath(fn)
-    with open(loc, "w" ) as file:
-        file.write(ps.model_dump_json(indent= 2))
+    def save(self, fn:str):
+        loc = WorkSpace.get_location_path().joinpath(fn)
+        with open(loc, "w" ) as file:
+            file.write(self.model_dump_json(indent= 2))
 
-def load(fn:str):
-    loc = WorkSpace.get_location_path().joinpath(fn)
-    if loc.exists():
-        with open(loc) as file:
-            data = file.read()
-        return PlotSetting.model_validate_json(data)
-    else:
-        return None

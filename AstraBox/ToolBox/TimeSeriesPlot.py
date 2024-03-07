@@ -9,7 +9,7 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
 
-from AstraBox.Dialogs.Setting import PlotSetting, SubPlot, load, save
+from AstraBox.Dialogs.Setting import PlotSetting, SubPlot
 
 from rich import print 
 
@@ -40,7 +40,8 @@ class TimeSeriesPlot(ttk.Frame):
 
 
     def init_setting(self):
-        self.setting = load('TimeSeriesPlot.setting')
+        self.setting  = PlotSetting.load('TimeSeriesPlot.setting')
+        #self.setting = load('TimeSeriesPlot.setting')
         if self.setting is None:
             self.setting = PlotSetting(
             title= 'Time Series',
@@ -65,7 +66,7 @@ class TimeSeriesPlot(ttk.Frame):
 
     def on_update_setting(self):
         print('on_update_setting')
-        save(self.setting, 'TimeSeriesPlot.setting')
+        self.setting.save('TimeSeriesPlot.setting')
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
