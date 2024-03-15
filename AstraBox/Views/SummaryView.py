@@ -25,19 +25,29 @@ class SummaryView(ttk.Frame):
         self.text_box.insert(tk.END, info)
 
         self.text_box.insert(tk.END, 'Driver current:\n')
-        self.text_box.insert(tk.END, self.get_current())
+        self.text_box.insert(tk.END, self.get_dc_view())
 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)            
         self.rowconfigure(2, weight=1)            
         #self.InitUI(model)
 
-    def get_current(self):
+    def get_dc_view(self):
         df = self.model.get_driven_current()
         print(df)
         #pd.set_option('display.max_rows', 5)
         if type(df) is str:
             return df
         else:
-            return df.to_string(max_rows = 5) 
-        #return df.head(3).to_string() + '\n' + df.tail(3).to_string()
+            text=  df.to_string(max_rows = 5) + '\n'
+            print(df.iloc[-1])
+            row = df.iloc[-1]
+            text+= ' ----- last moment dc ---------\n'
+            text+= f"time= {row['Time']}\n"
+            text+= f"cup= {row['cup']}  cp={row['cp']}\n"
+            text+= f"cum= {row['cum']}  cm={row['cm']}\n"
+            text+= f"cup0= {row['cup0']}  cp0= {row['cp0']}\n"
+            text+= f"cum0= {row['cum0']}  cm0= {row['cm0']}\n"
+            text+= f"sigma driven current, MA= {row['cp0'] + row['cm0']}\n"
+            text+= f"driven current, MA= {row['cup'] + row['cum']}\n"
+            return text
