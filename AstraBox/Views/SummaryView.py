@@ -34,7 +34,7 @@ class SummaryView(ttk.Frame):
 
     def get_dc_view(self):
         df = self.model.get_driven_current()
-        print(df)
+        #print(df)
         #pd.set_option('display.max_rows', 5)
         if type(df) is str:
             return df
