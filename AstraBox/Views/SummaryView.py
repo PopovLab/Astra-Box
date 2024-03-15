@@ -40,7 +40,7 @@ class SummaryView(ttk.Frame):
             return df
         else:
             text=  df.to_string(max_rows = 5) + '\n'
-            print(df.iloc[-1])
+            #print(df.iloc[-1])
             row = df.iloc[-1]
             text+= ' ----- last moment dc ---------\n'
             text+= f"time= {row['Time']}\n"
