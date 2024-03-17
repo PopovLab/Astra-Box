@@ -47,6 +47,7 @@ class TimeSeriesPlot(ttk.Frame):
             title= 'Time Series',
             shape= '1x3',
             x_axis= 'time',
+            x_label='time [ms]',
             sub_plots= [
                 SubPlot(name = 'ax1', title= 'Chart 1', data= ['L']), 
                 SubPlot(name = 'ax2', title= 'Chart 2', data= ['Iohm']), 
@@ -87,6 +88,7 @@ class TimeSeriesPlot(ttk.Frame):
         for sub_plot, ax in zip(sub_plots, self.axs.flat):
             self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
             ax.legend(loc='upper right')
+            ax.set_ylabel(sub_plot.y_label) 
             if self.setting.show_grid:
                 ax.grid(visible= True)
         self.axs.flat[2].set_xlabel('Time')

@@ -6,6 +6,7 @@ import AstraBox.WorkSpace as WorkSpace
 class SubPlot(BaseModel):
     name: str
     title: str = ''
+    y_label: str = Field(default='arb. unit')
     data: list[str]
 
 class PlotSetting(BaseModel):
@@ -14,6 +15,7 @@ class PlotSetting(BaseModel):
     shape: str
     x_axis: str 
     x_axis_list : list[str] = Field(default=[], exclude=True)
+    x_label: str = Field(default='Value [arb. unit]')
     sub_plots: list[SubPlot]
     
     data_terms: list[str] = Field(default=[], exclude=True)
