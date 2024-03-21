@@ -14,8 +14,6 @@ class SubPlotOptionsPanel(ttk.Frame):
         self.terms = terms
         self.checked = sub_plot.data
         self.on_update_options = on_update_options
-        self.vars = {}
-        print(self.checked)
         lbl= tk.Label(self, text ='Title:')
         lbl.grid(row=0, column=0, sticky=tk.W)
         self.sub_plot_title = tk.Label(self, text =sub_plot.title )
@@ -58,8 +56,7 @@ class CheckPanel(ttk.Frame):
         for index, term in enumerate(self.terms):
             col = index % self.num_cols
             row = index // self.num_cols
-            #print(f'create var: {term}')
-            var = tk.IntVar(name= term, value=1 if term in checked else 0)
+            var = tk.IntVar(self,  value=1 if term in checked else 0)
             checkbutton = tk.Checkbutton(self, text=term, variable=var, command= self.check_clicked )
             self.vars[term] = var
             checkbutton.grid(row= row, column=col, sticky=tk.W)
