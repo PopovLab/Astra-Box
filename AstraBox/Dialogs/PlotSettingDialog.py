@@ -5,6 +5,45 @@ import tkinter
 import tkinter.ttk as ttk
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Dialogs.Setting import PlotSetting
+from AstraBox.Dialogs.Setting import SubPlot
+
+class SubPlotOptionsPanel(ttk.Frame):
+    def __init__(self, master, sub_plot: SubPlot, terms: list, on_update_options= None) -> None:
+        super().__init__(master)
+        self.sub_plot = sub_plot
+        self.terms = terms
+        self.checked = sub_plot.data
+        self.on_update_options = on_update_options
+        self.vars = {}
+        print(self.checked)
+        lbl= tk.Label(self, text ='Title:')
+        lbl.grid(row=0, column=0, sticky=tk.W)
+        self.sub_plot_title = tk.Label(self, text =sub_plot.title )
+        self.sub_plot_title.grid(row= 0, column=1, sticky=tk.W)
+        lbl= tk.Label(self, text ='Y label:')
+        lbl.grid(row=1, column=0, sticky=tk.W)
+        
+        self.y_lable_var = tk.StringVar(self, value=sub_plot.y_label)
+        self.y_lable_var.trace_add('write', self.update_var)
+ 
+        self.entry = tk.Entry(self, width= 20, textvariable= self.y_lable_var)
+        self.entry.grid(row=1, column=1, columnspan=1)      
+
+        self.check_panel = CheckPanel(self, self.terms, self.sub_plot.data, self.update_checked)
+        self.check_panel.grid(row=2, column=0, columnspan=2)     
+
+
+    def update_checked(self):
+        self.sub_plot.data = self.check_panel.checked
+        if self.on_update_options:
+            self.on_update_options()
+        
+    def update_var(self, var, indx, mode):
+        self.sub_plot.y_label = self.y_lable_var.get()
+        if self.on_update_options:
+            self.on_update_options()
+
+    
 
 class CheckPanel(ttk.Frame):
     num_cols = 3
@@ -92,18 +131,14 @@ class PlotSettingDialog():
             combo = ttk.Combobox(win,  textvariable= self.x_axis_var, values=self.plot_setting.x_axis_list)
             combo.pack(padx=5, pady=5, fill=tk.X)
             combo.bind("<<ComboboxSelected>>", self.x_axis_changed)
-        
-        plot_names = self.plot_setting.get_sub_plots_names()
-        self.plot_var = tk.StringVar(win, value=plot_names[0])   
-        self.combo = ttk.Combobox(win,  textvariable= self.plot_var, values=plot_names)
-        self.combo.pack(padx=5, pady=5, fill=tk.X)
-        self.combo.bind("<<ComboboxSelected>>", self.selected)
-        plot = self.plot_var.get()
-        sub_plot_0 = self.plot_setting.sub_plots[0]
-        self.sub_plot_title = tk.Label(win, text =sub_plot_0.title )
-        self.sub_plot_title.pack(padx=5, pady=5, fill=tk.X)
-        self.check_panel = CheckPanel(win, self.plot_setting.data_terms, sub_plot_0.data, self.update_checked)
-        self.check_panel.pack(padx=5, pady=5, fill=tk.X)
+
+
+        self.notebook = ttk.Notebook(win)
+        self.notebook.pack(padx=5, pady=5, fill=tk.X)
+
+        for plot in self.plot_setting.sub_plots:
+            frame = SubPlotOptionsPanel(self.notebook, plot, self.plot_setting.data_terms, self.update_options)
+            self.notebook.add(frame, text=plot.name, underline=0, sticky=tk.NE + tk.SW)
 
         win.transient(self.master)
         #win.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -111,6 +146,10 @@ class PlotSettingDialog():
         win.grab_set()
         win.focus_set()
         win.wait_window()
+
+    def update_options(self):
+        if self.on_update_setting:
+            self.on_update_setting()  
 
     def x_axis_changed(self, event):
         self.plot_setting.x_axis= self.x_axis_var.get()
@@ -122,18 +161,6 @@ class PlotSettingDialog():
         if self.on_update_setting:
             self.on_update_setting()
 
-    def selected(self, event):
-        plot_name = self.plot_var.get()
-        sub_plot = self.plot_setting.get_sub_plot(plot_name)
-        self.sub_plot_title.config(text = sub_plot.title )
-        self.check_panel.set_checked(sub_plot.data)    
-
-    def update_checked(self):
-        plot_name = self.plot_var.get()
-        sub_plot = self.plot_setting.get_sub_plot(plot_name)
-        sub_plot.data = self.check_panel.checked
-        if self.on_update_setting:
-            self.on_update_setting()
 
     def on_closing(self):
         pass
