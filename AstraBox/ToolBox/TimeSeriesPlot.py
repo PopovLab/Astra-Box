@@ -91,7 +91,7 @@ class TimeSeriesPlot(ttk.Frame):
             ax.set_ylabel(sub_plot.y_label) 
             if self.setting.show_grid:
                 ax.grid(visible= True)
-        self.axs.flat[2].set_xlabel('Time')
+        self.axs.flat[2].set_xlabel(self.setting.x_label)
         #ax1.set_ylabel(keys[0])
         #ax2.set_ylabel(keys[1])
         #ax3.set_ylabel("V")                

@@ -7,6 +7,23 @@ import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Dialogs.Setting import PlotSetting
 from AstraBox.Dialogs.Setting import SubPlot
 
+class TextField(ttk.Frame):
+    def __init__(self, master: tk.Misc, label:str, text:str, on_update= None ) -> None:
+        super().__init__(master)
+        self.on_update= on_update
+        lbl= tk.Label(self, text= label)
+        lbl.grid(row=0, column=0, sticky=tk.W)
+        self.entry_var = tk.StringVar(self, value= text)
+        self.entry_var.trace_add('write', self.update_entry_var)
+ 
+        self.entry = tk.Entry(self, width= 25, textvariable= self.entry_var)
+        self.entry.grid(row=0, column=1, sticky=tk.W)
+
+    def update_entry_var(self, var, indx, mode):
+        text = self.entry_var.get()
+        if self.on_update:
+            self.on_update(text)
+
 class SubPlotOptionsPanel(ttk.Frame):
     def __init__(self, master, sub_plot: SubPlot, terms: list, on_update_options= None) -> None:
         super().__init__(master)
@@ -18,14 +35,19 @@ class SubPlotOptionsPanel(ttk.Frame):
         lbl.grid(row=0, column=0, sticky=tk.W)
         self.sub_plot_title = tk.Label(self, text =sub_plot.title )
         self.sub_plot_title.grid(row= 0, column=1, sticky=tk.W)
-        lbl= tk.Label(self, text ='Y label:')
-        lbl.grid(row=1, column=0, sticky=tk.W)
+
+        lbl = TextField(self, label='Y label:', text= sub_plot.y_label, on_update= self.update_y_label)
+        lbl.grid(row=1, column=0, sticky=tk.W, columnspan=2)
+
+
+        #lbl= tk.Label(self, text ='Y label:')
+        #lbl.grid(row=1, column=0, sticky=tk.W)
         
-        self.y_lable_var = tk.StringVar(self, value=sub_plot.y_label)
-        self.y_lable_var.trace_add('write', self.update_var)
+        #self.y_lable_var = tk.StringVar(self, value=sub_plot.y_label)
+        #self.y_lable_var.trace_add('write', self.update_y_lable_var)
  
-        self.entry = tk.Entry(self, width= 20, textvariable= self.y_lable_var)
-        self.entry.grid(row=1, column=1, columnspan=1)      
+        #self.entry = tk.Entry(self, width= 20, textvariable= self.y_lable_var)
+        #self.entry.grid(row=1, column=1, columnspan=1)      
 
         self.check_panel = CheckPanel(self, self.terms, self.sub_plot.data, self.update_checked)
         self.check_panel.grid(row=2, column=0, columnspan=2)     
@@ -36,8 +58,8 @@ class SubPlotOptionsPanel(ttk.Frame):
         if self.on_update_options:
             self.on_update_options()
         
-    def update_var(self, var, indx, mode):
-        self.sub_plot.y_label = self.y_lable_var.get()
+    def update_y_label(self, text):
+        self.sub_plot.y_label = text
         if self.on_update_options:
             self.on_update_options()
 
@@ -91,20 +113,6 @@ class CheckPanel(ttk.Frame):
         super().destroy() 
 
 
-    def update_var(self, var, indx, mode):
-        if self.ignore: return
-        (v, tid) = self.vars[var]
-        if v.get() > 0:
-            print(f'add {var}')
-            self.checked.append(var)
-        else:
-            print(f'remove {var}')
-            self.checked.remove(var)
-        print(self.checked)
-        if self.on_update_checked:
-            self.on_update_checked()
-
-
 
 class PlotSettingDialog():
     def __init__(self, master, plot_setting: PlotSetting, on_update_setting= None) -> None:
@@ -120,8 +128,12 @@ class PlotSettingDialog():
         tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
 
         self.show_grid_var = tk.IntVar(name= 'show grid', value=1 if self.plot_setting.show_grid else 0)
+
         chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
+
+        lbl = TextField(win, label='X label:', text= self.plot_setting.x_label, on_update= self.update_x_label)
+        lbl.pack(padx=5, pady=5, fill=tk.X)
 
         if len(self.plot_setting.x_axis_list)>0:
             self.x_axis_var = tk.StringVar(win, value=self.plot_setting.x_axis) 
@@ -144,6 +156,11 @@ class PlotSettingDialog():
         win.focus_set()
         win.wait_window()
 
+
+    def update_x_label(self, text):
+        self.plot_setting.x_label= text
+        self.update_options()
+        
     def update_options(self):
         if self.on_update_setting:
             self.on_update_setting()  
