@@ -133,7 +133,7 @@ class PlotSettingDialog():
 
         self.show_axis_labels_var = tk.IntVar(value=1 if self.plot_setting.show_axis_labels else 0)
 
-        chkbtn = tk.Checkbutton(win, text='show_axis_labels', variable=self.show_axis_labels_var, command= self.show_axis_labels_checked )
+        chkbtn = tk.Checkbutton(win, text='show axis labels', variable=self.show_axis_labels_var, command= self.show_axis_labels_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
         lbl = TextField(win, label='X label:', text= self.plot_setting.x_label, on_update= self.update_x_label)
