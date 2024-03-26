@@ -17,13 +17,10 @@ class TimeSeriesPlot(ttk.Frame):
     def __init__(self, master, time_series) -> None:
         super().__init__(master)  
         self.fig = plt.figure(figsize=(10, 7), dpi=100)        
-        #self.fig.suptitle(f'Astra time series. ')
         self.data = time_series
-
         self.init_setting()
-
         self.make_all_charts()
-
+        
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -32,7 +29,7 @@ class TimeSeriesPlot(ttk.Frame):
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)        
 
-        btn = ImageButton.create(self, 'gear.png', self.option_windows)
+        btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
         btn.grid(row=1, column=0, sticky=tk.N) 
 
         self.columnconfigure(1, weight=1)
@@ -41,7 +38,6 @@ class TimeSeriesPlot(ttk.Frame):
 
     def init_setting(self):
         self.setting  = PlotSetting.load('TimeSeriesPlot.setting')
-        #self.setting = load('TimeSeriesPlot.setting')
         if self.setting is None:
             self.setting = PlotSetting(
             title= 'Time Series',
@@ -55,12 +51,10 @@ class TimeSeriesPlot(ttk.Frame):
             ]
             )
 
-        #self.setting.x_axis_list.extend(['index', 'ameter', 'rho'])
         self.setting.data_terms.extend(self.data.keys())
 
-        #print(self.setting)
 
-    def option_windows(self):
+    def show_option_windows(self):
         ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
         ps.show()
 
