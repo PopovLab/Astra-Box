@@ -127,9 +127,13 @@ class PlotSettingDialog():
 
         tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
 
-        self.show_grid_var = tk.IntVar(name= 'show grid', value=1 if self.plot_setting.show_grid else 0)
-
+        self.show_grid_var = tk.IntVar(value=1 if self.plot_setting.show_grid else 0)
         chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
+        chkbtn.pack(padx=5, pady=5, fill=tk.X)
+
+        self.show_axis_labels_var = tk.IntVar(value=1 if self.plot_setting.show_axis_labels else 0)
+
+        chkbtn = tk.Checkbutton(win, text='show_axis_labels', variable=self.show_axis_labels_var, command= self.show_axis_labels_checked )
         chkbtn.pack(padx=5, pady=5, fill=tk.X)
 
         lbl = TextField(win, label='X label:', text= self.plot_setting.x_label, on_update= self.update_x_label)
@@ -169,6 +173,11 @@ class PlotSettingDialog():
         self.plot_setting.x_axis= self.x_axis_var.get()
         if self.on_update_setting:
             self.on_update_setting()        
+
+    def show_axis_labels_checked(self):
+        self.plot_setting.show_axis_labels = True if self.show_axis_labels_var.get() == 1 else False
+        if self.on_update_setting:
+            self.on_update_setting()
 
     def show_grid_checked(self):
         self.plot_setting.show_grid = True if self.show_grid_var.get() == 1 else False

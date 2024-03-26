@@ -12,6 +12,7 @@ class SubPlot(BaseModel):
 class PlotSetting(BaseModel):
     title: str
     show_grid: bool = True
+    show_axis_labels: bool = True
     shape: str
     x_axis: str 
     x_axis_list : list[str] = Field(default=[], exclude=True)

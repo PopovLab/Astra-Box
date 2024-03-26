@@ -88,13 +88,13 @@ class TimeSeriesPlot(ttk.Frame):
         for sub_plot, ax in zip(sub_plots, self.axs.flat):
             self.charts_list[sub_plot.name] = self.make_charts(ax, sub_plot)
             ax.legend(loc='upper right')
-            ax.set_ylabel(sub_plot.y_label) 
+            if self.setting.show_axis_labels:
+                ax.set_ylabel(sub_plot.y_label) 
             if self.setting.show_grid:
                 ax.grid(visible= True)
-        self.axs.flat[2].set_xlabel(self.setting.x_label)
-        #ax1.set_ylabel(keys[0])
-        #ax2.set_ylabel(keys[1])
-        #ax3.set_ylabel("V")                
+        if self.setting.show_axis_labels:
+            self.axs.flat[2].set_xlabel(self.setting.x_label)
+            
 
     def make_charts(self, axis, sub_plot):
         charts = {}
