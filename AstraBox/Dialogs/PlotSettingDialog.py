@@ -17,7 +17,7 @@ class TextField(ttk.Frame):
         self.entry_var.trace_add('write', self.update_entry_var)
  
         self.entry = tk.Entry(self, width= 25, textvariable= self.entry_var)
-        self.entry.grid(row=0, column=1, sticky=tk.W)
+        self.entry.grid(row=0, column=1, sticky=tk.W, padx=3)
 
     def update_entry_var(self, var, indx, mode):
         text = self.entry_var.get()
@@ -125,29 +125,28 @@ class PlotSettingDialog():
         win.title("Settings")
         win.geometry("220x400")
 
-        tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).pack(padx=5, pady=5, fill=tk.X)
+        tk.Label(win, text =f"Shape {self.plot_setting.shape}" ).grid(row= 0, column=0, sticky=tk.W, padx=5)
 
         self.show_grid_var = tk.IntVar(value=1 if self.plot_setting.show_grid else 0)
         chkbtn = tk.Checkbutton(win, text='show grid', variable=self.show_grid_var, command= self.show_grid_checked )
-        chkbtn.pack(padx=5, pady=5, fill=tk.X)
+        chkbtn.grid(row= 1, column=0, sticky=tk.W, padx=5)
 
         self.show_axis_labels_var = tk.IntVar(value=1 if self.plot_setting.show_axis_labels else 0)
 
         chkbtn = tk.Checkbutton(win, text='show axis labels', variable=self.show_axis_labels_var, command= self.show_axis_labels_checked )
-        chkbtn.pack(padx=5, pady=5, fill=tk.X)
+        chkbtn.grid(row= 2, column=0, sticky=tk.W, padx=5)
 
         lbl = TextField(win, label='X label:', text= self.plot_setting.x_label, on_update= self.update_x_label)
-        lbl.pack(padx=5, pady=5, fill=tk.X)
-
+        lbl.grid(row= 3, column=0, sticky=tk.W, padx=5, pady=3)
         if len(self.plot_setting.x_axis_list)>0:
             self.x_axis_var = tk.StringVar(win, value=self.plot_setting.x_axis) 
             combo = ttk.Combobox(win,  textvariable= self.x_axis_var, values=self.plot_setting.x_axis_list)
-            combo.pack(padx=5, pady=5, fill=tk.X)
+            combo.grid(row= 4, column=0, sticky=tk.W, padx=5, pady=3)
             combo.bind("<<ComboboxSelected>>", self.x_axis_changed)
 
 
         self.notebook = ttk.Notebook(win)
-        self.notebook.pack(padx=5, pady=5, fill=tk.X)
+        self.notebook.grid(row= 5, column=0, sticky=tk.W, padx=5)
 
         for plot in self.plot_setting.sub_plots:
             frame = SubPlotOptionsPanel(self.notebook, plot, self.plot_setting.data_terms, self.update_options)
