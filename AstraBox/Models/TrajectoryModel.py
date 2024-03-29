@@ -1,4 +1,5 @@
 import pathlib 
+import numpy as np
 from AstraBox.Models.RaceModel import RaceModel
 
 def path_to_time(p):
@@ -46,11 +47,28 @@ class TrajectoryModel:
         self.max_spectrum_index = max(self.traj_series, key=lambda x:x['index'])['index']
         self.min_spectrum_index = min(self.traj_series, key=lambda x:x['index'])['index']
 
+    def update_power_density_interval(self):
+        self.max_power_density_interval = max(self.traj_series, key=lambda x:x['power_density'])['power_density']
+        self.min_power_density_interval = min(self.traj_series, key=lambda x:x['power_density'])['power_density']
+
+
+    def read_trajectory_series(self, fn):
+        ts= self.race_model.read_trajectory_series(fn)
+        for series in ts:
+            if not series['traj'] is None:
+                traj = series['traj']
+                traj['length'] = np.sqrt(np.square(traj['R'].diff()) + np.square(traj['Z'].diff()))
+                #traj['length'][0] = 1.0
+                traj['delta_power'] = traj['P_tot'].diff()
+                traj['power_density'] = traj['delta_power']/traj['length']
+                #print(traj.head)
+        return ts
+
     def select_series(self, index):
         self.time_stamp = path_to_time(self.trajectory_series_list[index])
         
         if not index in self.traj_cache:
-            self.traj_cache[index] = self.race_model.read_trajectory_series(self.trajectory_series_list[index])
+            self.traj_cache[index] = self.read_trajectory_series(self.trajectory_series_list[index])
         self.traj_series = self.traj_cache[index]
 
     def get_term_list(self):
