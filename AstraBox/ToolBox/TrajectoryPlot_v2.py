@@ -42,6 +42,12 @@ class TrajectoryPlotOptionWindows():
 
         frame = tk.Frame(win)
         frame.pack(padx=5, pady=1, fill=tk.X)
+        self.chkvar3 = tk.IntVar(value= self.plot_options['show_power_density'])
+        chkbtn = tk.Checkbutton(frame, text='show power density', variable= self.chkvar3, command= self.check_clicked )
+        chkbtn.pack( pady=5, side=tk.LEFT)
+
+        frame = tk.Frame(win)
+        frame.pack(padx=5, pady=1, fill=tk.X)
         tk.Label(frame, text =f"x axis" ).pack(pady=5, side=tk.LEFT)
         self.combo1 = ttk.Combobox(frame, width= 20 )# command=lambda x=self: self.update(x))  
         self.combo1.bind("<<ComboboxSelected>>", self.combo_selected1)
@@ -76,6 +82,7 @@ class TrajectoryPlotOptionWindows():
     def check_clicked(self):
         self.plot_options['show_marker'] = True if self.chkvar1.get() == 1 else False
         self.plot_options['show_graph'] = True if self.chkvar2.get() == 1 else False
+        self.plot_options['show_power_density'] = True if self.chkvar3.get() == 1 else False
         if self.on_update_options:
             self.on_update_options()
 
@@ -101,6 +108,7 @@ def default_plot_options():
     return { 
         'show_marker' : False,
         'show_graph' : False,
+        'show_power_density' : False,
         'term_list' : [],
         'x_axis' : 'theta',
         'y_axis' : 'N_par',
@@ -347,6 +355,7 @@ class TrajectoryPlot_v2(ttk.Frame):
                                             offset_transform=offset_transform,
                                             )   
         return stars, tri
+    
     def update_traj(self, save_lim= False):
         bottom, top = self.ax1.get_ylim()
         left, right = self.ax1.get_xlim()        
