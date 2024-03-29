@@ -205,7 +205,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.ax1 = self.fig.subplots(1, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
             self.ax1.axis('equal')
-        self.update_traj()
+        self.draw_trajctory(self.ax1)
 
 
     def clear_axis(self):
@@ -226,7 +226,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.clear_axis()
             self.show_graph = self.plot_options['show_graph']
             self.init_axis()
-        self.update_traj(save_lim= True)
+        self.draw_trajctory(self.ax1, save_lim= True)
         if self.show_graph:
             self.update_graph()
         self.canvas.draw()
@@ -356,12 +356,12 @@ class TrajectoryPlot_v2(ttk.Frame):
                                             )   
         return stars, tri
     
-    def update_traj(self, save_lim= False):
-        bottom, top = self.ax1.get_ylim()
-        left, right = self.ax1.get_xlim()        
+    def draw_trajctory(self, axis, save_lim= False):
+        bottom, top = axis.get_ylim()
+        left, right = axis.get_xlim()        
 
-        self.ax1.clear()
-        self.ax1.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        axis.clear()
+        axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         cut_index = self.plot_options['cut_index']
         segs = []
         segs_colors = []
@@ -375,23 +375,23 @@ class TrajectoryPlot_v2(ttk.Frame):
             segs_colors.append(self.theta_color(series['theta']))
 
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
-        self.ax1.add_collection(col, autolim=True)
+        axis.add_collection(col, autolim=True)
         
         if self.plot_options['show_marker']:
             for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
                 stars, tri = self.create_markers(dr2, dr4, clr, self.ax1.transData)
-                self.ax1.add_collection(stars, autolim=True)            
-                self.ax1.add_collection(tri, autolim=True)  
+                axis.add_collection(stars, autolim=True)            
+                axis.add_collection(tri, autolim=True)  
 
         if save_lim:
-            self.ax1.set_ylim(bottom, top)
-            self.ax1.set_xlim(left, right)                      
+            axis.set_ylim(bottom, top)
+            axis.set_xlim(left, right)                      
         else:
-            self.ax1.autoscale_view()
+            axis.autoscale_view()
 
     def update(self):
         #self.rays = rays
-        self.update_traj(save_lim= True)
+        self.draw_trajctory(self.ax1, save_lim= True)
         self.ax1.set_title(self.traj_model.time_stamp, fontsize=12)
         if self.show_graph:
             self.update_graph()
