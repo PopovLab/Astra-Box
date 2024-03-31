@@ -134,6 +134,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.plot_options['max_index'] =  max([len(x['traj']) for x in self.traj_model.traj_series if x['mbad'] == 0] )
         self.plot_options['cut_index'] = self.plot_options['max_index']
         self.show_graph = self.plot_options['show_graph']
+        self.show_power_density = self.plot_options['show_power_density']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         self.colormaps = mpl.colormaps['nipy_spectral'] # plasma, tab20, gist_rainbow, rainbow
@@ -222,6 +223,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.option_windows.show()
 
     def update_plot_options(self):
+        self.show_power_density = self.plot_options['show_power_density']
         if self.show_graph != self.plot_options['show_graph']:
             self.clear_axis()
             self.show_graph = self.plot_options['show_graph']
@@ -356,13 +358,39 @@ class TrajectoryPlot_v2(ttk.Frame):
                                             )   
         return stars, tri
     
+    def make_color_seg(self, ray: pd.DataFrame):
+        points = np.array([ray['R'], ray['Z']]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        #colors = (0.0, 0.0, 1.0, ray['power_density']/30)
+        cut_index = self.plot_options['cut_index']
+        rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), ray['power_density']/25))
+        #rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), np.ones(cut_index)))
+        return segments, rgba
+
+    def draw_power_density(self, axis):
+        axis.clear()
+        axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        cut_index = self.plot_options['cut_index']
+        for series in self.get_good_traj():
+            segments, colors = self.make_color_seg(series['traj'].iloc[:cut_index])
+            col = collections.LineCollection(segments, colors= colors, linewidth=0.5)
+            axis.add_collection(col, autolim=True)
+
+        axis.autoscale_view()
+
     def draw_trajctory(self, axis, save_lim= False):
+        if self.show_power_density: 
+            self.draw_power_density(axis)
+            return
+        
         bottom, top = axis.get_ylim()
         left, right = axis.get_xlim()        
 
         axis.clear()
         axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+
         cut_index = self.plot_options['cut_index']
+
         segs = []
         segs_colors = []
         driver2_list = []
