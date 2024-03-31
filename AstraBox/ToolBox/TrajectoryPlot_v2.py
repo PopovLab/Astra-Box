@@ -201,12 +201,12 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.ax1, self.ax2 = self.fig.subplots(2, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
             self.ax1.axis('equal')
-            self.update_graph()
+            self.draw_graphics()
         else:
             self.ax1 = self.fig.subplots(1, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
             self.ax1.axis('equal')
-        self.draw_trajctory(self.ax1)
+        self.draw_poloidal_view(self.ax1)
 
 
     def clear_axis(self):
@@ -228,9 +228,9 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.clear_axis()
             self.show_graph = self.plot_options['show_graph']
             self.init_axis()
-        self.draw_trajctory(self.ax1, save_lim= True)
+        self.draw_poloidal_view(self.ax1, save_lim= True)
         if self.show_graph:
-            self.update_graph()
+            self.draw_graphics()
         self.canvas.draw()
 
     def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
@@ -265,7 +265,8 @@ class TrajectoryPlot_v2(ttk.Frame):
                     driver2_points = np.empty([0, 2], dtype=float)
         return curve, driver2_points, driver4_points
     
-    def update_graph(self, save_lim= False):
+    def draw_graphics(self, save_lim= False):
+        '''рисавание графиков значений вдоль луча'''
         bottom, top = self.ax2.get_ylim()
         left, right = self.ax2.get_xlim()  
         self.ax2.clear()
@@ -378,10 +379,13 @@ class TrajectoryPlot_v2(ttk.Frame):
 
         axis.autoscale_view()
 
-    def draw_trajctory(self, axis, save_lim= False):
+    def draw_poloidal_view(self, axis, save_lim= False):
         if self.show_power_density: 
             self.draw_power_density(axis)
-            return
+        else:
+            self.draw_trajctory(axis, save_lim)
+                
+    def draw_trajctory(self, axis, save_lim= False):
         
         bottom, top = axis.get_ylim()
         left, right = axis.get_xlim()        
@@ -419,10 +423,10 @@ class TrajectoryPlot_v2(ttk.Frame):
 
     def update(self):
         #self.rays = rays
-        self.draw_trajctory(self.ax1, save_lim= True)
+        self.draw_poloidal_view(self.ax1, save_lim= True)
         self.ax1.set_title(self.traj_model.time_stamp, fontsize=12)
         if self.show_graph:
-            self.update_graph()
+            self.draw_graphics()
         self.canvas.draw()
 
 
