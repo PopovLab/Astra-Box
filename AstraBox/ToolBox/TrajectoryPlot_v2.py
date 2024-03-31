@@ -201,7 +201,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.ax1, self.ax2 = self.fig.subplots(2, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
             self.ax1.axis('equal')
-            self.draw_graphics()
+            self.draw_graphics(self.ax2)
         else:
             self.ax1 = self.fig.subplots(1, 1)
             self.ax1.set_title(self.time_stamp, fontsize=10)
@@ -230,7 +230,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             self.init_axis()
         self.draw_poloidal_view(self.ax1, save_lim= True)
         if self.show_graph:
-            self.draw_graphics()
+            self.draw_graphics(self.ax2)
         self.canvas.draw()
 
     def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
@@ -265,16 +265,16 @@ class TrajectoryPlot_v2(ttk.Frame):
                     driver2_points = np.empty([0, 2], dtype=float)
         return curve, driver2_points, driver4_points
     
-    def draw_graphics(self, save_lim= False):
+    def draw_graphics(self, axis, save_lim= False):
         '''рисавание графиков значений вдоль луча'''
-        bottom, top = self.ax2.get_ylim()
-        left, right = self.ax2.get_xlim()  
-        self.ax2.clear()
+        bottom, top = axis.get_ylim()
+        left, right = axis.get_xlim()  
+        axis.clear()
         x_axis = self.plot_options['x_axis']
         y_axis = self.plot_options['y_axis']
         cut_index = self.plot_options['cut_index']
-        self.ax2.set_ylabel(y_axis, fontsize=10)
-        self.ax2.set_xlabel(x_axis, fontsize=10)
+        axis.set_ylabel(y_axis, fontsize=10)
+        axis.set_xlabel(x_axis, fontsize=10)
         segs = []
         segs_colors = []
         driver2_list = []
@@ -289,19 +289,19 @@ class TrajectoryPlot_v2(ttk.Frame):
             segs.append(curve) 
          
         col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
-        self.ax2.add_collection(col, autolim=True)     
+        axis.add_collection(col, autolim=True)     
 
         if self.plot_options['show_marker']:
             for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-                stars, tri = self.create_markers(dr2, dr4, clr, self.ax2.transData)
-                self.ax2.add_collection(stars, autolim=True)            
-                self.ax2.add_collection(tri, autolim=True)  
+                stars, tri = self.create_markers(dr2, dr4, clr, axis.transData)
+                axis.add_collection(stars, autolim=True)            
+                axis.add_collection(tri, autolim=True)  
 
         if save_lim:
-            self.ax2.set_ylim(bottom, top)
-            self.ax2.set_xlim(left, right)                      
+            axis.set_ylim(bottom, top)
+            axis.set_xlim(left, right)                      
         else: 
-            self.ax2.autoscale_view()                           
+            axis.autoscale_view()                           
 
     def check_theta_lim(self, theta):
         return (self.min_theta <= theta) and (theta <= self.max_theta)
@@ -368,6 +368,12 @@ class TrajectoryPlot_v2(ttk.Frame):
         #rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), np.ones(cut_index)))
         return segments, rgba
 
+    def draw_poloidal_view(self, axis, save_lim= False):
+        if self.show_power_density: 
+            self.draw_power_density(axis)
+        else:
+            self.draw_trajctory(axis, save_lim)
+
     def draw_power_density(self, axis):
         axis.clear()
         axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
@@ -378,13 +384,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             axis.add_collection(col, autolim=True)
 
         axis.autoscale_view()
-
-    def draw_poloidal_view(self, axis, save_lim= False):
-        if self.show_power_density: 
-            self.draw_power_density(axis)
-        else:
-            self.draw_trajctory(axis, save_lim)
-                
+               
     def draw_trajctory(self, axis, save_lim= False):
         
         bottom, top = axis.get_ylim()
@@ -422,11 +422,10 @@ class TrajectoryPlot_v2(ttk.Frame):
             axis.autoscale_view()
 
     def update(self):
-        #self.rays = rays
         self.draw_poloidal_view(self.ax1, save_lim= True)
         self.ax1.set_title(self.traj_model.time_stamp, fontsize=12)
         if self.show_graph:
-            self.draw_graphics()
+            self.draw_graphics(self.ax2)
         self.canvas.draw()
 
 
