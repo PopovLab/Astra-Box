@@ -186,7 +186,7 @@ class RTResultView(TabViewBasic):
         self.plot = RTResultPlot(self,self.rt_result_dict, keys)
         self.plot.grid(row=1, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(1, weight=1)
 
 
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
