@@ -11,7 +11,7 @@ from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
-from AstraBox.Models.SpectrumModel import SpectrumModel
+import AstraBox.Models.SpectrumModel as SpectrumModel
 
 import AstraBox.Widgets as Widgets
 
@@ -114,7 +114,7 @@ class FileSourcePanel(tk.Frame):
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model: SpectrumModel) -> None:
+    def __init__(self, master, model: SpectrumModel.SpectrumModel) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
@@ -127,12 +127,26 @@ class Spectrum1DView(tk.LabelFrame):
         self.make_plot()
         #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
         #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        btn = ttk.Button(self, text= 'Add compare file', command=self.load_compare_file)
+        btn.grid(row=0, column=1, padx=5, sticky=tk.W) 
+
         wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
         wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
+
 
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=0)
         self.rowconfigure(3, weight=1)        
+        self.columnconfigure(0, weight=1)
+        
+
+    def load_compare_file(self):
+        filename = fd.askopenfilename()
+        if len(filename) < 1 : return
+        fp = Path(filename)
+        compare = SpectrumModel.spectrum_normalization(SpectrumModel.load_spcp1D(fp))
+        self.spectrum_plot.add_compare_spectrum(compare['Ntor'], compare['Amp'])
+        pass
 
     def on_load_file(self, filename):
         print(filename)
