@@ -54,7 +54,7 @@ class ListView(ttk.Frame):
             self.tree.delete(i)
         self.nodes = {}
         if self.new_button:
-            self.tree.insert('', tk.END, text='New ',  tags=('new_model',))          
+            self.tree.insert('', tk.END, text='New ', values=('New',), tags=('new_model',))          
 
         self.models_dict = WorkSpace.get_models_dict(self.model_kind)
         keys_list = sorted(self.models_dict.keys(), reverse= self.reverse_sort) 
