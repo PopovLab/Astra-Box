@@ -15,9 +15,15 @@ class ListView(ttk.Frame):
         lab = ttk.Label(self, text=self.schema['title'])
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
-        self.tree = ttk.Treeview(self,  selectmode="browse", show="tree", columns=  ( "#1"), height= height)
-        self.tree.column('#0',stretch=tk.NO)
-        self.tree.column('#1', width=40)
+        #self.tree = ttk.Treeview(self,  selectmode="browse", show="headings", columns=  ( "#1",  "#2"), height= height)
+        self.tree = ttk.Treeview(self,  selectmode="browse", show="", columns=  ( "#1"), height= height)
+
+        self.tree.heading('#1', text='File')
+        #self.tree.heading('#2', text='Comment')
+        self.tree.column('#0', stretch=tk.NO)
+        self.tree.column('#1', width=30)
+        #self.tree.column('#2', width=35)
+    
         
         
         self.update_tree()
@@ -55,8 +61,9 @@ class ListView(ttk.Frame):
 
         for key in keys_list:
             item = self.models_dict[key]
-            self.tree.insert('', tk.END, text=item.name, values=('',), tags=('show'))  
-
+            self.tree.insert('', tk.END, text=item.name,  values=(item.name,), tags=('show'))  
+            #self.tree.insert('', tk.END, text=item.name,  values=(item.name, 't15 pam 25 ph0 1D',), tags=('show'))  
+            
     def select_node(self, event):
         sel_id = self.tree.selection()
         #print(f"selection = {sel_id}")
