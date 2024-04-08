@@ -109,6 +109,32 @@ def defaulSpectrum2D():
         'source': ''
     }
 
+def load_spcp1D(p: Path):        
+    if p:
+        with p.open() as file:
+            header = ['Ntor', 'Amp']
+            print(header)
+            spectrum = { h: [] for h in header }
+            lines = file.readlines()
+            table = []
+            for line in lines:
+                table.append(line.split())
+            for row in table:
+                for index, (p, item) in enumerate(spectrum.items()):
+                    item.append(float(row[index]))
+            spectrum_data = spectrum 
+    else:
+        spectrum_data = { 'Ntor': [], 'Amp': []  }
+    return spectrum_data
+
+def spectrum_normalization(spectrum_data):
+    power = fsum(spectrum_data['Amp'])
+    print(f'power= {power}')
+    if power>0:
+        positive_power = fsum([x[1] for x in zip(spectrum_data['Ntor'], spectrum_data['Amp']) if x[0]>0])
+        spectrum_data['Amp'] = [ x/power for x in spectrum_data['Amp']]
+    return  spectrum_data
+
 class SpectrumModel():
     def __init__(self, parent) -> None:
         self.parent = parent
@@ -202,23 +228,10 @@ class SpectrumModel():
         else: 
             return None
         
+
     def read_spcp1D(self):        
         p = self.get_file_path(self.setting['source'])
-        if p:
-            with p.open() as file:
-                header = ['Ntor', 'Amp']
-                print(header)
-                spectrum = { h: [] for h in header }
-                lines = file.readlines()
-                table = []
-                for line in lines:
-                    table.append(line.split())
-                for row in table:
-                    for index, (p, item) in enumerate(spectrum.items()):
-                        item.append(float(row[index]))
-                self.spectrum_data = spectrum 
-        else:
-            self.spectrum_data = { 'Ntor': [], 'Amp': []  }
+        self.spectrum_data = load_spcp1D(p)
         self.spectrum_normalization()            
   
     def read_spcp2D(self, file_path):
@@ -291,6 +304,7 @@ class SpectrumModel():
 
     def spectrum_normalization(self):
         power = fsum(self.spectrum_data['Amp'])
+        print(f'power= {power}')
         if power>0:
             positive_power = fsum([x[1] for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp']) if x[0]>0])
             self.spectrum_data['Amp'] = [ x/power for x in self.spectrum_data['Amp']]
