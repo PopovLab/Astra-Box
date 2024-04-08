@@ -276,20 +276,26 @@ class SpectrumPlot(ttk.Frame):
     def __init__(self, master, X= None, Y= None, spectrum_list = None) -> None:
         super().__init__(master)  
         self.fig = plt.figure(figsize=(5, 3), dpi=100)
-        ax = self.fig.add_subplot(111)
+        self.ax = self.fig.add_subplot(111)
         if spectrum_list:
             for sp in spectrum_list:
                 if sp is not None:
-                    ax.plot(sp['Ntor'], sp['Amp'])    
+                    self.ax.plot(sp['Ntor'], sp['Amp'])    
         else:
-            ax.plot(X, Y)
-        canvas = FigureCanvasTkAgg(self.fig, self)
-        canvas.draw()
-        canvas.get_tk_widget().grid(row=0, column=1)
+            self.ax.plot(X, Y)
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
         #toobar = NavigationToolbar2Tk(canvas, frame)
-        tb = VerticalNavigationToolbar2Tk(canvas, self)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)        
+
+    def add_compare_spectrum(self, X= None, Y= None):
+        self.ax.plot(X, Y)
+        self.canvas.draw()
 
     def destroy(self):
         print("SpectrumPlot destroy")
@@ -319,6 +325,7 @@ class RotatedSpectrumPlot(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
+
 
     def destroy(self):
         print("SpectrumPlot destroy")
