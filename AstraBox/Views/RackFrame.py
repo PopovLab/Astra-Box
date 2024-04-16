@@ -14,14 +14,7 @@ class RackFrame(ttk.Frame):
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-        frame = ttk.Frame(self)
-        ttk.Radiobutton(frame, text="Open Workspace", variable=self.v, value="owp", width=20, command= self.open_folder_dialog,
-                            style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
-        ttk.Radiobutton(frame, text="Doc", variable=self.v, value="doc", width=4, command= self.open_doc,
-                            style = 'Toolbutton').pack(side = tk.LEFT, expand=0, fill=tk.X)
-        frame.pack(expand=0, fill=tk.X)
-        
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
+
 
         ListView(self,'ExpModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'EquModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))

@@ -23,6 +23,9 @@ class App(tk.Tk):
         self.title("ASTRA Box")
         self.minsize(1080, 750)
 
+        main_menu = self.create_main_menu()
+        self.config(menu= main_menu)
+
         style = ttk.Style()
         # стиль для кнопок
 
@@ -59,6 +62,12 @@ class App(tk.Tk):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+
+    def open_work_space_dialog(self):
+        dir = tk.filedialog.askdirectory()
+        if len(dir)>0:
+            self.open_work_space(dir)
+        #self.v.set('xxx')
 
     def open_work_space(self, path):
         WorkSpace.open(path)
@@ -108,3 +117,20 @@ class App(tk.Tk):
         print('show_calc_view')
         view = RunAstraPage(self.content_frame)  
         self.content_frame.set_content(view)
+
+    def show_about(self):
+        messagebox.showinfo("Astra Box", "version x.y.z")
+
+    def create_main_menu(self):
+        file_menu = tk.Menu(tearoff=0)
+        file_menu.add_command(label="New", state='disabled')
+        file_menu.add_command(label="Open Wokrspace", command=self.open_work_space_dialog)
+        file_menu.add_command(label="Save", state='disabled')
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.on_closing)
+
+        main_menu = tk.Menu()
+        main_menu.add_cascade(label="File", menu=file_menu)
+        main_menu.add_cascade(label="Help", command=self.open_doc)
+        main_menu.add_cascade(label="About", command=self.show_about)
+        return main_menu
