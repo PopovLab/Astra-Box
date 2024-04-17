@@ -370,7 +370,7 @@ class TrajectoryTab(TabViewBasic):
         self.race_model = model
 
     def init_ui(self): 
-
+        self.index = 0 
         self.traj_model = TrajectoryModel(self.race_model, self.folder_name)
         if self.traj_model.num_traj>0: 
 
@@ -378,7 +378,7 @@ class TrajectoryTab(TabViewBasic):
             self.finish_time  = self.traj_model.finish_time
 
             n = self.traj_model.num_traj
-
+            
             self.time_var = tk.DoubleVar(master = self, value=self.start_time)
             self.time_var.trace_add('write', self.update_plot)
 
@@ -394,11 +394,16 @@ class TrajectoryTab(TabViewBasic):
                                    resolution= (self.finish_time-self.start_time)/n )
             self.time_slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
+            bnt_prev= tk.Button(self,text='<', command= self.prev)
+            bnt_prev.grid(row=0, column=1, padx=5, pady=5) 
+            bnt_next= tk.Button(self,text='>', command= self.next)
+            bnt_next.grid(row=0, column=2, padx=5, pady=5) 
+
             match self.traj_model.version:
                 case 2: self.traj_view = TrajectoryView_v2(self, self.traj_model)
                 case 1: self.traj_view = TrajectoryView_v1(self, self.traj_model)
 
-            self.traj_view.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+            self.traj_view.grid(row=1, column=0, columnspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
             self.columnconfigure(0, weight=1)
             self.rowconfigure(1, weight=1)
@@ -408,9 +413,28 @@ class TrajectoryTab(TabViewBasic):
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
 
     def update_plot(self, var, indx, mode):
-        index = int((self.traj_model.num_traj-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
-        self.traj_view.select_moment(index)
+        idx = (self.traj_model.num_traj-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time)
+        index = int(idx + 0.1)
+        #print(f"update {index} {idx}")
+        if self.index != index:
+            self.index = index
+            self.traj_view.select_moment(index)
 
+    def next(self):
+        if self.index < self.traj_model.num_traj-1:
+            self.index = self.index + 1
+            #print(f"next {self.index}")
+            self.traj_view.select_moment(self.index)
+            t = self.start_time + self.index*(self.finish_time-self.start_time)/(self.traj_model.num_traj-1)
+            #print(f"t {t}")
+            self.time_var.set(t)
+
+    def prev(self):
+        if self.index >0:
+            self.index = self.index - 1
+            self.traj_view.select_moment(self.index)
+            t = self.start_time + self.index*(self.finish_time-self.start_time)/(self.traj_model.num_traj-1)
+            self.time_var.set(t)
 
 class RadialDrivenCurrentView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
