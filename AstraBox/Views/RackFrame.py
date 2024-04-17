@@ -1,7 +1,8 @@
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
-from AstraBox.Views.ListView import ListView
+from AstraBox.Views.ListView  import ListView
+from AstraBox.Views.TableView import TableView 
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
@@ -26,7 +27,7 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ListView(self,'RaceModel', height= 8, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
+        TableView(self,'RaceModel', height= 8, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')
@@ -34,8 +35,9 @@ class RackFrame(ttk.Frame):
             if self.active_view is not sender:
                 self.active_view.selection_clear()
         self.active_view = sender
-        model = ModelFactory.do(action)
-        self.app.show_model(model)
+        #model = ModelFactory.do(action)
+        #self.app.show_model(model)
+        self.app.show_ViewItem(action['data'])
 
     def open_doc(self):
         self.app.open_doc()
