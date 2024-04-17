@@ -11,7 +11,7 @@ class EmptyPage(ttk.Frame):
         else:
             title = "Empty Page"
         self.header_content = { "title": title, "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
-        self.model = model
+        #self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)        
