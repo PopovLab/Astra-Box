@@ -12,6 +12,7 @@ from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
 from AstraBox.Pages.RacePage import RacePage
 from AstraBox.Pages.RunAstraPage import RunAstraPage
+from AstraBox.Models.RaceModel import RaceModel
 
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
@@ -137,8 +138,8 @@ class App(tk.Tk):
                 model = ModelFactory.load(view_item.path)
                 page = TextPage(self.content_frame, model)                   
             case 'RaceModel':
-                model = ModelFactory.load(view_item.path)
-                page = RacePage(self.content_frame, model)                 
+                #model = RaceModel(path= view_item.path )  
+                page = RacePage(self.content_frame, view_item)                 
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
