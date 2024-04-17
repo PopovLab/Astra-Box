@@ -14,8 +14,6 @@ class RackFrame(ttk.Frame):
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-
-
         ListView(self,'ExpModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'EquModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
         ListView(self,'SbrModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
