@@ -122,21 +122,26 @@ class App(tk.Tk):
         messagebox.showinfo("Astra Box", "version x.y.z")
 
     def show_ViewItem(self, view_item):
-        model = ModelFactory.load(view_item.path)
+        
         match view_item.model_kind:
             case 'RTModel':
+                model = ModelFactory.load(view_item.path)
                 page = RayTracingPage(self.content_frame, model)     
             case 'ExpModel':
+                model = ModelFactory.load(view_item.path)
                 page = ExpPage(self.content_frame, model)                     
             case 'EquModel':
+                model = ModelFactory.load(view_item.path)
                 page = TextPage(self.content_frame, model)     
             case 'SbrModel':
+                model = ModelFactory.load(view_item.path)
                 page = TextPage(self.content_frame, model)                   
             case 'RaceModel':
+                model = ModelFactory.load(view_item.path)
                 page = RacePage(self.content_frame, model)                 
             case _:
                 print('create Emptyview')
-                page = EmptyPage(self.content_frame, model)  
+                page = EmptyPage(self.content_frame)  
         self.content_frame.set_content(page)
     
 
