@@ -121,6 +121,25 @@ class App(tk.Tk):
     def show_about(self):
         messagebox.showinfo("Astra Box", "version x.y.z")
 
+    def show_ViewItem(self, view_item):
+        model = ModelFactory.load(view_item.path)
+        match view_item.model_kind:
+            case 'RTModel':
+                page = RayTracingPage(self.content_frame, model)     
+            case 'ExpModel':
+                page = ExpPage(self.content_frame, model)                     
+            case 'EquModel':
+                page = TextPage(self.content_frame, model)     
+            case 'SbrModel':
+                page = TextPage(self.content_frame, model)                   
+            case 'RaceModel':
+                page = RacePage(self.content_frame, model)                 
+            case _:
+                print('create Emptyview')
+                page = EmptyPage(self.content_frame, model)  
+        self.content_frame.set_content(page)
+    
+
     def create_RT_configuration(self):
         model = ModelFactory.create_model('RTModel')
         self.show_model(model)

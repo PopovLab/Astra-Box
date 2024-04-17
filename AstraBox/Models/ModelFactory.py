@@ -17,7 +17,7 @@ def do(action:dict):
         case 'new_model':
             model = create_model(action['model_kind'])
         case 'show':
-            model = load(action['data'])
+            model = load(action['data'].path)
     return model
 
 def build(data_item):

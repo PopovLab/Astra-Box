@@ -40,12 +40,19 @@ catalog = {}
 def get_item_list(model_kind):
     return list(get_models_dict(model_kind).keys())
 
+class ViewItem():
+    def __init__(self, name:str, path:Path, comment:str, model_kind:str) -> None:
+        self.name= name
+        self.path= path
+        self.comment= comment
+        self.model_kind= model_kind
+
 def get_models_dict(model_kind):
     global catalog
     if model_kind not in catalog:
         loc = schema[model_kind]['location']
         destpath = get_location_path().joinpath(loc)
-        catalog[model_kind] = {p.name: p for p in destpath.glob('*.*') if p.name !='.gitignore'}
+        catalog[model_kind] = {p.name: ViewItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
     return catalog[model_kind]
 
 schema = {
