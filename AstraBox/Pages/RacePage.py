@@ -51,18 +51,25 @@ class RacePage(ttk.Frame):
         self.model = model
         self.model.load_model_data()
         title = f"Race: {self.model.name}"
-        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('New windows', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
+        self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('Open', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
 
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.columnconfigure(0, weight=1)        
-        self.rowconfigure(3, weight=1)    
+        self.columnconfigure(1, weight=1)        
+        self.rowconfigure(4, weight=1)    
 
         ip = InfoPanel(self, model)
         ip.grid(row=2, column=0, columnspan=5, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+        self.label = ttk.Label(self,  text='Comment:')
+        self.label.grid(row=3, column=0, padx=5, pady=5)
+        self.var_name = tk.StringVar(master= self, value=self.model.name)
+        self.name_entry = ttk.Entry(self, textvariable = self.var_name)
+        self.name_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(row=3, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.notebook.grid(row=4, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         summary_view = SummaryView(self.notebook, model= model)
         self.notebook.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
