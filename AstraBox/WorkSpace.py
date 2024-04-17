@@ -50,7 +50,7 @@ def get_models_dict(model_kind):
 
 schema = {
     "ExpModel"  : {
-        'title'   : 'Experiments xyz',
+        'title'   : 'Experiments',
         'location': 'exp',
         'binding' : None
     },
@@ -67,7 +67,7 @@ schema = {
     "RTModel"   : {
         'title'   : 'Ray Tracing Configurations',
         'location': 'ray_tracing',
-        'new_btn' : True,
+        #'new_btn' : True,
         'binding' : None
     },
     "RaceModel" : {

@@ -121,9 +121,18 @@ class App(tk.Tk):
     def show_about(self):
         messagebox.showinfo("Astra Box", "version x.y.z")
 
+    def create_RT_configuration(self):
+        model = ModelFactory.create_model('RTModel')
+        self.show_model(model)
+
     def create_main_menu(self):
+        new_menu = tk.Menu(tearoff=0)
+        new_menu.add_command(label='Ray Tracing Configurations', command=self.create_RT_configuration)
+        new_menu.add_command(label='Experiments', state='disabled')
+        new_menu.add_command(label='Equlibrium', state='disabled')
+
         file_menu = tk.Menu(tearoff=0)
-        file_menu.add_command(label="New", state='disabled')
+        file_menu.add_cascade(label="New", menu=new_menu)
         file_menu.add_command(label="Open Wokrspace", command=self.open_work_space_dialog)
         file_menu.add_command(label="Save", state='disabled')
         file_menu.add_separator()
