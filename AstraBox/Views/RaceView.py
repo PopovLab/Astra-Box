@@ -291,8 +291,6 @@ class TrajectoryView_v2(tk.Frame):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-
-
     
 
     def select_moment(self, index):
