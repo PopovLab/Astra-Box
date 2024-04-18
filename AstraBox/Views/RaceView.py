@@ -428,10 +428,14 @@ class TrajectoryTab(TabViewBasic):
     def make_magic(self):
         if messagebox.askokcancel("Make Magick", "Are you sure?"):
             print('Make Magick')
+            tmp= WorkSpace.temp_folder_location().joinpath(self.traj_model.race_model.name)
+            if not tmp.exists():
+                print(f"make dir {tmp}")
+                tmp.mkdir()
             for index in range(self.traj_model.num_traj):
                 print(f'index= {index}')
                 self.traj_view.select_moment(index)
-                p= WorkSpace.temp_folder_location().joinpath(f'{index:04}.png')
+                p= tmp.joinpath(f'{index:04}.png')
                 print(p.as_posix())
                 self.traj_view.save_figure(p.as_posix())
             print('magick finita')
