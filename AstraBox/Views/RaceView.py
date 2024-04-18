@@ -2,7 +2,7 @@ from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
-#from typing_extensions import Literal
+import tkinter.messagebox as messagebox
 import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
@@ -392,16 +392,19 @@ class TrajectoryTab(TabViewBasic):
                                    resolution= (self.finish_time-self.start_time)/n )
             self.time_slider.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
-            bnt_prev= tk.Button(self,text='<', command= self.prev)
-            bnt_prev.grid(row=0, column=1, padx=5, pady=5) 
-            bnt_next= tk.Button(self,text='>', command= self.next)
-            bnt_next.grid(row=0, column=2, padx=5, pady=5) 
+            bnt_prev= ttk.Button(self, text='<', width=2, command= self.prev)
+            bnt_prev.grid(row=0, column=1, padx=2, pady=5) 
+            bnt_next= ttk.Button(self,text='>', width=2, command= self.next)
+            bnt_next.grid(row=0, column=2,  padx=2, pady=5) 
+
+            bnt= ttk.Button(self, text='!',width=2, command= self.make_magic)
+            bnt.grid(row=0, column=3, padx=5, pady=5) 
 
             match self.traj_model.version:
                 case 2: self.traj_view = TrajectoryView_v2(self, self.traj_model)
                 case 1: self.traj_view = TrajectoryView_v1(self, self.traj_model)
 
-            self.traj_view.grid(row=1, column=0, columnspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
+            self.traj_view.grid(row=1, column=0, columnspan=4, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
 
             self.columnconfigure(0, weight=1)
             self.rowconfigure(1, weight=1)
@@ -417,6 +420,10 @@ class TrajectoryTab(TabViewBasic):
         if self.index != index:
             self.index = index
             self.traj_view.select_moment(index)
+
+    def make_magic(self):
+        if messagebox.askokcancel("Make Magick", "Are you sure?"):
+            print('Make Magick')
 
     def next(self):
         if self.index < self.traj_model.num_traj-1:
