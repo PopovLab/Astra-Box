@@ -151,7 +151,7 @@ class Worker:
 
         while self.proc.returncode == None:
             data = await self.proc.stdout.readline()
-            line = data.decode('ascii').rstrip()
+            line = data.decode('utf-8').rstrip()
 
             if self.proc.stdout.at_eof(): break
             call_progress_callback()
