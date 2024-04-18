@@ -135,7 +135,7 @@ class RacePage(ttk.Frame):
         new_window = tk.Toplevel(self.master)
         new_window.title("Race Window")
         new_window.geometry("850x870")                
-        model_view = RacePage(new_window, self.model)   
+        model_view = RacePage(new_window, self.view_item)   
         model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
         new_window.columnconfigure(0, weight=1)        
         new_window.rowconfigure(0, weight=1)    
