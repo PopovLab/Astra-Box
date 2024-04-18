@@ -51,8 +51,8 @@ def load(p):
 def get(model_kind= None, model_name= None):
     d = WorkSpace.get_models_dict(model_kind)
     try:
-        p = d[model_name]
-        return load(p)
+        vi = d[model_name]
+        return load(vi.path)
     except:
         return None
 

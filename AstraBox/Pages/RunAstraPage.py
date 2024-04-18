@@ -56,14 +56,17 @@ class RunAstraPage(ttk.Frame):
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.header_content =  { "title": "Run ASTRA", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate)]}
+        self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
+
+        self.header_content =  { "title": f"Run   {self.race_name['value']}", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate)]}
         self.astra_profiles = AstraBox.Models.AstraProfiles.default()
 
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0,  padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
  
         self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
-        self.rn_wdg = StringBox(self, self.race_name, width=40)
+        self.race_comment = {'title': 'Comment', 'value': 'enter comment'}
+        self.rn_wdg = StringBox(self, self.race_comment, width=40)
         self.rn_wdg.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.config_panel = ConfigPanel(self)
@@ -104,7 +107,7 @@ class RunAstraPage(ttk.Frame):
         self.log_console.set_logger(Kernel.get_logger())
         Kernel.set_progress_callback(self.on_progress)
         Kernel.set_astra_profile(ap)
-        run_model = RunModel(name= race_name, exp_name= exp, equ_name= equ, rt_name= rt ) 
+        run_model = RunModel(name= race_name, comment= self.race_comment['value'],exp_name= exp, equ_name= equ, rt_name= rt ) 
         worker = Kernel.AstraWorker(run_model)
    
         Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {ap}")

@@ -12,7 +12,7 @@ import AstraBox.Astra as Astra
 
 class RunModel(RootModel):
 
-    def __init__(self, name = None, exp_name = None, equ_name = None, rt_name = None) -> None:
+    def __init__(self, name:str = None, comment:str= None, exp_name = None, equ_name = None, rt_name = None) -> None:
         super().__init__(name)
         self._setting = None
         self.changed = False
@@ -24,7 +24,7 @@ class RunModel(RootModel):
         self.exp_model = ModelFactory.get('ExpModel', exp_name)
         self.equ_model =  ModelFactory.get('EquModel', equ_name)
         self.rt_model =  ModelFactory.get('RTModel', rt_name)
- 
+        self.comment= comment
         self.race_zip_file = None
 
     @property
@@ -67,7 +67,7 @@ class RunModel(RootModel):
         #zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
         zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
         with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
-            
+            zip.comment = bytes(self.comment,'UTF-8')
             self.make_folders(zip)
             self.pack_model_to_zip(zip, self.exp_model)
             self.pack_model_to_zip(zip, self.equ_model)
@@ -75,7 +75,7 @@ class RunModel(RootModel):
             if self.rt_model:
                 self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
             for key, item in WorkSpace.get_models_dict('SbrModel').items():
-                self.pack_model_to_zip(zip, ModelFactory.load(item))
+                self.pack_model_to_zip(zip, ModelFactory.load(item.path))
 
             models  = {
                 'ExpModel' : self.exp_model.data,
