@@ -167,6 +167,7 @@ class TrajectoryPlot_v2(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
+
         self.canvas.get_tk_widget().grid(row=2, column=1,columnspan=2, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
         #toobar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         #toobar.grid(row=0, column=0, sticky=tk.W)
@@ -181,6 +182,8 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.columnconfigure(2, weight=1)
         self.rowconfigure(2, weight=1)
 
+    def save_figure(self, file_name):
+        self.fig.savefig(file_name)
 
     def update_spectrum_index(self, vals):
         print(vals)

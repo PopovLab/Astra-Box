@@ -8,6 +8,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 
+import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
@@ -293,6 +294,9 @@ class TrajectoryView_v2(tk.Frame):
         self.rowconfigure(0, weight=1)
     
 
+    def save_figure(self, file_name):
+        self.plot.save_figure(file_name)
+
     def select_moment(self, index):
         print(index)
         self.time_stamp = path_to_time(self.traj_model.trajectory_series_list[index])
@@ -424,6 +428,12 @@ class TrajectoryTab(TabViewBasic):
     def make_magic(self):
         if messagebox.askokcancel("Make Magick", "Are you sure?"):
             print('Make Magick')
+            for index in range(self.traj_model.num_traj):
+                print(f'index= {index}')
+                self.traj_view.select_moment(index)
+                p= WorkSpace.temp_folder_location().joinpath(f'{index:04}.png')
+                print(p.as_posix())
+                self.traj_view.save_figure(p.as_posix())
 
     def next(self):
         if self.index < self.traj_model.num_traj-1:
