@@ -48,8 +48,9 @@ class RacePage(ttk.Frame):
     def __init__(self, master, view_item) -> None:
         super().__init__(master)        
         self.master = master
-        self.model = RaceModel(path= view_item.path )  
-        self.model.load_model_data()
+        self.view_item = view_item
+        self.model = RaceModel.load(view_item.path)  
+        #self.model.load_model_data()
         title = f"Race: {self.model.name}"
         self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('Open', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
 
@@ -63,13 +64,15 @@ class RacePage(ttk.Frame):
 
         self.label = ttk.Label(self,  text='Comment:')
         self.label.grid(row=3, column=0, padx=5, pady=5)
-        self.var_name = tk.StringVar(master= self, value=self.model.name)
-        self.name_entry = ttk.Entry(self, textvariable = self.var_name)
-        self.name_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.var_comment = tk.StringVar(master= self, value=self.model.read_comment())
+        self.comment_entry = ttk.Entry(self, textvariable = self.var_comment)
+        self.comment_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+        self.save_btn = ttk.Button(self, text='save', command=self.save_comment)
+        self.save_btn.grid(row=3, column=2, padx=5, pady=5)
 
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(row=4, column=0, columnspan=2, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.notebook.grid(row=4, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         summary_view = SummaryView(self.notebook, model= self.model)
         self.notebook.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
@@ -115,6 +118,13 @@ class RacePage(ttk.Frame):
 
         et_view = ExecTimeView(self.notebook, model= self.model)
         self.notebook.add(et_view, text="Exec time", underline=0, sticky=tk.NE + tk.SW)  
+
+    def save_comment(self):
+        cmt = self.var_comment.get()
+        self.model.write_comment(cmt)
+        self.view_item.comment = cmt
+        if not self.view_item.on_update is None:
+                self.view_item.on_update()
 
     def delete_model(self):
         if self.model:

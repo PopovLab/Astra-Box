@@ -27,7 +27,12 @@ class RaceModel(RootModel):
         print(self.race_zip_file)
         self.name = path.name
 
-
+    @classmethod
+    def load(cls, path):
+        rm = cls(path)
+        rm.load_model_data()
+        return rm
+    
     @property
     def model_kind(self):
         return 'RaceModel'   
@@ -40,6 +45,7 @@ class RaceModel(RootModel):
         except:
             print('error')
 
+
     def get_models_dict(self):
         return {
             'RaceModel' : self.data,
@@ -48,6 +54,27 @@ class RaceModel(RootModel):
             "rt_model" : self.rt_model.data,
         }
 
+    def get_info(self):
+        info = f"Exp: {self.data['ExpModel']['name']} Equ: {self.data['EquModel']['name']}"
+        if 'RTModel' in  self.data:
+            info = info + f" RT: {self.data['RTModel']['name']}"
+        return info
+    
+    def read_comment(self):
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                comment = zip.comment.decode("utf-8")            
+        except:
+            comment = 'no comment'#self.get_info()      
+        return comment
+
+    def write_comment(self, text:str):
+        print(text)
+        with zipfile.ZipFile(self.race_zip_file, 'a') as zip:
+            zip.comment = bytes(text,'UTF-8')
+             #zip.writestr('comment.txt',text)
+
+             
 
     def read_exec_time(self, f):
         try:

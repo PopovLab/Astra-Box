@@ -40,12 +40,21 @@ catalog = {}
 def get_item_list(model_kind):
     return list(get_models_dict(model_kind).keys())
 
+import zipfile
+
 class ViewItem():
     def __init__(self, name:str, path:Path, comment:str, model_kind:str) -> None:
         self.name= name
         self.path= path
-        self.comment= comment
+        self.comment= ''
         self.model_kind= model_kind
+        self.on_update= None
+        match path.suffix:
+            case '.zip':
+                with zipfile.ZipFile(path) as zip:
+                    self.comment = zip.comment.decode("utf-8")           
+            case _:
+                self.comment= ''
 
 def get_models_dict(model_kind):
     global catalog

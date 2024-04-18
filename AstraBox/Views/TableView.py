@@ -50,13 +50,15 @@ class TableView(ttk.Frame):
             self.tree.delete(i)
         self.nodes = {}
 
-        self.models_dict = WorkSpace.get_models_dict(self.model_kind)
-        keys_list = sorted(self.models_dict.keys(), reverse= self.reverse_sort) 
+        self.view_items = WorkSpace.get_models_dict(self.model_kind)
+        keys_list = sorted(self.view_items.keys(), reverse= self.reverse_sort) 
 
         for key in keys_list:
-            item = self.models_dict[key]
+            vi = self.view_items[key]
+            if vi.on_update is None:
+                vi.on_update = self.update_tree
             #self.tree.insert('', tk.END, text=item.name,  values=(item.name,), tags=('show'))  
-            self.tree.insert('', tk.END, text=item.name,  values=(item.name, item.comment,), tags=('show'))  
+            self.tree.insert('', tk.END, text=vi.name,  values=(vi.name, vi.comment,), tags=('show'))  
             
     def select_node(self, event):
         sel_id = self.tree.selection()
@@ -69,7 +71,7 @@ class TableView(ttk.Frame):
             action = {
                 'action': tag,
                 'model_kind' : self.model_kind,
-                'data' : self.models_dict.get(text)
+                'data' : self.view_items.get(text)
                 }
 
             self.on_select_item(self, action)
