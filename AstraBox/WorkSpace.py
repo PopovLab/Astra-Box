@@ -14,7 +14,12 @@ def get_location_path(model_kind = None):
     else:
         return _location
 
-
+def temp_folder_location():
+    loc = get_location_path().joinpath('tmp')
+    if not loc.exists():
+        print(f"make dir {loc}")
+        loc.mkdir()
+    return loc
 
 def get_item_location(model_kind, model_name):
     loc = get_location_path()
