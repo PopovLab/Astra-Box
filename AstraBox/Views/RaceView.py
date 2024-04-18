@@ -434,6 +434,7 @@ class TrajectoryTab(TabViewBasic):
                 p= WorkSpace.temp_folder_location().joinpath(f'{index:04}.png')
                 print(p.as_posix())
                 self.traj_view.save_figure(p.as_posix())
+            print('magick finita')
 
     def next(self):
         if self.index < self.traj_model.num_traj-1:
