@@ -3,7 +3,7 @@ name = "astra-box"
 version = "0.1.0"
 description = "ASTRA Box"
 authors = ["Alex <temper8@gmail.com>"]
-package-mode = false
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -17,3 +17,4 @@ rich = "^13.7.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+package-mode = false
