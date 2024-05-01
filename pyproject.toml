@@ -10,6 +10,7 @@ matplotlib = "^3.6.1"
 pandas = "^2.0.1"
 pydantic = "^2.6.2"
 rich = "^13.7.0"
+tkinter-tooltip = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 

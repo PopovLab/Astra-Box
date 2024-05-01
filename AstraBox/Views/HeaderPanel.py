@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from idlelib.tooltip import Hovertip
+from tktooltip import ToolTip
 
 class HeaderPanel(ttk.Frame):
     def __init__(self, master, content: dict) -> None:
@@ -14,7 +14,7 @@ class HeaderPanel(ttk.Frame):
         for text, command in content['buttons']:
             btn = ttk.Button(frame, text=text, style = 'Toolbutton', command=command)
             btn.pack(side=tk.RIGHT, expand=0, padx=20, pady=0)
-            Hovertip(btn, text, hover_delay=100)
+            ToolTip(btn, text, delay=2.0)
 
         frame.pack(fill='x')
         ttk.Separator(self, orient='horizontal').pack(fill='x')

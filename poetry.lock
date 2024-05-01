@@ -777,6 +777,23 @@ files = [
 ]
 
 [[package]]
+name = "tkinter-tooltip"
+version = "3.0.0"
+description = "An easy and customisable ToolTip implementation for Tkinter"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tkinter-tooltip-3.0.0.tar.gz", hash = "sha256:7ef1f7b36ab5a156868fb1e00ce65077c5d7128211d4137714b0bfe1af863c78"},
+    {file = "tkinter_tooltip-3.0.0-py3-none-any.whl", hash = "sha256:b49b706a35c893f43d69b99c0721356889584dc2e94151cb96f164e0f9585adc"},
+]
+
+[package.extras]
+dev = ["black", "isort", "pre-commit", "pytest (>=5.4.3)", "pytest-cov (>=2.12.1)"]
+docs = ["furo", "myst-parser", "sphinx (>=4.0.0)", "sphinx-argparse", "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-design", "sphinx-sitemap"]
+examples = ["Pillow", "sv-ttk"]
+
+[[package]]
 name = "typing-extensions"
 version = "4.10.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -803,4 +820,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2b0e7aa7f4ee9c0764149edb506432d778ce4a12a198f0ea20206ead1bdca2a7"
+content-hash = "3462f370aae8ee3420b83d2ea5e1446ce5dc824004a464222db6c2bd0dca3f47"
