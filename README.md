@@ -11,6 +11,8 @@ Doc ([rus](https://temper8.github.io/Astra-Box/))
 ![](scr.png)
 
 
+## Установка Astra-Box
+
 1. Установка python для Windows:
 
     скачать дистрибутив с сайта https://www.python.org/
