@@ -8,7 +8,7 @@ Doc ([rus](https://temper8.github.io/Astra-Box/))
 
 
 
-![](scr.png)
+![](/docs/media/main.png)
 
 
 ## Установка Astra-Box
