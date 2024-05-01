@@ -2,7 +2,7 @@ import ast
 import tkinter as tk
 import tkinter.ttk as ttk
 from turtle import width
-from idlelib.tooltip import Hovertip
+from tktooltip import ToolTip
 
 LABEL_WIDTH = 12
 
@@ -91,13 +91,13 @@ class IntTextBox(ttk.Frame):
         #print(item)
         label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
-        Hovertip(label, item['description'], hover_delay=100)
+        ToolTip(label, item['description'], delay=0.1)
         self.tk_var = tk.IntVar(self, value=item['value'])
         self.tk_var.trace_add('write', self.update_var)
  
         self.entry = tk.Entry(self, width=20, textvariable= self.tk_var)
         self.entry.grid(row=0, column=1, columnspan=1)        
-        Hovertip(self.entry, item['description'], hover_delay=100)
+        ToolTip(self.entry, item['description'], delay=0.1)
 
     def update_var(self, var, indx, mode):
         try:
@@ -113,13 +113,13 @@ class FloatTextBox(ttk.Frame):
         #print(item)
         label = ttk.Label(self, text=item['title'], width=LABEL_WIDTH)
         label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
-        Hovertip(label, item['description'], hover_delay=100)
+        ToolTip(label, item['description'], delay=0.1)
         self.tk_var = tk.DoubleVar(self, value=item['value'])
         self.tk_var.trace_add('write', self.update_var)
  
         self.entry = tk.Entry(self, width=20, textvariable= self.tk_var)
         self.entry.grid(row=0, column=1, columnspan=1)        
-        Hovertip(self.entry, item['description'], hover_delay=100)
+        ToolTip(self.entry, item['description'], delay=0.1)
 
     def callback(self):
         print(self.item['title'])

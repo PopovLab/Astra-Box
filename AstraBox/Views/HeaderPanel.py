@@ -14,7 +14,7 @@ class HeaderPanel(ttk.Frame):
         for text, command in content['buttons']:
             btn = ttk.Button(frame, text=text, style = 'Toolbutton', command=command)
             btn.pack(side=tk.RIGHT, expand=0, padx=20, pady=0)
-            ToolTip(btn, text, delay=2.0)
+            ToolTip(btn, text, delay=0.5)
 
         frame.pack(fill='x')
         ttk.Separator(self, orient='horizontal').pack(fill='x')
