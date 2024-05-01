@@ -1,6 +1,6 @@
 from re import T
 import tkinter as tk
-from asyncio.windows_events import NULL
+#from asyncio.windows_events import NULL
 import os
 import logging
 import subprocess
@@ -13,7 +13,7 @@ from AstraBox.Models.RunModel import RunModel
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
 
-proc = NULL
+proc = None
 
 current_working_directory = ''
 
