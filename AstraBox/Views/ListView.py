@@ -57,12 +57,13 @@ class ListView(ttk.Frame):
             self.tree.insert('', tk.END, text='New ', values=('New',), tags=('new_model',))          
 
         self.models_dict = WorkSpace.get_models_dict(self.model_kind)
-        keys_list = sorted(self.models_dict.keys(), reverse= self.reverse_sort) 
+        if self.models_dict:
+            keys_list = sorted(self.models_dict.keys(), reverse= self.reverse_sort) 
 
-        for key in keys_list:
-            item = self.models_dict[key]
-            self.tree.insert('', tk.END, text=item.name,  values=(item.name,), tags=('show'))  
-            #self.tree.insert('', tk.END, text=item.name,  values=(item.name, 't15 pam 25 ph0 1D',), tags=('show'))  
+            for key in keys_list:
+                item = self.models_dict[key]
+                self.tree.insert('', tk.END, text=item.name,  values=(item.name,), tags=('show'))  
+                #self.tree.insert('', tk.END, text=item.name,  values=(item.name, 't15 pam 25 ph0 1D',), tags=('show'))  
             
     def select_node(self, event):
         sel_id = self.tree.selection()

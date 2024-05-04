@@ -51,6 +51,8 @@ class TableView(ttk.Frame):
         self.nodes = {}
 
         self.view_items = WorkSpace.get_models_dict(self.model_kind)
+        if self.view_items is None:
+            return
         keys_list = sorted(self.view_items.keys(), reverse= self.reverse_sort) 
 
         for key in keys_list:

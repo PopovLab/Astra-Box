@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
+from functools import partial
 from AstraBox.Views.RackFrame import RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
@@ -17,6 +18,7 @@ from AstraBox.Models.RaceModel import RaceModel
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
+import AstraBox.History as History
 
 class App(tk.Tk):
     def __init__(self):
@@ -41,12 +43,14 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
-        abspath = os.path.abspath(Config.get_current_workspace_dir())
-        if not os.path.exists(abspath):
-            os.mkdir(abspath)
-        self.base_folder = abspath
-        
-        self.open_work_space(abspath)
+        #abspath = os.path.abspath(Config.get_current_workspace_dir())
+        #if not os.path.exists(abspath):
+        #    os.mkdir(abspath)
+
+        last_ws = History.get_last()
+        if last_ws:
+            self.base_folder = last_ws
+            self.open_work_space(last_ws)
         # first paned window
         w1 = tk.PanedWindow( background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
@@ -74,6 +78,7 @@ class App(tk.Tk):
         WorkSpace.open(path)
         self.title(f"ASTRA Box in {path}")
         Config.set_current_workspace_dir(path)        
+        History.add_new(path)
 
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -150,6 +155,17 @@ class App(tk.Tk):
         model = ModelFactory.create_model('RTModel')
         self.show_model(model)
 
+    def open_command(self, arg):
+        print('open command', arg)
+        self.open_work_space(arg)
+
+    def create_open_recent_menu(self):
+        menu = tk.Menu(tearoff=0)
+        hi = History.get_list()
+        for item in reversed(hi):
+            menu.add_command(label=item, command= partial(self.open_command, item))
+        return menu
+
     def create_main_menu(self):
         new_menu = tk.Menu(tearoff=0)
         new_menu.add_command(label='Ray Tracing Configurations', command=self.create_RT_configuration)
@@ -158,7 +174,8 @@ class App(tk.Tk):
 
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)
-        file_menu.add_command(label="Open Wokrspace", command=self.open_work_space_dialog)
+        file_menu.add_command(label="Open Workspace", command=self.open_work_space_dialog)
+        file_menu.add_cascade(label="Open Recent", menu= self.create_open_recent_menu())
         file_menu.add_command(label="Save", state='disabled')
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.on_closing)
