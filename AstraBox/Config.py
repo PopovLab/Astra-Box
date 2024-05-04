@@ -34,14 +34,6 @@ def save():
     with open( abspath , "w" ) as json_file:
         json.dump( __instance , json_file, indent = 2 )
 
-def get_current_workspace_dir():
-    return get()['current_workspace_dir']
-
-def set_current_workspace_dir(path):
-    global __instance
-    print(f'set workspace: {path}')
-    __instance['current_workspace_dir'] = path
-    save()
 
 def get_astra_profile_list():
     cfg = get()
