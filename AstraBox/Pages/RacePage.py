@@ -27,7 +27,7 @@ from AstraBox.Views.RaceView import ExecTimeView
 from AstraBox.Views.SummaryView import SummaryView
 
 class InfoPanel(tk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model:RaceModel) -> None:
         super().__init__(master) #, text= 'Race info')
         info = {
             'Exp:': model.data['ExpModel']['name'],
