@@ -1,3 +1,4 @@
+from pydantic import BaseModel, Field
 
 data_folder = {
     'DATA'         : "dat/",
@@ -15,3 +16,17 @@ data_folder = {
     'plasma'       : 'lhcd/plasma/',
     'lhcd'         : 'lhcd/'
 }
+
+
+class AstraProfile(BaseModel):
+    type:str    = Field(default='WSL')
+    name:str    = Field(default='Astra-6 a4')
+    home:str    = Field(default='/home/linux_user/ASTRA-6')
+    profile:str = Field(default='a4')
+    dest:str    = Field(default='\\\\wsl$\\Ubuntu-20.04\\home\\linux_user\\ASTRA-6')
+
+    data: list[str]
+
+
+class ProfileList(BaseModel):
+    profiles:list[AstraProfile]
