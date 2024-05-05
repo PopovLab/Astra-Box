@@ -3,7 +3,6 @@ import json
 import re 
 
 __instance = {
-        'current_workspace_dir' : 'data',
         'Astra Profiles':{
             "Astra-6 a4": {
                 'home' : '/home/tmp8/ASTRA-6',
