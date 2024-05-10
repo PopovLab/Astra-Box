@@ -11,7 +11,7 @@ Doc ([rus](https://temper8.github.io/Astra-Box/))
 ![](/docs/media/main.png)
 
 
-## Установка Astra-Box
+## Установка Astra-Box для Windows
 
 1. Установить python для Windows:
 
@@ -41,3 +41,37 @@ Doc ([rus](https://temper8.github.io/Astra-Box/))
     ```
     run.bat
     ```
+
+
+## Установка Astra-Box для Ubuntu
+
+1. Нужен Python 3.12 (самое просто использовать Ubuntu 24.04)
+
+2.  установка pip  и poetry
+    ```
+    sudo apt install python3-pip
+
+    sudo apt install python3-poetry
+
+    sudo apt install python3-tk
+
+    ```
+
+3. клонировать репозиторий
+    ```
+    git clone https://github.com/PopovLab/Astra-Box.git
+    ```
+
+4. инициализация
+    ```
+    cd Astra-Box
+    poetry install
+    ```
+
+
+5. запуск
+    ```
+    poetry run python main.py
+    ```
+
+    
