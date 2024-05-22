@@ -24,7 +24,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("ASTRA Box")
-        self.minsize(1080, 750)
+        self.minsize(1024, 600)
 
         main_menu = self.create_main_menu()
         self.config(menu= main_menu)
