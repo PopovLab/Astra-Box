@@ -24,8 +24,8 @@ class LHCDRadialPlot(ttk.Frame):
         #                             on_update_setting= self.on_update_setting )
         self.fig = plt.figure(figsize=(8, 6.6))
         self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
-        
-        self.ax = self.fig.add_subplot(111)
+        self.axs = self.fig.subplots(3, 1)  
+        #self.ax = self.fig.add_subplot(111)
         self.make_plots()
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
@@ -47,12 +47,25 @@ class LHCDRadialPlot(ttk.Frame):
         pass
 
     def make_plots(self):
-        self.ax.clear()
-        self.ax.plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
-        self.ax.plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
-        self.ax.plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
-        self.ax.plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
-        self.ax.legend(loc='upper right')
+        self.axs[0].clear()
+        self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
+        self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
+        self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
+        self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
+        self.axs[0].legend(loc='upper right')
+
+        self.axs[1].clear()
+        self.axs[1].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pwe'], c= 'darkred', label= 'pos pwe')
+        self.axs[1].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pwe'], c= 'blue', label= 'neg pwe')
+    
+        self.axs[1].legend(loc='upper right')
+
+        self.axs[2].clear()
+        self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['sk'], c= 'darkred', label= 'pos sk')
+        self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['sk'], c= 'blue', label= 'neg sk')
+        self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['vk'], c= 'salmon', label= 'pos vk')
+        self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['vk'], c= 'violet', label= 'neg vk')           
+        self.axs[2].legend(loc='upper right')
 
     def update(self, data):
         self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
