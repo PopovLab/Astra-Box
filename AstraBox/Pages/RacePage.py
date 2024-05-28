@@ -18,6 +18,7 @@ from AstraBox.Views.RaceView import TimeSeriesView
 from AstraBox.Views.RaceView import RadialDataView
 from AstraBox.Views.RaceView import TrajectoryTab
 from AstraBox.Views.RaceView import RadialDrivenCurrentView
+from AstraBox.Views.RaceView import LHCDRadialDataView
 from AstraBox.Views.RaceView import MaxwellView
 from AstraBox.Views.RaceView import DiffusionView
 from AstraBox.Views.RaceView import SpectrumView
@@ -98,6 +99,9 @@ class RacePage(ttk.Frame):
 
         #distrib_view = DistributionView(self.notebook, model= model)
         #self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
+        lhcd_radial_view = LHCDRadialDataView(self.notebook, model= self.model)
+        self.notebook.add(lhcd_radial_view, text="LHCD Radial", underline=0, sticky=tk.NE + tk.SW)
+
         dc_view = RadialDrivenCurrentView(self.notebook, model= self.model)
         self.notebook.add(dc_view, text="Radial DC", underline=0, sticky=tk.NE + tk.SW)
         
