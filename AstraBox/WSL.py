@@ -68,7 +68,6 @@ async def run(cmd):
     else:
         return None
     
-from pathlib import Path
 #wslpath -w /usr/bin
 
 def win_wsl_path(wsl_path):
