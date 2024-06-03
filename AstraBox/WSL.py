@@ -67,12 +67,36 @@ async def run(cmd):
         return stdout.removesuffix(UNIX_LINE_ENDING).decode(get_CP())
     else:
         return None
-    
+
+
 _progress_callback = None
 
 def progress(progress = 0):
     if _progress_callback:
         _progress_callback(progress)
+
+async def progress_run(cmd):
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    while proc.returncode == None:
+        data = await proc.stdout.readline()
+        data = data.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
+        line = data.decode('ascii').rstrip()
+        if proc.stdout.at_eof(): break
+        progress()
+        _logger.info(line)
+
+    stdout, stderr = await proc.communicate()
+    lines = stdout.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    for line in lines:
+         _logger.info(line)
+
+    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    for line in lines:
+            _logger.error(line)
 
 _logger = None
 
@@ -83,8 +107,8 @@ def log_info(msg):
 def exec(wsl_work_folder, command):
     ps_cmd = f'wsl --cd {wsl_work_folder} {command}'
     log_info(f'exec: {command}')
-    out=  asyncio.run(run(ps_cmd))
-    log_info(out)
+    asyncio.run(progress_run(ps_cmd))
+
 #wslpath -w /usr/bin
 
 def win_wsl_path(wsl_path):
