@@ -12,6 +12,7 @@ import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.RunModel import RunModel
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
+import AstraBox.WSL as WSL
 
 proc = None
 
@@ -238,9 +239,11 @@ class AstraWorker(Worker):
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
         _logger.info(f'copy : {zip_file}')
-        dest = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}'
+        #dest = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}'
+        dest = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
         _logger.info(f'to: {dest}')
-        copy_file_to_folder(zip_file, dest)
+        #copy_file_to_folder(zip_file, dest)
+        WSL.put(zip_file, dest)
         #unpack_cmd = f'unzip -o race_data.zip -d {_astra_profile["profile"]}'
         unpack_cmd = f'unzip -o race_data.zip'
         wd = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'

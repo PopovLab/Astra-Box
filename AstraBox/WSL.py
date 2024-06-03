@@ -1,12 +1,30 @@
 import os
 import logging
 import subprocess
+import sys
 import asyncio
 import shutil
+from ctypes import windll
+import subprocess
+
+def GetConsoleOutputCP():
+    'Get Console Output CP '
+    cp= windll.kernel32.GetConsoleOutputCP()
+    return f"CP{cp}"
+
+__CP = None
+
+
+def get_CP():
+    global __CP
+    if __CP is None:
+        __CP = GetConsoleOutputCP()
+    return __CP
 
 def copy_file_to_folder(src, dst):
     try:
-        shutil.copy(src, dst)
+        res = shutil.copy(src, dst)
+        print(res)
         print(f" copy {src} to {dst}")
  
     except shutil.SameFileError:
@@ -23,6 +41,13 @@ def copy_file_to_folder(src, dst):
 
 remotepath = '/path/to/remote/file.py'
 localpath = '/path/to/local/file.py'
+# replacement strings
+WINDOWS_LINE_ENDING = b'\r\n'
+UNIX_LINE_ENDING = b'\n'
+# Windows ➡ Unix
+#content = content.replace(WINDOWS_LINE_ENDING, UNIX_LINE_ENDING)
+# Unix ➡ Windows
+# content = content.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
 
 async def run(cmd):
     proc = await asyncio.create_subprocess_shell(
@@ -34,19 +59,32 @@ async def run(cmd):
 
     print(f'[{cmd!r} exited with {proc.returncode}]')
     if stdout:
-        print(f'[stdout]\n{stdout.decode("utf-8")}')
+        print(f'[stdout]\n{stdout.decode()}')
     if stderr:
-        print(f'[stderr]\n{stderr.decode("utf-8")}')
+        print(f'[stderr]\n{stderr.decode()}')
 
-
+    if proc.returncode == 0:
+        return stdout.removesuffix(UNIX_LINE_ENDING).decode(get_CP())
+    else:
+        return None
+    
+from pathlib import Path
 #wslpath -w /usr/bin
-def wslpath(wsl_path):
-    pass
+
+def win_wsl_path(wsl_path):
+    cmd = f'wsl wslpath -w {wsl_path}'
+    return asyncio.run(run(cmd))
 
 def put(local_src, wsl_dst):
-    pass
-
+    win_wsl_dst = win_wsl_path(wsl_dst)
+    copy_file_to_folder(local_src, win_wsl_dst)
 
 
 if __name__ == '__main__':
-    asyncio.run(run('ls /zzz'))
+    print(GetConsoleOutputCP())
+    print(sys.getdefaultencoding())
+    asyncio.run(run('wsl ls /zzz'))
+    
+    wp = win_wsl_path('/home/tmp8')
+    print(wp)
+    put("d:\spcpz.dat",'/home/tmp8/ASTRA-6/a4')
