@@ -242,10 +242,8 @@ class AstraWorker(Worker):
         
         astra_cmd = f'./run10.sh {_astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
 
-        run_cmd = f'start wsl  --cd {_astra_profile["home"]} {astra_cmd}'
-        asyncio.run(self.run(run_cmd, shell=True))
-        #self.WSL_Run(_astra_profile["home"], astra_cmd)
- 
+        WSL.start_exec(_astra_profile["home"],astra_cmd)
+
         _logger.info('finish')
 
         self.pack_data()
