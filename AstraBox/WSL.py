@@ -87,22 +87,31 @@ async def progress_run(cmd):
         line = data.decode('ascii').rstrip()
         if proc.stdout.at_eof(): break
         progress()
-        _logger.info(line)
+        log_info(line)
 
     stdout, stderr = await proc.communicate()
     lines = stdout.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
     for line in lines:
-         _logger.info(line)
+        log_info(line)
 
     lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
     for line in lines:
-            _logger.error(line)
+        log_error(line)
 
 _logger = None
 
+def isNotBlank(myString):
+    return bool(myString and myString.strip())
+
 def log_info(msg):
     if _logger:
-        _logger.info(msg)
+        if isNotBlank(msg):
+            _logger.info(msg)
+
+def log_error(msg):
+    if _logger:
+        if isNotBlank(msg):
+            _logger.error(msg)            
 
 def start_exec(wsl_work_folder, command):
     ps_cmd = f'start wsl --cd {wsl_work_folder} {command}'

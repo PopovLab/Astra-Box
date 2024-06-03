@@ -219,7 +219,7 @@ class AstraWorker(Worker):
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
             clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}' + '{v*,*.*}'
-            self.WSL_Run(_astra_profile["home"], clear_cmd)
+            WSL.exec(_astra_profile["home"], clear_cmd)
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
