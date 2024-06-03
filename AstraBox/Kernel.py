@@ -127,58 +127,6 @@ class Worker:
         self.run_model.data['status'] = status
         call_progress_callback()
 
-    async def run(self, cmd, shell = False):
-        self.error_flag = False
-        _logger.log(logging.INFO, f"run_cmd: {cmd}")
-
-        if shell:
-            self.proc = await asyncio.create_subprocess_shell(
-                cmd,
-                bufsize=0,
-                #universal_newlines= True,
-                stdin=asyncio.subprocess.PIPE,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE)
-        else:                        
-            self.proc = await asyncio.create_subprocess_exec(
-                cmd,
-                #universal_newlines= True,
-                stdin=asyncio.subprocess.PIPE,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE)
-
-        if self.stdinput !=None:
-            self.proc.stdin.write(self.stdinput)    
-        #self.proc.stdin.write(b"1\n1\n1\n1\n1\n")
-
-        while self.proc.returncode == None:
-            data = await self.proc.stdout.readline()
-            line = data.decode('utf-8').rstrip()
-
-            if self.proc.stdout.at_eof(): break
-            call_progress_callback()
-                
-            if line.startswith(' done'):
-                progress = float(line[10:])
-                call_progress_callback()
-                continue
-            if 'FATAL ERROR' in line:
-                self.error_flag = True
-            _logger.info(line)
-
-        stdout, stderr = await self.proc.communicate()
-        lines = stdout.decode('ascii').split("\r\n")
-        for line in lines:
-            if isNotBlank(line):
-                _logger.info(line)
-
-        lines = stderr.decode('ascii').split("\r\n")
-        for line in lines:
-            if isNotBlank(line):
-                _logger.error(line)
-
- 
-
     def terminate(self):
         self.proc.terminate()
         _logger.info(f'Termitate')
@@ -209,12 +157,6 @@ class AstraWorker(Worker):
         WSL._logger = _logger
         _logger.info('create AstraWorker')
         self.wsl_path = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
-
-    def WSL_Run(self, work_folder, command):
-        ps_cmd = f'wsl --cd {work_folder} {command}'
-        with asyncio.Runner() as runner:
-            runner.run(self.run(ps_cmd, shell=True))
-        call_progress_callback()
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
