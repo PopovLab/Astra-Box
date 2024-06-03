@@ -68,6 +68,23 @@ async def run(cmd):
     else:
         return None
     
+_progress_callback = None
+
+def progress(progress = 0):
+    if _progress_callback:
+        _progress_callback(progress)
+
+_logger = None
+
+def log_info(msg):
+    if _logger:
+        _logger.info(msg)
+
+def exec(wsl_work_folder, command):
+    ps_cmd = f'wsl --cd {wsl_work_folder} {command}'
+    log_info(f'exec: {command}')
+    out=  asyncio.run(run(ps_cmd))
+    log_info(out)
 #wslpath -w /usr/bin
 
 def win_wsl_path(wsl_path):
@@ -75,6 +92,8 @@ def win_wsl_path(wsl_path):
     return asyncio.run(run(cmd))
 
 def put(local_src, wsl_dst):
+    log_info(f'copy : {local_src}')
+    log_info(f'to: {wsl_dst}')
     win_wsl_dst = win_wsl_path(wsl_dst)
     copy_file_to_folder(local_src, win_wsl_dst)
 

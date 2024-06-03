@@ -104,6 +104,7 @@ def log_info(info):
 _progress_callback = None
 def set_progress_callback(cb):
     global _progress_callback
+    WSL._progress_callback = cb
     _progress_callback = cb
 
 def call_progress_callback(progress = 0):
@@ -200,29 +201,12 @@ def copy_file(src, dst):
     except:
         print(f"Error occurred while copying file: {src} to {dst}")
 
-
-def copy_file_to_folder(src, dst):
-    try:
-        shutil.copy(src, dst)
-        print(f" copy {src} to {dst}")
- 
-    except shutil.SameFileError:
-        print("Source and destination represents the same file.")
- 
-    except IsADirectoryError:
-        print("Destination is a directory.")
- 
-    except PermissionError:
-        print("Permission denied.")
- 
-    except:
-        print(f"Error occurred while copying file: {src} to {dst}")
-
    
 
 class AstraWorker(Worker):
     def __init__(self, model: RunModel) -> None:
         super().__init__(model)
+        WSL._logger = _logger
         _logger.info('create AstraWorker')
         self.wsl_path = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
 
@@ -239,18 +223,14 @@ class AstraWorker(Worker):
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
-        _logger.info(f'copy : {zip_file}')
-        _logger.info(f'to: {self.wsl_path}')
         WSL.put(zip_file, self.wsl_path)
-        unpack_cmd = f'unzip -o race_data.zip'
-        self.WSL_Run(self.wsl_path, unpack_cmd)
+        WSL.exec(self.wsl_path, f'unzip -o race_data.zip')
+
 
     def pack_data(self):
-        _logger.info('pack data')
-        pack_cmd = f'zip -r race_data.zip dat'
-        self.WSL_Run(self.wsl_path, pack_cmd)
-        pack_cmd = f'zip -r race_data.zip lhcd'
-        self.WSL_Run(self.wsl_path, pack_cmd)
+        _logger.info('----- pack data -------')
+        WSL.exec(self.wsl_path, f'zip -r race_data.zip dat')
+        WSL.exec(self.wsl_path, f'zip -r race_data.zip lhcd')
 
     def start(self):
         _logger.info(f'start {self.run_model.name}')
