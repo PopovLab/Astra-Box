@@ -224,6 +224,7 @@ class AstraWorker(Worker):
     def __init__(self, model: RunModel) -> None:
         super().__init__(model)
         _logger.info('create AstraWorker')
+        self.wsl_path = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
 
     def WSL_Run(self, work_folder, command):
         ps_cmd = f'wsl --cd {work_folder} {command}'
@@ -239,23 +240,17 @@ class AstraWorker(Worker):
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
         _logger.info(f'copy : {zip_file}')
-        #dest = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}'
-        dest = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
-        _logger.info(f'to: {dest}')
-        #copy_file_to_folder(zip_file, dest)
-        WSL.put(zip_file, dest)
-        #unpack_cmd = f'unzip -o race_data.zip -d {_astra_profile["profile"]}'
+        _logger.info(f'to: {self.wsl_path}')
+        WSL.put(zip_file, self.wsl_path)
         unpack_cmd = f'unzip -o race_data.zip'
-        wd = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
-        self.WSL_Run(wd, unpack_cmd)
+        self.WSL_Run(self.wsl_path, unpack_cmd)
 
     def pack_data(self):
         _logger.info('pack data')
-        wd = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
         pack_cmd = f'zip -r race_data.zip dat'
-        self.WSL_Run(wd, pack_cmd)
+        self.WSL_Run(self.wsl_path, pack_cmd)
         pack_cmd = f'zip -r race_data.zip lhcd'
-        self.WSL_Run(wd, pack_cmd)
+        self.WSL_Run(self.wsl_path, pack_cmd)
 
     def start(self):
         _logger.info(f'start {self.run_model.name}')
