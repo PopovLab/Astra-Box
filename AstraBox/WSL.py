@@ -57,8 +57,6 @@ def copy_file(src, dst):
         print(f"Error occurred while copying file: {src} to {dst}")
 
 
-remotepath = '/path/to/remote/file.py'
-localpath = '/path/to/local/file.py'
 # replacement strings
 WINDOWS_LINE_ENDING = b'\r\n'
 UNIX_LINE_ENDING = b'\n'
