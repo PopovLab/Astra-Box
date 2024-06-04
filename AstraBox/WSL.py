@@ -49,6 +49,19 @@ UNIX_LINE_ENDING = b'\n'
 # Unix ➡ Windows
 # content = content.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
 
+#wslpath -w /usr/bin
+
+def win_wsl_path(wsl_path):
+    cmd = f'wsl wslpath -w {wsl_path}'
+    return asyncio.run(run(cmd))
+
+def put(local_src, wsl_dst):
+    log_info(f'copy : {local_src}')
+    log_info(f'to: {wsl_dst}')
+    win_wsl_dst = win_wsl_path(wsl_dst)
+    copy_file_to_folder(local_src, win_wsl_dst)
+
+
 async def run(cmd):
     proc = await asyncio.create_subprocess_shell(
         cmd,
@@ -123,17 +136,7 @@ def exec(wsl_work_folder, command):
     log_info(f'exec: {command}')
     asyncio.run(progress_run(ps_cmd))
 
-#wslpath -w /usr/bin
 
-def win_wsl_path(wsl_path):
-    cmd = f'wsl wslpath -w {wsl_path}'
-    return asyncio.run(run(cmd))
-
-def put(local_src, wsl_dst):
-    log_info(f'copy : {local_src}')
-    log_info(f'to: {wsl_dst}')
-    win_wsl_dst = win_wsl_path(wsl_dst)
-    copy_file_to_folder(local_src, win_wsl_dst)
 
 
 if __name__ == '__main__':
