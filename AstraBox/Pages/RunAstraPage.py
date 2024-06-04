@@ -108,12 +108,13 @@ class RunAstraPage(ttk.Frame):
         Kernel.set_progress_callback(self.on_progress)
         Kernel.set_astra_profile(ap)
         run_model = RunModel(name= race_name, comment= self.race_comment['value'],exp_name= exp, equ_name= equ, rt_name= rt ) 
-        worker = Kernel.AstraWorker(run_model)
    
         Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {ap}")
         self.on_progress(0)
         self.save_last_run(exp, equ, rt, ap)
-        worker.start()
+
+        Kernel.execute(run_model)
+        
         WorkSpace.refresh('RaceModel')
 
     def save_last_run(self, exp, equ, rt, ap):

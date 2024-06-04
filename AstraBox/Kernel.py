@@ -117,7 +117,6 @@ def set_astra_profile(astra_porfile_name):
     _astra_profile = Config.get_astra_profile(astra_porfile_name)
 
 class Worker:
-
     def __init__(self, model: RunModel) -> None:
         self.error_flag = False
         self.stdinput = None
@@ -156,7 +155,7 @@ class AstraWorker(Worker):
         WSL.exec(self.wsl_path, f'zip -r race_data.zip dat')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip lhcd')
 
-    def start(self):
+    def execute(self):
         _logger.info(f'start {self.run_model.name}')
 
         self.clear_work_folders()
@@ -174,9 +173,12 @@ class AstraWorker(Worker):
 
         zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
-        #src = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}/race_data.zip'
         src = f'{_astra_profile["home"]}/{_astra_profile["profile"]}/race_data.zip'
         WSL.get(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
+
+def execute(model: RunModel):
+    worker = AstraWorker(model)
+    worker.execute()
