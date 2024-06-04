@@ -39,6 +39,24 @@ def copy_file_to_folder(src, dst):
     except:
         print(f"Error occurred while copying file: {src} to {dst}")
 
+def copy_file(src, dst):
+    try:
+        shutil.copyfile(src, dst)
+        print(f" copy {src} to {dst}")
+ 
+    except shutil.SameFileError:
+        print("Source and destination represents the same file.")
+ 
+    except IsADirectoryError:
+        print("Destination is a directory.")
+ 
+    except PermissionError:
+        print("Permission denied.")
+ 
+    except:
+        print(f"Error occurred while copying file: {src} to {dst}")
+
+
 remotepath = '/path/to/remote/file.py'
 localpath = '/path/to/local/file.py'
 # replacement strings
@@ -61,6 +79,11 @@ def put(local_src, wsl_dst):
     win_wsl_dst = win_wsl_path(wsl_dst)
     copy_file_to_folder(local_src, win_wsl_dst)
 
+def get(wsl_src, local_dst):
+    log_info(f'copy : {wsl_src}')
+    log_info(f'to: {local_dst}')
+    win_wsl_src = win_wsl_path(wsl_src)
+    copy_file(win_wsl_src, local_dst)
 
 async def run(cmd):
     proc = await asyncio.create_subprocess_shell(

@@ -132,24 +132,6 @@ class Worker:
         _logger.info(f'Termitate')
         self.set_model_status('term')
 
-def copy_file(src, dst):
-    try:
-        shutil.copyfile(src, dst)
-        print(f" copy {src} to {dst}")
- 
-    except shutil.SameFileError:
-        print("Source and destination represents the same file.")
- 
-    except IsADirectoryError:
-        print("Destination is a directory.")
- 
-    except PermissionError:
-        print("Permission denied.")
- 
-    except:
-        print(f"Error occurred while copying file: {src} to {dst}")
-
-   
 
 class AstraWorker(Worker):
     def __init__(self, model: RunModel) -> None:
@@ -192,8 +174,9 @@ class AstraWorker(Worker):
 
         zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
-        src = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}/race_data.zip'
-        copy_file(src, race_zip_file)
+        #src = f'{_astra_profile["dest"]}/{_astra_profile["profile"]}/race_data.zip'
+        src = f'{_astra_profile["home"]}/{_astra_profile["profile"]}/race_data.zip'
+        WSL.get(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
