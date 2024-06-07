@@ -155,7 +155,7 @@ class AstraWorker(Worker):
         WSL.exec(self.wsl_path, f'zip -r race_data.zip dat')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip lhcd')
 
-    def execute(self):
+    def execute(self, option:str='no_pause'):
         _logger.info(f'start {self.run_model.name}')
 
         self.clear_work_folders()
@@ -163,7 +163,7 @@ class AstraWorker(Worker):
 
         self.set_model_status('run')
         
-        astra_cmd = f'./run10.sh {_astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name}'
+        astra_cmd = f'./run_astra.sh {_astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name} {option}'
 
         WSL.start_exec(_astra_profile["home"],astra_cmd)
 
