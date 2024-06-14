@@ -179,6 +179,6 @@ class AstraWorker(Worker):
 
         _logger.info('the end')
 
-def execute(model: RunModel):
+def execute(model: RunModel, option:str):
     worker = AstraWorker(model)
-    worker.execute()
+    worker.execute(option)

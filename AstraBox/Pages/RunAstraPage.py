@@ -5,6 +5,7 @@ import json
 import pathlib as pathlib
 import os 
 from pathlib import Path
+import tkinter.messagebox as messagebox
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
@@ -21,7 +22,7 @@ import AstraBox.ToolBox.ImageButton as ImageButton
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', ['All exp'] + WorkSpace.get_item_list('ExpModel'))
+        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_item_list('ExpModel'))
         self.exp_combo.grid(row=0, column=0,  padx=2, sticky= tk.E + tk.W)
         self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_item_list('EquModel'))
         self.equ_combo.grid(row=0, column=1,  padx=2, sticky=tk.E + tk.W)
@@ -56,9 +57,21 @@ class RunAstraPage(ttk.Frame):
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
+        self.race_name = {
+            'title': 'Race name',
+             'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            }
 
-        self.header_content =  { "title": f"Run   {self.race_name['value']}", "buttons":[('Run calculation', self.start), ('Terminate', self.terminate)]}
+        self.header_content =  { 
+            "title": f"{self.race_name['value']}", 
+            "buttons":[
+                ('Run', self.run),
+                ('Run with Pause', self.run_with_pause),
+                #('Run with timeout', self.start),
+                ('Multy Run', self.multy_run),
+                ('Terminate', self.terminate)
+                ]
+            }
         self.astra_profiles = AstraBox.Models.AstraProfiles.default()
 
         self.hp = HeaderPanel(self, self.header_content)
@@ -83,22 +96,26 @@ class RunAstraPage(ttk.Frame):
         self.rowconfigure(3, weight=1)
         self.columnconfigure(0, weight=1)        
         
-
-    def start(self):
-        exp = self.config_panel.exp_combo.get()
-        equ = self.config_panel.equ_combo.get()
-        if exp == 'All exp':
+    def multy_run(self):
+        if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
+            print('run multy run')
             exp_list =  WorkSpace.get_item_list('ExpModel')
+            equ = self.config_panel.equ_combo.get()
             for exp in exp_list:
                 if self.terminated: break
                 race_name = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
                 print(race_name)
-                self.single_run(race_name, exp)
+                self.single_run(race_name, exp, 'no_pause')
                 #self.batch_run()
-        else:
-            self.single_run(self.race_name['value'], exp)
 
-    def single_run(self, race_name, exp):
+    def run_with_pause(self):
+        exp = self.config_panel.exp_combo.get()
+        self.single_run(self.race_name['value'], exp, 'pause')
+    def run(self):
+        exp = self.config_panel.exp_combo.get()
+        self.single_run(self.race_name['value'], exp, 'no_pause')
+
+    def single_run(self, race_name, exp, option:str):
         
         equ = self.config_panel.equ_combo.get()
         rt = self.config_panel.rt_combo.get()
@@ -113,7 +130,7 @@ class RunAstraPage(ttk.Frame):
         self.on_progress(0)
         self.save_last_run(exp, equ, rt, ap)
 
-        Kernel.execute(run_model)
+        Kernel.execute(run_model, option)
         
         WorkSpace.refresh('RaceModel')
 
