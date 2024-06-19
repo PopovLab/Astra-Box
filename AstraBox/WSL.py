@@ -154,7 +154,7 @@ def start_exec(wsl_work_folder, command):
 
 def exec(wsl_work_folder, command):
     ps_cmd = f'wsl --cd {wsl_work_folder} {command}'
-    log_info(f'exec: {command}')
+    log_info(f'exec: {wsl_work_folder} {command}')
     asyncio.run(progress_run(ps_cmd))
 
 
