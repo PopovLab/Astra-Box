@@ -41,13 +41,16 @@ class SummaryView(ttk.Frame):
         else:
             text=  df.to_string(max_rows = 5) + '\n'
             #print(df.iloc[-1])
-            row = df.iloc[-1]
-            text+= ' ----- last moment dc ---------\n'
-            text+= f"time= {row['Time']}\n"
-            text+= f"cup= {row['cup']}  cp={row['cp']}\n"
-            text+= f"cum= {row['cum']}  cm={row['cm']}\n"
-            text+= f"cup0= {row['cup0']}  cp0= {row['cp0']}\n"
-            text+= f"cum0= {row['cum0']}  cm0= {row['cm0']}\n"
-            text+= f"sigma driven current, MA= {row['cp0'] + row['cm0']}\n"
-            text+= f"driven current, MA= {row['cup'] + row['cum']}\n"
+            try:
+                row = df.iloc[-1]
+                text+= ' ----- last moment dc ---------\n'
+                text+= f"time= {row['Time']}\n"
+                text+= f"cup= {row['cup']}  cp={row['cp']}\n"
+                text+= f"cum= {row['cum']}  cm={row['cm']}\n"
+                text+= f"cup0= {row['cup0']}  cp0= {row['cp0']}\n"
+                text+= f"cum0= {row['cum0']}  cm0= {row['cm0']}\n"
+                text+= f"sigma driven current, MA= {row['cp0'] + row['cm0']}\n"
+                text+= f"driven current, MA= {row['cup'] + row['cum']}\n"
+            except  Exception as e:
+                text+=  str(e)
             return text
