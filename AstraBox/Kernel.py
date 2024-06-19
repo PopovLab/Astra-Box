@@ -143,6 +143,10 @@ class AstraWorker(Worker):
         for key, folder in Astra.data_folder.items():
             clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}' + '{v*,*.*}'
             WSL.exec(_astra_profile["home"], clear_cmd)
+        clear_cmd = f'rm -f {_astra_profile["profile"]}/' + '*.mod'
+        WSL.exec(_astra_profile["home"], clear_cmd)
+        clear_cmd = f'rm -f {_astra_profile["profile"]}/sbr/' + '*.f90'
+        WSL.exec(_astra_profile["home"], clear_cmd)        
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
@@ -159,6 +163,7 @@ class AstraWorker(Worker):
         _logger.info(f'start {self.run_model.name}')
 
         self.clear_work_folders()
+
         self.copy_data()
 
         self.set_model_status('run')
