@@ -162,6 +162,12 @@ class AstraWorker(Worker):
     def execute(self, option:str='no_pause'):
         _logger.info(f'start {self.run_model.name}')
 
+        if len(self.run_model.errors)>0:
+            for e in self.run_model.errors:
+                _logger.error(e)
+            _logger.error('запуск не возможен из-за ошибок')
+            return
+            
         self.clear_work_folders()
 
         self.copy_data()

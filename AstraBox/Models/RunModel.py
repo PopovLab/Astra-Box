@@ -16,13 +16,20 @@ class RunModel(RootModel):
         super().__init__(name)
         self._setting = None
         self.changed = False
+        self.errors = []
         self.collection = {
             "ExpModel" : exp_name,
             "EquModel" : equ_name,
             "RTModel" : rt_name,
         }
         self.exp_model = ModelFactory.get('ExpModel', exp_name)
+        if self.exp_model is None:
+            self.errors.append(f"ExpModel {exp_name} not exists")
+
         self.equ_model =  ModelFactory.get('EquModel', equ_name)
+        if self.equ_model is None:
+            self.errors.append(f"EquModel {equ_name} not exists")        
+
         self.rt_model =  ModelFactory.get('RTModel', rt_name)
         self.comment= comment
         self.race_zip_file = None
