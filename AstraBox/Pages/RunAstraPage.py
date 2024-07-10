@@ -111,6 +111,7 @@ class RunAstraPage(ttk.Frame):
     def run_with_pause(self):
         exp = self.config_panel.exp_combo.get()
         self.single_run(self.race_name['value'], exp, 'pause')
+
     def run(self):
         exp = self.config_panel.exp_combo.get()
         self.single_run(self.race_name['value'], exp, 'no_pause')
@@ -119,18 +120,20 @@ class RunAstraPage(ttk.Frame):
         
         equ = self.config_panel.equ_combo.get()
         rt = self.config_panel.rt_combo.get()
-        ap = self.config_panel.astra_combo.get()
-        
+        astra_porfile_name = self.config_panel.astra_combo.get()
+        astra_profile = Config.get_astra_profile(astra_porfile_name)
+        self.save_last_run(exp, equ, rt, astra_porfile_name)
+
         self.log_console.set_logger(Kernel.get_logger())
         Kernel.set_progress_callback(self.on_progress)
-        Kernel.set_astra_profile(ap)
+        #Kernel.set_astra_profile(a_p)
+
         run_model = RunModel(name= race_name, comment= self.race_comment['value'],exp_name= exp, equ_name= equ, rt_name= rt ) 
    
-        Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {ap}")
+        Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {astra_porfile_name}")
         self.on_progress(0)
-        self.save_last_run(exp, equ, rt, ap)
 
-        Kernel.execute(run_model, option)
+        Kernel.execute(run_model, astra_profile, option)
         
         WorkSpace.refresh('RaceModel')
 

@@ -111,10 +111,10 @@ def call_progress_callback(progress = 0):
     if _progress_callback:
         _progress_callback(progress)
 
-_astra_profile = None
-def set_astra_profile(astra_porfile_name):
-    global _astra_profile
-    _astra_profile = Config.get_astra_profile(astra_porfile_name)
+#_astra_profile = None
+#def set_astra_profile(astra_porfile_name):
+#    global _astra_profile
+#    _astra_profile = Config.get_astra_profile(astra_porfile_name)
 
 class Worker:
     def __init__(self, model: RunModel) -> None:
@@ -137,16 +137,15 @@ class AstraWorker(Worker):
         super().__init__(model)
         WSL._logger = _logger
         _logger.info('create AstraWorker')
-        self.wsl_path = f'{_astra_profile["home"]}/{_astra_profile["profile"]}'
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
-            clear_cmd = f'rm -f {_astra_profile["profile"]}/{folder}' + '{v*,*.*}'
-            WSL.exec(_astra_profile["home"], clear_cmd)
-        clear_cmd = f'rm -f {_astra_profile["profile"]}/' + '*.mod'
-        WSL.exec(_astra_profile["home"], clear_cmd)
-        clear_cmd = f'rm -f {_astra_profile["profile"]}/sbr/' + '*.f90'
-        WSL.exec(_astra_profile["home"], clear_cmd)        
+            clear_cmd = f'rm -f {self.astra_user}/{folder}' + '{v*,*.*}'
+            WSL.exec(self.astra_home, clear_cmd)
+        clear_cmd = f'rm -f {self.astra_user}/' + '*.mod'
+        WSL.exec(self.astra_home, clear_cmd)
+        clear_cmd = f'rm -f {self.astra_user}/sbr/' + '*.f90'
+        WSL.exec(self.astra_home, clear_cmd)        
 
     def copy_data(self):
         zip_file = self.run_model.prepare_run_data()
@@ -159,7 +158,12 @@ class AstraWorker(Worker):
         WSL.exec(self.wsl_path, f'zip -r race_data.zip dat')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip lhcd')
 
-    def execute(self, option:str='no_pause'):
+    def execute(self, astra_profile:dict, option:str='no_pause'):
+        print(astra_profile)
+        self.astra_user = astra_profile["profile"]
+        self.astra_home = astra_profile["home"]
+
+        self.wsl_path = f'{self.astra_home}/{self.astra_user}'
         _logger.info(f'start {self.run_model.name}')
 
         if len(self.run_model.errors)>0:
@@ -174,9 +178,9 @@ class AstraWorker(Worker):
 
         self.set_model_status('run')
         
-        astra_cmd = f'./run_astra.sh {_astra_profile["profile"]} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name} {option}'
+        astra_cmd = f'./run_astra.sh {self.astra_user} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name} {option}'
 
-        WSL.start_exec(_astra_profile["home"],astra_cmd)
+        WSL.start_exec(self.astra_home, astra_cmd)
 
         _logger.info('finish')
 
@@ -184,12 +188,16 @@ class AstraWorker(Worker):
 
         zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
-        src = f'{_astra_profile["home"]}/{_astra_profile["profile"]}/race_data.zip'
+        src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
         WSL.get(src, race_zip_file)
         self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
 
-def execute(model: RunModel, option:str):
-    worker = AstraWorker(model)
-    worker.execute(option)
+def check_astra_profile(astra_profile)-> bool:
+    return True
+
+def execute(model: RunModel, astra_profile:dict, option:str):
+    if check_astra_profile(astra_profile):
+        worker = AstraWorker(model)
+        worker.execute(astra_profile, option)
