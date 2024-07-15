@@ -135,7 +135,6 @@ class Worker:
 class AstraWorker(Worker):
     def __init__(self, model: RunModel) -> None:
         super().__init__(model)
-        WSL._logger = _logger
         _logger.info('create AstraWorker')
 
     def clear_work_folders(self):
@@ -195,9 +194,17 @@ class AstraWorker(Worker):
         _logger.info('the end')
 
 def check_astra_profile(astra_profile)-> bool:
-    return True
+    astra_user = astra_profile["profile"]
+    astra_home = astra_profile["home"]
+    print('check dir')
+    print(astra_home)
+    
+    return WSL.check_dir(astra_home)
 
 def execute(model: RunModel, astra_profile:dict, option:str):
+    WSL._logger = _logger
     if check_astra_profile(astra_profile):
         worker = AstraWorker(model)
         worker.execute(astra_profile, option)
+    else:
+        WSL.log_error('нет Астры')

@@ -103,6 +103,28 @@ async def run(cmd):
         return None
 
 
+async def checked_run(cmd)->bool:
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+
+    print(f'[{cmd!r} exited with {proc.returncode}]')
+    lines = stdout.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    for line in lines:
+        log_info(line)
+
+    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    for line in lines:
+        log_error(line)
+
+    if proc.returncode == 0:
+        return True #stdout.removesuffix(UNIX_LINE_ENDING).decode(get_CP())
+    else:
+        return False
+
 _progress_callback = None
 
 def progress(progress = 0):
@@ -157,6 +179,10 @@ def exec(wsl_work_folder, command):
     log_info(f'exec: {wsl_work_folder} {command}')
     asyncio.run(progress_run(ps_cmd))
 
+def check_dir(wsl_folder):
+    ps_cmd = f'wsl {wsl_folder}'
+    log_info(f'check: {wsl_folder}')
+    return asyncio.run(checked_run(ps_cmd))
 
 
 
