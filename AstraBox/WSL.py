@@ -120,7 +120,7 @@ async def checked_run(cmd)->bool:
     for line in lines:
         log_error(line)
 
-    if proc.returncode == 0:
+    if (proc.returncode == 0) or (proc.returncode == 126):
         return True #stdout.removesuffix(UNIX_LINE_ENDING).decode(get_CP())
     else:
         return False
@@ -180,7 +180,7 @@ def exec(wsl_work_folder, command):
     asyncio.run(progress_run(ps_cmd))
 
 def check_dir(wsl_folder):
-    ps_cmd = f'wsl {wsl_folder}'
+    ps_cmd = f'wsl bash {wsl_folder}'
     log_info(f'check: {wsl_folder}')
     return asyncio.run(checked_run(ps_cmd))
 
