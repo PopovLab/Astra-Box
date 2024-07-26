@@ -319,8 +319,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             return self.colormaps(t)
         else:
             return mpl.colors.to_rgba('#0000F0',0.1)
-        #lc = len(self.colors)
-        #return self.colors[int(t*lc)]
+
     
     def divider(self, ray: pd.DataFrame):
         curve = np.column_stack([ray['R'], ray['Z']])
