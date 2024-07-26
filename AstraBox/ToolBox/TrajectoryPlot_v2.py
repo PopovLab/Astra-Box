@@ -142,13 +142,14 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.label1 = tk.Label(master=self, text=f'Theta ({self.traj_model.min_theta}, {self.traj_model.max_theta})')
         self.label1.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        slider1 = Slider(self, height = 35, width=330,
-                         min_val = self.min_theta, 
-                         max_val =  self.max_theta, 
-                         init_lis = [self.min_theta, self.max_theta], 
-                         show_value = True)
-        slider1.grid(row=1, column=1,  sticky=tk.N + tk.S + tk.E + tk.W) 
-        slider1.setValueChageCallback(self.update_theta)
+        if self.traj_model.max_theta>self.traj_model.min_theta:
+            slider1 = Slider(self, height = 35, width=330,
+                            min_val = self.min_theta, 
+                            max_val =  self.max_theta, 
+                            init_lis = [self.min_theta, self.max_theta], 
+                            show_value = True)
+            slider1.grid(row=1, column=1,  sticky=tk.N + tk.S + tk.E + tk.W) 
+            slider1.setValueChageCallback(self.update_theta)
 
         ms = self.traj_model.min_spectrum_index
         gs = self.traj_model.max_spectrum_index
@@ -313,8 +314,11 @@ class TrajectoryPlot_v2(ttk.Frame):
         return (self.min_spectrum_index <= index) and (index <= self.max_spectrum_index)
 
     def theta_color(self, theta):
-        t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
-        return self.colormaps(t)
+        if self.traj_model.max_theta>self.traj_model.min_theta:
+            t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
+            return self.colormaps(t)
+        else
+            return self.colormaps(0)
         #lc = len(self.colors)
         #return self.colors[int(t*lc)]
     
