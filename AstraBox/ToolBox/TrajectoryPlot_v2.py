@@ -318,7 +318,7 @@ class TrajectoryPlot_v2(ttk.Frame):
             t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
             return self.colormaps(t)
         else:
-            return self.colormaps(1)
+            return self.colormaps(0.5)
         #lc = len(self.colors)
         #return self.colors[int(t*lc)]
     
