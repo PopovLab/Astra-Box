@@ -52,7 +52,7 @@ class App(tk.Tk):
             self.base_folder = last_ws
             self.open_work_space(last_ws)
         # first paned window
-        w1 = tk.PanedWindow( background='#C0DCF3')  
+        w1 = tk.PanedWindow(self, background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
 
         # second paned window
