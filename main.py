@@ -5,6 +5,6 @@ if __name__ == '__main__':
     #app = App()
     #app.mainloop()
     
-    while Window.re_create_flag:
+    while Window.new_window:
         w = Window.Window()
         w.mainloop()
