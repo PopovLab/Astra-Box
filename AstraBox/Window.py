@@ -5,20 +5,36 @@ new_window = True
 
 geo_file = "data/geo.ini"
 
+def load_geometry():
+    try:
+        # get geometry from file 
+        f = open(geo_file,'r')
+        geo =f.read()
+        f.close()
+    except:
+        print ('error reading geo-file')    
+        geo = None
+    return geo
+
+def save_geometry(geo):
+        # save current geometry to the file 
+        try:
+            with open(geo_file, 'w') as f:
+                f.write(geo)
+                print('save geo')
+                f.close()
+        except:
+            print('file error')        
+
 class Window(tk.Tk):
     '''Opens a new Window.
     '''
     def __init__ (self):
         super().__init__()
         self.title('New Window')
-        try:
-            # get geometry from file 
-            ini_file = open(geo_file,'r')
-            self.geometry(ini_file.read())
-            
-            ini_file.close()
-        except:
-            print ('error reading geo-file')
+        geo = load_geometry()
+        if geo:
+            self.geometry(geo)
             
         self.button_dummy = tk.Button(self, text = f'Do the thing {count}', width = 25, command = lambda : print("Button pressed on window!"))
         self.button_close = tk.Button(self, text = 'Close', width = 25, command = self.close_me)
@@ -32,16 +48,6 @@ class Window(tk.Tk):
         self.button_close.grid(row = 2, column = 0)
         self.button_destroy.grid(row = 3, column = 0)
 
-    def save_geo(self):
-            # save current geometry to the ini file 
-            try:
-                with open(geo_file, 'w') as f:
-                    f.write(self.geometry())
-                    print('save geo')
-                    f.close()
-            except:
-                print('file error')
-
     def destroy_me(self):
         global new_window
         new_window = False  
@@ -50,6 +56,6 @@ class Window(tk.Tk):
     def close_me(self):
         global count
         # Destroys the Widget
-        self.save_geo()
+        save_geometry(self.geometry())
         count = count +1
         self.destroy()
