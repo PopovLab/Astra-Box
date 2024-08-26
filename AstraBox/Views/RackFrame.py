@@ -6,6 +6,24 @@ from AstraBox.Views.TableView import TableView
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
+
+def construct(master, app):
+    rf = RackFrame(master, app)
+    ListView(rf,'ExpModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+    ListView(rf,'EquModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+    ListView(rf,'SbrModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+    ListView(rf,'RTModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
+
+    ttk.Separator(rf, orient='horizontal').pack(fill='x')
+
+    ttk.Radiobutton(rf, text="Run ASTRA", variable=rf.v, value="imped", width=25, command= rf.show_RunAstraPage,
+                        style = 'Toolbutton').pack(expand=0, fill=tk.X)
+
+    ttk.Separator(rf, orient='horizontal').pack(fill='x')
+
+    TableView(rf,'RaceModel', height= 8, command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
+    return rf
+
 class RackFrame(ttk.Frame):
     def __init__(self, master, app) -> None:
         super().__init__(master)
@@ -15,19 +33,7 @@ class RackFrame(ttk.Frame):
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-        ListView(self,'ExpModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
-        ListView(self,'EquModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
-        ListView(self,'SbrModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
-        ListView(self,'RTModel', command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
- 
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
 
-        ttk.Radiobutton(self, text="Run ASTRA", variable=self.v, value="imped", width=25, command= self.show_RunAstraPage,
-                            style = 'Toolbutton').pack(expand=0, fill=tk.X)
-
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
-
-        TableView(self,'RaceModel', height= 8, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')

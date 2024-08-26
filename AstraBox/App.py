@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from functools import partial
-from AstraBox.Views.RackFrame import RackFrame
+import AstraBox.Views.RackFrame as RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
 from AstraBox.Pages.EmptyPage import EmptyPage
@@ -66,7 +66,7 @@ class App(tk.Tk):
         left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
         main_panel.add(left_panel)  
 
-        rack_frame = RackFrame(left_panel, self)
+        rack_frame = RackFrame.construct(left_panel, self)
         left_panel.add(rack_frame)
 
         self.content_frame = ContentFrame(main_panel)
