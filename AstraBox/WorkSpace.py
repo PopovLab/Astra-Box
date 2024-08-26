@@ -107,7 +107,8 @@ def open(path):
     global _location
     print(f'Open {path}')
     _location = Path(path)
-    for key, _ in schema.items():
+    for key, item in schema.items():
+        item['binding'] = None
         refresh(key)
         
 

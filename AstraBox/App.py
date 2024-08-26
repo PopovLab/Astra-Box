@@ -20,6 +20,15 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.History as History
 
+live = True
+
+work_space = None
+
+def run():
+    print(work_space)
+    app = App()
+    app.mainloop()
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -47,10 +56,12 @@ class App(tk.Tk):
         #if not os.path.exists(abspath):
         #    os.mkdir(abspath)
 
-        last_ws = History.get_last()
-        if last_ws:
-            self.base_folder = last_ws
-            self.open_work_space(last_ws)
+        if work_space:
+            self.base_folder = work_space
+            WorkSpace.open(work_space)
+            self.title(f"ASTRA Box in {work_space}")
+            History.add_new(work_space)
+
         # first paned window
         w1 = tk.PanedWindow(self, background='#C0DCF3')  
         w1.pack(fill=tk.BOTH, expand=1) 
@@ -75,15 +86,13 @@ class App(tk.Tk):
         #self.v.set('xxx')
 
     def open_work_space(self, path):
-        WorkSpace.open(path)
-        self.title(f"ASTRA Box in {path}")
-        #Config.set_current_workspace_dir(path)        
-        History.add_new(path)
+        work_space = path
+        self.destroy()
 
     def on_closing(self):
+        global live 
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            #self.controller.destroy()
-            #Storage().close()
+            live = False
             self.destroy()
             
     def open_doc(self):
