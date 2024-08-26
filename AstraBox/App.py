@@ -86,6 +86,7 @@ class App(tk.Tk):
         #self.v.set('xxx')
 
     def open_work_space(self, path):
+        global work_space
         work_space = path
         self.destroy()
 
