@@ -52,29 +52,25 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
-        #abspath = os.path.abspath(Config.get_current_workspace_dir())
-        #if not os.path.exists(abspath):
-        #    os.mkdir(abspath)
-
         if work_space:
             self.base_folder = work_space
+            self.title(f"ASTRA Box in {work_space}")            
             WorkSpace.open(work_space)
-            self.title(f"ASTRA Box in {work_space}")
             History.add_new(work_space)
 
         # first paned window
-        w1 = tk.PanedWindow(self, background='#C0DCF3')  
-        w1.pack(fill=tk.BOTH, expand=1) 
+        main_panel = tk.PanedWindow(self, background='#C0DCF3')  
+        main_panel.pack(fill=tk.BOTH, expand=1) 
 
         # second paned window
-        w2 = tk.PanedWindow(w1, orient=tk.VERTICAL)  
-        w1.add(w2)  
+        left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
+        main_panel.add(left_panel)  
 
-        rack_frame = RackFrame(w2, self)
-        w2.add(rack_frame)
+        rack_frame = RackFrame(left_panel, self)
+        left_panel.add(rack_frame)
 
-        self.content_frame = ContentFrame(w1)
-        w1.add(self.content_frame)
+        self.content_frame = ContentFrame(main_panel)
+        main_panel.add(self.content_frame)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
