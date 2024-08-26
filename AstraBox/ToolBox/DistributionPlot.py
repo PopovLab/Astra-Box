@@ -7,7 +7,6 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 
-
 class DistributionPlot(ttk.Frame):
     def __init__(self, master, distribution, time_stamp) -> None:
         super().__init__(master)  

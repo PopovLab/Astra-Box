@@ -3,9 +3,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Views.ListView  import ListView
 from AstraBox.Views.TableView import TableView 
-import AstraBox.Models.ModelFactory as ModelFactory
-import AstraBox.WorkSpace as WorkSpace
-
 
 def construct(master, app):
     rf = RackFrame(master, app)
@@ -16,8 +13,9 @@ def construct(master, app):
 
     ttk.Separator(rf, orient='horizontal').pack(fill='x')
 
-    ttk.Radiobutton(rf, text="Run ASTRA", variable=rf.v, value="imped", width=25, command= rf.show_RunAstraPage,
-                        style = 'Toolbutton').pack(expand=0, fill=tk.X)
+    ttk.Radiobutton(rf, text="Run ASTRA", variable= rf.v, value="imped", width=25, 
+                    command= rf.show_RunAstraPage,
+                    style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
     ttk.Separator(rf, orient='horizontal').pack(fill='x')
 
@@ -33,16 +31,12 @@ class RackFrame(ttk.Frame):
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
-
-
     def on_select_item(self, sender, action):
         self.v.set('xxx')
         if self.active_view:
             if self.active_view is not sender:
                 self.active_view.selection_clear()
         self.active_view = sender
-        #model = ModelFactory.do(action)
-        #self.app.show_model(model)
         self.app.show_ViewItem(action['data'])
 
     def open_doc(self):
