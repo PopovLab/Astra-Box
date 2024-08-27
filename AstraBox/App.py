@@ -22,10 +22,10 @@ import AstraBox.History as History
 
 live = True
 
-work_space = None
+work_space_loc = None
 
 def run():
-    print(work_space)
+    print(work_space_loc)
     app = App()
     app.mainloop()
 
@@ -52,11 +52,11 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
-        if work_space:
-            self.base_folder = work_space
-            self.title(f"ASTRA Box in {work_space}")            
-            WorkSpace.open(work_space)
-            History.add_new(work_space)
+        if work_space_loc:
+            self.base_folder = work_space_loc
+            self.title(f"ASTRA Box in {work_space_loc}")            
+            WorkSpace.open(work_space_loc)
+            History.add_new(work_space_loc)
 
         # first paned window
         main_panel = tk.PanedWindow(self, background='#C0DCF3')  
@@ -82,8 +82,8 @@ class App(tk.Tk):
         #self.v.set('xxx')
 
     def open_work_space(self, path):
-        global work_space
-        work_space = path
+        global work_space_loc
+        work_space_loc = path
         self.destroy()
 
     def on_closing(self):

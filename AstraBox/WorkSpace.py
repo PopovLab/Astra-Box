@@ -83,6 +83,7 @@ class Folder(BaseModel):
     required: bool = True
     location: str
     sort_direction: str=  'default'
+    tag: str = 'top'
     _root: str
     #_content: list[str] = []
 
@@ -104,7 +105,7 @@ default_catalog = [
     Folder(title= 'Equlibrium', model_kind='EquModel', location= 'equ'),
     Folder(title= 'Subroutine', model_kind='SbrModel', location= 'sbr'),
     Folder(title= 'Ray Tracing Configurations', model_kind='RTModel', location= 'ray_tracing', required= False),
-    Folder(title= 'Race history', model_kind='RaceModel', location= 'races', sort_direction= 'reverse'),
+    Folder(title= 'Race history', model_kind='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
 
 class WorkSpace(BaseModel):
@@ -156,17 +157,18 @@ schema = {
     }
 }
 
-
+work_space = None
 def open(path):
     global _location
+    global work_space
     print(f'Open {path}')
-    ws = WorkSpace()
-    ws.open(path)
-    ws.print()
+    work_space = WorkSpace()
+    work_space.open(path)
+    work_space.print()
 
     _location = Path(path)
     for key, item in schema.items():
         item['binding'] = None
         refresh(key)
-        
+    return work_space
 
