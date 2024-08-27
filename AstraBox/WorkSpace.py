@@ -1,6 +1,10 @@
 from pathlib import Path
+from pydantic import BaseModel, Field
 
 _location = None
+
+#import AstraBox.WorkSpace as WorkSpace
+
 
 
 def get_location_path(model_kind = None):
@@ -72,6 +76,56 @@ def get_models_dict(model_kind):
         catalog[model_kind] = None
     return catalog[model_kind]
 
+
+class Folder(BaseModel):
+    title: str
+    model_kind: str
+    required: bool = True
+    location: str
+    sort_direction: str=  'default'
+    _root: str
+    #_content: list[str] = []
+
+    def exists(self, root_path)->bool:
+        self._location = root_path.joinpath(self.location)
+        if self._location.exists():
+            return True
+        else:
+            if self.required:
+                print(f"make dir {self._location}")
+                self._location.mkdir()
+        return True
+    
+    def populate(self):
+        self._content = {p.name: ViewItem(p.name, p, 'comment', self.model_kind) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+
+default_catalog = [
+    Folder(title= 'Experiments', model_kind='ExpModel', location= 'exp'),
+    Folder(title= 'Equlibrium', model_kind='EquModel', location= 'equ'),
+    Folder(title= 'Subroutine', model_kind='SbrModel', location= 'sbr'),
+    Folder(title= 'Ray Tracing Configurations', model_kind='RTModel', location= 'ray_tracing', required= False),
+    Folder(title= 'Race history', model_kind='RaceModel', location= 'races', sort_direction= 'reverse'),
+]
+
+class WorkSpace(BaseModel):
+    folders: list[Folder] = []
+    _location: str
+
+
+    def open(self, path):
+        self._location = Path(path)
+        for folder in default_catalog:
+            if folder.exists(self._location):
+                folder.populate()
+                self.folders.append(folder)
+
+    def print(self):
+        for folder in self.folders:
+            print('------')
+            print(folder)
+            for x in folder._content:
+                print(x)
+
 schema = {
     "ExpModel"  : {
         'title'   : 'Experiments',
@@ -106,6 +160,10 @@ schema = {
 def open(path):
     global _location
     print(f'Open {path}')
+    ws = WorkSpace()
+    ws.open(path)
+    ws.print()
+
     _location = Path(path)
     for key, item in schema.items():
         item['binding'] = None
