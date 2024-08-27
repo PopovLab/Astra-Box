@@ -52,12 +52,15 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
+
         if work_space_loc:
             self.base_folder = work_space_loc
             self.title(f"ASTRA Box in {work_space_loc}")            
-            WorkSpace.open(work_space_loc)
+            self.work_space= WorkSpace.open(work_space_loc)
             History.add_new(work_space_loc)
-
+        else:
+            self.work_space= WorkSpace.WorkSpace()
+            
         # first paned window
         main_panel = tk.PanedWindow(self, background='#C0DCF3')  
         main_panel.pack(fill=tk.BOTH, expand=1) 
