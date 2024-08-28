@@ -51,12 +51,13 @@ def get_item_list(model_kind):
 
 import zipfile
 
-class ViewItem():
-    def __init__(self, name:str, path:Path, comment:str, model_kind:str) -> None:
-        self.name= name
+class FolderItem():
+    def __init__(self, folder,  path:Path) -> None:
+        self.parent = folder
+        self.name= path.name
         self.path= path
         self.comment= ''
-        self.model_kind= model_kind
+        self.model_kind= folder.content_type
         self.on_update= None
         match path.suffix:
             case '.zip':
@@ -71,7 +72,7 @@ def get_models_dict(model_kind):
         if model_kind not in catalog:
             loc = schema[model_kind]['location']
             destpath = get_location_path().joinpath(loc)
-            catalog[model_kind] = {p.name: ViewItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
+            catalog[model_kind] = {} #{p.name: FolderItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
     else:
         catalog[model_kind] = None
     return catalog[model_kind]
@@ -98,7 +99,7 @@ class Folder(BaseModel):
         return True
     
     def populate(self):
-        self._content = {p.name: ViewItem(p.name, p, 'comment', self.content_type) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+        self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
 
 default_catalog = [
     Folder(title= 'Experiments', content_type='ExpModel', location= 'exp'),
