@@ -4,9 +4,9 @@ import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
 class ListView(ttk.Frame):
-    def __init__(self, master, model_kind= None, height= 5, command= None) -> None:
+    def __init__(self, master, folder= None, height= 5, command= None) -> None:
         super().__init__(master)  
-        self.model_kind = model_kind
+        self.model_kind = folder.content_type
         self.schema = WorkSpace.get_shema(model_kind)
         WorkSpace.set_binding(model_kind, self)
         self.reverse_sort = True if self.schema.get('reverse_sort') else False

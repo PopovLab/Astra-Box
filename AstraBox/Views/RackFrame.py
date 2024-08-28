@@ -9,7 +9,7 @@ def construct(master, app):
     rf = RackFrame(master, app)
     for f in app.work_space.folders:
         if f.tag == 'top':
-            ListView(rf,f.content_type, command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+            ListView(rf, f, command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
     #ListView(rf,'ExpModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
     #ListView(rf,'EquModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
     #ListView(rf,'SbrModel', command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
