@@ -72,7 +72,7 @@ class ListView(ttk.Frame):
             action = {
                 'action': tag,
                 'model_kind' : self.model_kind,
-                'data' : self.content.get(text)
+                'payload' : self.content.get(text)
                 }
 
             self.on_select_item(self, action)

@@ -41,7 +41,7 @@ class RackFrame(ttk.Frame):
             if self.active_view is not sender:
                 self.active_view.selection_clear()
         self.active_view = sender
-        self.app.show_ViewItem(action['data'])
+        self.app.show_FolderItem(action['payload'])
 
     def open_doc(self):
         self.app.open_doc()
