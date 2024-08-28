@@ -22,8 +22,9 @@ def construct(master, app):
                     style = 'Toolbutton').pack(expand=0, fill=tk.X)
 
     ttk.Separator(rf, orient='horizontal').pack(fill='x')
-
-    TableView(rf,'RaceModel', height= 8, command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
+    for f in app.work_space.folders:
+        if f.tag == 'bottom':
+            TableView(rf, f, height= 8, command= rf.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))
     return rf
 
 class RackFrame(ttk.Frame):

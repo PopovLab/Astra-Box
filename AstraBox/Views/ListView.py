@@ -13,7 +13,7 @@ class ListView(ttk.Frame):
         #WorkSpace.set_binding(folder.content_type, self)
         self.reverse_sort = False
         self.on_select_item = command
-        lab = ttk.Label(self, text=self.folder.title)
+        lab = ttk.Label(self, text= self.folder.title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
         #self.tree = ttk.Treeview(self,  selectmode="browse", show="headings", columns=  ( "#1",  "#2"), height= height)
