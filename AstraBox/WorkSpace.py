@@ -6,8 +6,6 @@ _location = None
 
 #import AstraBox.WorkSpace as WorkSpace
 
-
-
 def get_location_path(model_kind = None):
     """get workspace location path"""
     if model_kind:
@@ -114,7 +112,8 @@ class Folder(BaseModel):
             if self.required:
                 print(f"make dir {self._location}")
                 self._location.mkdir()
-        return True
+                return True
+        return False
     
     def populate(self):
         self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
@@ -129,8 +128,6 @@ class Folder(BaseModel):
             removed= True
         return removed
     
-    def raiseEvent(self, event):
-        print(event)
 
 
 default_catalog = [
