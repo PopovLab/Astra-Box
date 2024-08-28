@@ -8,12 +8,10 @@ class ListView(ttk.Frame):
         super().__init__(master)  
         self.folder = folder
         self.model_kind = folder.content_type
-        self.schema = WorkSpace.get_shema(folder.content_type)
-        WorkSpace.set_binding(folder.content_type, self)
-        self.reverse_sort = True if self.schema.get('reverse_sort') else False
+        #WorkSpace.set_binding(folder.content_type, self)
+        self.reverse_sort = False
         self.on_select_item = command
-        self.new_button = True if self.schema.get('new_btn') else False
-        lab = ttk.Label(self, text=self.schema['title'])
+        lab = ttk.Label(self, text=self.folder.title)
         lab.grid(row=0, column=0, sticky=tk.W)
         self.nodes = {}
         #self.tree = ttk.Treeview(self,  selectmode="browse", show="headings", columns=  ( "#1",  "#2"), height= height)
@@ -52,10 +50,9 @@ class ListView(ttk.Frame):
         for i in self.tree.get_children():
             self.tree.delete(i)
         self.nodes = {}
-        if self.new_button:
-            self.tree.insert('', tk.END, text='New ', values=('New',), tags=('new_model',))          
+      
 
-        self.content = self.folder._content#WorkSpace.get_models_dict(self.model_kind)
+        self.content = self.folder._content
         if self.content:
             keys_list = sorted(self.content.keys(), reverse= self.reverse_sort) 
 
