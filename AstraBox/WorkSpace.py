@@ -90,6 +90,21 @@ class Folder(BaseModel):
     sort_direction: str=  'default'
     tag: str = 'top'
     _root: str
+    _observers = set()
+
+    
+    def attach(self, observer):
+        if (observer not in self._observers):
+            self._observers.add(observer)
+
+    def detach(self, observer):
+        if (observer in self._observers):
+            self.observers.remove(observer)
+        
+    def raise_event(self, event_name):
+        print(event_name)
+        for event_observer in self._observers:
+            event_observer(event_name)
 
     def exists(self, root_path)->bool:
         self._location = root_path.joinpath(self.location)
@@ -110,7 +125,7 @@ class Folder(BaseModel):
         removed = False
         if ans == 'yes':
             self._content.pop(item.name, None)
-            self.raiseEvent('itemsRemoved')
+            self.raise_event('itemsRemoved')
             removed= True
         return removed
     

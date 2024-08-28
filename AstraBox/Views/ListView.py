@@ -6,7 +6,9 @@ import AstraBox.WorkSpace as WorkSpace
 class ListView(ttk.Frame):
     def __init__(self, master, folder= None, height= 5, command= None) -> None:
         super().__init__(master)  
-        self.folder = folder
+        folder.attach(self.folder_handler)
+        self.folder = folder   
+        
         self.model_kind = folder.content_type
         #WorkSpace.set_binding(folder.content_type, self)
         self.reverse_sort = False
@@ -38,6 +40,9 @@ class ListView(ttk.Frame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)        
 
+    def folder_handler(self, event):
+        print(f'folder {self.model_kind}')
+        print(f'event  {event}')
 
     def refresh(self):
         self.update_tree()
