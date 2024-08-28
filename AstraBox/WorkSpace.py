@@ -1,3 +1,4 @@
+import tkinter as tk
 from pathlib import Path
 from pydantic import BaseModel, Field
 
@@ -51,6 +52,18 @@ def get_item_list(model_kind):
 
 import zipfile
 
+def get_models_dict(model_kind):
+    global catalog
+    if _location:
+        if model_kind not in catalog:
+            loc = schema[model_kind]['location']
+            destpath = get_location_path().joinpath(loc)
+            catalog[model_kind] = {} #{p.name: FolderItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
+    else:
+        catalog[model_kind] = None
+    return catalog[model_kind]
+
+
 class FolderItem():
     def __init__(self, folder,  path:Path) -> None:
         self.parent = folder
@@ -66,17 +79,8 @@ class FolderItem():
             case _:
                 self.comment= ''
 
-def get_models_dict(model_kind):
-    global catalog
-    if _location:
-        if model_kind not in catalog:
-            loc = schema[model_kind]['location']
-            destpath = get_location_path().joinpath(loc)
-            catalog[model_kind] = {} #{p.name: FolderItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
-    else:
-        catalog[model_kind] = None
-    return catalog[model_kind]
-
+    def remove(self)->bool:
+        return self.parent.remove(self)
 
 class Folder(BaseModel):
     title: str
@@ -86,7 +90,6 @@ class Folder(BaseModel):
     sort_direction: str=  'default'
     tag: str = 'top'
     _root: str
-    #_content: list[str] = []
 
     def exists(self, root_path)->bool:
         self._location = root_path.joinpath(self.location)
@@ -100,6 +103,20 @@ class Folder(BaseModel):
     
     def populate(self):
         self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+
+    def remove(self, item)->bool:
+        print(f'remove {item.name}')
+        ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {item.name}?', icon ='warning')
+        removed = False
+        if ans == 'yes':
+            self._content.pop(item.name, None)
+            self.raiseEvent('itemsRemoved')
+            removed= True
+        return removed
+    
+    def raiseEvent(self, event):
+        print(event)
+
 
 default_catalog = [
     Folder(title= 'Experiments', content_type='ExpModel', location= 'exp'),

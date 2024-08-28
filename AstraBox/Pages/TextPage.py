@@ -8,9 +8,9 @@ import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Views.TextView import TextView
 
 class TextPage(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, folder_item, model) -> None:
         super().__init__(master)        
-        #self.title = 'ImpedModelView'
+        self.folder_item= folder_item
         title = f"{model.name}"
         self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
         self.model = model
@@ -35,7 +35,8 @@ class TextPage(ttk.Frame):
 
 
     def delete(self):
-        if ModelFactory.delete_model(self.model):
+        #if ModelFactory.delete_model(self.model):
+        if self.folder_item.remove():
             self.master.show_empty_view()
 
     def save(self):
