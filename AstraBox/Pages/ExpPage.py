@@ -42,7 +42,7 @@ class ExpPage(ttk.Frame):
 
 
     def delete(self):
-        if ModelFactory.delete_model(self.model):
+        if self.folder_item.remove():
             self.master.show_empty_view()
 
     def save(self):

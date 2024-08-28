@@ -141,7 +141,7 @@ class App(tk.Tk):
         match folder_item.model_kind:
             case 'RTModel':
                 model = ModelFactory.load(folder_item.path)
-                page = RayTracingPage(self.content_frame, model)     
+                page = RayTracingPage(self.content_frame, folder_item, model)     
             case 'ExpModel':
                 model = ModelFactory.load(folder_item.path)
                 page = ExpPage(self.content_frame, folder_item, model)                     

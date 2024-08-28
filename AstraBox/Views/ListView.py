@@ -43,6 +43,7 @@ class ListView(ttk.Frame):
     def folder_handler(self, event):
         print(f'folder {self.model_kind}')
         print(f'event  {event}')
+        self.update_tree()
 
     def refresh(self):
         self.update_tree()

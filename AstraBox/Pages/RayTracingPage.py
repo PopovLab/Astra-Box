@@ -41,9 +41,9 @@ class RadioPanel(ttk.Frame):
 
 
 class RayTracingPage(ttk.Frame):
-    def __init__(self, master, model:RTModel) -> None:
+    def __init__(self, master, folder_item, model:RTModel) -> None:
         super().__init__(master)        
-        #self.title = 'ImpedModelView'
+        self.folder_item = folder_item
         title = f"RT Configuration View {model.name}"
         if model.name == 'new model':
             self.header_content = { "title": title, "buttons":[('Save', self.save_model)]}
@@ -141,5 +141,5 @@ class RayTracingPage(ttk.Frame):
         WorkSpace.refresh('RTModel') 
     
     def delete_model(self):
-        if ModelFactory.delete_model(self.model):
+        if self.folder_item.remove():
             self.master.show_empty_view()
