@@ -57,7 +57,6 @@ class TableView(ttk.Frame):
         for i in self.tree.get_children():
             self.tree.delete(i)
         self.nodes = {}
-        #self.view_items = WorkSpace.get_models_dict(self.model_kind)
         self.content = self.folder._content
         if self.content is None:
             return

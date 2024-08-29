@@ -45,12 +45,12 @@ def get_shema(model_kind):
 
 catalog = {}
 
-def get_item_list(model_kind):
-    return list(get_models_dict(model_kind).keys())
+def __get_item_list(model_kind):
+    return list(__get_models_dict(model_kind).keys())
 
 import zipfile
 
-def get_models_dict(model_kind):
+def __get_models_dict(model_kind):
     global catalog
     if _location:
         if model_kind not in catalog:
@@ -157,6 +157,20 @@ class WorkSpace(BaseModel):
             for x in folder._content:
                 print(x)
 
+    def folder_content(self, content_type):
+        matches = [x for x in self.folders if x.content_type == content_type]
+        if len(matches)>0:
+            return matches[0]._content
+        else:
+            return None
+
+    def get_folder_content(self, content_type):
+        content = self.folder_content(content_type)
+        if content:
+            return list(content.keys())
+        else:
+            return []
+
 schema = {
     "ExpModel"  : {
         'title'   : 'Experiments',
@@ -187,10 +201,18 @@ schema = {
     }
 }
 
-#work_space = None
+work_space = None
+def get_folder_content(content_type):
+    if work_space:
+        return work_space.get_folder_content(content_type)
+
+def folder_content(content_type):
+    if work_space:
+        return work_space.folder_content(content_type)
+        
 def open(path):
     global _location
-    #global work_space
+    global work_space
     print(f'Open {path}')
     work_space = WorkSpace()
     work_space.open(path)

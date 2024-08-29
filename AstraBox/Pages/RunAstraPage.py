@@ -22,11 +22,11 @@ import AstraBox.ToolBox.ImageButton as ImageButton
 class ConfigPanel(ttk.Frame):
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_item_list('ExpModel'))
+        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_folder_content('ExpModel'))
         self.exp_combo.grid(row=0, column=0,  padx=2, sticky= tk.E + tk.W)
-        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_item_list('EquModel'))
+        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_folder_content('EquModel'))
         self.equ_combo.grid(row=0, column=1,  padx=2, sticky=tk.E + tk.W)
-        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_item_list('RTModel'))
+        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_folder_content('RTModel'))
         self.rt_combo.grid(row=0, column=2,  padx=2, sticky= tk.E + tk.W)
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width=15)
         self.astra_combo.grid(row=0, column=3,  padx=2, sticky= tk.E + tk.W)
@@ -99,7 +99,7 @@ class RunAstraPage(ttk.Frame):
     def multy_run(self):
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
-            exp_list =  WorkSpace.get_item_list('ExpModel')
+            exp_list =  WorkSpace.get_folder_content('ExpModel')
             equ = self.config_panel.equ_combo.get()
             for exp in exp_list:
                 if self.terminated: break

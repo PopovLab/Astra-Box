@@ -49,10 +49,10 @@ def load(p):
     return model 
 
 def get(model_kind= None, model_name= None):
-    d = WorkSpace.get_models_dict(model_kind)
+    content = WorkSpace.folder_content(model_kind)
     try:
-        vi = d[model_name]
-        return load(vi.path)
+        fi = content[model_name]
+        return load(fi.path)
     except:
         return None
 

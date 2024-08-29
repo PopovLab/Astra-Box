@@ -81,7 +81,7 @@ class RunModel(RootModel):
             self.pack_model_to_zip(zip, self.rt_model)
             if self.rt_model:
                 self.pack_model_to_zip(zip, self.rt_model.get_spectrum_model())
-            for key, item in WorkSpace.get_models_dict('SbrModel').items():
+            for key, item in WorkSpace.folder_content('SbrModel').items():
                 self.pack_model_to_zip(zip, ModelFactory.load(item.path))
 
             models  = {
