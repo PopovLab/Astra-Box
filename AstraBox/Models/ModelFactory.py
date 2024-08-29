@@ -86,27 +86,27 @@ def delete_model(model)  -> bool:
         match model.model_kind:
             case 'RaceModel':
                 os.remove(model.race_zip_file)
-                WorkSpace.refresh('RaceModel')
+                WorkSpace.refresh_folder('RaceModel')
                 deleted = True
 
             case 'RTModel':
                 model.path.unlink()
-                WorkSpace.refresh('RTModel')                
+                WorkSpace.refresh_folder('RTModel')                
                 deleted = True
 
             case 'ExpModel':
                 model.path.unlink()
-                WorkSpace.refresh('ExpModel')                
+                WorkSpace.refresh_folder('ExpModel')                
                 deleted = True   
 
             case 'EquModel':
                 model.path.unlink()
-                WorkSpace.refresh('EquModel')                
+                WorkSpace.refresh_folder('EquModel')                
                 deleted = True   
 
             case 'SbrModel':
                 model.path.unlink()
-                WorkSpace.refresh('SbrModel')                
+                WorkSpace.refresh_folder('SbrModel')                
                 deleted = True                
             case _:
 

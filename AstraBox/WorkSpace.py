@@ -28,13 +28,13 @@ def get_item_location(model_kind, model_name):
     loc = get_location_path()
     return Path(loc).joinpath(model_name)
 
-def refresh(model_kind):
+def __refresh(model_kind):
     if model_kind in catalog:
         del catalog[model_kind]
     obj = schema[model_kind].get('binding')
     if obj:  obj.refresh()
 
-def set_binding(name, object):
+def __set_binding(name, object):
     schema[name]['binding'] = object
 
 def get_title(name):
@@ -118,6 +118,10 @@ class Folder(BaseModel):
     def populate(self):
         self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
 
+    def refresh(self):
+        self.populate()
+        self.raise_event('itemsRefresh')
+
     def remove(self, item)->bool:
         print(f'remove {item.name}')
         ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {item.name}?', icon ='warning')
@@ -157,6 +161,13 @@ class WorkSpace(BaseModel):
             for x in folder._content:
                 print(x)
 
+    def folder(self, content_type):
+        matches = [x for x in self.folders if x.content_type == content_type]
+        if len(matches)>0:
+            return matches[0]
+        else:
+            return None
+        
     def folder_content(self, content_type):
         matches = [x for x in self.folders if x.content_type == content_type]
         if len(matches)>0:
@@ -208,8 +219,14 @@ def get_folder_content(content_type):
 
 def folder_content(content_type):
     if work_space:
-        return work_space.folder_content(content_type)
+        return work_space.folder(content_type)._content
         
+def refresh_folder(content_type):
+    if work_space:
+        f = work_space.folder(content_type)
+        if f:  f.refresh()
+
+
 def open(path):
     global _location
     global work_space
@@ -219,8 +236,8 @@ def open(path):
     #work_space.print()
 
     _location = Path(path)
-    for key, item in schema.items():
-        item['binding'] = None
-        refresh(key)
+    #for key, item in schema.items():
+    #    item['binding'] = None
+    #    refresh(key)
     return work_space
 
