@@ -28,7 +28,6 @@ class RackFrame(ttk.Frame):
         super().__init__(master)
         self.app = app
         self.on_select = None
-        self.active_exlorer = None
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
 
@@ -51,7 +50,8 @@ class RackFrame(ttk.Frame):
         self.v.set('xxx')
 
     def show_RunAstraPage(self):
-        if self.active_exlorer:
-            self.active_exlorer.selection_clear()
-            self.active_exlorer = None
+        if self.active_view:
+            self.v.set('xxx')
+            self.active_view.selection_clear()
+            self.active_view = None
         self.app.show_RunAstraPage()
