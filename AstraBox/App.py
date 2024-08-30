@@ -107,26 +107,7 @@ class App(tk.Tk):
 
 
 
-    def show_model(self, model):
-        print(model)
-        if model is None:
-            return
-        print(f'show {model.name}')
-        match model.model_kind:
-            case 'RTModel':
-                page = RayTracingPage(self.content_frame, model)     
-            case 'ExpModel':
-                page = ExpPage(self.content_frame, model)                     
-            case 'EquModel':
-                page = TextPage(self.content_frame, model)     
-            case 'SbrModel':
-                page = TextPage(self.content_frame, model)                   
-            case 'RaceModel':
-                page = RacePage(self.content_frame, model)                 
-            case _:
-                print('create Emptyview')
-                page = EmptyPage(self.content_frame, model)  
-        self.content_frame.set_content(page)
+
 
     def show_RunAstraPage(self):
         print('show_calc_view')
@@ -161,8 +142,9 @@ class App(tk.Tk):
     
 
     def create_RT_configuration(self):
-        model = ModelFactory.create_model('RTModel')
-        self.show_model(model)
+        print('заглушка создания новой конфигурации')
+        #model = ModelFactory.create_model('RTModel')
+        #self.show_model(model)
 
     def open_command(self, arg):
         print('open command', arg)
