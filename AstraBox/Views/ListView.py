@@ -45,9 +45,6 @@ class ListView(ttk.Frame):
         print(f'event  {event}')
         self.update_tree()
 
-    def refresh(self):
-        self.update_tree()
-
     def selection_clear(self):
         print('explorer selection clear')
         self.tree.selection_set(())
