@@ -29,11 +29,40 @@ def run():
     app = App()
     app.mainloop()
 
+
+geo_file = "data/geo.ini"
+
+def load_geometry():
+    try:
+        # get geometry from file 
+        f = open(geo_file,'r')
+        geo =f.read()
+        f.close()
+    except:
+        print ('error reading geo-file')    
+        geo = None
+    return geo
+
+def save_geometry(geo):
+        # save current geometry to the file 
+        try:
+            with open(geo_file, 'w') as f:
+                f.write(geo)
+                print('save geo')
+                f.close()
+        except:
+            print('file error')    
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("ASTRA Box")
-        self.minsize(1024, 600)
+        self.minsize(1024, 600)        
+        geo = load_geometry()
+        if geo:
+            self.geometry(geo)
+        
 
         main_menu = self.create_main_menu()
         self.config(menu= main_menu)
@@ -86,12 +115,14 @@ class App(tk.Tk):
 
     def open_work_space(self, path):
         global work_space_loc
+        save_geometry(self.geometry())
         work_space_loc = path
         self.destroy()
 
     def on_closing(self):
         global live 
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            save_geometry(self.geometry())
             live = False
             self.destroy()
             
