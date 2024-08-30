@@ -131,9 +131,8 @@ class RacePage(ttk.Frame):
                 self.folder_item.on_update()
 
     def delete_model(self):
-        if self.model:
-            if self.folder_item.remove():
-                self.master.show_empty_view()                
+        if self.folder_item.remove():
+            self.master.show_empty_view()                
         
     def open_new_windows(self):
         new_window = tk.Toplevel(self.master)
