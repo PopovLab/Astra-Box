@@ -1,4 +1,5 @@
 import os
+import json
 import tkinter as tk
 from pathlib import Path
 from pydantic import BaseModel, Field
@@ -208,6 +209,18 @@ def refresh_folder(content_type):
         f = work_space.folder(content_type)
         if f:  f.refresh()
 
+def load_last_run():
+    last_run = None
+    p = get_location_path('RaceModel').joinpath('last_run')
+    if p.exists():
+        with p.open(mode= "r") as json_file:
+            last_run = json.load(json_file)
+    return last_run
+
+def save_last_run(last_run):
+    p = get_location_path('RaceModel').joinpath('last_run')
+    with p.open(mode= "w") as json_file:
+        json.dump(last_run, json_file, indent=2)
 
 def open(path):
     global _location

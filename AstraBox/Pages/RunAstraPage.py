@@ -39,11 +39,8 @@ class ConfigPanel(ttk.Frame):
         self.columnconfigure(2, weight=1)    
         #self.columnconfigure(3, weight=1)    
   
-
-        p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
-        if p.exists():
-            with p.open(mode= "r") as json_file:
-                last_run = json.load(json_file)
+        last_run = WorkSpace.load_last_run()
+        if last_run:
             self.exp_combo.set(last_run['exp'])
             self.equ_combo.set(last_run['equ'])
             self.rt_combo.set(last_run['rt'])
@@ -139,9 +136,7 @@ class RunAstraPage(ttk.Frame):
 
     def save_last_run(self, exp, equ, rt, ap):
         last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
-        p = WorkSpace.get_location_path('RaceModel').joinpath('last_run')
-        with p.open(mode= "w") as json_file:
-            json.dump(last_run, json_file, indent=2)
+        WorkSpace.save_last_run(last_run)
 
     def terminate(self):
         self.terminated = True
