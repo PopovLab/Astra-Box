@@ -1,10 +1,9 @@
+import os
 import tkinter as tk
 from pathlib import Path
 from pydantic import BaseModel, Field
 
 _location = None
-
-#import AstraBox.WorkSpace as WorkSpace
 
 def get_location_path(model_kind = None):
     """get workspace location path"""
@@ -28,38 +27,7 @@ def get_item_location(model_kind, model_name):
     loc = get_location_path()
     return Path(loc).joinpath(model_name)
 
-def __refresh(model_kind):
-    if model_kind in catalog:
-        del catalog[model_kind]
-    obj = schema[model_kind].get('binding')
-    if obj:  obj.refresh()
-
-def __set_binding(name, object):
-    schema[name]['binding'] = object
-
-def get_title(name):
-    return schema[name]['title']
-
-def get_shema(model_kind):
-    return schema[model_kind]
-
-catalog = {}
-
-def __get_item_list(model_kind):
-    return list(__get_models_dict(model_kind).keys())
-
 import zipfile
-
-def __get_models_dict(model_kind):
-    global catalog
-    if _location:
-        if model_kind not in catalog:
-            loc = schema[model_kind]['location']
-            destpath = get_location_path().joinpath(loc)
-            catalog[model_kind] = {} #{p.name: FolderItem(p.name, p, 'comment', model_kind) for p in destpath.glob('*.*') if p.name !='.gitignore'}
-    else:
-        catalog[model_kind] = None
-    return catalog[model_kind]
 
 
 class FolderItem():
@@ -79,6 +47,19 @@ class FolderItem():
 
     def remove(self)->bool:
         return self.parent.remove(self)
+
+    def delete_file(self)  -> bool:
+        print(f'try delete file {self.path}')
+        deleted = False
+        match self.model_kind:
+            case 'RaceModel':
+                os.remove(self.path)
+                deleted = True
+            case _:
+                self.path.unlink()
+                deleted = True
+        print(f'delete status {deleted}')
+        return deleted
 
 class Folder(BaseModel):
     title: str
@@ -127,9 +108,10 @@ class Folder(BaseModel):
         ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {item.name}?', icon ='warning')
         removed = False
         if ans == 'yes':
-            self._content.pop(item.name, None)
-            self.raise_event('itemsRemoved')
-            removed= True
+            if item.delete_file():
+                self._content.pop(item.name, None)
+                self.raise_event('itemsRemoved')
+                removed= True
         return removed
     
 
@@ -231,13 +213,9 @@ def open(path):
     global _location
     global work_space
     print(f'Open {path}')
+    _location = Path(path)
     work_space = WorkSpace()
     work_space.open(path)
     #work_space.print()
-
-    _location = Path(path)
-    #for key, item in schema.items():
-    #    item['binding'] = None
-    #    refresh(key)
     return work_space
 
