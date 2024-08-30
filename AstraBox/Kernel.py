@@ -185,7 +185,7 @@ class AstraWorker(Worker):
 
         self.pack_data()
 
-        zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
+        zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
         race_zip_file = str(zip_path)
         src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
         WSL.get(src, race_zip_file)

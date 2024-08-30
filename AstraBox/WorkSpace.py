@@ -4,18 +4,13 @@ import tkinter as tk
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+import zipfile
+
 _location = None
 
-def get_location_path(model_kind = None):
+def get_location_path():
     """get workspace location path"""
-    if model_kind:
-        loc = _location.joinpath(schema[model_kind]['location'])
-        if not loc.exists():
-            print(f"make dir {loc}")
-            loc.mkdir()
-        return loc
-    else:
-        return _location
+    return _location
 
 def temp_folder_location():
     loc = get_location_path().joinpath('tmp')
@@ -27,8 +22,6 @@ def temp_folder_location():
 def get_item_location(model_kind, model_name):
     loc = get_location_path()
     return Path(loc).joinpath(model_name)
-
-import zipfile
 
 
 class FolderItem():
@@ -98,7 +91,11 @@ class Folder(BaseModel):
         return False
     
     def populate(self):
-        self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+        try:
+            self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+        except Exception as e:
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+            self._content = {}
 
     def refresh(self):
         self.populate()
@@ -165,36 +162,6 @@ class WorkSpace(BaseModel):
         else:
             return []
 
-schema = {
-    "ExpModel"  : {
-        'title'   : 'Experiments',
-        'location': 'exp',
-        'binding' : None
-    },
-    "EquModel"  : {
-        'title'   : 'Equlibrium',
-        'location': 'equ',
-        'binding' : None
-    },
-    "SbrModel"  : {
-        'title'   : 'Subroutine',
-        'location': 'sbr',
-        'binding' : None
-    },
-    "RTModel"   : {
-        'title'   : 'Ray Tracing Configurations',
-        'location': 'ray_tracing',
-        #'new_btn' : True,
-        'binding' : None
-    },
-    "RaceModel" : {
-        'title'   : 'Race history',
-        'location': 'races',
-        'binding' : None,
-        'reverse_sort' : True
-    }
-}
-
 work_space = None
 def get_folder_content(content_type):
     if work_space:
@@ -209,16 +176,29 @@ def refresh_folder(content_type):
         f = work_space.folder(content_type)
         if f:  f.refresh()
 
+def get_path(content_type: str, sub_path: str= None):
+    """get path of workspace folder"""
+    if work_space:
+        loc = _location.joinpath(work_space.folder(content_type).location)
+        if sub_path:
+            loc = loc.joinpath(sub_path)
+        if not loc.exists():
+            print(f"make dir {loc}")
+            loc.mkdir()
+        return loc
+    else:
+        return _location
+
 def load_last_run():
     last_run = None
-    p = get_location_path('RaceModel').joinpath('last_run')
+    p = get_path('RaceModel', 'last_run')
     if p.exists():
         with p.open(mode= "r") as json_file:
             last_run = json.load(json_file)
     return last_run
 
 def save_last_run(last_run):
-    p = get_location_path('RaceModel').joinpath('last_run')
+    p = get_path('RaceModel', 'last_run')
     with p.open(mode= "w") as json_file:
         json.dump(last_run, json_file, indent=2)
 
