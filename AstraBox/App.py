@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from functools import partial
-from AstraBox.Views.RackFrame import RackFrame
+import AstraBox.Views.RackFrame as RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
 from AstraBox.Pages.EmptyPage import EmptyPage
@@ -20,11 +20,49 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.History as History
 
+live = True
+
+work_space_loc = None
+
+def run():
+    print(work_space_loc)
+    app = App()
+    app.mainloop()
+
+
+geo_file = "data/geo.ini"
+
+def load_geometry():
+    try:
+        # get geometry from file 
+        f = open(geo_file,'r')
+        geo =f.read()
+        f.close()
+    except:
+        print ('error reading geo-file')    
+        geo = None
+    return geo
+
+def save_geometry(geo):
+        # save current geometry to the file 
+        try:
+            with open(geo_file, 'w') as f:
+                f.write(geo)
+                print('save geo')
+                f.close()
+        except:
+            print('file error')    
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("ASTRA Box")
-        self.minsize(1024, 600)
+        self.minsize(1024, 600)        
+        geo = load_geometry()
+        if geo:
+            self.geometry(geo)
+        
 
         main_menu = self.create_main_menu()
         self.config(menu= main_menu)
@@ -43,27 +81,28 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
-        #abspath = os.path.abspath(Config.get_current_workspace_dir())
-        #if not os.path.exists(abspath):
-        #    os.mkdir(abspath)
 
-        last_ws = History.get_last()
-        if last_ws:
-            self.base_folder = last_ws
-            self.open_work_space(last_ws)
+        if work_space_loc:
+            self.base_folder = work_space_loc
+            self.title(f"ASTRA Box in {work_space_loc}")            
+            self.work_space= WorkSpace.open(work_space_loc)
+            History.add_new(work_space_loc)
+        else:
+            self.work_space= WorkSpace.WorkSpace()
+            
         # first paned window
-        w1 = tk.PanedWindow( background='#C0DCF3')  
-        w1.pack(fill=tk.BOTH, expand=1) 
+        main_panel = tk.PanedWindow(self, background='#C0DCF3')  
+        main_panel.pack(fill=tk.BOTH, expand=1) 
 
         # second paned window
-        w2 = tk.PanedWindow(w1, orient=tk.VERTICAL)  
-        w1.add(w2)  
+        left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
+        main_panel.add(left_panel)  
 
-        rack_frame = RackFrame(w2, self)
-        w2.add(rack_frame)
+        rack_frame = RackFrame.construct(left_panel, self)
+        left_panel.add(rack_frame)
 
-        self.content_frame = ContentFrame(w1)
-        w1.add(self.content_frame)
+        self.content_frame = ContentFrame(main_panel)
+        main_panel.add(self.content_frame)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -75,15 +114,16 @@ class App(tk.Tk):
         #self.v.set('xxx')
 
     def open_work_space(self, path):
-        WorkSpace.open(path)
-        self.title(f"ASTRA Box in {path}")
-        #Config.set_current_workspace_dir(path)        
-        History.add_new(path)
+        global work_space_loc
+        save_geometry(self.geometry())
+        work_space_loc = path
+        self.destroy()
 
     def on_closing(self):
+        global live 
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            #self.controller.destroy()
-            #Storage().close()
+            save_geometry(self.geometry())
+            live = False
             self.destroy()
             
     def open_doc(self):
@@ -98,26 +138,7 @@ class App(tk.Tk):
 
 
 
-    def show_model(self, model):
-        print(model)
-        if model is None:
-            return
-        print(f'show {model.name}')
-        match model.model_kind:
-            case 'RTModel':
-                page = RayTracingPage(self.content_frame, model)     
-            case 'ExpModel':
-                page = ExpPage(self.content_frame, model)                     
-            case 'EquModel':
-                page = TextPage(self.content_frame, model)     
-            case 'SbrModel':
-                page = TextPage(self.content_frame, model)                   
-            case 'RaceModel':
-                page = RacePage(self.content_frame, model)                 
-            case _:
-                print('create Emptyview')
-                page = EmptyPage(self.content_frame, model)  
-        self.content_frame.set_content(page)
+
 
     def show_RunAstraPage(self):
         print('show_calc_view')
@@ -127,24 +148,24 @@ class App(tk.Tk):
     def show_about(self):
         messagebox.showinfo("Astra Box", "version x.y.z")
 
-    def show_ViewItem(self, view_item):
+    def show_FolderItem(self, folder_item):
         
-        match view_item.model_kind:
+        match folder_item.model_kind:
             case 'RTModel':
-                model = ModelFactory.load(view_item.path)
-                page = RayTracingPage(self.content_frame, model)     
+                model = ModelFactory.load(folder_item.path)
+                page = RayTracingPage(self.content_frame, folder_item, model)     
             case 'ExpModel':
-                model = ModelFactory.load(view_item.path)
-                page = ExpPage(self.content_frame, model)                     
+                model = ModelFactory.load(folder_item.path)
+                page = ExpPage(self.content_frame, folder_item, model)                     
             case 'EquModel':
-                model = ModelFactory.load(view_item.path)
-                page = TextPage(self.content_frame, model)     
+                model = ModelFactory.load(folder_item.path)
+                page = TextPage(self.content_frame, folder_item, model)     
             case 'SbrModel':
-                model = ModelFactory.load(view_item.path)
-                page = TextPage(self.content_frame, model)                   
+                model = ModelFactory.load(folder_item.path)
+                page = TextPage(self.content_frame, folder_item, model)                   
             case 'RaceModel':
                 #model = RaceModel(path= view_item.path )  
-                page = RacePage(self.content_frame, view_item)                 
+                page = RacePage(self.content_frame, folder_item)                 
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
@@ -152,8 +173,9 @@ class App(tk.Tk):
     
 
     def create_RT_configuration(self):
-        model = ModelFactory.create_model('RTModel')
-        self.show_model(model)
+        print('заглушка создания новой конфигурации')
+        #model = ModelFactory.create_model('RTModel')
+        #self.show_model(model)
 
     def open_command(self, arg):
         print('open command', arg)

@@ -8,8 +8,9 @@ import asyncio
 import shutil
 import platform
 
+from AstraBox.Models import ModelFactory
+from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
-from AstraBox.Models.RunModel import RunModel
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
 import AstraBox.WSL as WSL
@@ -117,13 +118,13 @@ def call_progress_callback(progress = 0):
 #    _astra_profile = Config.get_astra_profile(astra_porfile_name)
 
 class Worker:
-    def __init__(self, model: RunModel) -> None:
+    def __init__(self, task: Task) -> None:
         self.error_flag = False
         self.stdinput = None
-        self.run_model = model
+        self.task = task
 
     def set_model_status(self, status):
-        self.run_model.data['status'] = status
+        #self.run_model.data['status'] = status
         call_progress_callback()
 
     def terminate(self):
@@ -133,8 +134,8 @@ class Worker:
 
 
 class AstraWorker(Worker):
-    def __init__(self, model: RunModel) -> None:
-        super().__init__(model)
+    def __init__(self, task: Task) -> None:
+        super().__init__(task)
         _logger.info('create AstraWorker')
 
     def clear_work_folders(self):
@@ -147,9 +148,17 @@ class AstraWorker(Worker):
         WSL.exec(self.astra_home, clear_cmd)        
 
     def copy_data(self):
-        zip_file = self.run_model.prepare_run_data()
+        #zip_file = self.run_model.prepare_run_data()
+        zip_file= zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
+        errors = ModelFactory.prepare_task_zip(self.task, zip_file)
+        if len(errors)>0:
+            for e in errors:
+                _logger.error(e)
+            _logger.error('запуск не возможен из-за ошибок')
+            return True
         WSL.put(zip_file, self.wsl_path)
         WSL.exec(self.wsl_path, f'unzip -o race_data.zip')
+        return False
 
 
     def pack_data(self):
@@ -163,21 +172,15 @@ class AstraWorker(Worker):
         self.astra_home = astra_profile["home"]
 
         self.wsl_path = f'{self.astra_home}/{self.astra_user}'
-        _logger.info(f'start {self.run_model.name}')
+        _logger.info(f'start {self.task.name}')
 
-        if len(self.run_model.errors)>0:
-            for e in self.run_model.errors:
-                _logger.error(e)
-            _logger.error('запуск не возможен из-за ошибок')
-            return
-            
         self.clear_work_folders()
-
-        self.copy_data()
+        
+        if self.copy_data():  return
 
         self.set_model_status('run')
         
-        astra_cmd = f'./run_astra.sh {self.astra_user} {self.run_model.exp_model.path.name} {self.run_model.equ_model.path.name} {option}'
+        astra_cmd = f'./run_astra.sh {self.astra_user} {self.task.exp} {self.task.equ} {option}'
 
         WSL.start_exec(self.astra_home, astra_cmd)
 
@@ -185,11 +188,11 @@ class AstraWorker(Worker):
 
         self.pack_data()
 
-        zip_path = WorkSpace.get_location_path('RaceModel').joinpath(f'{self.run_model.name}.zip')
+        zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{self.task.name}.zip')
         race_zip_file = str(zip_path)
         src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
         WSL.get(src, race_zip_file)
-        self.run_model.race_zip_file = race_zip_file
+        #self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
 
@@ -201,10 +204,12 @@ def check_astra_profile(astra_profile)-> bool:
     
     return WSL.check_dir(astra_home)
 
-def execute(model: RunModel, astra_profile:dict, option:str):
+def execute(task: Task, astra_profile:dict, option:str):
     WSL._logger = _logger
     if check_astra_profile(astra_profile):
-        worker = AstraWorker(model)
+        worker = AstraWorker(task)
         worker.execute(astra_profile, option)
     else:
         WSL.log_error('нет Астры')
+
+

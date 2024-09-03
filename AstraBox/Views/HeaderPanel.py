@@ -8,8 +8,8 @@ class HeaderPanel(ttk.Frame):
         # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
         padx = 5
         frame = ttk.Frame(self)
-        label = ttk.Label(frame,  text=content['title'], style="Header.TLabel")
-        label.pack(side=tk.LEFT, padx=padx, pady=0)
+        self.label = ttk.Label(frame,  text=content['title'], style="Header.TLabel")
+        self.label.pack(side=tk.LEFT, padx=padx, pady=0)
 
         for text, command in content['buttons']:
             btn = ttk.Button(frame, text=text, style = 'Toolbutton', command=command)
@@ -18,3 +18,6 @@ class HeaderPanel(ttk.Frame):
 
         frame.pack(fill='x')
         ttk.Separator(self, orient='horizontal').pack(fill='x')
+
+    def update_title(self, text:str):
+        self.label.config(text = text)

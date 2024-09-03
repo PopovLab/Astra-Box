@@ -46,11 +46,11 @@ class InfoPanel(tk.Frame):
 
 class RacePage(ttk.Frame):
  
-    def __init__(self, master, view_item) -> None:
+    def __init__(self, master, folder_item) -> None:
         super().__init__(master)        
         self.master = master
-        self.view_item = view_item
-        self.model = RaceModel.load(view_item.path)  
+        self.folder_item = folder_item
+        self.model = RaceModel.load(folder_item.path)  
         #self.model.load_model_data()
         title = f"Race: {self.model.name}"
         self.header_content = { "title": title, "buttons":[('Delete', self.delete_model), ('Open', self.open_new_windows), ('Extra', self.open_extra_race_view) ]}
@@ -126,20 +126,19 @@ class RacePage(ttk.Frame):
     def save_comment(self):
         cmt = self.var_comment.get()
         self.model.write_comment(cmt)
-        self.view_item.comment = cmt
-        if not self.view_item.on_update is None:
-                self.view_item.on_update()
+        self.folder_item.comment = cmt
+        if not self.folder_item.on_update is None:
+                self.folder_item.on_update()
 
     def delete_model(self):
-        if self.model:
-            if ModelFactory.delete_model(self.model):
-                self.master.show_empty_view()
+        if self.folder_item.remove():
+            self.master.show_empty_view()                
         
     def open_new_windows(self):
         new_window = tk.Toplevel(self.master)
         new_window.title("Race Window")
         new_window.geometry("850x870")                
-        model_view = RacePage(new_window, self.view_item)   
+        model_view = RacePage(new_window, self.folder_item)   
         model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
         new_window.columnconfigure(0, weight=1)        
         new_window.rowconfigure(0, weight=1)    
