@@ -1,13 +1,17 @@
 import os
 from pathlib import Path
 import tkinter as tk
+from zipfile import ZipFile
+import zipfile
 
+from AstraBox import Astra
 from AstraBox.Models.RootModel import get_new_name
 from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Models.RaceModel import RaceModel
+from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
 
 def do(action:dict):
@@ -115,4 +119,62 @@ def delete_model(model)  -> bool:
     return deleted
 
 
+import json
+import encodings
 
+def pack_model_to_zip(zip, model):
+    if model:
+        file_name = model.get_dest_path()        
+        data = model.get_text()
+        zip.writestr(file_name,data)
+
+
+def make_folders(zip: ZipFile):
+    for key, folder in Astra.data_folder.items():
+        zip.mkdir(folder)
+
+
+def prepare_task_zip(task:Task, zip_file):
+    #zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
+    #zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
+    errors = []
+    with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
+        zip.comment = bytes(task.title,'UTF-8')
+        make_folders(zip)
+
+        exp_model = get('ExpModel', task.exp)
+        if exp_model is None:
+            errors.append(f"ExpModel {task.exp} not exists")
+            return errors
+
+
+        equ_model =  get('EquModel', task.equ)
+        if equ_model is None:
+            errors.append(f"EquModel {task.equ} not exists")
+            return errors
+        rt_model =  get('RTModel', task.rt)
+
+        pack_model_to_zip(zip, exp_model)
+        pack_model_to_zip(zip, equ_model)
+        pack_model_to_zip(zip, rt_model)
+
+        if rt_model:
+            pack_model_to_zip(zip, rt_model.get_spectrum_model())
+
+        for key, item in WorkSpace.folder_content('SbrModel').items():
+            pack_model_to_zip(zip, load(item.path))
+
+        models  = {
+            'ExpModel' : exp_model.data,
+            'EquModel' : equ_model.data,
+            'name' : task.name
+            }
+        
+        if rt_model:
+            models['RTModel'] = rt_model.data
+            
+        with zip.open( 'race_model.json' , "w" ) as json_file:
+            json_writer = encodings.utf_8.StreamWriter(json_file)
+            # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
+            json.dump(models, json_writer, ensure_ascii=False, indent=2)
+    return errors

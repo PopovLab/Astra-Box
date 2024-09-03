@@ -19,48 +19,67 @@ from AstraBox.ToolBox.ComboBox import ComboBox
 
 import AstraBox.ToolBox.ImageButton as ImageButton
 
+from AstraBox.Task import Task
+
 class ConfigPanel(ttk.Frame):
-    def __init__(self, master) -> None:
+    def __init__(self, master, last_task) -> None:
         super().__init__(master)        
-        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_folder_content('ExpModel'))
-        self.exp_combo.grid(row=0, column=0,  padx=2, sticky= tk.E + tk.W)
-        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_folder_content('EquModel'))
-        self.equ_combo.grid(row=0, column=1,  padx=2, sticky=tk.E + tk.W)
-        self.rt_combo = ComboBox(self, 'Ray tracing:', WorkSpace.get_folder_content('RTModel'))
-        self.rt_combo.grid(row=0, column=2,  padx=2, sticky= tk.E + tk.W)
+
+        frame = ttk.Frame(self)
+        ttk.Label(frame, text='Title:').pack(side='left')
+        self.entry = ttk.Entry(frame, width= 60 )
+        self.entry.pack(side='left', padx=10)
+        self.entry.insert(0, last_task.title)
+        frame.grid(row=0, column=0, columnspan=3, pady=4, sticky= tk.E + tk.W)  
+
+        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_folder_content_list('ExpModel'))
+        self.exp_combo.grid(row=1, column=0,  padx=2, sticky= tk.E + tk.W)
+        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_folder_content_list('EquModel'))
+        self.equ_combo.grid(row=1, column=1,  padx=2, sticky=tk.E + tk.W)
+        fcl =  WorkSpace.get_folder_content_list('RTModel')
+        if len(fcl)>0:
+            self.rt_combo = ComboBox(self, 'Ray tracing:', fcl)
+            self.rt_combo.grid(row=1, column=2,  padx=2, sticky= tk.E + tk.W)
+        else:
+            self.rt_combo= None
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width=15)
-        self.astra_combo.grid(row=0, column=3,  padx=2, sticky= tk.E + tk.W)
+        self.astra_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
       
         self.btn = ImageButton.create(self, '4231901.png', self.open_config)
-        self.btn.grid(row=0, column=4,  padx=5, sticky= tk.E + tk.W)
+        self.btn.grid(row=1, column=4,  padx=5, sticky= tk.E + tk.W)
 
         self.columnconfigure(0, weight=1)    
         self.columnconfigure(1, weight=1)    
         self.columnconfigure(2, weight=1)    
-        #self.columnconfigure(3, weight=1)    
-  
-        last_run = WorkSpace.load_last_run()
-        if last_run:
-            self.exp_combo.set(last_run['exp'])
-            self.equ_combo.set(last_run['equ'])
-            self.rt_combo.set(last_run['rt'])
-            self.astra_combo.set(last_run['astra_profile'])      
+
+        self.exp_combo.set(last_task.exp)
+        self.equ_combo.set(last_task.equ)
+        if self.rt_combo:
+            self.rt_combo.set(last_task.rt)
+        self.astra_combo.set(last_task.astra_profile)      
                 
     def open_config(self):
         print('open_config')
         os.system(f'start notepad {Config.get_config_path()}') 
 
+    def get_task(self):
+        print('get_task')
+        task = Task(exp= self.exp_combo.get(), equ= self.equ_combo.get())
+        print(task.name)
+        task.title= self.entry.get()
+        if self.rt_combo:
+            task.rt= self.rt_combo.get()
+        task.astra_profile= self.astra_combo.get()
+        return task
+
 class RunAstraPage(ttk.Frame):
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
-        self.race_name = {
-            'title': 'Race name',
-             'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-            }
+        last_task = WorkSpace.get_last_task()
 
         self.header_content =  { 
-            "title": f"{self.race_name['value']}", 
+            "title": f"{last_task.name}", 
             "buttons":[
                 ('Run', self.run),
                 ('Run with Pause', self.run_with_pause),
@@ -74,12 +93,7 @@ class RunAstraPage(ttk.Frame):
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0,  padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
  
-        self.race_name = {'title': 'Race name', 'value': datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}
-        self.race_comment = {'title': 'Comment', 'value': 'enter comment'}
-        self.rn_wdg = StringBox(self, self.race_comment, width=40)
-        self.rn_wdg.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
-        self.config_panel = ConfigPanel(self)
+        self.config_panel = ConfigPanel(self, last_task)
         self.config_panel.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
         runframe = ttk.LabelFrame(self,  text=f"Calculation log:")
@@ -107,11 +121,28 @@ class RunAstraPage(ttk.Frame):
 
     def run_with_pause(self):
         exp = self.config_panel.exp_combo.get()
-        self.single_run(self.race_name['value'], exp, 'pause')
+        #self.single_run(self.race_name['value'], exp, 'pause')
+        task= self.config_panel.get_task()
+        self.run_task(task, 'pause')
 
     def run(self):
         exp = self.config_panel.exp_combo.get()
-        self.single_run(self.race_name['value'], exp, 'no_pause')
+        #self.single_run(self.race_name['value'], exp, 'no_pause')
+        task= self.config_panel.get_task()
+        self.run_task(task, 'no_pause')
+
+    def run_task(self, task, option:str):
+        self.hp.update_title(task.name)
+        WorkSpace.save_last_task(task)
+        self.log_console.set_logger(Kernel.get_logger())
+        Kernel.set_progress_callback(self.on_progress)     
+        Kernel.log_info(task)
+        astra_profile = Config.get_astra_profile(task.astra_profile)
+        self.on_progress(0)
+
+        Kernel.execute(task, astra_profile, option)
+        
+        WorkSpace.refresh_folder('RaceModel')        
 
     def single_run(self, race_name, exp, option:str):
         

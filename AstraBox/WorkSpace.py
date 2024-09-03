@@ -4,6 +4,7 @@ import tkinter as tk
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+from AstraBox.Task import Task
 import zipfile
 
 _location = None
@@ -155,7 +156,7 @@ class WorkSpace(BaseModel):
         else:
             return None
 
-    def get_folder_content(self, content_type):
+    def get_folder_content_list(self, content_type):
         content = self.folder_content(content_type)
         if content:
             return list(content.keys())
@@ -163,9 +164,9 @@ class WorkSpace(BaseModel):
             return []
 
 work_space = None
-def get_folder_content(content_type):
+def get_folder_content_list(content_type):
     if work_space:
-        return work_space.get_folder_content(content_type)
+        return work_space.get_folder_content_list(content_type)
 
 def folder_content(content_type):
     if work_space:
@@ -188,6 +189,23 @@ def get_path(content_type: str, sub_path: str= None):
         return loc
     else:
         return _location
+
+def get_last_task():
+    last_task = Task()
+    p = get_path('RaceModel').joinpath('last_task')
+    if p.exists():
+        print(p)
+        with p.open(mode= "r") as json_file:
+            data = json_file.read()
+            last_task = Task.load(data)
+    print(last_task)
+    return last_task
+
+def save_last_task(last_task):
+    p = get_path('RaceModel').joinpath('last_task')
+    with p.open(mode= "w") as file:
+        file.write(last_task.dump())    
+
 
 def load_last_run():
     last_run = None
