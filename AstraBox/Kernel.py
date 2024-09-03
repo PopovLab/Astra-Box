@@ -11,7 +11,6 @@ import platform
 from AstraBox.Models import ModelFactory
 from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
-from AstraBox.Models.RunModel import RunModel
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
 import AstraBox.WSL as WSL
@@ -214,11 +213,3 @@ def execute(task: Task, astra_profile:dict, option:str):
         WSL.log_error('нет Астры')
 
 
-def __execute(model: RunModel, astra_profile:dict, option:str):
-    '''устаревшая версия'''
-    WSL._logger = _logger
-    if check_astra_profile(astra_profile):
-        worker = AstraWorker(model)
-        worker.execute(astra_profile, option)
-    else:
-        WSL.log_error('нет Астры')

@@ -9,7 +9,6 @@ import tkinter.messagebox as messagebox
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
-from AstraBox.Models.RunModel import RunModel
 import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
@@ -103,7 +102,6 @@ class RunAstraPage(ttk.Frame):
         runframe.columnconfigure(0, weight=1)
         runframe.rowconfigure(1, weight=1)
         self.first_init = True
-        #self.bind('<Visibility>', self.visibilityChanged)
         runframe.grid(row=3, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
         self.rowconfigure(3, weight=1)
         self.columnconfigure(0, weight=1)        
@@ -117,18 +115,16 @@ class RunAstraPage(ttk.Frame):
                 if self.terminated: break
                 race_name = f"{self.race_name['value']}_{Path(equ).stem}-{Path(exp).stem} "
                 print(race_name)
-                self.single_run(race_name, exp, 'no_pause')
+                #self.single_run(race_name, exp, 'no_pause')
                 #self.batch_run()
 
     def run_with_pause(self):
         exp = self.config_panel.exp_combo.get()
-        #self.single_run(self.race_name['value'], exp, 'pause')
         task= self.config_panel.get_task()
         self.run_task(task, 'pause')
 
     def run(self):
         exp = self.config_panel.exp_combo.get()
-        #self.single_run(self.race_name['value'], exp, 'no_pause')
         task= self.config_panel.get_task()
         self.run_task(task, 'no_pause')
 
@@ -145,30 +141,8 @@ class RunAstraPage(ttk.Frame):
         
         WorkSpace.refresh_folder('RaceModel')        
 
-    def single_run(self, race_name, exp, option:str):
-        
-        equ = self.config_panel.equ_combo.get()
-        rt = self.config_panel.rt_combo.get()
-        astra_porfile_name = self.config_panel.astra_combo.get()
-        astra_profile = Config.get_astra_profile(astra_porfile_name)
-        self.save_last_run(exp, equ, rt, astra_porfile_name)
 
-        self.log_console.set_logger(Kernel.get_logger())
-        Kernel.set_progress_callback(self.on_progress)
-        #Kernel.set_astra_profile(a_p)
 
-        run_model = RunModel(name= race_name, comment= self.race_comment['value'],exp_name= exp, equ_name= equ, rt_name= rt ) 
-   
-        Kernel.log_info(f"exp: {exp}, equ: {equ}, rt: {rt}, astra_profile: {astra_porfile_name}")
-        self.on_progress(0)
-
-        Kernel.execute(run_model, astra_profile, option)
-        
-        WorkSpace.refresh_folder('RaceModel')
-
-    def save_last_run(self, exp, equ, rt, ap):
-        last_run = {'exp': exp, 'equ': equ, 'rt': rt, 'astra_profile': ap}
-        WorkSpace.save_last_run(last_run)
 
     def terminate(self):
         self.terminated = True
