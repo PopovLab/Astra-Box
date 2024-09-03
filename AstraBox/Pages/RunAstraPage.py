@@ -55,7 +55,8 @@ class ConfigPanel(ttk.Frame):
         self.exp_combo.set(last_task.exp)
         self.equ_combo.set(last_task.equ)
         if self.rt_combo:
-            self.rt_combo.set(last_task.rt)
+            if last_task.rt:
+                self.rt_combo.set(last_task.rt)
         self.astra_combo.set(last_task.astra_profile)      
                 
     def open_config(self):
