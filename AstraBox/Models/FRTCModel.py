@@ -1,6 +1,7 @@
 import pathlib 
 from typing import Literal
 from typing_extensions import Annotated
+from typing import ClassVar
 from pydantic import BaseModel, Field
 
 #import AstraBox.WorkSpace as WorkSpace
@@ -26,7 +27,7 @@ class ctype(BaseModel):
     kind: str
 
 class PhysicalParameters(ParametersSection):
-    title: str = 'Physical Parameters'
+    title: ClassVar[str] = 'Physical Parameters'
     freq: float = Field(title= 'Frequency', default=5.0, unit= 'GHz', description= "RF frequency, GHz")
     xmi1: float = Field(title= 'xmi1', default= 2.0, description= "Mi1/Mp,  relative mass of ions 1")
     zi1:  float = Field(title= 'zi1', default= 1.0, description= "charge of ions 1")
@@ -34,34 +35,34 @@ class PhysicalParameters(ParametersSection):
     zi2:  float = Field(title= 'zi2', default= 0.0,  description= "charge of ions 2")
     dni2: float = Field(title= 'dni2', default= 0.03, description= "Ni2/Ni1, relative density of ions 2")
     xmi3: float = Field(title= 'xmi3', default= 1.0, description= "Mi3/Mp,  relative mass of ions 3")
-    zi3:  float = Field(title= 'zi3', default= 1.0, description= "charge of ions 3")
-    dni3: float = Field(title= 'dni3', default= 1.0, description= "Ni3/Ni1, relative density of ions 3")
+    zi3:  float = Field(default= 1.0, title= 'zi3',  description= "charge of ions 3")
+    dni3: float = Field(default= 1.0, title= 'dni3', description= "Ni3/Ni1, relative density of ions 3")
 
 class AlphasParameters(ParametersSection):
-    title: str = 'Parameters for alphas calculations'
+    title: ClassVar[str] = 'Parameters for alphas calculations'
 
 class NumericalParameters(ParametersSection):
-    title: str = 'Numerical parameters'
+    title: ClassVar[str] = 'Numerical parameters'
 
 
 
 class Options(ParametersSection):
-    title: str = 'Options'
+    title: ClassVar[str] = 'Options'
     xyz:  float = Field(default= 1.23, title='test xyz', description='xyz test', unit='Ghz')
     zyx: float = Field(default= 3.1415, title='test zyx', description='zyx test', unit='Mhz')
 
-    ipri:     int = Field( default= 2, title= 'ipri', type= 'int', description= "printing output monitoring: 0,1,2,3,4")
-    iw:       int = Field(default= 1, title= 'iw', type= 'int',description= "initial mode (slow=1, fast=-1)")
-    ismth:    int = Field(default= 1, title= 'ismth',type= 'int',description= "if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)")
-    ismthalf: int = Field(default= 0, title= 'ismthalf',type= 'int',description= "if=0, no smoothing in D_alpha(vperp)")                     
-    ismthout: int = Field(default= 1, title= 'ismthout',type= 'int',description= "if=0, no smoothing in output profiles")
-    inew: int = Field(default= 0, title= 'inew',type= 'int',description= "inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill")                   
-    itor: int = Field(default= 1, title= 'itor',type= 'int',description= "+-1, Btor direction in right coord{drho,dteta,dfi}")    
-    ipol: int = Field(default= 1, title= 'ipol',type= 'int',description= "+-1, Bpol direction in right coord{drho,dteta,dfi}")    
+    ipri:     int = Field( default= 2, title= 'ipri',  description= "printing output monitoring: 0,1,2,3,4")
+    iw:       int = Field(default= 1, title= 'iw',     description= "initial mode (slow=1, fast=-1)")
+    ismth:    int = Field(default= 1, title= 'ismth',  description= "if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)")
+    ismthalf: int = Field(default= 0, title= 'ismthalf',description= "if=0, no smoothing in D_alpha(vperp)")                     
+    ismthout: int = Field(default= 1, title= 'ismthout',description= "if=0, no smoothing in output profiles")
+    inew: int = Field(default= 0, title= 'inew', description= "inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill")                   
+    itor: int = Field(default= 1, title= 'itor', description= "+-1, Btor direction in right coord{drho,dteta,dfi}")    
+    ipol: int = Field(default= 1, title= 'ipol', description= "+-1, Bpol direction in right coord{drho,dteta,dfi}")    
 
 
 class GrillParameters(ParametersSection):
-    title: str = 'Grill parameters'
+    title: ClassVar[str] = 'Grill parameters'
 
 
 
@@ -108,14 +109,14 @@ if __name__ == '__main__':
     o.zyx = 31.415
     print(o.zyx)
     #print(pp.zyx.title)
-    print(o.model_json_schema())
+    #print(o.model_json_schema())
     for sec in frtc.get_sections():
         print('-----------------------------')
         print(sec)
         schema= sec.model_json_schema()['properties']
-        #print(schema)
+        print(schema)
         for name, value in sec:
             s = schema[name]
             print(f' - {s["title"]}: {value}  -- {s.get("description")}')
-            print()
+            print(s)
 
