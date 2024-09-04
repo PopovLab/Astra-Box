@@ -136,10 +136,6 @@ class App(tk.Tk):
                 url = 'https://temper8.github.io/FRTC_v2'
                 os.startfile(url)
 
-
-
-
-
     def show_RunAstraPage(self):
         print('show_calc_view')
         view = RunAstraPage(self.content_frame)  
