@@ -14,21 +14,6 @@ from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
 
-def do(action:dict):
-    print(action)
-    model = None
-    match action['action']:
-        case 'new_model':
-            model = create_model(action['model_kind'])
-        case 'show':
-            model = load(action['data'].path)
-    return model
-
-def build(data_item):
-    p = data_item.path
-    print(p)
-    print(p.suffix)
-    return load(p)
 
 def load(p):
     match p.suffix:
