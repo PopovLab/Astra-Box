@@ -22,9 +22,6 @@ class FRTCView(tk.Frame):
             self.notebook = ttk.Notebook(self)
             self.notebook.grid(row=4, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             for sec in model.get_sections():
-                print('-----------------------------')
-                print(sec.title)
-                #frame = ttk.Frame(self.notebook)
                 frame = SectionView(self.notebook, sec) 
                 self.notebook.add(frame, text=sec.title, underline=0, sticky=tk.NE + tk.SW)
             
