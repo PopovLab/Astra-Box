@@ -39,16 +39,6 @@ class RackFrame(ttk.Frame):
         self.active_view = sender
         self.app.show_FolderItem(action['payload'])
 
-    def open_doc(self):
-        self.app.open_doc()
-        self.v.set('xxx')
-
-    def open_folder_dialog(self):
-        dir = tk.filedialog.askdirectory()
-        if len(dir)>0:
-            self.app.open_work_space(dir)
-        self.v.set('xxx')
-
     def show_RunAstraPage(self):
         if self.active_view:
             self.v.set('xxx')
