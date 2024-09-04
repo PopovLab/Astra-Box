@@ -12,9 +12,11 @@ def construct(master, value, schema):
     #return StringBox(frame, item)  
     match schema['type']:
         case 'integer':
-            ui =  IntegerField(master, value, schema)
+            ui = IntegerField(master, value, schema)
         case 'number':
             ui = NumberField(master, value, schema)
+        case _:
+            ui = StringField(master, value, schema)
     return ui
 
 
@@ -69,3 +71,29 @@ class NumberField(ttk.Frame):
             self.entry.configure({"background": 'white'})
         except Exception :
             self.entry.configure({"background": 'red'})        
+
+
+class StringField(ttk.Frame):
+    def __init__(self, master, value, schema) -> None:
+        super().__init__(master)
+        self.value = value
+        description = schema.get('description')
+        label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
+        label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
+        if description: 
+            ToolTip(label, description, delay=0.1)
+
+        self.tk_var = tk.StringVar(self, value= value)
+        self.tk_var.trace_add('write', self.update_var)
+ 
+        self.entry = tk.Entry(self, width=20, textvariable= self.tk_var)
+        self.entry.grid(row=0, column=1, columnspan=1)        
+        if description: 
+            ToolTip(self.entry, schema['description'], delay=0.1)
+
+    def update_var(self, var, indx, mode):
+        try:
+            self.value = self.tk_var.get()
+            self.entry.configure({"background": 'white'})
+        except Exception :
+            self.entry.configure({"background": 'red'})  
