@@ -49,9 +49,9 @@ class NumericalParameters(ParametersSection):
 class Options(ParametersSection):
     title: ClassVar[str] = 'Options'
 
-    ipri:     int = Field( default= 2, title= 'ipri',  description= "printing output monitoring: 0,1,2,3,4")
-    iw:       int = Field(default= 1, title= 'iw',     description= "initial mode (slow=1, fast=-1)")
-    ismth:    int = Field(default= 1, title= 'ismth',  description= "if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)")
+    ipri:     int = Field(default= 2, title= 'ipri',    description= "printing output monitoring: 0,1,2,3,4")
+    iw:       int = Field(default= 1, title= 'iw',      description= "initial mode (slow=1, fast=-1)")
+    ismth:    int = Field(default= 1, title= 'ismth',   description= "if=0, no smoothing in Ne(rho),Te(rho),Ti(rho)")
     ismthalf: int = Field(default= 0, title= 'ismthalf',description= "if=0, no smoothing in D_alpha(vperp)")                     
     ismthout: int = Field(default= 1, title= 'ismthout',description= "if=0, no smoothing in output profiles")
     inew: int = Field(default= 0, title= 'inew', description= "inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill")                   
