@@ -19,7 +19,6 @@ class SectionView(tk.Frame):
 class FRTCView(tk.Frame):
     def __init__(self, master, model:FRTCModel) -> None:
             super().__init__(master) 
-
             self.notebook = ttk.Notebook(self)
             self.notebook.grid(row=4, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             for sec in model.get_sections():
@@ -29,12 +28,7 @@ class FRTCView(tk.Frame):
                 frame = SectionView(self.notebook, sec) 
                 self.notebook.add(frame, text=sec.title, underline=0, sticky=tk.NE + tk.SW)
             
-        
-
-                #for row, (_, item) in enumerate(value.items()):
-                #    wg = Widgets.create_widget(frame, item)
-                #    wg.grid(row=row%ROW_MAX, column=row//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-
+ 
 if __name__ == '__main__':
     frtc = FRTCModel()
     #save_rtp(frtc, 'test_frtc_model.txt')
