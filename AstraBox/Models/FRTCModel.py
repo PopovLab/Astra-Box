@@ -121,8 +121,6 @@ class FRTCModel(BaseModel):
 
 
 def save_rtp(rtp, fn):
-    #loc = WorkSpace.get_location_path().joinpath(fn)
-
     loc = pathlib.Path(fn)
     with open(loc, "w" ) as file:
             file.write(rtp.model_dump_json(indent= 2))
@@ -130,11 +128,6 @@ def save_rtp(rtp, fn):
 if __name__ == '__main__':
     frtc = FRTCModel()
     save_rtp(frtc, 'test_frtc_model.txt')
-
-    o = frtc.options
-
-    #print(pp.zyx.title)
-    #print(o.model_json_schema())
     for sec in frtc.get_sections():
         print('-----------------------------')
         print(sec)
