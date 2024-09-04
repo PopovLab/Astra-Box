@@ -40,6 +40,8 @@ def load(folder_item: WorkSpace.FolderItem):
 
 def get(model_kind= None, model_name= None):
     content = WorkSpace.folder_content(model_kind)
+    if content is None:
+        return None
     try:
         fi = content[model_name]
         return load(fi)
@@ -142,9 +144,9 @@ def prepare_task_zip(task:Task, zip_file):
 
         pack_model_to_zip(zip, exp_model)
         pack_model_to_zip(zip, equ_model)
-        pack_model_to_zip(zip, rt_model)
 
         if rt_model:
+            pack_model_to_zip(zip, rt_model)
             pack_model_to_zip(zip, rt_model.get_spectrum_model())
 
         for key, item in WorkSpace.folder_content('SbrModel').items():

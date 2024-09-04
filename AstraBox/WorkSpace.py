@@ -170,7 +170,11 @@ def get_folder_content_list(content_type):
 
 def folder_content(content_type):
     if work_space:
-        return work_space.folder(content_type)._content
+        folder= work_space.folder(content_type)
+        if folder is not None:
+            return folder._content
+        else:
+            return None
         
 def refresh_folder(content_type):
     if work_space:
