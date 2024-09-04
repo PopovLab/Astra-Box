@@ -6,9 +6,6 @@ from pydantic import BaseModel, Field
 
 #import AstraBox.WorkSpace as WorkSpace
 
-class String(BaseModel):
-    title: str
-    text: str
 
 class Text(BaseModel):
     title: str
@@ -100,9 +97,8 @@ class GrillParameters(ParametersSection):
 
 
 class FRTCModel(BaseModel):
-    name:  String = Field(default= String(title='name', text= ''))
-
-    comments: Text = Field(default= Text(title='Comments', text= []))
+    name:  str = Field(default= '123', title='name')
+    comments: str = Field(default='ccc', title='Comments')
 
     physical_parameters: PhysicalParameters = Field(default= PhysicalParameters())
 
@@ -137,9 +133,6 @@ if __name__ == '__main__':
 
     o = frtc.options
 
-    print(o.xyz)
-    o.zyx = 31.415
-    print(o.zyx)
     #print(pp.zyx.title)
     #print(o.model_json_schema())
     for sec in frtc.get_sections():
