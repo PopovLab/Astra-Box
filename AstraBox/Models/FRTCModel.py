@@ -48,8 +48,6 @@ class NumericalParameters(ParametersSection):
 
 class Options(ParametersSection):
     title: ClassVar[str] = 'Options'
-    xyz:  float = Field(default= 1.23, title='test xyz', description='xyz test', unit='Ghz')
-    zyx: float = Field(default= 3.1415, title='test zyx', description='zyx test', unit='Mhz')
 
     ipri:     int = Field( default= 2, title= 'ipri',  description= "printing output monitoring: 0,1,2,3,4")
     iw:       int = Field(default= 1, title= 'iw',     description= "initial mode (slow=1, fast=-1)")
@@ -63,6 +61,12 @@ class Options(ParametersSection):
 
 class GrillParameters(ParametersSection):
     title: ClassVar[str] = 'Grill parameters'
+
+    Zplus: float = Field(default= 11, title='Zplus', description='upper grill corner in centimeters', unit='cm')
+    Zminus: float = Field(default= -11, title='Zminus', description='lower grill corner in centimeters', unit='cm')
+
+    ntet: int = Field(default= 21, title='ntet', description='theta grid number')
+    nnz:  int = Field(default= 51, title='nnz', description='iN_phi grid numbe')
 
 
 
