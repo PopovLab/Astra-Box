@@ -15,7 +15,8 @@ from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
 
 
-def load(p):
+def load(folder_item: WorkSpace.FolderItem):
+    p= folder_item.path
     match p.suffix:
         case '.exp':
             print(f'build exp - {p.name}')
@@ -41,7 +42,7 @@ def get(model_kind= None, model_name= None):
     content = WorkSpace.folder_content(model_kind)
     try:
         fi = content[model_name]
-        return load(fi.path)
+        return load(fi)
     except:
         return None
 
@@ -147,7 +148,7 @@ def prepare_task_zip(task:Task, zip_file):
             pack_model_to_zip(zip, rt_model.get_spectrum_model())
 
         for key, item in WorkSpace.folder_content('SbrModel').items():
-            pack_model_to_zip(zip, load(item.path))
+            pack_model_to_zip(zip, load(item))
 
         models  = {
             'ExpModel' : exp_model.data,

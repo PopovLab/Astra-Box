@@ -152,16 +152,16 @@ class App(tk.Tk):
         
         match folder_item.model_kind:
             case 'RTModel':
-                model = ModelFactory.load(folder_item.path)
+                model = ModelFactory.load(folder_item)
                 page = RayTracingPage(self.content_frame, folder_item, model)     
             case 'ExpModel':
-                model = ModelFactory.load(folder_item.path)
+                model = ModelFactory.load(folder_item)
                 page = ExpPage(self.content_frame, folder_item, model)                     
             case 'EquModel':
-                model = ModelFactory.load(folder_item.path)
+                model = ModelFactory.load(folder_item)
                 page = TextPage(self.content_frame, folder_item, model)     
             case 'SbrModel':
-                model = ModelFactory.load(folder_item.path)
+                model = ModelFactory.load(folder_item)
                 page = TextPage(self.content_frame, folder_item, model)                   
             case 'RaceModel':
                 #model = RaceModel(path= view_item.path )  
