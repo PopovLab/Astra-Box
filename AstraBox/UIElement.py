@@ -6,24 +6,26 @@ from tktooltip import ToolTip
 
 LABEL_WIDTH = 12
 
-def construct(master, value, schema):
+def construct(master, name, value, schema, observer ):
     #print(value)
     #print(schema)
     #return StringBox(frame, item)  
     match schema['type']:
         case 'integer':
-            ui = IntegerField(master, value, schema)
+            ui = IntegerField(master, name, value, schema, observer)
         case 'number':
-            ui = NumberField(master, value, schema)
+            ui = NumberField(master, name, value, schema, observer)
         case _:
-            ui = StringField(master, value, schema)
+            ui = StringField(master, name, value, schema, observer)
     return ui
 
 
 
 class IntegerField(ttk.Frame):
-    def __init__(self, master, value, schema) -> None:
+    def __init__(self, master,  name, value, schema, observer) -> None:
         super().__init__(master)
+        self.name = name
+        self.observer = observer        
         self.value = value
         description = schema.get('description')
         label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
@@ -43,13 +45,16 @@ class IntegerField(ttk.Frame):
         try:
             self.value = self.tk_var.get()
             self.entry.configure({"background": 'white'})
+            self.observer(self.name, self.value)
         except Exception :
             self.entry.configure({"background": 'red'})  
 
 
 class NumberField(ttk.Frame):
-    def __init__(self, master, value, schema) -> None:
+    def __init__(self, master,  name, value, schema, observer) -> None:
         super().__init__(master)
+        self.name = name
+        self.observer = observer
         self.value = value
         description = schema.get('description')
         label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
@@ -69,13 +74,17 @@ class NumberField(ttk.Frame):
         try:
             self.value = self.tk_var.get()
             self.entry.configure({"background": 'white'})
-        except Exception :
+            self.observer(self.name, self.value)
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
             self.entry.configure({"background": 'red'})        
 
 
 class StringField(ttk.Frame):
-    def __init__(self, master, value, schema) -> None:
+    def __init__(self, master,  name, value, schema, observer) -> None:
         super().__init__(master)
+        self.name = name
+        self.observer = observer        
         self.value = value
         description = schema.get('description')
         label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
@@ -95,5 +104,6 @@ class StringField(ttk.Frame):
         try:
             self.value = self.tk_var.get()
             self.entry.configure({"background": 'white'})
+            self.observer(self.name, self.value)
         except Exception :
             self.entry.configure({"background": 'red'})  

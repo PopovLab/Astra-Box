@@ -9,13 +9,17 @@ ROW_MAX = 7
 class SectionView(tk.Frame):
     def __init__(self, master, section:ParametersSection) -> None:
             super().__init__(master)
+            self.section = section
             count=0
             schema= section.model_json_schema()['properties']
             for name, value in section:
-                e = UIElement.construct(self, value, schema[name])
+                e = UIElement.construct(self, name, value, schema[name], self.observer)
                 e.grid(row=count%ROW_MAX, column=count//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
                 count = count + 1
 
+    def observer(self, name, value):
+        print(f'{name} {value}')
+        setattr(self.section, name, value)
 
 class FRTCView(tk.Frame):
     def __init__(self, master, model:FRTCModel) -> None:
