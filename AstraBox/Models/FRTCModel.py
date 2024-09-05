@@ -129,14 +129,14 @@ class FRTCModel(BaseModel):
     def get_dump(self):
         return self.model_dump_json(indent= 2)
 
-def save_rtp(rtp, fn):
+def save_frtc(rtp, fn):
     loc = pathlib.Path(fn)
     with open(loc, "w" ) as file:
             file.write(rtp.model_dump_json(indent= 2))
 
 if __name__ == '__main__':
     frtc = FRTCModel()
-    save_rtp(frtc, 'test_frtc_model.txt')
+    save_frtc(frtc, 'test_frtc_model.txt')
     for sec in frtc.get_sections():
         print('-----------------------------')
         print(sec)
