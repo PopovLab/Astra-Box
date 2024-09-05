@@ -1,3 +1,4 @@
+import pathlib 
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Models.FRTCModel import FRTCModel, ParametersSection
@@ -42,15 +43,41 @@ class FRTCView(tk.Frame):
                 frame = SectionView(self.notebook, sec) 
                 self.notebook.add(frame, text=sec.title, underline=0, sticky=tk.NE + tk.SW)
             
- 
+    def update_model(self):
+        self.model.name = self.var_name.get()
+        self.model.comment = self.comment_text.get("1.0","end-1c")
+
+
+def save_dump(frtc_dump, fn):
+    loc = pathlib.Path(fn)
+    with open(loc, "w" , encoding='utf-8') as file:
+            file.write(frtc_dump)
+
+frtc_dump_file = 'frtc_dump.json'
+
+def click_button():
+     print('click')
+
 if __name__ == '__main__':
-    frtc = FRTCModel()
+    global view
+    loc = pathlib.Path(frtc_dump_file)
+    if loc.exists():
+        with open(loc, encoding='utf-8') as file:
+                dump = file.read()
+        frtc = FRTCModel.construct(dump)
+        print(f'frtc load from {frtc_dump_file}')
+    else:
+        frtc = FRTCModel()
+        print(f'create new frtc')
     #save_rtp(frtc, 'test_frtc_model.txt')
     root = tk.Tk() 
-
     root.geometry ("700x600") 
     view = FRTCView(root, frtc)
     view.pack()
+    btn = tk.Button(master=root, text='Update Model', command= lambda  : view.update_model())
+    btn.pack()
     root.mainloop()
 
+    print('save dump')
+    save_dump(frtc.get_dump(), frtc_dump_file)
  

@@ -119,6 +119,15 @@ class FRTCModel(BaseModel):
             self.grill_parameters
             ]
 
+    @classmethod
+    def construct(cls, dump):
+        try:
+            return cls.model_validate_json(dump)
+        except:
+            return None
+        
+    def get_dump(self):
+        return self.model_dump_json(indent= 2)
 
 def save_rtp(rtp, fn):
     loc = pathlib.Path(fn)
