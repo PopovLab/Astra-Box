@@ -55,9 +55,6 @@ def save_dump(frtc_dump, fn):
 
 frtc_dump_file = 'frtc_dump.json'
 
-def click_button():
-     print('click')
-
 if __name__ == '__main__':
     global view
     loc = pathlib.Path(frtc_dump_file)
