@@ -98,7 +98,7 @@ class GrillParameters(ParametersSection):
 
 class FRTCModel(BaseModel):
     name:  str = Field(default= '123', title='name')
-    comments: str = Field(default='ccc', title='Comments')
+    comment: str = Field(default='ccc', title='Comment')
 
     physical_parameters: PhysicalParameters = Field(default= PhysicalParameters())
 
