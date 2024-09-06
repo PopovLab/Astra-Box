@@ -3,6 +3,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from functools import partial
+from AstraBox.Pages.FRTCPage import FRTCPage
+from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Views.RackFrame as RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
@@ -168,9 +170,13 @@ class App(tk.Tk):
         self.content_frame.set_content(page)
     
 
-    def create_RT_configuration(self):
+    def create_FRTC_configuration(self):
         print('заглушка создания новой конфигурации')
-        #model = ModelFactory.create_model('RTModel')
+        model = ModelFactory.create_model('FRTCModel')
+        WorkSpace.save_model(model)
+        page = FRTCPage(self.content_frame, None, model) 
+        self.content_frame.set_content(page)
+        WorkSpace.refresh_folder('FRTCModel') 
         #self.show_model(model)
 
     def open_command(self, arg):
@@ -186,7 +192,7 @@ class App(tk.Tk):
 
     def create_main_menu(self):
         new_menu = tk.Menu(tearoff=0)
-        new_menu.add_command(label='Ray Tracing Configurations', command=self.create_RT_configuration)
+        new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
         new_menu.add_command(label='Experiments', state='disabled')
         new_menu.add_command(label='Equlibrium', state='disabled')
 

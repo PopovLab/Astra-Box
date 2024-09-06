@@ -1,6 +1,7 @@
 import os
 import json
 import tkinter as tk
+#import pathlib
 from pathlib import Path
 from pydantic import BaseModel, Field
 
@@ -120,6 +121,7 @@ default_catalog = [
     Folder(title= 'Equlibrium', content_type='EquModel', location= 'equ'),
     Folder(title= 'Subroutine', content_type='SbrModel', location= 'sbr'),
     Folder(title= 'Ray Tracing Configurations', content_type='RTModel', location= 'ray_tracing', required= False),
+    Folder(title= 'FRTC Configurations', content_type='FRTCModel', location= 'frtc', required= False),
     Folder(title= 'Race history', content_type='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
 
@@ -193,6 +195,23 @@ def get_path(content_type: str, sub_path: str= None):
         return loc
     else:
         return _location
+
+from typing import Type
+
+def save_model(model):
+    #print(type(model))
+    match type(model).__name__:
+        case 'FRTCModel':
+            print("save FRTCModel")
+            p = get_path('FRTCModel').joinpath(f'{model.name}.frtc')
+            print(p)
+            with p.open("w" , encoding='utf-8') as file:
+                file.write(model.get_dump())
+
+        case 'int':
+            print("This is an Int")
+        case _:
+            print("This is an Any")
 
 def get_last_task():
     last_task = Task()

@@ -11,6 +11,7 @@ from AstraBox.Models.EquModel import EquModel
 from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Models.RaceModel import RaceModel
+from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Task import Task
 import AstraBox.WorkSpace as WorkSpace
 
@@ -48,6 +49,11 @@ def get(model_kind= None, model_name= None):
     except:
         return None
 
+import uuid
+
+def random_name():
+    return 'frtc_'+str(uuid.uuid4())[0:4]
+
 def create_model(model_kind=None ):
     match model_kind:
         case 'exp':
@@ -59,11 +65,9 @@ def create_model(model_kind=None ):
         case 'sbr':
             print(f'create sbr - {model_kind}')
             model = SbrModel(model_kind)        
-        case 'RTModel':
+        case 'FRTCModel':
             print(f'create rt - {model_kind}')
-            p = WorkSpace.get_location_path('RTModel')
-            path = p.joinpath(f'{get_new_name()}.rt')
-            model = RTModel(path= path)
+            model = FRTCModel(name=random_name())
         case _:
             print("Это другое")
             model = None
