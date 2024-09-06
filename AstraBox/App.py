@@ -149,9 +149,6 @@ class App(tk.Tk):
     def show_FolderItem(self, folder_item):
         
         match folder_item.model_kind:
-            case 'RTModel':
-                model = ModelFactory.load(folder_item)
-                page = RayTracingPage(self.content_frame, folder_item, model)     
             case 'ExpModel':
                 model = ModelFactory.load(folder_item)
                 page = ExpPage(self.content_frame, folder_item, model)                     
@@ -164,6 +161,12 @@ class App(tk.Tk):
             case 'RaceModel':
                 #model = RaceModel(path= view_item.path )  
                 page = RacePage(self.content_frame, folder_item)                 
+            case 'RTModel':
+                model = ModelFactory.load(folder_item)
+                page = RayTracingPage(self.content_frame, folder_item, model)                  
+            case 'FRTCModel':
+                model = ModelFactory.load(folder_item)
+                page = FRTCPage(self.content_frame, folder_item, model)                    
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
@@ -171,12 +174,12 @@ class App(tk.Tk):
     
 
     def create_FRTC_configuration(self):
-        print('заглушка создания новой конфигурации')
         model = ModelFactory.create_model('FRTCModel')
         WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('FRTCModel') 
         page = FRTCPage(self.content_frame, None, model) 
         self.content_frame.set_content(page)
-        WorkSpace.refresh_folder('FRTCModel') 
+
         #self.show_model(model)
 
     def open_command(self, arg):

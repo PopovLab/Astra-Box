@@ -17,7 +17,11 @@ import AstraBox.WorkSpace as WorkSpace
 
 
 def load(folder_item: WorkSpace.FolderItem):
+    model = None
     p= folder_item.path
+    if not p.exists():
+        return None
+    
     match p.suffix:
         case '.exp':
             print(f'build exp - {p.name}')
@@ -31,6 +35,12 @@ def load(folder_item: WorkSpace.FolderItem):
         case '.rt':
             print(f'build ray_tracing - {p.name}')
             model = RTModel(path= p )
+
+        case '.frtc':
+            print(f'load frtc - {p.name}')
+            with open(p, encoding='utf-8') as file:
+                    dump = file.read()
+            model = FRTCModel.construct(dump)
         case '.zip':
             print(f'build race - {p.name}')
             model = RaceModel(path= p )            
@@ -52,7 +62,7 @@ def get(model_kind= None, model_name= None):
 import uuid
 
 def random_name():
-    return 'frtc_'+str(uuid.uuid4())[0:4]
+    return 'new_'+str(uuid.uuid4())[0:4]
 
 def create_model(model_kind=None ):
     match model_kind:
