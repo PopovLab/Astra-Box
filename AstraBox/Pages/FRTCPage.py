@@ -18,7 +18,7 @@ class FRTCPage(ttk.Frame):
     def __init__(self, master, folder_item, model:RTModel) -> None:
         super().__init__(master)        
         self.folder_item = folder_item
-        title = f"FRTC Configuration View {model.name}"
+        title = f"FRTC: {model.name}"
         self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', self.delete_model), ('Clone', self.clone_model)]}
         self.model = model
         self.hp = HeaderPanel(self, self.header_content)
@@ -31,17 +31,6 @@ class FRTCPage(ttk.Frame):
         self.view.grid(row=1, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
 
-        
-    def on_change_spectrum_type(self):
-        print(self.radio.selected)
-        self.spectrum_model.spectrum_type = self.radio.selected
-        #self.spectrum_model.check_model()   
-        if self.spectrum_view:
-            self.spectrum_view.destroy()
-        self.spectrum_view = self.make_spectum_view()
-        self.spectrum_view.grid(row=6, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)  
-                
-        
     def clone_model(self):
         name = self.var_name.get()
         self.var_name.set(f'{name}_clone_{RootModel.get_uuid_id()[0:4]}')
