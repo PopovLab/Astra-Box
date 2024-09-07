@@ -15,19 +15,19 @@ import AstraBox.WorkSpace as WorkSpace
 
 
 class FRTCPage(ttk.Frame):
-    def __init__(self, master, folder_item, model:RTModel) -> None:
+    def __init__(self, master, folder_item) -> None:
         super().__init__(master)        
         self.folder_item = folder_item
-        title = f"FRTC: {model.name}"
+        self.model = ModelFactory.load(folder_item)
+        title = f"FRTC: {self.model.name}"
         self.header_content = { "title": title, "buttons":[('Save', self.save_model), ('Delete', self.delete_model), ('Clone', self.clone_model)]}
-        self.model = model
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
         self.columnconfigure(0, weight=0)        
         self.columnconfigure(1, weight=1)         
 
-        self.view = FRTCView(self, model)
+        self.view = FRTCView(self, self.model)
         self.view.grid(row=1, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
 
@@ -41,14 +41,9 @@ class FRTCPage(ttk.Frame):
         WorkSpace.refresh_folder('RTModel') 
         
     def save_model(self):
-        old_path = self.model.path
-        self.model.name = self.var_name.get()
-        self.model.setting['Comments']['value'] = self.comment_text.get("1.0","end-1c")
-        self.model.path = self.model.path.with_stem(self.model.name)
-        self.model.save_to_json()
-        if (self.model.path != old_path):
-            old_path.unlink(missing_ok = True)
-        WorkSpace.refresh_folder('RTModel') 
+        self.view.update_model()
+        self.folder_item.save_model(self.model)
+
     
     def delete_model(self):
         if self.folder_item.remove():

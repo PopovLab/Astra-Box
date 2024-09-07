@@ -26,6 +26,10 @@ def get_item_location(model_kind, model_name):
     return Path(loc).joinpath(model_name)
 
 
+def save_dump(path:Path, dump):
+    with path.open("w" , encoding='utf-8') as file:
+            file.write(dump)
+
 class FolderItem():
     def __init__(self, folder,  path:Path) -> None:
         self.parent = folder
@@ -43,6 +47,20 @@ class FolderItem():
 
     def remove(self)->bool:
         return self.parent.remove(self)
+
+    def save_dump(self, dump):
+        with self.path.open("w" , encoding='utf-8') as file:
+                file.write(dump)
+
+    def save_model(self, model):
+        if self.path.stem != model.name:
+            self.path.unlink()
+            self.path= self.path.with_stem(model.name)
+        self.save_dump(model.get_dump())
+        #self.name= self.path.name
+        #print(self.path.with_stem(model.name))
+        self.parent.refresh()
+
 
     def delete_file(self)  -> bool:
         print(f'try delete file {self.path}')
@@ -103,7 +121,7 @@ class Folder(BaseModel):
         self.populate()
         self.raise_event('itemsRefresh')
 
-    def remove(self, item)->bool:
+    def remove(self, item:FolderItem)->bool:
         print(f'remove {item.name}')
         ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {item.name}?', icon ='warning')
         removed = False
