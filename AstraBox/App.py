@@ -166,7 +166,7 @@ class App(tk.Tk):
                 page = RayTracingPage(self.content_frame, folder_item, model)                  
             case 'FRTCModel':
                 model = ModelFactory.load(folder_item)
-                page = FRTCPage(self.content_frame, folder_item, model)                    
+                page = FRTCPage(self.content_frame, folder_item)                    
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
