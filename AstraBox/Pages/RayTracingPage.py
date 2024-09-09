@@ -7,7 +7,7 @@ from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
-import AstraBox.Views.SpectrumView as SpectrumView
+import AstraBox.Views.SpectrumView_v1 as SpectrumView_v1
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
@@ -110,15 +110,15 @@ class RayTracingPage(ttk.Frame):
         print(self.spectrum_model.spectrum_type)
         match self.spectrum_model.spectrum_type:
             case 'gaussian':
-                return SpectrumView.GaussianSpectrumView(self, self.spectrum_model)          
+                return SpectrumView_v1.GaussianSpectrumView(self, self.spectrum_model)          
             case 'rotated_gaussian':
-                return SpectrumView.RotatedGaussianView(self, self.spectrum_model)
+                return SpectrumView_v1.RotatedGaussianView(self, self.spectrum_model)
             case 'spectrum_1D':
-                return SpectrumView.Spectrum1DView(self, self.spectrum_model)
+                return SpectrumView_v1.Spectrum1DView(self, self.spectrum_model)
             case 'scatter_spectrum':
-                return SpectrumView.ScatterSpectrumView(self, self.spectrum_model)
+                return SpectrumView_v1.ScatterSpectrumView(self, self.spectrum_model)
             case 'spectrum_2D':
-                return SpectrumView.Spectrum2DView(self, self.spectrum_model)
+                return SpectrumView_v1.Spectrum2DView(self, self.spectrum_model)
                  
         
     def clone_model(self):
