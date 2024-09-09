@@ -140,6 +140,7 @@ default_catalog = [
     Folder(title= 'Subroutine', content_type='SbrModel', location= 'sbr'),
     Folder(title= 'Ray Tracing Configurations', content_type='RTModel', location= 'ray_tracing', required= False),
     Folder(title= 'FRTC Configurations', content_type='FRTCModel', location= 'frtc', required= False),
+    Folder(title= 'Spectrums', content_type='SpectrumModel', location= 'spectrum', required= False),
     Folder(title= 'Race history', content_type='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
 
@@ -197,6 +198,7 @@ def folder_content(content_type):
             return None
         
 def refresh_folder(content_type):
+    print(f'refresh {content_type}')
     if work_space:
         f = work_space.folder(content_type)
         if f:  f.refresh()
@@ -217,7 +219,7 @@ def get_path(content_type: str, sub_path: str= None):
 from typing import Type
 
 def save_model(model):
-    #print(type(model))
+    print(type(model))
     match type(model).__name__:
         case 'FRTCModel':
             print("save FRTCModel")
@@ -226,8 +228,12 @@ def save_model(model):
             with p.open("w" , encoding='utf-8') as file:
                 file.write(model.get_dump())
 
-        case 'int':
-            print("This is an Int")
+        case 'SpectrumModel':
+            print("save SpectrumModel")
+            p = get_path('SpectrumModel').joinpath(f'{model.name}.spm')
+            print(p)
+            with p.open("w" , encoding='utf-8') as file:
+                file.write(model.get_dump())            
         case _:
             print("This is an Any")
 

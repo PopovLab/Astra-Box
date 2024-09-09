@@ -13,6 +13,7 @@ from AstraBox.Models.RTModel import RTModel
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Task import Task
+import AstraBox.Models.SpectrumModel_v2 as SpectrumModel_v2
 import AstraBox.WorkSpace as WorkSpace
 
 
@@ -41,6 +42,11 @@ def load(folder_item: WorkSpace.FolderItem):
             with open(p, encoding='utf-8') as file:
                     dump = file.read()
             model = FRTCModel.construct(dump)
+        case '.spm':
+            print(f'load spm - {p.name}')
+            with open(p, encoding='utf-8') as file:
+                    dump = file.read()
+            model = SpectrumModel_v2.SpectrumModel.construct(dump)            
         case '.zip':
             print(f'build race - {p.name}')
             model = RaceModel(path= p )            
@@ -63,6 +69,17 @@ import uuid
 
 def random_name():
     return 'new_'+str(uuid.uuid4())[0:4]
+
+def create_spectrum_model(spectrum_type):
+    model = None
+    print(f'create specturm: {spectrum_type}')
+    match spectrum_type:
+        case 'gauss': 
+            print('create gauss')
+            model=SpectrumModel_v2.SpectrumModel.construct_new(random_name())
+        case _:
+            pass
+    return model
 
 def create_model(model_kind=None ):
     match model_kind:

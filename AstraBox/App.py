@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from functools import partial
 from AstraBox.Pages.FRTCPage import FRTCPage
+from AstraBox.Pages.SpectrumPage import SpectrumPage
 from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Views.RackFrame as RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
@@ -167,6 +168,9 @@ class App(tk.Tk):
             case 'FRTCModel':
                 model = ModelFactory.load(folder_item)
                 page = FRTCPage(self.content_frame, folder_item)                    
+            case 'SpectrumModel':
+                #model = ModelFactory.load(folder_item)
+                page = SpectrumPage(self.content_frame, folder_item)                    
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
@@ -181,6 +185,12 @@ class App(tk.Tk):
         self.content_frame.set_content(page)
 
         #self.show_model(model)
+
+    def create_gauss_spectrum(self):
+        print('create_gauss_spectrum')
+        model = ModelFactory.create_spectrum_model('gauss')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
 
     def open_command(self, arg):
         print('open command', arg)
@@ -198,6 +208,9 @@ class App(tk.Tk):
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
         new_menu.add_command(label='Experiments', state='disabled')
         new_menu.add_command(label='Equlibrium', state='disabled')
+        new_menu.add_command(label='gauss spectrum', command=self.create_gauss_spectrum)
+        new_menu.add_command(label='spectrum 1D', command=self.create_gauss_spectrum)
+        new_menu.add_command(label='scatter spectrum', command=self.create_gauss_spectrum)
 
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)
