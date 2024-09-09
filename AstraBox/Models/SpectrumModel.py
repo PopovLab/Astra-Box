@@ -4,8 +4,6 @@ from math import fsum
 from pathlib import Path
 import AstraBox.WorkSpace as WorkSpace
 
-
-
 def defaultRotatedGaussian():
     return {
         'spectrum_type': 'rotated_gaussian',
