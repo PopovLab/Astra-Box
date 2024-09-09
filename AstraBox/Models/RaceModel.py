@@ -9,7 +9,7 @@ from io import BytesIO
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
-from AstraBox.Models.SpectrumModel import SpectrumModel_v1
+from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 import AstraBox.Astra as Astra
 
 def float_try(str):

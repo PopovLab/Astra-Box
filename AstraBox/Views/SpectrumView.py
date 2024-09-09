@@ -11,7 +11,7 @@ from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
-import AstraBox.Models.SpectrumModel as SpectrumModel
+import AstraBox.Models.SpectrumModel_v1 as SpectrumModel_v1
 
 import AstraBox.Widgets as Widgets
 
@@ -114,7 +114,7 @@ class FileSourcePanel(tk.Frame):
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model: SpectrumModel.SpectrumModel_v1) -> None:
+    def __init__(self, master, model: SpectrumModel_v1.SpectrumModel_v1) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
@@ -144,7 +144,7 @@ class Spectrum1DView(tk.LabelFrame):
         filename = fd.askopenfilename()
         if len(filename) < 1 : return
         fp = Path(filename)
-        compare = SpectrumModel.spectrum_normalization(SpectrumModel.load_spcp1D(fp))
+        compare = SpectrumModel_v1.spectrum_normalization(SpectrumModel_v1.load_spcp1D(fp))
         self.spectrum_plot.add_compare_spectrum(compare['Ntor'], compare['Amp'])
         pass
 

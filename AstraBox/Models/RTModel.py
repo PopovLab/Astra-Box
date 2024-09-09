@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 from AstraBox.Models.RootModel import RootModel
-from AstraBox.Models.SpectrumModel import SpectrumModel_v1
+from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 
 def default_rt_setting():
         return {

@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 
 import AstraBox.Models.RootModel as RootModel
-from AstraBox.Models.SpectrumModel import SpectrumModel_v1
+from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
 import AstraBox.Widgets as Widgets
