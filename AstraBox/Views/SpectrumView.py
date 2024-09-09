@@ -43,7 +43,7 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.options_box = OptionsPanel(self, self.model.spectrum)
         self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
