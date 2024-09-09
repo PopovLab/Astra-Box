@@ -3,6 +3,9 @@ import os
 from math import fsum
 from pathlib import Path
 import AstraBox.WorkSpace as WorkSpace
+
+
+
 def defaultRotatedGaussian():
     return {
         'spectrum_type': 'rotated_gaussian',
@@ -135,7 +138,7 @@ def spectrum_normalization(spectrum_data):
         spectrum_data['Amp'] = [ x/power for x in spectrum_data['Amp']]
     return  spectrum_data
 
-class SpectrumModel():
+class SpectrumModel_old():
     def __init__(self, parent) -> None:
         self.parent = parent
         if not 'spectrum' in parent:

@@ -9,7 +9,7 @@ from io import BytesIO
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
-from AstraBox.Models.SpectrumModel import SpectrumModel
+from AstraBox.Models.SpectrumModel import SpectrumModel_old
 import AstraBox.Astra as Astra
 
 def float_try(str):
@@ -132,7 +132,7 @@ class RaceModel(RootModel):
      
 
     def get_spectrum(self):
-        spectrum_model = SpectrumModel(self.data['RTModel']['setting'])
+        spectrum_model = SpectrumModel_old(self.data['RTModel']['setting'])
         f = spectrum_model.get_dest_path()
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
