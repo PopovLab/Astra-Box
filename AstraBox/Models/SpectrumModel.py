@@ -136,7 +136,7 @@ def spectrum_normalization(spectrum_data):
         spectrum_data['Amp'] = [ x/power for x in spectrum_data['Amp']]
     return  spectrum_data
 
-class SpectrumModel_old():
+class SpectrumModel_v1():
     def __init__(self, parent) -> None:
         self.parent = parent
         if not 'spectrum' in parent:

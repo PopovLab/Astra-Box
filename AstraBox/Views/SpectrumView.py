@@ -114,7 +114,7 @@ class FileSourcePanel(tk.Frame):
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model: SpectrumModel.SpectrumModel_old) -> None:
+    def __init__(self, master, model: SpectrumModel.SpectrumModel_v1) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
         #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
