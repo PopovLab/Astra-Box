@@ -26,6 +26,19 @@ class SpectrumPage(ttk.Frame):
         self.columnconfigure(0, weight=0)        
         self.columnconfigure(1, weight=1)   
 
+        self.label = ttk.Label(self,  text='Name:')
+        self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)
+        self.var_name = tk.StringVar(master= self, value=self.model.name)
+        self.name_entry = ttk.Entry(self, textvariable = self.var_name)
+        self.name_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        self.label = ttk.Label(self,  text='Comment:')
+        self.label.grid(row=2, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.comment_text = tk.Text(self, height=3,  wrap="none")
+        self.comment_text.grid(row=2, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.comment_text.insert(tk.END, self.model.comment)
+
+
         print(type(self.model.spectrum).__name__)
 
         match type(self.model.spectrum).__name__:
@@ -36,7 +49,7 @@ class SpectrumPage(ttk.Frame):
             case _: 
                 self.view = tk.Frame(self)
         
-        self.view.grid(row=1, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.view.grid(row=3, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
                                     
     
