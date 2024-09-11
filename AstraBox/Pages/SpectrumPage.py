@@ -39,16 +39,14 @@ class SpectrumPage(ttk.Frame):
         self.comment_text.insert(tk.END, self.model.comment)
 
 
-        print(type(self.model.spectrum).__name__)
-
-        match type(self.model.spectrum).__name__:
-            case 'GaussSpectrum': 
+        match self.model.spectrum.kind:
+            case 'gauss_spectrum': 
                 self.view = GaussianSpectrumView(self, self.model)
-            case 'Spectrum1D': 
+            case 'spectrum_1D': 
                 self.view = Spectrum1DView(self, self.model)
-            case 'Spectrum2D': 
+            case 'spectrum_2D': 
                 self.view = Spectrum2DView(self, self.model)                
-            case 'ScatterSpectrum': 
+            case 'scatter_spectrum': 
                 self.view = ScatterSpectrumView(self, self.model)                
             case _: 
                 self.view = tk.Frame(self)
