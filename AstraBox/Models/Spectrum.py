@@ -7,9 +7,10 @@ from pydantic import BaseModel, Field
 
 
 class BaseSpectrum(BaseModel):
-    pass
+    kind: None
 
 class GaussSpectrum(BaseSpectrum):
+    kind: Literal['gauss_spectrum']
     title: ClassVar[str] = 'Gauss Spectrum'
     x_min: float = Field(default= -40.0, title= 'x_min')
     x_max: float = Field(default= 40.0, title= 'x_max')
@@ -31,7 +32,16 @@ class GaussSpectrum(BaseSpectrum):
         #self.spectrum_normalization()
     
 class Spectrum1D(BaseSpectrum):
+    kind: Literal['spectrum_1D']
     title: ClassVar[str] = 'Spectrum 1D'    
-    source: str = Field(default= 0.0, title= 'source')
+    source: str   = Field(default= '', title= 'source')
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
-    PWM:  bool = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
+    PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
+
+
+class ScatterSpectrum(BaseSpectrum):
+    kind: Literal['scatter_spectrum']
+    title: ClassVar[str] = 'Scatter Spectrum'    
+    source: str   = Field(default= 0.0, title= 'source')
+    angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
+    PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")  

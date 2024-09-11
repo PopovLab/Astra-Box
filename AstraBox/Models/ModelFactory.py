@@ -46,7 +46,9 @@ def load(folder_item: WorkSpace.FolderItem):
             print(f'load spm - {p.name}')
             with open(p, encoding='utf-8') as file:
                     dump = file.read()
+            print(dump)
             model = SpectrumModel_v2.SpectrumModel.construct(dump)            
+            print(model)
         case '.zip':
             print(f'build race - {p.name}')
             model = RaceModel(path= p )            
@@ -73,12 +75,7 @@ def random_name():
 def create_spectrum_model(spectrum_type):
     model = None
     print(f'create specturm: {spectrum_type}')
-    match spectrum_type:
-        case 'gauss': 
-            print('create gauss')
-            model=SpectrumModel_v2.SpectrumModel.construct_new(random_name())
-        case _:
-            pass
+    model = SpectrumModel_v2.SpectrumModel.construct_new(random_name(), spectrum_type)
     return model
 
 def create_model(model_kind=None ):

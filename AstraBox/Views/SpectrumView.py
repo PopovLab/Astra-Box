@@ -23,10 +23,13 @@ class OptionsPanel(tk.Frame):
             self.section = section
             count=0
             schema= section.model_json_schema()['properties']
+            print(schema)
             for name, value in section:
-                e = UIElement.construct(self, name, value, schema[name], self.observer)
-                e.grid(row=0, column= count, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-                count = count + 1
+                print(name)
+                if name != 'kind':
+                    e = UIElement.construct(self, name, value, schema[name], self.observer)
+                    e.grid(row=0, column= count, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+                    count = count + 1
 
     def observer(self, name, value):
         print(f'{name} {value}')
@@ -47,11 +50,6 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
-        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        #wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        #wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
-
         self.rowconfigure(2, weight=1)
 
     def generate(self):
@@ -59,3 +57,21 @@ class GaussianSpectrumView(tk.LabelFrame):
         s_d= self.model.spectrum.make_spectrum_data()
         self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+
+class Spectrum1DView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Spectrum 1D')        
+
+        self.model = model
+        self.label = ttk.Label(self,  text=f'Spectrum View')
+        self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+        self.options_box = OptionsPanel(self, self.model.spectrum)
+        self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        #self.generate()
+        self.rowconfigure(2, weight=1)        
