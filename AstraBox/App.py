@@ -201,7 +201,7 @@ class App(tk.Tk):
 
     def create_scatter_spectrum(self):
         print('create scatter_spectrum')
-        model = ModelFactory.create_spectrum_model('create_scatter_spectrum')
+        model = ModelFactory.create_spectrum_model('scatter_spectrum')
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('SpectrumModel') 
 

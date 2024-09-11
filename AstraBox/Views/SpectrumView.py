@@ -118,3 +118,66 @@ class Spectrum1DView(tk.LabelFrame):
         spectrum_data = self.model.spectrum.read_spcp1D()
         self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
+
+
+class ScatterSpectrumView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Scatter Spectrum')        
+
+        self.model = model
+
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        radio_selector = self.make_radio_selector()
+        radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.make_plot()
+
+    def on_load_file(self, filepath):
+        print(filepath)
+        self.model.spectrum.source = filepath
+        self.make_plot(filepath)
+            
+
+    def make_plot(self):
+        #head, filename = os.path.split(filepath)
+        return self.make_scatter_plot3D()
+
+    def make_scatter_plot3D(self):
+        self.spectrum_data = self.model.spectrum.read_scatter()
+            
+        if self.spectrum_data == None:
+            print('spectrum_data == None')
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            return False
+        else:
+            self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return True
+
+    def make_radio_selector(self):
+        frame = ttk.Frame(self, relief=tk.FLAT)
+        # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
+        padx = 10
+        pady = 5
+        btn2 = ttk.Radiobutton(frame, text='3D', value='3D', width=5, 
+                                command= self.select_View3D,
+                                style= 'Toolbutton')
+        btn2.pack(side=tk.RIGHT, padx=padx, pady=pady)
+
+        btn1 = ttk.Radiobutton(frame, text='2D',  value='2D', width=5, 
+                                command= self.select_View2D,
+                                style= 'Toolbutton')
+        btn1.pack(side=tk.RIGHT, padx=padx, pady=pady)
+        return frame
+
+    def select_View2D(self):
+        self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
+        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+    def select_View3D(self):
+        self.spectrum_plot = ScatterPlot3D(self, self.spectrum_data)
+        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)           
