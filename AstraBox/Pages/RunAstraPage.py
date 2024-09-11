@@ -41,15 +41,31 @@ class ConfigPanel(ttk.Frame):
             self.rt_combo.grid(row=1, column=2,  padx=2, sticky= tk.E + tk.W)
         else:
             self.rt_combo= None
+
+        fcl =  WorkSpace.get_folder_content_list('FRTCModel')
+        if len(fcl)>0:
+            self.frtc_combo = ComboBox(self, 'FRTC:', fcl)
+            self.frtc_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
+        else:
+            self.frtc_combo= None            
+
+        fcl =  WorkSpace.get_folder_content_list('SpectrumModel')
+        if len(fcl)>0:
+            self.spm_combo = ComboBox(self, 'Spectrum:', fcl)
+            self.spm_combo.grid(row=1, column=4,  padx=2, sticky= tk.E + tk.W)
+        else:
+            self.spm_combo= None
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width=15)
-        self.astra_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
+        self.astra_combo.grid(row=1, column=5,  padx=2, sticky= tk.E + tk.W)
       
         self.btn = ImageButton.create(self, '4231901.png', self.open_config)
-        self.btn.grid(row=1, column=4,  padx=5, sticky= tk.E + tk.W)
+        self.btn.grid(row=1, column=6,  padx=5, sticky= tk.E + tk.W)
 
         self.columnconfigure(0, weight=1)    
         self.columnconfigure(1, weight=1)    
         self.columnconfigure(2, weight=1)    
+        self.columnconfigure(3, weight=1)    
+        self.columnconfigure(4, weight=1)   
 
         self.exp_combo.set(last_task.exp)
         self.equ_combo.set(last_task.equ)

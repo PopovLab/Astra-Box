@@ -9,11 +9,13 @@ def datetime_now() -> str:
     return datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
 class Task(BaseModel):
-    name: str  = Field(default_factory=datetime_now)
+    name:  str = Field(default_factory=datetime_now)
     title: str = 'Task'
-    exp: str   = ''
-    equ: str   = ''
+    exp:   str = ''
+    equ:   str = ''
     rt: Optional[str] = None
+    frtc: Optional[str] = None
+    spectrum: Optional[str] = None
     astra_profile: str = ''
 
     @classmethod
