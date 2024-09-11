@@ -52,17 +52,19 @@ class SpectrumPage(ttk.Frame):
         self.view.grid(row=3, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         
                                     
-    
+    def update_model(self):
+        self.model.name = self.var_name.get()
+        self.model.comment = self.comment_text.get("1.0","end-1c")
 
     def clone_model(self):
-        self.view.update_model()
+        self.update_model()
         name = self.model.name
         #self.model.name = f'{name}_clone_{RootModel.get_uuid_id()[0:4]}'
 
         WorkSpace.refresh_folder('FRTCModel') 
         
     def save_model(self):
-        self.view.update_model()
+        self.update_model()
         self.folder_item.save_model(self.model)
 
     

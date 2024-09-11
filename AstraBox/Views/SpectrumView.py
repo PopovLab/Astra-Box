@@ -1,12 +1,13 @@
 import os 
+from pathlib import Path
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
-from AstraBox import UIElement
-from AstraBox.Models.Spectrum import BaseSpectrum
+from AstraBox import UIElement, WorkSpace
+from AstraBox.Models.Spectrum import BaseSpectrum, Spectrum1D
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
 from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
@@ -59,6 +60,35 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
+class FileSourcePanel(tk.Frame):
+    def __init__(self, master, spectrum:Spectrum1D , on_select_source = None) -> None:
+        super().__init__(master)
+        self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
+        print(self.spectrum_folder)
+        self.on_select_source = on_select_source
+        self.path_var = tk.StringVar(master= self, value=spectrum.source)
+        label = tk.Label(master=self, text='Source:')
+        label.pack(side = tk.LEFT, padx=2)		
+        entry = tk.Entry(self, width=65, textvariable= self.path_var)
+        entry.pack(side = tk.LEFT, padx=2)
+        btn1 = ttk.Button(self, text= 'Select file', command=self.select_file)
+        btn1.pack(side = tk.LEFT, padx=10)   
+
+    def load_file(self):
+        if self.on_select_source:
+            self.on_select_source(self.path_var.get())
+
+    def select_file(self):
+        filename = fd.askopenfilename(initialdir= self.spectrum_folder)
+        if len(filename) < 1 : return
+        fp = Path(filename)
+        if fp.is_relative_to(self.spectrum_folder):
+            filename = fp.name
+        self.path_var.set(filename)
+        if self.on_select_source:
+            self.on_select_source(filename)
+
+
 class Spectrum1DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Spectrum 1D')        
@@ -67,11 +97,24 @@ class Spectrum1DView(tk.LabelFrame):
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
         self.options_box = OptionsPanel(self, self.model.spectrum)
-        self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         #btn = ttk.Button(self, text= 'Generate', command=self.generate)
         #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-        #self.generate()
+        self.make_plot()
         self.rowconfigure(2, weight=1)        
+
+    def on_load_file(self, filename):
+        print(filename)
+        self.model.spectrum.source = filename
+        self.make_plot()        
+
+    def make_plot(self):
+        spectrum_data = self.model.spectrum.read_spcp1D()
+        self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
+        self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         

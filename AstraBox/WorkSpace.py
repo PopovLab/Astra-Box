@@ -216,6 +216,18 @@ def get_path(content_type: str, sub_path: str= None):
     else:
         return _location
 
+
+def get_spectrum_dat_file_path(fn):
+    """"""
+    if len(fn) < 1 : return None
+    p = Path(fn)
+    if not p.is_absolute():
+        p =  get_location_path() / 'spectrum_data' / p
+    if p.exists():
+        return p
+    else: 
+        return None
+
 from typing import Type
 
 def save_model(model):

@@ -5,6 +5,8 @@ from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
 
+import AstraBox.WorkSpace as WorkSpace
+
 
 class BaseSpectrum(BaseModel):
     kind: None
@@ -31,12 +33,37 @@ class GaussSpectrum(BaseSpectrum):
         return spectrum_data   
         #self.spectrum_normalization()
     
+
+def load_spcp1D(p: pathlib.Path):        
+    if p:
+        with p.open() as file:
+            header = ['Ntor', 'Amp']
+            print(header)
+            spectrum = { h: [] for h in header }
+            lines = file.readlines()
+            table = []
+            for line in lines:
+                table.append(line.split())
+            for row in table:
+                for index, (p, item) in enumerate(spectrum.items()):
+                    item.append(float(row[index]))
+            spectrum_data = spectrum 
+    else:
+        spectrum_data = { 'Ntor': [], 'Amp': []  }
+    return spectrum_data
+    
 class Spectrum1D(BaseSpectrum):
     kind: Literal['spectrum_1D']
     title: ClassVar[str] = 'Spectrum 1D'    
     source: str   = Field(default= '', title= 'source')
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
+
+    def read_spcp1D(self):        
+        p = WorkSpace.get_spectrum_dat_file_path(self.source)
+        spectrum_data = load_spcp1D(p)
+        #self.spectrum_normalization()     
+        return spectrum_data
 
 
 class ScatterSpectrum(BaseSpectrum):
