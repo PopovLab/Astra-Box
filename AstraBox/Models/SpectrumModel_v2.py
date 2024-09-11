@@ -9,7 +9,7 @@ from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
 import AstraBox.WorkSpace as WorkSpace
-from AstraBox.Models.Spectrum import GaussSpectrum, ScatterSpectrum, Spectrum1D
+from AstraBox.Models.Spectrum import GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
 
 
 
@@ -19,7 +19,7 @@ def random_name():
 class SpectrumModel(BaseModel):
     name:  str = Field(default= '123', title='name')
     comment: str = Field(default='ccc', title='Comment')
-    spectrum: GaussSpectrum | Spectrum1D | ScatterSpectrum= Field(default= GaussSpectrum(kind='gauss_spectrum'))
+    spectrum: GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum= Field(default= GaussSpectrum(kind='gauss_spectrum'))
 
     @classmethod
     def construct(cls, dump):
@@ -37,6 +37,8 @@ class SpectrumModel(BaseModel):
                 return cls(name= name, spectrum=GaussSpectrum(kind='gauss_spectrum'))
             case 'spectrum_1D':
                 return cls(name= name, spectrum=Spectrum1D(kind='spectrum_1D'))
+            case 'spectrum_2D':
+                return cls(name= name, spectrum=Spectrum2D(kind='spectrum_2D'))            
             case 'scatter_spectrum':
                 return cls(name= name, spectrum=ScatterSpectrum(kind='scatter_spectrum'))            
             case _:

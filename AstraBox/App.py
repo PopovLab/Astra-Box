@@ -198,6 +198,12 @@ class App(tk.Tk):
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('SpectrumModel') 
 
+    def create_spectrum_2D(self):
+        print('create gcreate_spectrum_2D')
+        model = ModelFactory.create_spectrum_model('spectrum_2D')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
+
 
     def create_scatter_spectrum(self):
         print('create scatter_spectrum')
@@ -224,6 +230,7 @@ class App(tk.Tk):
         new_menu.add_command(label='Equlibrium', state='disabled')
         new_menu.add_command(label='gauss spectrum', command=self.create_gauss_spectrum)
         new_menu.add_command(label='spectrum 1D', command=self.create_spectrum_1D)
+        new_menu.add_command(label='spectrum 2D', command=self.create_spectrum_2D)
         new_menu.add_command(label='scatter spectrum', command=self.create_scatter_spectrum)
 
         file_menu = tk.Menu(tearoff=0)

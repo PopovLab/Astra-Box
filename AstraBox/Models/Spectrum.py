@@ -106,3 +106,54 @@ class ScatterSpectrum(BaseSpectrum):
                 except ValueError:
                     item.append(0.0)
         return data
+    
+
+class Spectrum2D(BaseSpectrum):
+    kind: Literal['spectrum_2D']
+    title: ClassVar[str] = 'Spectrum 2D'    
+    source: str   = Field(default= '', title= 'source')
+    angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
+    PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
+
+    def spectrum_data(self):        
+        p = WorkSpace.get_spectrum_dat_file_path(self.source)
+        spectrum_data = self.read_spcp2D(p)
+        #self.spectrum_normalization()     
+        return spectrum_data    
+    
+    def read_spcp2D(self, file_path):
+        print(file_path)
+        if file_path is not None and file_path.exists():
+            file = open(file_path)
+            table = []
+            header = file.readline().split()
+            print(header)
+            spectrum1D = { h: [] for h in header }
+            lines = file.readlines()    
+            for line in lines:
+                table.append(line.split())
+            for row in table:
+                #print(row)
+                for index, (p, item) in enumerate(spectrum1D.items()):
+                    try:
+                        item.append(float(row[index]))
+                    except ValueError:
+                        print(f'error in {index}: {row}')
+                        item.append(0.0)
+            Nz_v = spectrum1D['Nz'][0]
+            Ny_v = spectrum1D['Ny'][0]
+            spectrum_shape = (spectrum1D['Nz'].count(Nz_v),spectrum1D['Ny'].count(Ny_v) )
+            print(spectrum_shape)
+            spectrum2D = { h: [] for h in header }
+            for key, item in spectrum1D.items():
+                spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )# dtype=float, order='F')
+        
+            level = 0.4
+            spectrum2D['Amp'] = spectrum2D.pop('Px')
+            arr = spectrum2D['Amp']
+            with np.nditer(arr, op_flags=['readwrite']) as it:
+                for x in it:
+                    x[...] = x if x<level else level
+            return spectrum2D   
+        else:
+            return None    

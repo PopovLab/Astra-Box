@@ -119,7 +119,42 @@ class Spectrum1DView(tk.LabelFrame):
         self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
 
+class Spectrum2DView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Spectrum 2D')        
 
+        self.model = model
+        self.label = ttk.Label(self,  text=f'Spectrum View')
+        self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.options_box = OptionsPanel(self, self.model.spectrum)
+        self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.make_plot()
+        self.rowconfigure(2, weight=1)        
+
+    def on_load_file(self, filename):
+        print(filename)
+        self.model.spectrum.source = filename
+        self.make_plot()        
+
+    def make_plot(self):
+        spectrum_data = self.model.spectrum.spectrum_data()
+        if spectrum_data == None:
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            return False
+        else:
+            self.spectrum_plot = Plot2DArray(self, spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return True
+        
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Scatter Spectrum')        

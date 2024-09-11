@@ -6,7 +6,7 @@ import AstraBox.Models.RootModel as RootModel
 from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 from AstraBox.Models.RTModel import RTModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
-from AstraBox.Views.SpectrumView import GaussianSpectrumView, ScatterSpectrumView, Spectrum1DView
+from AstraBox.Views.SpectrumView import GaussianSpectrumView, ScatterSpectrumView, Spectrum1DView, Spectrum2DView
 import AstraBox.Widgets as Widgets
 from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Models.ModelFactory as ModelFactory
@@ -46,6 +46,8 @@ class SpectrumPage(ttk.Frame):
                 self.view = GaussianSpectrumView(self, self.model)
             case 'Spectrum1D': 
                 self.view = Spectrum1DView(self, self.model)
+            case 'Spectrum2D': 
+                self.view = Spectrum2DView(self, self.model)                
             case 'ScatterSpectrum': 
                 self.view = ScatterSpectrumView(self, self.model)                
             case _: 
