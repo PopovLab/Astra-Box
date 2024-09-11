@@ -16,7 +16,7 @@ class GaussSpectrum(BaseSpectrum):
     kind: Literal['gauss_spectrum']
     title: ClassVar[str] = 'Gauss Spectrum'
     x_min: float = Field(default= -40.0, title= 'x_min')
-    x_max: float = Field(default= 40.0, title= 'x_max')
+    x_max: float = Field(default=  40.0, title= 'x_max')
     step:  float = Field(default= 0.5, title= 'step')
     bias:  float = Field(default= 0.0, title= 'bias')
     sigma: float = Field(default= 2.5, title= 'sigma')
