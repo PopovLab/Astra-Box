@@ -130,13 +130,36 @@ class FRTCModel(BaseModel):
     def get_dump(self):
         return self.model_dump_json(indent= 2)
 
+    def get_text(self):
+        return self.prepare_dat_file()
+
+    def get_dest_path(self):
+        return 'lhcd/ray_tracing.dat'
+
+    def prepare_dat_file(self):
+        lines = []
+        for sec in self.get_sections():
+            lines.append("!"*15 + " "+ sec.title + " "+ "!"*(60-len(sec.title)) + "\n")
+            schema= sec.model_json_schema()['properties']
+            for name, value in sec:
+                s = schema[name]
+                lines.append(f" {str(value):10} ! {name:15} {s.get('description')}\n" )
+             
+        return ''.join(lines)   
+    
 def save_frtc(rtp, fn):
     loc = pathlib.Path(fn)
     with open(loc, "w" ) as file:
             file.write(rtp.model_dump_json(indent= 2))
 
+     
+
+
+
 if __name__ == '__main__':
     frtc = FRTCModel()
+    print(frtc.prepare_dat_file())
+    exit()
     save_frtc(frtc, 'test_frtc_model.txt')
     for sec in frtc.get_sections():
         print('-----------------------------')

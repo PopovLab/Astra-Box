@@ -168,14 +168,20 @@ def prepare_task_zip(task:Task, zip_file):
         if equ_model is None:
             errors.append(f"EquModel {task.equ} not exists")
             return errors
-        rt_model =  get('RTModel', task.rt)
-
+        
         pack_model_to_zip(zip, exp_model)
         pack_model_to_zip(zip, equ_model)
 
-        if rt_model:
+        if task.rt is not None:
+            rt_model =  get('RTModel', task.rt)
+            if rt_model:
+                pack_model_to_zip(zip, rt_model)
+                pack_model_to_zip(zip, rt_model.get_spectrum_model())
+        elif task.frtc is not None:
+            frtc_model = get('FRTCModel', task.frtc)
             pack_model_to_zip(zip, rt_model)
-            pack_model_to_zip(zip, rt_model.get_spectrum_model())
+            spectrum_model = get('SpectrumModel', task.spectrum)
+            pack_model_to_zip(zip, spectrum_model)
 
         for key, item in WorkSpace.folder_content('SbrModel').items():
             pack_model_to_zip(zip, load(item))
