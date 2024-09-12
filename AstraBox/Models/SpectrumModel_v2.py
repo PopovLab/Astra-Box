@@ -46,3 +46,40 @@ class SpectrumModel(BaseModel):
 
     def get_dump(self):
         return self.model_dump_json(indent= 2)
+    
+    def get_dest_path(self):
+        return 'lhcd/spectrum.dat'
+
+    def generate(self):
+        match self.spectrum.kind:
+            case 'gauss_spectrum':
+                self.make_gauss_data()
+            case 'rotated_gaussian':
+                self.make_rotated_gauss_data()                
+            case 'spectrum_1D':
+                self.read_spcp1D()
+            case 'scatter_spectrum':
+                self.read_scatter(self.setting['source'])
+            case 'spectrum_2D':
+                self.read_spcp2D(self.setting['source'])
+
+    def divide_spectrum(self):
+        sp = [x for x in zip(self.spectrum_data['Ntor'], self.spectrum_data['Amp'])]
+        sp_pos = [ (s[0], s[1]) for s in sp if s[0]>0]
+        sp_neg = [ (-s[0], s[1]) for s in sp if s[0]<0]
+        sp_neg = list(reversed(sp_neg))
+        return sp_pos, sp_neg
+
+    def get_text(self):
+        spectrum_data = self.spectrum.get_spectrum_data()
+        print(self.spectrum.kind)
+        match self.spectrum.kind:
+            case 'gauss_spectrum'| 'spectrum_1D':
+                sp = [(x,0,p) for x, p in zip(spectrum_data['Ntor'], spectrum_data['Amp'])]
+            case 'rotated_gaussian':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                                
+            case 'scatter_spectrum':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                
+            case 'spectrum_2D':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]                
+        return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])

@@ -82,8 +82,8 @@ class Options(ParametersSection):
     inew: int = Field(default= 0, title= 'inew', description= "inew=0 for usual tokamak&Ntor_grill; 1 or 2 for g' in ST&Npol_grill")                   
     itor: int = Field(default= 1, title= 'itor', description= "+-1, Btor direction in right coord{drho,dteta,dfi}")    
     ipol: int = Field(default= 1, title= 'ipol', description= "+-1, Bpol direction in right coord{drho,dteta,dfi}")    
-    demo1: int = Field(default= 1, title= 'demo1', description= "demo1 option")    
-    demo2: int = Field(default= 1, title= 'demo2', description= "demo2 option")   
+    #demo1: int = Field(default= 1, title= 'demo1', description= "demo1 option")    
+    #demo2: int = Field(default= 1, title= 'demo2', description= "demo2 option")   
 
 class GrillParameters(ParametersSection):
     title: ClassVar[str] = 'Grill parameters'
@@ -101,8 +101,8 @@ class FRTCModel(BaseModel):
     name:  str = Field(default= '123', title='name')
     comment: str = Field(default='ccc', title='Comment')
 
-    spectrum_kind: ClassVar[str] = 'gauss_spectrum'
-    spectrum_PWM: ClassVar[bool] = True
+    spectrum_kind: str = Field(default= 'gauss_spectrum', exclude=True)
+    spectrum_PWM: bool = Field(default= True, exclude=True)
 
     physical_parameters: PhysicalParameters = Field(default= PhysicalParameters())
 

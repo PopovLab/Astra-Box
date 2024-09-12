@@ -55,7 +55,7 @@ class GaussianSpectrumView(tk.LabelFrame):
 
     def generate(self):
         #self.options_box.update()
-        s_d= self.model.spectrum.make_spectrum_data()
+        s_d= self.model.spectrum.get_spectrum_data()
         self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
@@ -115,7 +115,7 @@ class Spectrum1DView(tk.LabelFrame):
         self.make_plot()        
 
     def make_plot(self):
-        spectrum_data = self.model.spectrum.read_spcp1D()
+        spectrum_data = self.model.spectrum.get_spectrum_data()
         self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
         self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
 
@@ -145,7 +145,7 @@ class Spectrum2DView(tk.LabelFrame):
         self.make_plot()        
 
     def make_plot(self):
-        spectrum_data = self.model.spectrum.spectrum_data()
+        spectrum_data = self.model.spectrum.get_spectrum_data()
         if spectrum_data == None:
             label = ttk.Label(self, text="Spectrum None", width=20)
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
@@ -181,7 +181,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         return self.make_scatter_plot3D()
 
     def make_scatter_plot3D(self):
-        self.spectrum_data = self.model.spectrum.read_scatter()
+        self.spectrum_data = self.model.spectrum.get_spectrum_data()
             
         if self.spectrum_data == None:
             print('spectrum_data == None')

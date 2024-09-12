@@ -172,21 +172,6 @@ def prepare_task_zip(task:Task, zip_file):
         pack_model_to_zip(zip, exp_model)
         pack_model_to_zip(zip, equ_model)
 
-        if task.rt is not None:
-            rt_model =  get('RTModel', task.rt)
-            if rt_model:
-                pack_model_to_zip(zip, rt_model)
-                pack_model_to_zip(zip, rt_model.get_spectrum_model())
-        elif task.frtc is not None:
-            frtc_model = get('FRTCModel', task.frtc)
-            spectrum_model = get('SpectrumModel', task.spectrum)
-            frtc_model.spectrum_kind = spectrum_model.spectrum.kind # нужно что бы знать тип спектра для файла конфигурации FRTC
-            frtc_model.spectrum_PWM = spectrum_model.spectrum.PWM 
-            pack_model_to_zip(zip, frtc_model)
-            pack_model_to_zip(zip, spectrum_model)
-
-        for key, item in WorkSpace.folder_content('SbrModel').items():
-            pack_model_to_zip(zip, load(item))
 
         models  = {
             'ExpModel' : exp_model.data,
@@ -194,8 +179,23 @@ def prepare_task_zip(task:Task, zip_file):
             'name' : task.name
             }
         
-        if rt_model:
-            models['RTModel'] = rt_model.data
+        if task.rt is not None:
+            rt_model =  get('RTModel', task.rt)
+            if rt_model:
+                models['RTModel'] = rt_model.data
+                pack_model_to_zip(zip, rt_model)
+                pack_model_to_zip(zip, rt_model.get_spectrum_model())
+        elif task.frtc is not None:
+            frtc_model = get('FRTCModel', task.frtc)
+            spectrum_model = get('SpectrumModel', task.spectrum)
+            frtc_model.spectrum_kind = 'gauss_spectrum' #spectrum_model.spectrum.kind # нужно что бы знать тип спектра для файла конфигурации FRTC
+            frtc_model.spectrum_PWM = spectrum_model.spectrum.PWM 
+            pack_model_to_zip(zip, frtc_model)
+            pack_model_to_zip(zip, spectrum_model)
+
+        for key, item in WorkSpace.folder_content('SbrModel').items():
+            pack_model_to_zip(zip, load(item))
+
             
         with zip.open( 'race_model.json' , "w" ) as json_file:
             json_writer = encodings.utf_8.StreamWriter(json_file)

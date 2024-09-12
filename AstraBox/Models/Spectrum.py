@@ -23,7 +23,7 @@ class GaussSpectrum(BaseSpectrum):
     angle: float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:   bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")
     
-    def make_spectrum_data(self):
+    def get_spectrum_data(self):
       
         num = int((self.x_max - self.x_min)/self.step)
         x = np.linspace(self.x_min, self.x_max, num = num)
@@ -65,6 +65,9 @@ class Spectrum1D(BaseSpectrum):
         spectrum_data = load_spcp1D(p)
         #self.spectrum_normalization()     
         return spectrum_data
+    
+    def get_spectrum_data(self):
+        return self.read_spcp1D()
 
 
 class ScatterSpectrum(BaseSpectrum):
@@ -107,6 +110,9 @@ class ScatterSpectrum(BaseSpectrum):
                     item.append(0.0)
         return data
     
+    
+    def get_spectrum_data(self):
+        return self.read_scatter()    
 
 class Spectrum2D(BaseSpectrum):
     kind: Literal['spectrum_2D']
@@ -115,7 +121,7 @@ class Spectrum2D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
-    def spectrum_data(self):        
+    def get_spectrum_data(self):        
         p = WorkSpace.get_spectrum_dat_file_path(self.source)
         spectrum_data = self.read_spcp2D(p)
         #self.spectrum_normalization()     
@@ -157,3 +163,4 @@ class Spectrum2D(BaseSpectrum):
             return spectrum2D   
         else:
             return None    
+           

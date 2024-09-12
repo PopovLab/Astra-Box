@@ -72,6 +72,12 @@ class ConfigPanel(ttk.Frame):
         if self.rt_combo:
             if last_task.rt:
                 self.rt_combo.set(last_task.rt)
+        if self.frtc_combo:
+            if last_task.frtc:
+                self.frtc_combo.set(last_task.frtc)
+        if self.spm_combo:
+            if last_task.spectrum:
+                self.spm_combo.set(last_task.spectrum)                                
         self.astra_combo.set(last_task.astra_profile)      
                 
     def open_config(self):
@@ -85,6 +91,10 @@ class ConfigPanel(ttk.Frame):
         task.title= self.entry.get()
         if self.rt_combo:
             task.rt= self.rt_combo.get()
+        if self.frtc_combo:
+            task.frtc= self.frtc_combo.get()
+        if self.spm_combo:
+            task.spectrum= self.spm_combo.get()                        
         task.astra_profile= self.astra_combo.get()
         return task
 
