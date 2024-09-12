@@ -149,7 +149,7 @@ class AstraWorker(Worker):
 
     def copy_data(self):
         #zip_file = self.run_model.prepare_run_data()
-        zip_file= zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
+        zip_file= WorkSpace.get_location_path().joinpath('race_data.zip')
         errors = ModelFactory.prepare_task_zip(self.task, zip_file)
         if len(errors)>0:
             for e in errors:
