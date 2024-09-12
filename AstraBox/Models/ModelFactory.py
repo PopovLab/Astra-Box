@@ -179,8 +179,10 @@ def prepare_task_zip(task:Task, zip_file):
                 pack_model_to_zip(zip, rt_model.get_spectrum_model())
         elif task.frtc is not None:
             frtc_model = get('FRTCModel', task.frtc)
-            pack_model_to_zip(zip, rt_model)
             spectrum_model = get('SpectrumModel', task.spectrum)
+            frtc_model.spectrum_kind = spectrum_model.spectrum.kind # нужно что бы знать тип спектра для файла конфигурации FRTC
+            frtc_model.spectrum_PWM = spectrum_model.spectrum.PWM 
+            pack_model_to_zip(zip, frtc_model)
             pack_model_to_zip(zip, spectrum_model)
 
         for key, item in WorkSpace.folder_content('SbrModel').items():

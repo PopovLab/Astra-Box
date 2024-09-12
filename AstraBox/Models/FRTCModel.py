@@ -101,6 +101,9 @@ class FRTCModel(BaseModel):
     name:  str = Field(default= '123', title='name')
     comment: str = Field(default='ccc', title='Comment')
 
+    spectrum_kind: ClassVar[str] = 'gauss_spectrum'
+    spectrum_PWM: ClassVar[bool] = True
+
     physical_parameters: PhysicalParameters = Field(default= PhysicalParameters())
 
     alphas_parameters: AlphasParameters = Field(default= AlphasParameters())
@@ -145,6 +148,23 @@ class FRTCModel(BaseModel):
                 s = schema[name]
                 lines.append(f" {str(value):10} ! {name:15} {s.get('description')}\n" )
              
+
+
+        spect_line = ''
+        match self.spectrum_kind:
+            case 'gauss_spectrum' | 'spectrum_1D':
+                if self.spectrum_PWM:
+                    spect_line = '  0     ! spectr type 0 - 1D + spline approximation ON'
+                else:
+                    spect_line = '  1     ! spectr type 1 - 1D + spline approximation OFF'
+            case 'rotated_gaussian':
+                spect_line = '  2     ! spectr type 2 - scatter spectrum'
+            case 'scatter_spectrum':
+                spect_line = '  2     ! spectr type 2 - scatter spectrum'
+            case 'spectrum_2D':
+                spect_line = '  3     ! spectr type 3 - 2D for future'
+
+        lines += spect_line  
         return ''.join(lines)   
     
 def save_frtc(rtp, fn):
