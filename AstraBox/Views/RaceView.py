@@ -31,22 +31,7 @@ from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
 from AstraBox.ToolBox.ExecTimePlot import ExecTimePlot
 from AstraBox.ToolBox.RadialDCPlot import RadialDCPlot
 
-class InfoPanel(tk.Frame):
-    def __init__(self, master, model) -> None:
-        super().__init__(master) #, text= 'Race info')
-        info = {
-            'Exp:': model.data['ExpModel']['name'],
-            'Equ:': model.data['EquModel']['name'],
-            
-            }
-        if 'RTModel' in  model.data.keys():
-            info['Ray tracing:'] : model.data['RTModel']['name']
-        for key, value in info.items():
-            var = tk.StringVar(master= self, value=value)
-            label = tk.Label(master=self, text=key)
-            label.pack(side = tk.LEFT, ipadx=10)		
-            entry = tk.Entry(self, width=15, textvariable= var, state='disabled')
-            entry.pack(side = tk.LEFT)
+           
 
 
 class TabViewBasic(ttk.Frame):
