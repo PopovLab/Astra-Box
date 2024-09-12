@@ -28,15 +28,23 @@ from AstraBox.Views.RaceView import ExecTimeView
 from AstraBox.Views.SummaryView import SummaryView
 
 class InfoPanel(tk.Frame):
-    def __init__(self, master, model:RaceModel) -> None:
+    def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master) #, text= 'Race info')
-        info = {
-            'Exp:': model.data['ExpModel']['name'],
-            'Equ:': model.data['EquModel']['name'],
-            
-            }
-        if 'RTModel' in  model.data:
-            info['Ray tracing:'] = model.data['RTModel']['name']
+        if model.version == 'v1':
+            info = {
+                'Exp:': model.data['ExpModel']['name'],
+                'Equ:': model.data['EquModel']['name'],
+                
+                }
+            if 'RTModel' in  model.data.keys():
+                info['Ray tracing:'] : model.data['RTModel']['name']
+        else: # v2
+            info = {
+                'Exp:': model.task.exp,
+                'Equ:': model.task.equ,
+                'FRTS:': model.task.frtc,
+                'Spectrum:': model.task.spectrum,
+                }            
         for key, value in info.items():
             var = tk.StringVar(master= self, value=value)
             label = tk.Label(master=self, text=key)

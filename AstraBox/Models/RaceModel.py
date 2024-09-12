@@ -6,6 +6,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 from io import BytesIO
+from AstraBox.Task import Task
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
@@ -26,6 +27,7 @@ class RaceModel(RootModel):
         self.race_zip_file = str(path)
         print(self.race_zip_file)
         self.name = path.name
+        self.version = 'v1'
 
     @classmethod
     def load(cls, path):
@@ -38,12 +40,24 @@ class RaceModel(RootModel):
         return 'RaceModel'   
 
     def load_model_data(self):
-        try:
-            with zipfile.ZipFile(self.race_zip_file) as zip:
-                with zip.open( 'race_model.json' , "r" ) as json_file:
-                    self.data |= json.load(json_file)
-        except:
-            print('error')
+        print('load_model_data !!!!!!!!!!')
+        zip_root = zipfile.Path(self.race_zip_file)
+        task_file = zip_root / "task.json"
+        if task_file.exists():
+            print(f'{task_file.name} exists!!')
+            self.version = 'v2'
+            with task_file.open(mode= "r") as json_file:
+                data = json_file.read()
+                self.task = Task.load(data)
+            print(self.task)
+        else:
+            try:
+                with zipfile.ZipFile(self.race_zip_file) as zip:
+                    with zip.open( 'race_model.json' , "r" ) as json_file:
+                        self.data |= json.load(json_file)
+            except Exception as e:
+                print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+                print('error')
 
 
     def get_models_dict(self):

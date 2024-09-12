@@ -138,6 +138,10 @@ def delete_model(model)  -> bool:
 import json
 import encodings
 
+def model_dump_to_zip(zip, model, file_name):
+    dump = model.model_dump_json(indent= 2)
+    zip.writestr(file_name, dump)
+
 def pack_model_to_zip(zip, model):
     if model:
         file_name = model.get_dest_path()        
@@ -157,6 +161,8 @@ def prepare_task_zip(task:Task, zip_file):
     with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
         zip.comment = bytes(task.title,'UTF-8')
         make_folders(zip)
+
+        model_dump_to_zip(zip, model= task, file_name='task.json')
 
         exp_model = get('ExpModel', task.exp)
         if exp_model is None:
@@ -179,26 +185,29 @@ def prepare_task_zip(task:Task, zip_file):
             'name' : task.name
             }
         
-        if task.rt is not None:
+        if task.rt is not None: # старая версия модели v1
             rt_model =  get('RTModel', task.rt)
             if rt_model:
                 models['RTModel'] = rt_model.data
                 pack_model_to_zip(zip, rt_model)
                 pack_model_to_zip(zip, rt_model.get_spectrum_model())
-        elif task.frtc is not None:
+                with zip.open( 'race_model.json' , "w" ) as json_file:
+                    json_writer = encodings.utf_8.StreamWriter(json_file)
+                    # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
+                    json.dump(models, json_writer, ensure_ascii=False, indent=2)                
+        elif task.frtc is not None: # новая версия v2
             frtc_model = get('FRTCModel', task.frtc)
             spectrum_model = get('SpectrumModel', task.spectrum)
             frtc_model.spectrum_kind = 'gauss_spectrum' #spectrum_model.spectrum.kind # нужно что бы знать тип спектра для файла конфигурации FRTC
             frtc_model.spectrum_PWM = spectrum_model.spectrum.PWM 
             pack_model_to_zip(zip, frtc_model)
             pack_model_to_zip(zip, spectrum_model)
+            model_dump_to_zip(zip, model= frtc_model, file_name='frtc_model.json')
+            model_dump_to_zip(zip, model= spectrum_model, file_name='spectrum_model.json')
 
         for key, item in WorkSpace.folder_content('SbrModel').items():
             pack_model_to_zip(zip, load(item))
 
             
-        with zip.open( 'race_model.json' , "w" ) as json_file:
-            json_writer = encodings.utf_8.StreamWriter(json_file)
-            # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
-            json.dump(models, json_writer, ensure_ascii=False, indent=2)
+
     return errors
