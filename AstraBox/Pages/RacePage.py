@@ -37,12 +37,12 @@ class InfoPanel(tk.Frame):
                 
                 }
             if 'RTModel' in  model.data.keys():
-                info['Ray tracing:'] : model.data['RTModel']['name']
+                info['Ray tracing:'] = model.data['RTModel']['name']
         else: # v2
             info = {
                 'Exp:': model.task.exp,
                 'Equ:': model.task.equ,
-                'FRTS:': model.task.frtc,
+                'FRTC:': model.task.frtc,
                 'Spectrum:': model.task.spectrum,
                 }            
         for key, value in info.items():
