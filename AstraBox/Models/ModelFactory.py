@@ -192,7 +192,7 @@ def prepare_task_zip(task:Task, zip_file):
                 pack_model_to_zip(zip, rt_model)
                 pack_model_to_zip(zip, rt_model.get_spectrum_model())
                 with zip.open( 'race_model.json' , "w" ) as json_file:
-                    json_writer = encodings.utf_8.StreamWriter(json_file)
+                    json_writer = encodings.utf_8.StreamWriter(json_file) 
                     # JSON spec literally fixes interchange encoding as UTF-8: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
                     json.dump(models, json_writer, ensure_ascii=False, indent=2)                
         elif task.frtc is not None: # новая версия v2

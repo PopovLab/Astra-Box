@@ -135,7 +135,7 @@ class RunAstraPage(ttk.Frame):
     def multy_run(self):
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
-            exp_list =  WorkSpace.get_folder_content ('ExpModel')
+            exp_list =  WorkSpace.get_folder_content('ExpModel')
             equ = self.config_panel.equ_combo.get()
             for exp in exp_list:
                 if self.terminated: break
@@ -160,10 +160,10 @@ class RunAstraPage(ttk.Frame):
         self.log_console.set_logger(Kernel.get_logger())
         Kernel.set_progress_callback(self.on_progress)     
         Kernel.log_info(task)
-        astra_profile = Config.get_astra_profile(task.astra_profile)
+
         self.on_progress(0)
 
-        Kernel.execute(task, astra_profile, option)
+        Kernel.execute(task, option)
         
         WorkSpace.refresh_folder('RaceModel')        
 
