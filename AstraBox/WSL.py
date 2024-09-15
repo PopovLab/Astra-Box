@@ -150,7 +150,7 @@ async def progress_run(cmd):
     for line in lines:
         log_info(line)
 
-    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('utf-8').split("\r\n")
     for line in lines:
         log_error(line)
 

@@ -67,6 +67,14 @@ def get(model_kind= None, model_name= None):
     except:
         return None
 
+def get2(model_kind= None, model_name= None):
+    folder = WorkSpace.folder(model_kind)
+    content = folder.generator(model_name)
+    for name, folder_item in content:
+        yield load(folder_item)
+
+
+
 import uuid
 
 def random_name():
@@ -164,10 +172,16 @@ def prepare_task_zip(task:Task, zip_file):
 
         model_dump_to_zip(zip, model= task, file_name='task.json')
 
-        exp_model = get('ExpModel', task.exp)
-        if exp_model is None:
-            errors.append(f"ExpModel {task.exp} not exists")
-            return errors
+
+        folder = WorkSpace.folder('ExpModel')
+        for name, folder_item in folder.generator(task.exp):
+            exp_model = load(folder_item)
+            pack_model_to_zip(zip, exp_model)
+
+        #exp_model = get('ExpModel', task.exp)
+        #if exp_model is None:
+        #    errors.append(f"ExpModel {task.exp} not exists")
+        #    return errors
 
 
         equ_model =  get('EquModel', task.equ)
@@ -175,7 +189,7 @@ def prepare_task_zip(task:Task, zip_file):
             errors.append(f"EquModel {task.equ} not exists")
             return errors
         
-        pack_model_to_zip(zip, exp_model)
+        
         pack_model_to_zip(zip, equ_model)
 
 

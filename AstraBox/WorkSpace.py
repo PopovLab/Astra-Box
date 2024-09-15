@@ -110,9 +110,12 @@ class Folder(BaseModel):
                 return True
         return False
     
+    def generator(self, pathname):
+        return ((p.name, FolderItem(self, p)) for p in self._location.glob(pathname) if p.name !='.gitignore')
+
     def populate(self):
         try:
-            self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+            self._content = {name: item for name, item in self.generator('*.*') }
         except Exception as e:
             print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
             self._content = {}
@@ -188,6 +191,14 @@ work_space = None
 def get_folder_content_list(content_type):
     if work_space:
         return work_space.get_folder_content_list(content_type)
+
+def folder(content_type):
+    if work_space:
+        folder= work_space.folder(content_type)
+        if folder is not None:
+            return folder
+        else:
+            return None
 
 def folder_content(content_type):
     if work_space:

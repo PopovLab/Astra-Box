@@ -9,6 +9,7 @@ def datetime_now() -> str:
     return datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
 class Task(BaseModel):
+    index: int = Field(default=0, exclude=True)
     name:  str = Field(default_factory=datetime_now)
     title: str = 'Task'
     exp:   str = ''

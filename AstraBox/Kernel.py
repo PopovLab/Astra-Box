@@ -137,6 +137,11 @@ class AstraWorker(Worker):
         super().__init__()
         _logger.info('create AstraWorker')
 
+    def mk_work_folders(self):
+        for key, folder in Astra.data_folder.items():
+            mk_cmd = f'mkdir {self.astra_user}/{folder}'
+            WSL.exec(self.astra_home, mk_cmd)
+
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
             clear_cmd = f'rm -f {self.astra_user}/{folder}' + '{v*,*.*}'
@@ -171,12 +176,21 @@ class AstraWorker(Worker):
         task_folder = f'task_{task.index}'
         WSL.exec(self.wsl_path, f'mkdir {task_folder}')
         WSL.exec(self.wsl_path, f'mv dat {task_folder}')
+        WSL.exec(self.wsl_path, f'mkdir {task_folder}/equ')       
+        WSL.exec(self.wsl_path, f'cp equ/{task.equ} {task_folder}/equ')
+        WSL.exec(self.wsl_path, f'mkdir {task_folder}/exp')       
+        WSL.exec(self.wsl_path, f'cp exp/{task.exp} {task_folder}/exp')        
         #WSL.exec(self.wsl_path, f'mv lhcd {task_name}')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip {task_folder}')
         WSL.exec(self.wsl_path, f'rm -r {task_folder}')
 
     def sub_task_generaton(self, task: Task):
-        return []
+        folder = WorkSpace.folder('ExpModel')
+        for index, (name, folder_item) in enumerate(folder.generator(task.exp)):
+            #exp_model = load(folder_item)
+            sub_task = Task(exp=name, equ=task.equ, frtc=task.frtc, spectrum=task.spectrum)
+            sub_task.index = index
+            yield sub_task
 
     def execute(self, task: Task,  option:str='no_pause'):
         astra_profile = Config.get_astra_profile(task.astra_profile)
@@ -198,8 +212,10 @@ class AstraWorker(Worker):
         if task.exp == '*.*':
             for sub_task in self.sub_task_generaton(task):
                 astra_cmd = f'./run_astra.sh {self.astra_user} {sub_task.exp} {sub_task.equ} {option}'
+                print(sub_task)
                 WSL.start_exec(self.astra_home, astra_cmd)
-                self.pack_task_results(task)
+                self.pack_task_results(sub_task)
+                self.mk_work_folders()
         else:
 
             astra_cmd = f'./run_astra.sh {self.astra_user} {task.exp} {task.equ} {option}'
