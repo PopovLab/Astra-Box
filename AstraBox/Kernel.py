@@ -173,13 +173,18 @@ class AstraWorker(Worker):
     def pack_task_results(self, task:Task):
         _logger.info(f'----- pack task results {task.index} -------')
         print(f'----- pack task results {task.index} -------')
-        task_folder = f'task_{task.index}'
+        task_folder = f'task_{task.index:05}'
         WSL.exec(self.wsl_path, f'mkdir {task_folder}')
+        
         WSL.exec(self.wsl_path, f'mv dat {task_folder}')
         WSL.exec(self.wsl_path, f'mkdir {task_folder}/equ')       
         WSL.exec(self.wsl_path, f'cp equ/{task.equ} {task_folder}/equ')
         WSL.exec(self.wsl_path, f'mkdir {task_folder}/exp')       
-        WSL.exec(self.wsl_path, f'cp exp/{task.exp} {task_folder}/exp')        
+        WSL.exec(self.wsl_path, f'cp exp/{task.exp} {task_folder}/exp')    
+        #WSL.exec_command(self.wsl_path, f"echo {task.model_dump_json()} > {task_folder}/task.json")    
+        win_path = WSL.win_wsl_path(f'{self.wsl_path}/{task_folder}/task.json')
+        #print(win_path)
+        task.save(win_path)
         #WSL.exec(self.wsl_path, f'mv lhcd {task_name}')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip {task_folder}')
         WSL.exec(self.wsl_path, f'rm -r {task_folder}')
@@ -188,7 +193,9 @@ class AstraWorker(Worker):
         folder = WorkSpace.folder('ExpModel')
         for index, (name, folder_item) in enumerate(folder.generator(task.exp)):
             #exp_model = load(folder_item)
-            sub_task = Task(exp=name, equ=task.equ, frtc=task.frtc, spectrum=task.spectrum)
+            sub_task = task.model_copy() #Task(exp=name, equ=task.equ, frtc=task.frtc, spectrum=task.spectrum)
+            sub_task.exp=name
+            sub_task.title = f'{task.title}_{index:05}'
             sub_task.index = index
             yield sub_task
 
@@ -224,9 +231,6 @@ class AstraWorker(Worker):
 
         _logger.info('finish')
 
-        
-        
-        
         zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{task.name}.zip')
         race_zip_file = str(zip_path)
         src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
