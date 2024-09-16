@@ -150,6 +150,7 @@ default_catalog = [
 class WorkSpace(BaseModel):
     folders: list[Folder] = []
     _location: str
+    kind: str = 'basic_transport' #frtc_v1 frts_v2
 
 
     def open(self, path):

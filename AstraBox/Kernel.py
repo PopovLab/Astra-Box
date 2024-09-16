@@ -138,7 +138,7 @@ class AstraWorker(Worker):
         _logger.info('create AstraWorker')
 
     def mk_work_folders(self):
-        for key, folder in Astra.data_folder.items():
+        for key, folder in Astra.basic_folder.items():
             mk_cmd = f'mkdir {self.astra_user}/{folder}'
             WSL.exec(self.astra_home, mk_cmd)
 
