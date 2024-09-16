@@ -45,6 +45,11 @@ class Task(BaseModel):
         with open(loc, "w" ) as file:
             file.write(self.model_dump_json(indent= 2))    
 
+class TaskList(BaseModel):
+    main_task: Task
+    tasks: list[Task] = Field(default= [])
+
+
 
 if __name__ == '__main__':
     task1 = Task(exp='21', equ='22')

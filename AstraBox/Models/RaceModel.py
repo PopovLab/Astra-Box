@@ -6,7 +6,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 from io import BytesIO
-from AstraBox.Task import Task
+from AstraBox.Task import Task, TaskList
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
@@ -50,6 +50,13 @@ class RaceModel(RootModel):
                 data = json_file.read()
                 self.task = Task.load(data)
             print(self.task)
+            task_list_file = zip_root / "task_list.json"
+            if task_list_file.exists():
+                self.version = 'v3'
+                with task_file.open(mode= "r") as json_file:
+                    data = json_file.read()
+                    self.task = TaskList.model_validate_json(data)
+                    
         else:
             try:
                 with zipfile.ZipFile(self.race_zip_file) as zip:

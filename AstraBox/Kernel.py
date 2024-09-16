@@ -7,9 +7,10 @@ import subprocess
 import asyncio
 import shutil
 import platform
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from AstraBox.Models import ModelFactory
-from AstraBox.Task import Task
+from AstraBox.Task import Task, TaskList
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
@@ -214,15 +215,17 @@ class AstraWorker(Worker):
         self.clear_work_folders()
         
         if self.copy_data(task):  return
-
+        task_list = None
         self.set_model_status('run')
         if task.exp == '*.*':
+            task_list = TaskList(main_task= task)
             for sub_task in self.sub_task_generaton(task):
                 astra_cmd = f'./run_astra.sh {self.astra_user} {sub_task.exp} {sub_task.equ} {option}'
                 print(sub_task)
                 WSL.start_exec(self.astra_home, astra_cmd)
                 self.pack_task_results(sub_task)
                 self.mk_work_folders()
+                task_list.tasks.append(sub_task)
         else:
 
             astra_cmd = f'./run_astra.sh {self.astra_user} {task.exp} {task.equ} {option}'
@@ -235,6 +238,10 @@ class AstraWorker(Worker):
         race_zip_file = str(zip_path)
         src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
         WSL.get(src, race_zip_file)
+        if task_list: 
+                with ZipFile(race_zip_file, 'a', compression= ZIP_DEFLATED, compresslevel = 2) as zip:
+                    dump = task_list.model_dump_json(indent= 2)
+                    zip.writestr('task_list.json', dump)
         #self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
