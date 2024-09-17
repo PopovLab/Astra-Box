@@ -28,6 +28,7 @@ class RaceModel(RootModel):
         print(self.race_zip_file)
         self.name = path.name
         self.version = 'v1'
+        self.sel_task= None
 
     @classmethod
     def load(cls, path):
@@ -143,8 +144,15 @@ class RaceModel(RootModel):
         except Exception as error:
             return str(error)
 
+    def task_suffix(self, path:str):
+        if self.sel_task:
+            task_folder = f'task_{self.sel_task.index:05}'
+            return f'{task_folder}/{path}'    
+        else:
+            return path
+        
     def get_time_series(self):
-        f = 'dat/time_series.dat'
+        f = self.task_suffix('dat/time_series.dat')
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
@@ -208,7 +216,7 @@ class RaceModel(RootModel):
         if p.suffix != '.bin': return
 
     def get_file_list(self, folder_name):
-        folder = Astra.data_folder[folder_name]
+        folder = self.task_suffix(Astra.data_folder[folder_name])
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]

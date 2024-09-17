@@ -8,6 +8,8 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToo
 
 import AstraBox.Models.ModelFactory as ModelFactory
 
+from AstraBox.Pages.InfoPanel import InfoPanel
+from AstraBox.Pages.TaskPage import TaskPage
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
 
@@ -27,31 +29,6 @@ from AstraBox.Views.RaceView import DrivenCurrentView
 from AstraBox.Views.RaceView import ExecTimeView
 from AstraBox.Views.SummaryView import SummaryView
 from AstraBox.Views.TaskListView import TaskListView
-
-class InfoPanel(tk.Frame):
-    def __init__(self, master, model: RaceModel) -> None:
-        super().__init__(master) #, text= 'Race info')
-        if model.version == 'v1':
-            info = {
-                'Exp:': model.data['ExpModel']['name'],
-                'Equ:': model.data['EquModel']['name'],
-                
-                }
-            if 'RTModel' in  model.data.keys():
-                info['Ray tracing:'] = model.data['RTModel']['name']
-        else: # v2
-            info = {
-                'Exp:': model.task.exp,
-                'Equ:': model.task.equ,
-                'FRTC:': model.task.frtc,
-                'Spectrum:': model.task.spectrum,
-                }            
-        for key, value in info.items():
-            var = tk.StringVar(master= self, value=value)
-            label = tk.Label(master=self, text=key)
-            label.pack(side = tk.LEFT, ipadx=10)		
-            entry = tk.Entry(self, width=20, textvariable= var, state='disabled')
-            entry.pack(side = tk.LEFT)
 
 
 class FRTCBook(ttk.Notebook):
@@ -148,9 +125,9 @@ class RacePage(ttk.Frame):
         print(action)
         new_window = tk.Toplevel(self.master)
         new_window.title("Race Window")
-        new_window.geometry("850x870")                
-        #model_view = RacePage(new_window, self.folder_item)   
-        #model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
+        new_window.geometry("1050x800")                
+        model_view = TaskPage(new_window, self.folder_item, action['payload'])   
+        model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
         new_window.columnconfigure(0, weight=1)        
         new_window.rowconfigure(0, weight=1)    
 
