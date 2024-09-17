@@ -26,6 +26,7 @@ from AstraBox.Views.RaceView import RTResultView
 from AstraBox.Views.RaceView import DrivenCurrentView
 from AstraBox.Views.RaceView import ExecTimeView
 from AstraBox.Views.SummaryView import SummaryView
+from AstraBox.Views.TaskListView import TaskListView
 
 class InfoPanel(tk.Frame):
     def __init__(self, master, model: RaceModel) -> None:
@@ -135,9 +136,23 @@ class RacePage(ttk.Frame):
         self.save_btn = ttk.Button(self, text='save', command=self.save_comment)
         self.save_btn.grid(row=3, column=2, padx=5, pady=5)
 
-        self.notebook = FRTCBook(self, self.model)
-        self.notebook.grid(row=4, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        match self.model.version:
+            case 'v3':
+                task_list_view = TaskListView(self, self.model, command= self.show_task)
+                task_list_view.grid(row=4, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            case _:
+                self.notebook = FRTCBook(self, self.model)
+                self.notebook.grid(row=4, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
+    def show_task(self, action):
+        print(action)
+        new_window = tk.Toplevel(self.master)
+        new_window.title("Race Window")
+        new_window.geometry("850x870")                
+        #model_view = RacePage(new_window, self.folder_item)   
+        #model_view.grid(row=0, column=0, padx=10, sticky=tk.N + tk.S + tk.E + tk.W)     
+        new_window.columnconfigure(0, weight=1)        
+        new_window.rowconfigure(0, weight=1)    
 
     def save_comment(self):
         cmt = self.var_comment.get()

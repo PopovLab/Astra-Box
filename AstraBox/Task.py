@@ -9,7 +9,7 @@ def datetime_now() -> str:
     return datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
 class Task(BaseModel):
-    index: int = Field(default=0, exclude=True)
+    index: int = Field(default=0)
     name:  str = Field(default_factory=datetime_now)
     title: str = 'Task'
     exp:   str = ''
@@ -23,7 +23,8 @@ class Task(BaseModel):
     def load(cls, data):
         try:
             return cls.model_validate_json(data)
-        except:
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
             return cls.model_validate_json('{}')
 
 
@@ -49,6 +50,13 @@ class TaskList(BaseModel):
     main_task: Task
     tasks: list[Task] = Field(default= [])
 
+    @classmethod
+    def load(cls, data):
+        try:
+            return cls.model_validate_json(data)
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+            return Task()
 
 
 if __name__ == '__main__':

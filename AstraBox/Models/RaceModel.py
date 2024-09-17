@@ -52,10 +52,11 @@ class RaceModel(RootModel):
             print(self.task)
             task_list_file = zip_root / "task_list.json"
             if task_list_file.exists():
+                print(f'{task_list_file.name} exists!!')
                 self.version = 'v3'
-                with task_file.open(mode= "r") as json_file:
+                with task_list_file.open(mode= "r") as json_file:
                     data = json_file.read()
-                    self.task = TaskList.model_validate_json(data)
+                    self.task_list = TaskList.load(data)
                     
         else:
             try:
