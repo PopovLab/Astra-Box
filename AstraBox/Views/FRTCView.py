@@ -12,6 +12,7 @@ class SectionView(tk.Frame):
             self.section = section
             count=0
             schema= section.model_json_schema()['properties']
+            UIElement.LABEL_WIDTH = 12
             for name, value in section:
                 e = UIElement.construct(self, name, value, schema[name], self.observer)
                 e.grid(row=count%ROW_MAX, column=count//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)

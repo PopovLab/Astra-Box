@@ -25,6 +25,7 @@ class OptionsPanel(tk.Frame):
             count=0
             schema= section.model_json_schema()['properties']
             print(schema)
+            UIElement.LABEL_WIDTH = None
             for name, value in section:
                 print(name)
                 if name != 'kind':
