@@ -8,16 +8,56 @@ LABEL_WIDTH = 12
 
 def construct(master, name, value, schema, observer ):
     #print(value)
-    #print(schema)
+    print(schema)
     #return StringBox(frame, item)  
     match schema['type']:
         case 'integer':
             ui = IntegerField(master, name, value, schema, observer)
         case 'number':
             ui = NumberField(master, name, value, schema, observer)
+        case 'boolean':
+            ui = BooleanField(master, name, value, schema, observer)            
         case _:
             ui = StringField(master, name, value, schema, observer)
     return ui
+
+
+class BooleanField(ttk.Frame):
+    def __init__(self, master,  name, value, schema, observer) -> None:
+        super().__init__(master)
+        self.name = name
+        self.observer = observer        
+        self.value = value
+        description = schema.get('description')
+        label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
+        label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
+        if description: 
+            ToolTip(label, description, delay=0.1)
+
+        self.tk_var = tk.IntVar(self, value= value)
+        self.tk_var.trace_add('write', self.update_var)
+ 
+        self.entry = ttk.Checkbutton(self, text= schema['title'], variable=self.tk_var, width=20)
+        self.entry.grid(row=0, column=1)
+        if description: 
+            ToolTip(self.entry, schema['description'], delay=0.1)
+
+    def update_var(self, var, indx, mode):
+        try:
+            self.value = self.tk_var.get()
+            match self.tk_var.get():
+                case 0:
+                    self.value = False
+                case 1:
+                    self.value = True
+                case _:
+                    self.value = False
+            print(self.value)
+            #self.entry.configure({"background": 'white'})
+            self.observer(self.name, self.value)
+        except Exception :
+            #self.entry.configure({"background": 'red'})  
+            pass
 
 
 
