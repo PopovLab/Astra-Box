@@ -54,8 +54,12 @@ class TableView(ttk.Frame):
         self.tree.selection_set(())
 
     def update_tree(self):
-        for i in self.tree.get_children():
-            self.tree.delete(i)
+        try:
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+
         self.nodes = {}
         self.content = self.folder._content
         if self.content is None:
