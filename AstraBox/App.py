@@ -181,8 +181,8 @@ class App(tk.Tk):
         model = ModelFactory.create_model('FRTCModel')
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('FRTCModel') 
-        page = FRTCPage(self.content_frame, None, model) 
-        self.content_frame.set_content(page)
+        #page = FRTCPage(self.content_frame, None, model) 
+        #self.content_frame.set_content(page)
 
         #self.show_model(model)
 
