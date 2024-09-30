@@ -1,3 +1,4 @@
+from math import fsum
 import os
 import pathlib 
 import numpy as np
@@ -8,6 +9,13 @@ from pydantic import BaseModel, Field
 
 import AstraBox.WorkSpace as WorkSpace
 
+
+def power_normalization(spectrum_data):
+    power = fsum(spectrum_data['Amp'])
+    print(f'power= {power}')
+    if power>0:
+        spectrum_data['Amp'] = [ x/power for x in spectrum_data['Amp']]
+    return  spectrum_data
 
 class BaseSpectrum(BaseModel):
     kind: None
@@ -31,9 +39,8 @@ class GaussSpectrum(BaseSpectrum):
         sigma = self.sigma
         y = np.exp(-0.5*((x-bias)/sigma)**2) # + np.exp(-25*((x+bias)/bias)**2)
         spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }     
-        return spectrum_data   
-        #self.spectrum_normalization()
-    
+        return power_normalization(spectrum_data)
+
 
 def load_spcp1D(p: pathlib.Path):        
     if p:
@@ -67,7 +74,7 @@ class Spectrum1D(BaseSpectrum):
         return spectrum_data
     
     def get_spectrum_data(self):
-        return self.read_spcp1D()
+        return power_normalization(self.read_spcp1D())
 
 
 class ScatterSpectrum(BaseSpectrum):
@@ -112,7 +119,7 @@ class ScatterSpectrum(BaseSpectrum):
     
     
     def get_spectrum_data(self):
-        return self.read_scatter()    
+        return power_normalization(self.read_scatter())
 
 class Spectrum2D(BaseSpectrum):
     kind: Literal['spectrum_2D']

@@ -101,9 +101,6 @@ class FRTCModel(BaseModel):
     name:  str = Field(default= '123', title='name')
     comment: str = Field(default='ccc', title='Comment')
 
-    spectrum_kind: str = Field(default= 'gauss_spectrum', exclude=True)
-    spectrum_PWM: bool = Field(default= True, exclude=True)
-
     physical_parameters: PhysicalParameters = Field(default= PhysicalParameters())
 
     alphas_parameters: AlphasParameters = Field(default= AlphasParameters())
@@ -134,12 +131,14 @@ class FRTCModel(BaseModel):
         return self.model_dump_json(indent= 2)
 
     def get_text(self):
-        return self.prepare_dat_file()
+        return self.export_to_text()
 
     def get_dest_path(self):
         return 'lhcd/ray_tracing.dat'
 
-    def prepare_dat_file(self):
+    def export_to_text(self, spectrum_kind:str, spectrum_PWM: bool):
+        '''"Экспорт в формат для кода FRTC'''
+        #spectrum_kind, spectrum_PWM нужно что бы знать тип спектра для файла конфигурации FRTC
         lines = []
         for sec in self.get_sections():
             lines.append("!"*15 + " "+ sec.title + " "+ "!"*(60-len(sec.title)) + "\n")
@@ -147,13 +146,11 @@ class FRTCModel(BaseModel):
             for name, value in sec:
                 s = schema[name]
                 lines.append(f" {str(value):10} ! {name:15} {s.get('description')}\n" )
-             
-
 
         spect_line = ''
-        match self.spectrum_kind:
+        match spectrum_kind:
             case 'gauss_spectrum' | 'spectrum_1D':
-                if self.spectrum_PWM:
+                if spectrum_PWM:
                     spect_line = '  0     ! spectr type 0 - 1D + spline approximation ON'
                 else:
                     spect_line = '  1     ! spectr type 1 - 1D + spline approximation OFF'
@@ -163,7 +160,7 @@ class FRTCModel(BaseModel):
                 spect_line = '  2     ! spectr type 2 - scatter spectrum'
             case 'spectrum_2D':
                 spect_line = '  3     ! spectr type 3 - 2D for future'
-
+        print(spect_line)
         lines += spect_line  
         return ''.join(lines)   
     

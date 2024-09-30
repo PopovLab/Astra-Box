@@ -70,7 +70,7 @@ class SpectrumModel(BaseModel):
         sp_neg = list(reversed(sp_neg))
         return sp_pos, sp_neg
 
-    def get_text(self):
+    def export_to_text(self):
         spectrum_data = self.spectrum.get_spectrum_data()
         print(self.spectrum.kind)
         match self.spectrum.kind:
