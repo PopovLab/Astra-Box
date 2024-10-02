@@ -56,7 +56,7 @@ class RaceModel(RootModel):
             frtc_file = zip_root / "frtc_model.json"
             if frtc_file.exists():
                 print(f'{frtc_file.name} exists!!')
-                with frtc_file.open(mode= "r") as json_file:
+                with frtc_file.open(mode= "r", encoding='utf-8') as json_file:
                     data = json_file.read()
                     self.frtc_model = FRTCModel.construct(data)
                     
