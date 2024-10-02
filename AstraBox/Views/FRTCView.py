@@ -7,14 +7,14 @@ import AstraBox.UIElement as UIElement
 ROW_MAX = 7 
 
 class SectionView(tk.Frame):
-    def __init__(self, master, section:ParametersSection) -> None:
+    def __init__(self, master, section:ParametersSection, state:str= 'normal') -> None:
             super().__init__(master)
             self.section = section
             count=0
             schema= section.model_json_schema()['properties']
             UIElement.LABEL_WIDTH = 12
             for name, value in section:
-                e = UIElement.construct(self, name, value, schema[name], self.observer)
+                e = UIElement.construct(self, name, value, schema[name], self.observer, state)
                 e.grid(row=count%ROW_MAX, column=count//ROW_MAX, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
                 count = count + 1
 
@@ -23,7 +23,7 @@ class SectionView(tk.Frame):
         setattr(self.section, name, value)
 
 class FRTCView(tk.Frame):
-    def __init__(self, master, model:FRTCModel) -> None:
+    def __init__(self, master, model:FRTCModel, state:str ='normal') -> None:
             super().__init__(master) 
             self.model = model
 
@@ -33,19 +33,19 @@ class FRTCView(tk.Frame):
             self.label = ttk.Label(self,  text='Name:')
             self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)
             self.var_name = tk.StringVar(master= self, value=model.name)
-            self.name_entry = ttk.Entry(self, textvariable = self.var_name)
+            self.name_entry = ttk.Entry(self, textvariable = self.var_name, state= state)
             self.name_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
             self.label = ttk.Label(self,  text='Comment:')
             self.label.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            self.comment_text = tk.Text(self, height=3,  wrap="none")
+            self.comment_text = tk.Text(self, height=3,  wrap="none", state= state)
             self.comment_text.grid(row=1, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.comment_text.insert(tk.END, model.comment)
     
             self.notebook = ttk.Notebook(self)
             self.notebook.grid(row=2, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
             for sec in model.get_sections():
-                frame = SectionView(self.notebook, sec) 
+                frame = SectionView(self.notebook, sec, state= state) 
                 self.notebook.add(frame, text=sec.title, underline=0, sticky=tk.NE + tk.SW)
             
     def update_model(self):

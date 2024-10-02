@@ -6,24 +6,24 @@ from tktooltip import ToolTip
 
 LABEL_WIDTH = 12
 
-def construct(master, name, value, schema, observer ):
+def construct(master, name, value, schema, observer, state:str='normal'):
     #print(value)
     #print(schema)
     #return StringBox(frame, item)  
     match schema['type']:
         case 'integer':
-            ui = IntegerField(master, name, value, schema, 10, observer)
+            ui = IntegerField(master, name, value, schema, 10, observer, state)
         case 'number':
-            ui = NumberField(master, name, value, schema, 10, observer)
+            ui = NumberField(master, name, value, schema, 10, observer, state)
         case 'boolean':
-            ui = BooleanField(master, name, value, schema, 10, observer)            
+            ui = BooleanField(master, name, value, schema, 10, observer, state)            
         case _:
-            ui = StringField(master, name, value, schema, 20, observer)
+            ui = StringField(master, name, value, schema, 20, observer, state)
     return ui
 
 
 class BooleanField(ttk.Frame):
-    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any) -> None:
+    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any, state:str='normal' ) -> None:
         super().__init__(master)
         self.name = name
         self.observer = observer        
@@ -37,7 +37,7 @@ class BooleanField(ttk.Frame):
         self.tk_var = tk.IntVar(self, value= value)
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = ttk.Checkbutton(self, text= schema['title'], variable=self.tk_var, width= width)
+        self.entry = ttk.Checkbutton(self, text= schema['title'], variable=self.tk_var, width= width, state= state)
         self.entry.grid(row=0, column=1)
         if description: 
             ToolTip(self.entry, schema['description'], delay=0.1)
@@ -62,7 +62,7 @@ class BooleanField(ttk.Frame):
 
 
 class IntegerField(ttk.Frame):
-    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any) -> None:
+    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any,  state:str='normal' ) -> None:
         super().__init__(master)
         self.name = name
         self.observer = observer        
@@ -76,7 +76,7 @@ class IntegerField(ttk.Frame):
         self.tk_var = tk.IntVar(self, value= value)
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var)
+        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var, state= state)
         self.entry.grid(row=0, column=1, sticky=tk.W, pady=4, padx=4)        
         self.columnconfigure(0, weight=0) 
         self.columnconfigure(1, weight=2) 
@@ -94,7 +94,7 @@ class IntegerField(ttk.Frame):
 
 
 class NumberField(ttk.Frame):
-    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any) -> None:
+    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any,  state:str='normal' ) -> None:
         super().__init__(master)
         self.name = name
         self.observer = observer
@@ -108,7 +108,7 @@ class NumberField(ttk.Frame):
         self.tk_var = tk.DoubleVar(self, value=value)
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var)
+        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var, state= state)
         self.entry.grid(row=0, column=1, columnspan=1)        
         if description: 
             ToolTip(self.entry, schema['description'], delay=0.1)
@@ -124,7 +124,7 @@ class NumberField(ttk.Frame):
 
 
 class StringField(ttk.Frame):
-    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any) -> None:
+    def __init__(self, master,  name:str, value: any, schema:dict, width:int, observer: any,  state:str='normal' ) -> None:
         super().__init__(master)
         self.name = name
         self.observer = observer        
@@ -138,7 +138,7 @@ class StringField(ttk.Frame):
         self.tk_var = tk.StringVar(self, value= value)
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var)
+        self.entry = tk.Entry(self, width= width, textvariable= self.tk_var, state= state)
         self.entry.grid(row=0, column=1, columnspan=1)        
         if description: 
             ToolTip(self.entry, schema['description'], delay=0.1)

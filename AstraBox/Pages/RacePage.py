@@ -73,7 +73,7 @@ class FRTCBook(ttk.Notebook):
         self.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
 
         if model.frtc_model:
-            frtc_view = FRTCView(self, model.frtc_model)
+            frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
             self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
 
         spectrum_view = SpectrumView(self, model= model)
