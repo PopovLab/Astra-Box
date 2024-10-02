@@ -38,9 +38,11 @@ class FRTCView(tk.Frame):
 
             self.label = ttk.Label(self,  text='Comment:')
             self.label.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-            self.comment_text = tk.Text(self, height=3,  wrap="none", state= state)
+            self.comment_text = tk.Text(self, height=3,  wrap="none")
             self.comment_text.grid(row=1, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
             self.comment_text.insert(tk.END, model.comment)
+            if state=='disabled':
+                 self.comment_text.configure(state="disabled")
     
             self.notebook = ttk.Notebook(self)
             self.notebook.grid(row=2, column=0, columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
