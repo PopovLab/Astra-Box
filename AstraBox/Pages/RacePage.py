@@ -10,6 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Pages.InfoPanel import InfoPanel
 from AstraBox.Pages.TaskPage import TaskPage
+from AstraBox.Views.FRTCView import FRTCView
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
 
@@ -70,6 +71,10 @@ class FRTCBook(ttk.Notebook):
 
         maxwell_view = DiffusionView(self, model= model)
         self.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
+
+        if model.frtc_model:
+            frtc_view = FRTCView(self, model.frtc_model)
+            self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
 
         spectrum_view = SpectrumView(self, model= model)
         self.add(spectrum_view, text="Spectrum View", underline=0, sticky=tk.NE + tk.SW)      
