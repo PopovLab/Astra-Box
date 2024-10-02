@@ -30,6 +30,7 @@ from AstraBox.Views.RaceView import DrivenCurrentView
 from AstraBox.Views.RaceView import ExecTimeView
 from AstraBox.Views.SummaryView import SummaryView
 from AstraBox.Views.TaskListView import TaskListView
+from AstraBox.Views.TextView import TextView
 
 
 class FRTCBook(ttk.Notebook):
@@ -39,6 +40,13 @@ class FRTCBook(ttk.Notebook):
         summary_view = SummaryView(self, model= model)
         self.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
 
+        if model.exp_model:
+            view = TextView(self, model.exp_model, state= 'disabled')
+            self.add(view, text="Exp", underline=0, sticky=tk.NE + tk.SW)   
+
+        if model.equ_model:
+            view = TextView(self, model.equ_model, state= 'disabled')
+            self.add(view, text="Equ", underline=0, sticky=tk.NE + tk.SW)   
 
         time_series_view = TimeSeriesView(self, model= model)
         self.add(time_series_view, text="Time Series", underline=0, sticky=tk.NE + tk.SW)
