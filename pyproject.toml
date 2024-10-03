@@ -11,6 +11,7 @@ pandas = "^2.0.1"
 pydantic = "^2.6.2"
 rich = "^13.7.0"
 tkinter-tooltip = "^3.0.0"
+setuptools = "^75.1.0"
 
 [tool.poetry.dev-dependencies]
 

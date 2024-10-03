@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
+import pkg_resources
 from functools import partial
 from AstraBox.Pages.FRTCPage import FRTCPage
 from AstraBox.Pages.SpectrumPage import SpectrumPage
@@ -150,7 +151,9 @@ class App(tk.Tk):
         self.content_frame.set_content(view)
 
     def show_about(self):
-        messagebox.showinfo("Astra Box", "version x.y.z")
+
+        my_version = pkg_resources.get_distribution('AstraBox').version
+        messagebox.showinfo("Astra Box", f"version {my_version}")
 
     def show_FolderItem(self, folder_item):
         
