@@ -29,15 +29,15 @@ class BooleanField(ttk.Frame):
         self.observer = observer        
         self.value = value
         description = schema.get('description')
-        #label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
-        #label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
-        #if description: 
-        #    ToolTip(label, description, delay=0.1)
+        label = ttk.Label(self, text=schema['title'], width=LABEL_WIDTH)
+        label.grid(row=0, column=0, sticky=tk.W, pady=4, padx=4)
+        if description: 
+            ToolTip(label, description, delay=0.1)
 
         self.tk_var = tk.IntVar(self, value= value)
         self.tk_var.trace_add('write', self.update_var)
  
-        self.entry = ttk.Checkbutton(self, text= schema['title'], variable=self.tk_var, width= width, state= state)
+        self.entry = ttk.Checkbutton(self,  variable=self.tk_var, width= width, state= state)
         self.entry.grid(row=0, column=1)
         if description: 
             ToolTip(self.entry, schema['description'], delay=0.1)
