@@ -1,95 +1,73 @@
 import os 
+from pathlib import Path
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from AstraBox import UIElement, WorkSpace
+from AstraBox.Models.Spectrum import BaseSpectrum, Spectrum1D
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
 from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
-import AstraBox.Models.SpectrumModel as SpectrumModel
 
 import AstraBox.Widgets as Widgets
 
+
 class OptionsPanel(tk.Frame):
-    def __init__(self, master, options) -> None:
-        super().__init__(master)
-        self.options = options
-        for key, value in options.items():
-            var = tk.DoubleVar(master= self, name = key, value=value)
-            label = tk.Label(master=self, text=key)
-            label.pack(side = tk.LEFT, padx=(10, 2))		
-            entry = tk.Entry(self, width=10, textvariable= var)
-            entry.pack(side = tk.LEFT)
+    def __init__(self, master, section: BaseSpectrum ) -> None:
+            super().__init__(master)
+            self.section = section
+            count=0
+            schema= section.model_json_schema()['properties']
+            print(schema)
+            UIElement.LABEL_WIDTH = None
+            for name, value in section:
+                print(name)
+                if name != 'kind':
+                    e = UIElement.construct(self, name, value, schema[name], self.observer)
+                    e.grid(row=0, column= count, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+                    count = count + 1
 
-    def update(self):
-        for key in self.options.keys():
-            var = tk.DoubleVar(master= self, name = key)
-            self.options[key] = var.get()
-
+    def observer(self, name, value):
+        print(f'{name} {value}')
+        setattr(self.section, name, value)
 
 class GaussianSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Gaussian Spectrum')        
 
-        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.options_box = OptionsPanel(self, self.model.setting['options'])
+        self.options_box = OptionsPanel(self, self.model.spectrum)
         self.options_box.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.generate()
-        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
-
         self.rowconfigure(2, weight=1)
 
     def generate(self):
-        self.options_box.update()
-        self.model.generate()
-        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
+        #self.options_box.update()
+        s_d= self.model.spectrum.get_spectrum_data()
+        self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
-class RotatedGaussianView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
-        super().__init__(master, text='Rotated Gaussian Spectrum')        
-        self.model = model
-        btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        btn.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-        self.columnconfigure(0, weight=1)        
-        for r,(key, value) in enumerate(self.model.setting['parameters'].items()):
-            wg = Widgets.create_widget(self, value)
-            wg.grid(row=r+1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.generate()
-        self.rowconfigure(9, weight=1)
-
-    def generate(self):
-        self.model.generate()
-        self.spectrum_plot = RotatedSpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Npol'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=0, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-
-from pathlib import Path
-import AstraBox.WorkSpace as WorkSpace
-
 class FileSourcePanel(tk.Frame):
-    def __init__(self, master, path, load_file_cb = None) -> None:
+    def __init__(self, master, spectrum:Spectrum1D , on_select_source = None) -> None:
         super().__init__(master)
         self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
         print(self.spectrum_folder)
-        self.load_file_cb = load_file_cb
-        self.path_var = tk.StringVar(master= self, value=path)
+        self.on_select_source = on_select_source
+        self.path_var = tk.StringVar(master= self, value=spectrum.source)
         label = tk.Label(master=self, text='Source:')
         label.pack(side = tk.LEFT, padx=2)		
         entry = tk.Entry(self, width=65, textvariable= self.path_var)
@@ -98,8 +76,8 @@ class FileSourcePanel(tk.Frame):
         btn1.pack(side = tk.LEFT, padx=10)   
 
     def load_file(self):
-        if self.load_file_cb:
-            self.load_file_cb(self.path_var.get())
+        if self.on_select_source:
+            self.on_select_source(self.path_var.get())
 
     def select_file(self):
         filename = fd.askopenfilename(initialdir= self.spectrum_folder)
@@ -108,90 +86,111 @@ class FileSourcePanel(tk.Frame):
         if fp.is_relative_to(self.spectrum_folder):
             filename = fp.name
         self.path_var.set(filename)
-        if self.load_file_cb:
-            self.load_file_cb(filename)
-
+        if self.on_select_source:
+            self.on_select_source(filename)
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model: SpectrumModel.SpectrumModel) -> None:
+    def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
-        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
+        self.label = ttk.Label(self,  text=f'Spectrum View')
+        self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.options_box = OptionsPanel(self, self.model.spectrum)
+        self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot()
-        #wg1 = Widgets.create_widget(self, self.model.setting['parameters']['angle'])
-        #wg1.grid(row=1, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        btn = ttk.Button(self, text= 'Add compare file', command=self.load_compare_file)
-        btn.grid(row=0, column=1, padx=5, sticky=tk.W) 
-
-        wg2 = Widgets.create_widget(self, self.model.setting['parameters']['spline'])
-        wg2.grid(row=1, column=1, padx=5, sticky=tk.N)
-
-
-        self.rowconfigure(1, weight=0)
-        self.rowconfigure(2, weight=0)
-        self.rowconfigure(3, weight=1)        
-        self.columnconfigure(0, weight=1)
-        
-
-    def load_compare_file(self):
-        filename = fd.askopenfilename()
-        if len(filename) < 1 : return
-        fp = Path(filename)
-        compare = SpectrumModel.spectrum_normalization(SpectrumModel.load_spcp1D(fp))
-        self.spectrum_plot.add_compare_spectrum(compare['Ntor'], compare['Amp'])
-        pass
+        self.rowconfigure(2, weight=1)        
 
     def on_load_file(self, filename):
         print(filename)
-        self.model.setting['source'] = filename
-        self.make_plot()
+        self.model.spectrum.source = filename
+        self.make_plot()        
 
     def make_plot(self):
-        self.model.read_spcp1D()
-        self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        spectrum_data = self.model.spectrum.get_spectrum_data()
+        self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
+        self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
 
-class ScatterSpectrumView(tk.LabelFrame):
+class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
-        super().__init__(master, text='Scatter Spectrum')        
+        super().__init__(master, text='Spectrum 2D')        
 
-        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
         self.model = model
+        self.label = ttk.Label(self,  text=f'Spectrum View')
+        self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        radio_selector = self.make_radio_selector()
-        radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        self.options_box = OptionsPanel(self, self.model.spectrum)
+        self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
+        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
-        self.make_plot(self.model.setting['source'])
+        self.make_plot()
+        self.rowconfigure(2, weight=1)        
 
-    def on_load_file(self, filepath):
-        print(filepath)
-        
-        if self.make_plot(filepath):
-            self.model.setting['source'] = filepath
+    def on_load_file(self, filename):
+        print(filename)
+        self.model.spectrum.source = filename
+        self.make_plot()        
 
-    def make_plot(self, filepath):
-        head, filename = os.path.split(filepath)
-        return self.make_scatter_plot3D(filepath)
-
-    def make_scatter_plot3D(self, filepath):
-        self.model.read_scatter(filepath)
-            
-        if self.model.spectrum_data == None:
+    def make_plot(self):
+        spectrum_data = self.model.spectrum.get_spectrum_data()
+        if spectrum_data == None:
             label = ttk.Label(self, text="Spectrum None", width=20)
             label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             return False
         else:
-            self.spectrum_plot = ScatterPlot2D3D(self, self.model.spectrum_data)
+            self.spectrum_plot = Plot2DArray(self, spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return True
+        
+class ScatterSpectrumView(tk.LabelFrame):
+    def __init__(self, master, model=None) -> None:
+        super().__init__(master, text='Scatter Spectrum')        
+
+        self.model = model
+
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+
+        radio_selector = self.make_radio_selector()
+        radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        self.columnconfigure(0, weight=1)        
+        #self.rowconfigure(0, weight=1)    
+        self.make_plot()
+
+    def on_load_file(self, filepath):
+        print(filepath)
+        self.model.spectrum.source = filepath
+        self.make_plot(filepath)
+            
+
+    def make_plot(self):
+        #head, filename = os.path.split(filepath)
+        return self.make_scatter_plot3D()
+
+    def make_scatter_plot3D(self):
+        self.spectrum_data = self.model.spectrum.get_spectrum_data()
+            
+        if self.spectrum_data == None:
+            print('spectrum_data == None')
+            label = ttk.Label(self, text="Spectrum None", width=20)
+            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            return False
+        else:
+            self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return True
 
@@ -212,48 +211,9 @@ class ScatterSpectrumView(tk.LabelFrame):
         return frame
 
     def select_View2D(self):
-        self.spectrum_plot = ScatterPlot2D3D(self, self.model.spectrum_data)
+        self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
         self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
     def select_View3D(self):
-        self.spectrum_plot = ScatterPlot3D(self, self.model.spectrum_data)
-        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)   
-          
-
-class Spectrum2DView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
-        super().__init__(master, text='Spectrum 2D')        
-
-        #self.header_content = { "title": 'title', "buttons":[('Save', None), ('Delete', None), ('Clone', None)]}
-        self.model = model
-
-        self.control_panel = FileSourcePanel(self, self.model.setting['source'], self.on_load_file)
-        self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
-        self.make_plot(self.model.setting['source'])
-
-    def on_load_file(self, filepath):
-        print(filepath)
-        
-        if self.make_plot(filepath):
-            self.model.setting['source'] = filepath
-
-    def make_plot(self, filepath):
-        #head, filename = os.path.split(filepath)
-        return self.make_plot2D(filepath)
-
-    def make_plot2D(self, filepath):
-        self.model.read_spcp2D(filepath)
-            
-        if self.model.spectrum_data == None:
-            label = ttk.Label(self, text="Spectrum None", width=20)
-            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-            return False
-        else:
-            self.spectrum_plot = Plot2DArray(self, self.model.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-            return True
-        #self.model.read_spcp1D()
-        #self.spectrum_plot = SpectrumPlot(self, self.model.spectrum_data['Ntor'], self.model.spectrum_data['Amp']  )
-        #self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-
+        self.spectrum_plot = ScatterPlot3D(self, self.spectrum_data)
+        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)           

@@ -1,6 +1,7 @@
 import os
 import json
 import tkinter as tk
+#import pathlib
 from pathlib import Path
 from pydantic import BaseModel, Field
 
@@ -25,6 +26,10 @@ def get_item_location(model_kind, model_name):
     return Path(loc).joinpath(model_name)
 
 
+def save_dump(path:Path, dump):
+    with path.open("w" , encoding='utf-8') as file:
+            file.write(dump)
+
 class FolderItem():
     def __init__(self, folder,  path:Path) -> None:
         self.parent = folder
@@ -42,6 +47,20 @@ class FolderItem():
 
     def remove(self)->bool:
         return self.parent.remove(self)
+
+    def save_dump(self, dump):
+        with self.path.open("w" , encoding='utf-8') as file:
+                file.write(dump)
+
+    def save_model(self, model):
+        if self.path.stem != model.name:
+            self.path.unlink()
+            self.path= self.path.with_stem(model.name)
+        self.save_dump(model.get_dump())
+        #self.name= self.path.name
+        #print(self.path.with_stem(model.name))
+        self.parent.refresh()
+
 
     def delete_file(self)  -> bool:
         print(f'try delete file {self.path}')
@@ -91,9 +110,12 @@ class Folder(BaseModel):
                 return True
         return False
     
+    def generator(self, pathname):
+        return ((p.name, FolderItem(self, p)) for p in self._location.glob(pathname) if p.name !='.gitignore')
+
     def populate(self):
         try:
-            self._content = {p.name: FolderItem(self, p) for p in self._location.glob('*.*') if p.name !='.gitignore'}
+            self._content = {name: item for name, item in self.generator('*.*') }
         except Exception as e:
             print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
             self._content = {}
@@ -102,7 +124,7 @@ class Folder(BaseModel):
         self.populate()
         self.raise_event('itemsRefresh')
 
-    def remove(self, item)->bool:
+    def remove(self, item:FolderItem)->bool:
         print(f'remove {item.name}')
         ans = tk.messagebox.askquestion(title="Warning", message=f'Delete {item.name}?', icon ='warning')
         removed = False
@@ -120,12 +142,15 @@ default_catalog = [
     Folder(title= 'Equlibrium', content_type='EquModel', location= 'equ'),
     Folder(title= 'Subroutine', content_type='SbrModel', location= 'sbr'),
     Folder(title= 'Ray Tracing Configurations', content_type='RTModel', location= 'ray_tracing', required= False),
+    Folder(title= 'FRTC Configurations', content_type='FRTCModel', location= 'frtc', required= False),
+    Folder(title= 'Spectrums', content_type='SpectrumModel', location= 'spectrum', required= False),
     Folder(title= 'Race history', content_type='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
 
 class WorkSpace(BaseModel):
     folders: list[Folder] = []
     _location: str
+    kind: str = 'basic_transport' #frtc_v1 frts_v2
 
 
     def open(self, path):
@@ -168,6 +193,14 @@ def get_folder_content_list(content_type):
     if work_space:
         return work_space.get_folder_content_list(content_type)
 
+def folder(content_type):
+    if work_space:
+        folder= work_space.folder(content_type)
+        if folder is not None:
+            return folder
+        else:
+            return None
+
 def folder_content(content_type):
     if work_space:
         folder= work_space.folder(content_type)
@@ -177,6 +210,7 @@ def folder_content(content_type):
             return None
         
 def refresh_folder(content_type):
+    print(f'refresh {content_type}')
     if work_space:
         f = work_space.folder(content_type)
         if f:  f.refresh()
@@ -193,6 +227,39 @@ def get_path(content_type: str, sub_path: str= None):
         return loc
     else:
         return _location
+
+
+def get_spectrum_dat_file_path(fn):
+    """"""
+    if len(fn) < 1 : return None
+    p = Path(fn)
+    if not p.is_absolute():
+        p =  get_location_path() / 'spectrum_data' / p
+    if p.exists():
+        return p
+    else: 
+        return None
+
+from typing import Type
+
+def save_model(model):
+    print(type(model))
+    match type(model).__name__:
+        case 'FRTCModel':
+            print("save FRTCModel")
+            p = get_path('FRTCModel').joinpath(f'{model.name}.frtc')
+            print(p)
+            with p.open("w" , encoding='utf-8') as file:
+                file.write(model.get_dump())
+
+        case 'SpectrumModel':
+            print("save SpectrumModel")
+            p = get_path('SpectrumModel').joinpath(f'{model.name}.spm')
+            print(p)
+            with p.open("w" , encoding='utf-8') as file:
+                file.write(model.get_dump())            
+        case _:
+            print("This is an Any")
 
 def get_last_task():
     last_task = Task()

@@ -17,19 +17,25 @@ class SummaryView(ttk.Frame):
         title = f"{model.name}"
 
         self.model = model
+        if model.version == 'v1':
+            title = f'Summary for {model.name}:\n'
+            info = f"Exp: {model.data['ExpModel']['name']} Equ::{model.data['EquModel']['name']}\n"
+        else: #v2
+            title = f'Summary for {model.name}:\n'
+            info = f"Exp: {model.task.exp} Equ::{model.task.equ}\n"
 
         self.text_box = ScrolledText(self, wrap="none")
         self.text_box.grid(row=2, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text_box.insert(tk.END, f'Summary for {model.name}:\n')
-        info = f"Exp: {model.data['ExpModel']['name']} Equ::{model.data['EquModel']['name']}\n"
+        self.text_box.insert(tk.END, title)
         self.text_box.insert(tk.END, info)
-
         self.text_box.insert(tk.END, 'Driver current:\n')
         self.text_box.insert(tk.END, self.get_dc_view())
 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)            
-        self.rowconfigure(2, weight=1)            
+        self.rowconfigure(2, weight=1)          
+        
+
         #self.InitUI(model)
 
     def get_dc_view(self):

@@ -41,21 +41,43 @@ class ConfigPanel(ttk.Frame):
             self.rt_combo.grid(row=1, column=2,  padx=2, sticky= tk.E + tk.W)
         else:
             self.rt_combo= None
+
+        fcl =  WorkSpace.get_folder_content_list('FRTCModel')
+        if len(fcl)>0:
+            self.frtc_combo = ComboBox(self, 'FRTC:', fcl)
+            self.frtc_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
+        else:
+            self.frtc_combo= None            
+
+        fcl =  WorkSpace.get_folder_content_list('SpectrumModel')
+        if len(fcl)>0:
+            self.spm_combo = ComboBox(self, 'Spectrum:', fcl)
+            self.spm_combo.grid(row=1, column=4,  padx=2, sticky= tk.E + tk.W)
+        else:
+            self.spm_combo= None
         self.astra_combo = ComboBox(self, 'Astra profiles:', Config.get_astra_profile_list(), width=15)
-        self.astra_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
+        self.astra_combo.grid(row=1, column=5,  padx=2, sticky= tk.E + tk.W)
       
         self.btn = ImageButton.create(self, '4231901.png', self.open_config)
-        self.btn.grid(row=1, column=4,  padx=5, sticky= tk.E + tk.W)
+        self.btn.grid(row=1, column=6,  padx=5, sticky= tk.E + tk.W)
 
         self.columnconfigure(0, weight=1)    
         self.columnconfigure(1, weight=1)    
         self.columnconfigure(2, weight=1)    
+        self.columnconfigure(3, weight=1)    
+        self.columnconfigure(4, weight=1)   
 
         self.exp_combo.set(last_task.exp)
         self.equ_combo.set(last_task.equ)
         if self.rt_combo:
             if last_task.rt:
                 self.rt_combo.set(last_task.rt)
+        if self.frtc_combo:
+            if last_task.frtc:
+                self.frtc_combo.set(last_task.frtc)
+        if self.spm_combo:
+            if last_task.spectrum:
+                self.spm_combo.set(last_task.spectrum)                                
         self.astra_combo.set(last_task.astra_profile)      
                 
     def open_config(self):
@@ -69,6 +91,10 @@ class ConfigPanel(ttk.Frame):
         task.title= self.entry.get()
         if self.rt_combo:
             task.rt= self.rt_combo.get()
+        if self.frtc_combo:
+            task.frtc= self.frtc_combo.get()
+        if self.spm_combo:
+            task.spectrum= self.spm_combo.get()                        
         task.astra_profile= self.astra_combo.get()
         return task
 
@@ -109,7 +135,7 @@ class RunAstraPage(ttk.Frame):
     def multy_run(self):
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
-            exp_list =  WorkSpace.get_folder_content ('ExpModel')
+            exp_list =  WorkSpace.get_folder_content('ExpModel')
             equ = self.config_panel.equ_combo.get()
             for exp in exp_list:
                 if self.terminated: break
@@ -134,10 +160,10 @@ class RunAstraPage(ttk.Frame):
         self.log_console.set_logger(Kernel.get_logger())
         Kernel.set_progress_callback(self.on_progress)     
         Kernel.log_info(task)
-        astra_profile = Config.get_astra_profile(task.astra_profile)
+
         self.on_progress(0)
 
-        Kernel.execute(task, astra_profile, option)
+        Kernel.execute(task, option)
         
         WorkSpace.refresh_folder('RaceModel')        
 

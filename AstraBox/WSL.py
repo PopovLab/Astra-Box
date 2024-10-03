@@ -146,11 +146,15 @@ async def progress_run(cmd):
         log_info(line)
 
     stdout, stderr = await proc.communicate()
-    lines = stdout.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    lines = stdout.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('cp866').split("\r\n")
     for line in lines:
         log_info(line)
 
-    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('ascii').split("\r\n")
+    #print(stderr)
+    #print(sys.stdout.encoding)
+    #print('---------------------')
+    #lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('utf-8', errors='ignore').split("\r\n")
+    lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('cp866').split("\r\n")
     for line in lines:
         log_error(line)
 
@@ -172,6 +176,13 @@ def log_error(msg):
 def start_exec(wsl_work_folder, command):
     ps_cmd = f'start wsl --cd {wsl_work_folder} {command}'
     log_info(f'exec: {command}')
+    asyncio.run(progress_run(ps_cmd))
+
+
+def exec_command(wsl_work_folder, command):
+    ps_cmd = f"wsl --cd {wsl_work_folder} -e bash -c '{command}'"
+    print(ps_cmd)
+    log_info(f'exec: {ps_cmd}')
     asyncio.run(progress_run(ps_cmd))
 
 def exec(wsl_work_folder, command):

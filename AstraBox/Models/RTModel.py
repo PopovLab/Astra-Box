@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 from AstraBox.Models.RootModel import RootModel
-from AstraBox.Models.SpectrumModel import SpectrumModel
+from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 
 def default_rt_setting():
         return {
@@ -366,7 +366,7 @@ class RTModel(RootModel):
                 lines.append("!"*15 + " "+ section_name + " "+ "!"*(60-len(section_name)) + "\n")
                 lines += [ item_to_line(item) for name, item in items.items() if name !='total_power']
                 
-        spect = SpectrumModel(self.setting)
+        spect = SpectrumModel_v1(self.setting)
         spect_line = ''
         match spect.spectrum_type:
             case 'gaussian'| 'spectrum_1D':
@@ -387,4 +387,4 @@ class RTModel(RootModel):
         return ''.join(lines)        
 
     def get_spectrum_model(self):
-        return SpectrumModel(self.setting)
+        return SpectrumModel_v1(self.setting)

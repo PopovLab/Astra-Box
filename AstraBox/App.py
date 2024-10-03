@@ -4,6 +4,9 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 import pkg_resources
 from functools import partial
+from AstraBox.Pages.FRTCPage import FRTCPage
+from AstraBox.Pages.SpectrumPage import SpectrumPage
+from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Views.RackFrame as RackFrame
 from AstraBox.Views.ContentFrame import ContentFrame
 
@@ -30,6 +33,11 @@ def run():
     app = App()
     app.mainloop()
 
+def clone_model(model):
+    model = ModelFactory.clone_model(model)
+    WorkSpace.save_model(model)
+    print(type(model).__name__)
+    WorkSpace.refresh_folder(type(model).__name__) 
 
 geo_file = "data/geo.ini"
 
@@ -150,9 +158,6 @@ class App(tk.Tk):
     def show_FolderItem(self, folder_item):
         
         match folder_item.model_kind:
-            case 'RTModel':
-                model = ModelFactory.load(folder_item)
-                page = RayTracingPage(self.content_frame, folder_item, model)     
             case 'ExpModel':
                 model = ModelFactory.load(folder_item)
                 page = ExpPage(self.content_frame, folder_item, model)                     
@@ -165,16 +170,55 @@ class App(tk.Tk):
             case 'RaceModel':
                 #model = RaceModel(path= view_item.path )  
                 page = RacePage(self.content_frame, folder_item)                 
+            case 'RTModel':
+                model = ModelFactory.load(folder_item)
+                page = RayTracingPage(self.content_frame, folder_item, model)                  
+            case 'FRTCModel':
+                #model = ModelFactory.load(folder_item)
+                page = FRTCPage(self.content_frame, folder_item)                    
+            case 'SpectrumModel':
+                #model = ModelFactory.load(folder_item)
+                page = SpectrumPage(self.content_frame, folder_item)                    
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
         self.content_frame.set_content(page)
     
 
-    def create_RT_configuration(self):
-        print('заглушка создания новой конфигурации')
-        #model = ModelFactory.create_model('RTModel')
+    def create_FRTC_configuration(self):
+        model = ModelFactory.create_model('FRTCModel')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('FRTCModel') 
+        #page = FRTCPage(self.content_frame, None, model) 
+        #self.content_frame.set_content(page)
+
         #self.show_model(model)
+
+    def create_gauss_spectrum(self):
+        print('create_gauss_spectrum')
+        model = ModelFactory.create_spectrum_model('gauss')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
+
+    def create_spectrum_1D(self):
+        print('create gcreate_spectrum_1D')
+        model = ModelFactory.create_spectrum_model('spectrum_1D')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
+
+    def create_spectrum_2D(self):
+        print('create gcreate_spectrum_2D')
+        model = ModelFactory.create_spectrum_model('spectrum_2D')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
+
+
+    def create_scatter_spectrum(self):
+        print('create scatter_spectrum')
+        model = ModelFactory.create_spectrum_model('scatter_spectrum')
+        WorkSpace.save_model(model)
+        WorkSpace.refresh_folder('SpectrumModel') 
+
 
     def open_command(self, arg):
         print('open command', arg)
@@ -189,9 +233,13 @@ class App(tk.Tk):
 
     def create_main_menu(self):
         new_menu = tk.Menu(tearoff=0)
-        new_menu.add_command(label='Ray Tracing Configurations', command=self.create_RT_configuration)
+        new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
         new_menu.add_command(label='Experiments', state='disabled')
         new_menu.add_command(label='Equlibrium', state='disabled')
+        new_menu.add_command(label='gauss spectrum', command=self.create_gauss_spectrum)
+        new_menu.add_command(label='spectrum 1D', command=self.create_spectrum_1D)
+        new_menu.add_command(label='spectrum 2D', command=self.create_spectrum_2D)
+        new_menu.add_command(label='scatter spectrum', command=self.create_scatter_spectrum)
 
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)

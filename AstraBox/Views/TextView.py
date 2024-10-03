@@ -62,7 +62,7 @@ class FindToolBar(ttk.Frame):
      
 
 class TextView(ttk.Frame):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model, state:str= 'noraml') -> None:
         super().__init__(master)        
         #self.title = 'ImpedModelView'
         title = f"{model.name}"
@@ -75,6 +75,8 @@ class TextView(ttk.Frame):
         self.text_box = ScrolledText(self, bg = "mint cream", wrap="none")
         self.text_box.grid(row=2, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.text_box.insert(tk.END, model.get_text())
+        if state=='disabled':
+            self.text_box.configure(state="disabled")
 
         self.find_bat = FindToolBar(self, self.text_box)
         self.find_bat.grid(row=1, column=0, columnspan=5, padx=10, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)

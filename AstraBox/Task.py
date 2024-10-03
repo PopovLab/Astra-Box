@@ -9,18 +9,22 @@ def datetime_now() -> str:
     return datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
 class Task(BaseModel):
-    name: str  = Field(default_factory=datetime_now)
+    index: int = Field(default=0)
+    name:  str = Field(default_factory=datetime_now)
     title: str = 'Task'
-    exp: str   = ''
-    equ: str   = ''
+    exp:   str = ''
+    equ:   str = ''
     rt: Optional[str] = None
+    frtc: Optional[str] = None
+    spectrum: Optional[str] = None
     astra_profile: str = ''
 
     @classmethod
     def load(cls, data):
         try:
             return cls.model_validate_json(data)
-        except:
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
             return cls.model_validate_json('{}')
 
 
@@ -41,6 +45,18 @@ class Task(BaseModel):
         loc = pathlib.Path(path)
         with open(loc, "w" ) as file:
             file.write(self.model_dump_json(indent= 2))    
+
+class TaskList(BaseModel):
+    main_task: Task
+    tasks: list[Task] = Field(default= [])
+
+    @classmethod
+    def load(cls, data):
+        try:
+            return cls.model_validate_json(data)
+        except Exception as e :
+            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+            return Task()
 
 
 if __name__ == '__main__':

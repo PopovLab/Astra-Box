@@ -6,10 +6,13 @@ import zipfile
 import numpy as np
 import pandas as pd
 from io import BytesIO
+from AstraBox.Models.FRTCModel import FRTCModel
+from AstraBox.Models.PlainTextModel import PlainTextModel
+from AstraBox.Task import Task, TaskList
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
 import AstraBox.Models.DataSeries as DataSeries
-from AstraBox.Models.SpectrumModel import SpectrumModel
+from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 import AstraBox.Astra as Astra
 
 def float_try(str):
@@ -26,6 +29,8 @@ class RaceModel(RootModel):
         self.race_zip_file = str(path)
         print(self.race_zip_file)
         self.name = path.name
+        self.version = 'v1'
+        self.sel_task= None
 
     @classmethod
     def load(cls, path):
@@ -38,12 +43,59 @@ class RaceModel(RootModel):
         return 'RaceModel'   
 
     def load_model_data(self):
-        try:
-            with zipfile.ZipFile(self.race_zip_file) as zip:
-                with zip.open( 'race_model.json' , "r" ) as json_file:
-                    self.data |= json.load(json_file)
-        except:
-            print('error')
+        print('load_model_data !!!!!!!!!!')
+        self.equ_model = None
+        self.exp_model = None
+        self.frtc_model = None
+        zip_root = zipfile.Path(self.race_zip_file)
+        task_file = zip_root / "task.json"
+        if task_file.exists():
+            print(f'{task_file.name} exists!!')
+            self.version = 'v2'
+            with task_file.open(mode= "r") as json_file:
+                data = json_file.read()
+                self.task = Task.load(data)
+            print(self.task)
+
+            frtc_file = zip_root / "frtc_model.json"
+            if frtc_file.exists():
+                print(f'{frtc_file.name} exists!!')
+                with frtc_file.open(mode= "r", encoding='utf-8') as json_file:
+                    data = json_file.read()
+                    self.frtc_model = FRTCModel.construct(data)
+                    
+            exp_file = zip_root/"exp"/self.task.exp
+            if exp_file.exists():
+                print(f'{exp_file.name} exists!!')
+                with exp_file.open(mode= "rb") as file:
+                    data = file.read()
+                    self.exp_model = PlainTextModel(self.task.exp)
+                    self.exp_model.set_text_from_bytearray(data)
+
+            equ_file = zip_root/"equ"/self.task.equ
+            if equ_file.exists():
+                print(f'{exp_file.name} exists!!')
+                with equ_file.open(mode= "rb") as file:
+                    data = file.read()
+                    self.equ_model = PlainTextModel(self.task.equ)
+                    self.equ_model.set_text_from_bytearray(data)
+
+            task_list_file = zip_root / "task_list.json"
+            if task_list_file.exists():
+                print(f'{task_list_file.name} exists!!')
+                self.version = 'v3'
+                with task_list_file.open(mode= "r") as json_file:
+                    data = json_file.read()
+                    self.task_list = TaskList.load(data)
+                    
+        else:
+            try:
+                with zipfile.ZipFile(self.race_zip_file) as zip:
+                    with zip.open( 'race_model.json' , "r" ) as json_file:
+                        self.data |= json.load(json_file)
+            except Exception as e:
+                print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+                print('error')
 
 
     def get_models_dict(self):
@@ -121,8 +173,15 @@ class RaceModel(RootModel):
         except Exception as error:
             return str(error)
 
+    def task_suffix(self, path:str):
+        if self.sel_task:
+            task_folder = f'task_{self.sel_task.index:05}'
+            return f'{task_folder}/{path}'    
+        else:
+            return path
+        
     def get_time_series(self):
-        f = 'dat/time_series.dat'
+        f = self.task_suffix('dat/time_series.dat')
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
@@ -132,7 +191,7 @@ class RaceModel(RootModel):
      
 
     def get_spectrum(self):
-        spectrum_model = SpectrumModel(self.data['RTModel']['setting'])
+        spectrum_model = SpectrumModel_v1(self.data['RTModel']['setting'])
         f = spectrum_model.get_dest_path()
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
@@ -186,7 +245,7 @@ class RaceModel(RootModel):
         if p.suffix != '.bin': return
 
     def get_file_list(self, folder_name):
-        folder = Astra.data_folder[folder_name]
+        folder = self.task_suffix(Astra.data_folder[folder_name])
         length = len(folder)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             list =  [ z.filename for z in zip.filelist if (z.filename.startswith(folder)  and len(z.filename)>length+1 )]

@@ -7,9 +7,10 @@ import subprocess
 import asyncio
 import shutil
 import platform
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from AstraBox.Models import ModelFactory
-from AstraBox.Task import Task
+from AstraBox.Task import Task, TaskList
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.Astra as Astra
 import AstraBox.Config as Config
@@ -118,10 +119,9 @@ def call_progress_callback(progress = 0):
 #    _astra_profile = Config.get_astra_profile(astra_porfile_name)
 
 class Worker:
-    def __init__(self, task: Task) -> None:
+    def __init__(self) -> None:
         self.error_flag = False
         self.stdinput = None
-        self.task = task
 
     def set_model_status(self, status):
         #self.run_model.data['status'] = status
@@ -134,9 +134,14 @@ class Worker:
 
 
 class AstraWorker(Worker):
-    def __init__(self, task: Task) -> None:
-        super().__init__(task)
+    def __init__(self) -> None:
+        super().__init__()
         _logger.info('create AstraWorker')
+
+    def mk_work_folders(self):
+        for key, folder in Astra.basic_folder.items():
+            mk_cmd = f'mkdir {self.astra_user}/{folder}'
+            WSL.exec(self.astra_home, mk_cmd)
 
     def clear_work_folders(self):
         for key, folder in Astra.data_folder.items():
@@ -147,10 +152,10 @@ class AstraWorker(Worker):
         clear_cmd = f'rm -f {self.astra_user}/sbr/' + '*.f90'
         WSL.exec(self.astra_home, clear_cmd)        
 
-    def copy_data(self):
+    def copy_data(self, task: Task):
         #zip_file = self.run_model.prepare_run_data()
-        zip_file= zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
-        errors = ModelFactory.prepare_task_zip(self.task, zip_file)
+        zip_file= WorkSpace.get_location_path().joinpath('race_data.zip')
+        errors = ModelFactory.prepare_task_zip(task, zip_file)
         if len(errors)>0:
             for e in errors:
                 _logger.error(e)
@@ -166,32 +171,77 @@ class AstraWorker(Worker):
         WSL.exec(self.wsl_path, f'zip -r race_data.zip dat')
         WSL.exec(self.wsl_path, f'zip -r race_data.zip lhcd')
 
-    def execute(self, astra_profile:dict, option:str='no_pause'):
+    def pack_task_results(self, task:Task):
+        _logger.info(f'----- pack task results {task.index} -------')
+        print(f'----- pack task results {task.index} -------')
+        task_folder = f'task_{task.index:05}'
+        WSL.exec(self.wsl_path, f'mkdir {task_folder}')
+        
+        WSL.exec(self.wsl_path, f'mv dat {task_folder}')
+        WSL.exec(self.wsl_path, f'mkdir {task_folder}/equ')       
+        WSL.exec(self.wsl_path, f'cp equ/{task.equ} {task_folder}/equ')
+        WSL.exec(self.wsl_path, f'mkdir {task_folder}/exp')       
+        WSL.exec(self.wsl_path, f'cp exp/{task.exp} {task_folder}/exp')    
+        #WSL.exec_command(self.wsl_path, f"echo {task.model_dump_json()} > {task_folder}/task.json")    
+        win_path = WSL.win_wsl_path(f'{self.wsl_path}/{task_folder}/task.json')
+        #print(win_path)
+        task.save(win_path)
+        #WSL.exec(self.wsl_path, f'mv lhcd {task_name}')
+        WSL.exec(self.wsl_path, f'zip -r race_data.zip {task_folder}')
+        WSL.exec(self.wsl_path, f'rm -r {task_folder}')
+
+    def sub_task_generaton(self, task: Task):
+        folder = WorkSpace.folder('ExpModel')
+        for index, (name, folder_item) in enumerate(folder.generator(task.exp)):
+            #exp_model = load(folder_item)
+            sub_task = task.model_copy() #Task(exp=name, equ=task.equ, frtc=task.frtc, spectrum=task.spectrum)
+            sub_task.exp=name
+            sub_task.title = f'{task.title}_{index:05}'
+            sub_task.index = index
+            yield sub_task
+
+    def execute(self, task: Task,  option:str='no_pause'):
+        astra_profile = Config.get_astra_profile(task.astra_profile)
         print(astra_profile)
+        if not check_astra_profile(astra_profile):
+            WSL.log_error('нет Астры')
+            return
         self.astra_user = astra_profile["profile"]
         self.astra_home = astra_profile["home"]
 
         self.wsl_path = f'{self.astra_home}/{self.astra_user}'
-        _logger.info(f'start {self.task.name}')
+        _logger.info(f'start {task.name}')
 
         self.clear_work_folders()
         
-        if self.copy_data():  return
-
+        if self.copy_data(task):  return
+        task_list = None
         self.set_model_status('run')
-        
-        astra_cmd = f'./run_astra.sh {self.astra_user} {self.task.exp} {self.task.equ} {option}'
+        if task.exp == '*.*':
+            task_list = TaskList(main_task= task)
+            for sub_task in self.sub_task_generaton(task):
+                astra_cmd = f'./run_astra.sh {self.astra_user} {sub_task.exp} {sub_task.equ} {option}'
+                print(sub_task)
+                WSL.start_exec(self.astra_home, astra_cmd)
+                self.pack_task_results(sub_task)
+                self.mk_work_folders()
+                task_list.tasks.append(sub_task)
+        else:
 
-        WSL.start_exec(self.astra_home, astra_cmd)
+            astra_cmd = f'./run_astra.sh {self.astra_user} {task.exp} {task.equ} {option}'
+            WSL.start_exec(self.astra_home, astra_cmd)
+            self.pack_data()
 
         _logger.info('finish')
 
-        self.pack_data()
-
-        zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{self.task.name}.zip')
+        zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{task.name}.zip')
         race_zip_file = str(zip_path)
         src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
         WSL.get(src, race_zip_file)
+        if task_list: 
+                with ZipFile(race_zip_file, 'a', compression= ZIP_DEFLATED, compresslevel = 2) as zip:
+                    dump = task_list.model_dump_json(indent= 2)
+                    zip.writestr('task_list.json', dump)
         #self.run_model.race_zip_file = race_zip_file
 
         _logger.info('the end')
@@ -204,12 +254,10 @@ def check_astra_profile(astra_profile)-> bool:
     
     return WSL.check_dir(astra_home)
 
-def execute(task: Task, astra_profile:dict, option:str):
+def execute(task: Task, option:str):
     WSL._logger = _logger
-    if check_astra_profile(astra_profile):
-        worker = AstraWorker(task)
-        worker.execute(astra_profile, option)
-    else:
-        WSL.log_error('нет Астры')
+    worker = AstraWorker()
+    worker.execute(task, option)
+
 
 

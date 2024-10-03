@@ -1,5 +1,10 @@
 from pydantic import BaseModel, Field
 
+basic_folder = {
+    'DATA'         : "dat/",
+    'RADIAL_DATA'  : "dat/XData/" 
+}
+
 data_folder = {
     'DATA'         : "dat/",
     'RADIAL_DATA'  : "dat/XData/",
