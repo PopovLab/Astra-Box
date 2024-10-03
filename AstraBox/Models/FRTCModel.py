@@ -177,7 +177,8 @@ class FRTCModel(BaseModel):
             schema= sec.model_json_schema()['properties']
             for name, value in sec:
                 s = schema[name]
-                lines.append(f"{name} = {value}" )
+                nv = f"{name} = {value}"
+                lines.append(f"{nv:<18}  ! {s.get('description')}" )
             lines.append("/")
 
         lines.append(f"&spectrum")
