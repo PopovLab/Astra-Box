@@ -24,6 +24,7 @@ class ctype(BaseModel):
     kind: str
 
 class PhysicalParameters(ParametersSection):
+    name: ClassVar[str] = 'physical_parameters'
     title: ClassVar[str] = 'Physical Parameters'
     freq: float = Field(default= 5.0, title= 'Frequency', unit= 'GHz', description= "RF frequency, GHz")
     xmi1: float = Field(default= 2.0, title= 'xmi1', description= "Mi1/Mp,  relative mass of ions 1")
@@ -36,6 +37,7 @@ class PhysicalParameters(ParametersSection):
     dni3: float = Field(default= 1.0, title= 'dni3', description= "Ni3/Ni1, relative density of ions 3")
 
 class AlphasParameters(ParametersSection):
+    name: ClassVar[str] = 'parameters_for_alphas_calculations'
     title: ClassVar[str] = 'Parameters for alphas calculations'
     itend0: int   = Field(default= 0,    title= 'itend0', description= "if = 0, no alphas")
     energy: float = Field(default= 30.0, title= 'energy', description= "max. perp. energy of alphas (MeV", unit= 'MeV')
@@ -44,6 +46,7 @@ class AlphasParameters(ParametersSection):
     kv: int       = Field(default= 30,  title= 'kv',      description= "V_perp  greed number")
 
 class NumericalParameters(ParametersSection):
+    name: ClassVar[str] = 'numerical_parameters'
     title: ClassVar[str] = 'Numerical parameters'
     nr:     int = Field(default= 30, title= 'nr',    description= "radial grid number  <= 505")
 
@@ -72,6 +75,7 @@ class NumericalParameters(ParametersSection):
  
 
 class Options(ParametersSection):
+    name: ClassVar[str] = 'options'
     title: ClassVar[str] = 'Options'
 
     ipri:     int = Field(default= 2, title= 'ipri',    description= "printing output monitoring: 0,1,2,3,4")
@@ -86,8 +90,8 @@ class Options(ParametersSection):
     #demo2: int = Field(default= 1, title= 'demo2', description= "demo2 option")   
 
 class GrillParameters(ParametersSection):
+    name: ClassVar[str] = 'grill_parameters'
     title: ClassVar[str] = 'Grill parameters'
-
     Zplus: float = Field(default= 11, title='Zplus', description='upper grill corner in centimeters', unit='cm')
     Zminus: float = Field(default= -11, title='Zminus', description='lower grill corner in centimeters', unit='cm')
 
@@ -164,6 +168,35 @@ class FRTCModel(BaseModel):
         lines += spect_line  
         return ''.join(lines)   
     
+    def export_to_nml(self, spectrum_kind:str, spectrum_PWM: bool):
+        '''"Экспорт FRTCS параметров в nml-формат'''
+        #spectrum_kind, spectrum_PWM нужно что бы знать тип спектра для файла конфигурации FRTC
+        lines = []
+        for sec in self.get_sections():
+            lines.append(f"&{sec.name}")
+            schema= sec.model_json_schema()['properties']
+            for name, value in sec:
+                s = schema[name]
+                lines.append(f"{name} = {value}" )
+            lines.append("/")
+
+        lines.append(f"&spectrum")
+        match spectrum_kind:
+            case 'gauss_spectrum' | 'spectrum_1D':
+                if spectrum_PWM:
+                    spect_type = 0 #   0     ! spectr type 0 - 1D + spline approximation ON
+                else:
+                    spect_type = 1 #   1     ! spectr type 1 - 1D + spline approximation OFF
+            case 'rotated_gaussian':
+                spect_type = 2     #   2     ! spectr type 2 - scatter spectrum
+            case 'scatter_spectrum':
+                spect_type = 2     #  2     ! spectr type 2 - scatter spectrum
+            case 'spectrum_2D':
+                spect_type = 3    #  3     ! spectr type 3 - 2D for futureS
+        lines.append(f"spectrum_type = {spect_type}" )
+        lines.append("/")
+        return '\n'.join(lines)  
+
 def save_frtc(rtp, fn):
     loc = pathlib.Path(fn)
     with open(loc, "w" ) as file:
