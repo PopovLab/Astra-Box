@@ -166,7 +166,7 @@ class App(tk.Tk):
                 model = ModelFactory.load(folder_item)
                 page = RayTracingPage(self.content_frame, folder_item, model)                  
             case 'FRTCModel':
-                model = ModelFactory.load(folder_item)
+                #model = ModelFactory.load(folder_item)
                 page = FRTCPage(self.content_frame, folder_item)                    
             case 'SpectrumModel':
                 #model = ModelFactory.load(folder_item)
