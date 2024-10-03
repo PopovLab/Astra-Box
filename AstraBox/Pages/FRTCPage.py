@@ -10,7 +10,7 @@ import AstraBox.Widgets as Widgets
 from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
-
+import AstraBox.App as App
 
 
 
@@ -33,10 +33,7 @@ class FRTCPage(ttk.Frame):
 
     def clone_model(self):
         self.view.update_model()
-        name = self.model.name
-        #self.model.name = f'{name}_clone_{RootModel.get_uuid_id()[0:4]}'
-
-        WorkSpace.refresh_folder('FRTCModel') 
+        App.clone_model(self.model)
         
     def save_model(self):
         self.view.update_model()

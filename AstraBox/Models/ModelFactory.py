@@ -78,7 +78,7 @@ def get2(model_kind= None, model_name= None):
 import uuid
 
 def random_name():
-    return 'new_'+str(uuid.uuid4())[0:4]
+    return 'new_' + str(uuid.uuid4())[0:4]
 
 def create_spectrum_model(spectrum_type):
     model = None
@@ -105,6 +105,9 @@ def create_model(model_kind=None ):
             model = None
     return model
 
+def clone_model(model):
+    model.name= model.name + '_clone_' + str(uuid.uuid4())[0:4]
+    return model
 
 def delete_model(model)  -> bool:
     print(f'try delete {model.name}')

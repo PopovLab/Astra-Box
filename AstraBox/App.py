@@ -32,6 +32,11 @@ def run():
     app = App()
     app.mainloop()
 
+def clone_model(model):
+    model = ModelFactory.clone_model(model)
+    WorkSpace.save_model(model)
+    print(type(model).__name__)
+    WorkSpace.refresh_folder(type(model).__name__) 
 
 geo_file = "data/geo.ini"
 
