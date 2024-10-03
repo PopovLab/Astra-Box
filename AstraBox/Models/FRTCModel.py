@@ -88,6 +88,7 @@ class Options(ParametersSection):
     ipol: int = Field(default= 1, title= 'ipol', description= "+-1, Bpol direction in right coord{drho,dteta,dfi}")    
     upl_fix:   bool  = Field(default= False, title= 'Upl fixed', description= "enable fix Upl")    
     upl_value: float = Field(default= 0.0, title= 'Upl value', description= "Upl value")   
+    fp_solver: int = Field(default= 0, title= 'fp solver', description= "0 default savelyev solver 1 next solver")   
 
 class GrillParameters(ParametersSection):
     name: ClassVar[str] = 'grill_parameters'
