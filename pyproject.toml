@@ -6,11 +6,11 @@ authors = ["Alex <temper8@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-matplotlib = "^3.6.1"
-pandas = "^2.0.1"
-pydantic = "^2.6.2"
-rich = "^13.7.0"
-tkinter-tooltip = "^3.0.0"
+matplotlib = "^3.9.2"
+pandas = "^2.2.3"
+pydantic = "^2.9.2"
+rich = "^13.9.0"
+tkinter-tooltip = "^3.1.0"
 setuptools = "^75.1.0"
 
 [tool.poetry.dev-dependencies]
