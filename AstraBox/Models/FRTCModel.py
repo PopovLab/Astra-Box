@@ -89,6 +89,7 @@ class Options(ParametersSection):
     upl_fix:   bool  = Field(default= False, title= 'Upl fixed', description= "enable fix Upl")    
     upl_value: float = Field(default= 0.0, title= 'Upl value', description= "Upl value")   
     fp_solver: int = Field(default= 0, title= 'fp solver', description= "0 default savelyev solver 1 next solver")   
+    traj_len_seved : int = Field(default= -1, title= 'traj len saved', description= "-1 full len, 0 - not saved, >0 - saved length ")   
 
 class GrillParameters(ParametersSection):
     name: ClassVar[str] = 'grill_parameters'
