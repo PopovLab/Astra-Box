@@ -28,22 +28,27 @@ class RootModel:
         return 'RootModel'
 
     def try_decode(self, data:bytearray):
-        for encoding in ['utf-8', 'ascii', 'cp866']:
+        for encoding in ['ascii', 'utf-8', 'cp866']:
             try:
                 lines = data.decode(encoding)
                 break
             except UnicodeDecodeError as e:
                 print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
         print(f'good encoding {encoding}')
+        self.encoding = encoding
         return lines
 
     def get_text(self):
-        with self.path.open('rb') as f:
-            rawdata = f.read()
-        return self.try_decode(rawdata)
+        with self.path.open('r') as f:
+            return f.read()
+        #return self.try_decode(rawdata)        
+        #with self.path.open('rb') as f:
+        #    rawdata = f.read()
+        #return self.try_decode(rawdata)
 
     def save_text(self, text):
-        with self.path.open(mode='w', encoding='utf-8') as f:
+        #print(f'encoding {self.encoding}')
+        with self.path.open(mode='w') as f:
             f.write(text)
 
     def read(self, folder= None, path= None):
