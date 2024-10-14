@@ -25,6 +25,7 @@ from AstraBox.RaceTab.RaceView import LHCDRadialDataView
 from AstraBox.RaceTab.RaceView import MaxwellView
 from AstraBox.RaceTab.RaceView import DiffusionView
 from AstraBox.RaceTab.SpectrumTabView import SpectrumView
+from AstraBox.RaceTab.SpectrumTabView import SpectrumTabView
 from AstraBox.RaceTab.RaceView import RTResultView
 from AstraBox.RaceTab.RaceView import DrivenCurrentView
 from AstraBox.RaceTab.RaceView import ExecTimeView
@@ -84,8 +85,11 @@ class FRTCBook(ttk.Notebook):
             frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
             self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
 
-        spectrum_view = SpectrumView(self, model= model)
-        self.add(spectrum_view, text="Spectrum View", underline=0, sticky=tk.NE + tk.SW)      
+        if model.version == 'v1':
+            tab_view = SpectrumView(self, model= model)
+        else:
+            tab_view = SpectrumTabView(self, model= model)            
+        self.add(tab_view, text="Spectrum View", underline=0, sticky=tk.NE + tk.SW)      
 
         rt_result_view = RTResultView(self, model= model)
         self.add(rt_result_view, text="RT Result", underline=0, sticky=tk.NE + tk.SW)   
