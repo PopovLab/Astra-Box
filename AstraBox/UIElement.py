@@ -7,9 +7,9 @@ from tktooltip import ToolTip
 LABEL_WIDTH = 12
 
 def construct(master, name, value, schema, observer, state:str='normal'):
-    print('UI construct ----------')
-    print(value)
-    print(schema)
+    #print('UI construct ----------')
+    #print(value)
+    #print(schema)
     #return StringBox(frame, item)  
     match schema['type']:
         case 'integer':
@@ -19,7 +19,7 @@ def construct(master, name, value, schema, observer, state:str='normal'):
         case 'boolean':
             ui = BooleanField(master, name, value, schema, 10, observer, state)            
         case _:
-            ui = StringField(master, name, value, schema, 20, observer, state)
+            ui = StringField(master, name, value, schema, 30, observer, state)
     return ui
 
 
