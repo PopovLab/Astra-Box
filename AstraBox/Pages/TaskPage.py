@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 
 from AstraBox import Task
 from AstraBox.Models.RaceModel import RaceModel
-from AstraBox.Views.RaceView import RadialDataView, TimeSeriesView
+from AstraBox.RaceTab.RaceView import RadialDataView, TimeSeriesView
 
 
 class InfoPanel(tk.Frame):
