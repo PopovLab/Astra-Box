@@ -6,8 +6,8 @@ from AstraBox.RaceTab.TabViewBasic import TabViewBasic
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
 from AstraBox.Views.SheetView import SheetView
 
-class SpectrumTabView(TabViewBasic):
-    
+class SpectrumView(TabViewBasic):
+    """старая версия version == 'v1' """
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master, model)  
 
@@ -19,17 +19,14 @@ class SpectrumTabView(TabViewBasic):
         self.spectrums['full_spectrum'] = self.read_spectrum('full_spectrum.dat')        
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
-        if self.race_model.version == 'v1':
-            self.spectrum_model = self.race_model.get_spectrum()
-            self.rt = self.race_model.data['RTModel']['setting']
-            #print(self.spectrum_model.get_dest_path())
-            self.spectrums['nteta'] =  self.rt['grill parameters']['ntet']['value']
-            spectrum_type = self.spectrum_model.spectrum_type
-            summary = self.make_summary_v1()
-            summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
-        else: # v2
-            self.spectrums['nteta'] =  21 #self.rt['grill parameters']['ntet']['value']
-            spectrum_type = 'spectrum_1D'
+
+        self.spectrum_model = self.race_model.get_spectrum()
+        self.rt = self.race_model.data['RTModel']['setting']
+        #print(self.spectrum_model.get_dest_path())
+        self.spectrums['nteta'] =  self.rt['grill parameters']['ntet']['value']
+        spectrum_type = self.spectrum_model.spectrum_type
+        summary = self.make_summary_v1()
+        summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
        
         plot = self.make_spectrum_plot(spectrum_type)
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -88,3 +85,4 @@ class SpectrumTabView(TabViewBasic):
                     pass       
         
         return plot
+    
