@@ -67,8 +67,6 @@ class FRTCBook(ttk.Notebook):
             trajectory_view = TrajectoryTab(self, model= model, folder_name= 'TRAJ_NEG')
             self.add(trajectory_view, text="Traj neg", underline=0, sticky=tk.NE + tk.SW)
 
-        #distrib_view = DistributionView(self.notebook, model= model)
-        #self.notebook.add(distrib_view, text="Distribution", underline=0, sticky=tk.NE + tk.SW)
         lhcd_radial_view = LHCDRadialDataView(self, model= model)
         self.add(lhcd_radial_view, text="LHCD Radial", underline=0, sticky=tk.NE + tk.SW)
 
