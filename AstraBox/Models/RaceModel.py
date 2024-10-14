@@ -42,6 +42,32 @@ class RaceModel(RootModel):
     def model_kind(self):
         return 'RaceModel'   
 
+    def load_frtc_model(self, zip_root):
+        file = zip_root / "frtc_model.json"
+        if file.exists():
+            print(f'{file.name} exists!!')
+            with file.open(mode= "r", encoding='utf-8') as json_file:
+                data = json_file.read()
+                self.frtc_model = FRTCModel.construct(data)
+
+    def load_exp_model(self, zip_root):
+        file = zip_root/"exp"/self.task.exp
+        if file.exists():
+            print(f'{file.name} exists!!')
+            with file.open(mode= "rb") as file:
+                data = file.read()
+                self.exp_model = PlainTextModel(self.task.exp)
+                self.exp_model.set_text_from_bytearray(data)
+
+    def load_equ_model(self, zip_root):
+        file = zip_root/"equ"/self.task.equ
+        if file.exists():
+            print(f'{file.name} exists!!')
+            with file.open(mode= "rb") as file:
+                data = file.read()
+                self.equ_model = PlainTextModel(self.task.equ)
+                self.equ_model.set_text_from_bytearray(data)
+
     def load_model_data(self):
         print('load_model_data !!!!!!!!!!')
         self.equ_model = None
@@ -57,28 +83,9 @@ class RaceModel(RootModel):
                 self.task = Task.load(data)
             print(self.task)
 
-            frtc_file = zip_root / "frtc_model.json"
-            if frtc_file.exists():
-                print(f'{frtc_file.name} exists!!')
-                with frtc_file.open(mode= "r", encoding='utf-8') as json_file:
-                    data = json_file.read()
-                    self.frtc_model = FRTCModel.construct(data)
-                    
-            exp_file = zip_root/"exp"/self.task.exp
-            if exp_file.exists():
-                print(f'{exp_file.name} exists!!')
-                with exp_file.open(mode= "rb") as file:
-                    data = file.read()
-                    self.exp_model = PlainTextModel(self.task.exp)
-                    self.exp_model.set_text_from_bytearray(data)
-
-            equ_file = zip_root/"equ"/self.task.equ
-            if equ_file.exists():
-                print(f'{exp_file.name} exists!!')
-                with equ_file.open(mode= "rb") as file:
-                    data = file.read()
-                    self.equ_model = PlainTextModel(self.task.equ)
-                    self.equ_model.set_text_from_bytearray(data)
+            self.load_frtc_model(zip_root)
+            self.load_exp_model(zip_root)
+            self.load_equ_model(zip_root)
 
             task_list_file = zip_root / "task_list.json"
             if task_list_file.exists():
