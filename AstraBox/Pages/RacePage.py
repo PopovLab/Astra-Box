@@ -24,7 +24,7 @@ from AstraBox.RaceTab.RaceView import RadialDrivenCurrentView
 from AstraBox.RaceTab.RaceView import LHCDRadialDataView
 from AstraBox.RaceTab.RaceView import MaxwellView
 from AstraBox.RaceTab.RaceView import DiffusionView
-from AstraBox.RaceTab.SpectrumTabView import SpectrumView
+from AstraBox.RaceTab.SpectrumView import SpectrumView
 from AstraBox.RaceTab.SpectrumTabView import SpectrumTabView
 from AstraBox.RaceTab.RaceView import RTResultView
 from AstraBox.RaceTab.RaceView import DrivenCurrentView
@@ -41,11 +41,11 @@ class FRTCBook(ttk.Notebook):
         summary_view = SummaryView(self, model= model)
         self.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
 
-        if model.exp_model:
+        if hasattr(model, 'exp_model'):
             view = TextView(self, model.exp_model, state= 'disabled')
             self.add(view, text="Exp", underline=0, sticky=tk.NE + tk.SW)   
 
-        if model.equ_model:
+        if hasattr(model, 'equ_model'):
             view = TextView(self, model.equ_model, state= 'disabled')
             self.add(view, text="Equ", underline=0, sticky=tk.NE + tk.SW)   
 
@@ -79,7 +79,7 @@ class FRTCBook(ttk.Notebook):
         maxwell_view = DiffusionView(self, model= model)
         self.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
 
-        if model.frtc_model:
+        if hasattr(model, 'frtc_model'):
             frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
             self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
 

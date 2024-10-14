@@ -8,6 +8,7 @@ import pandas as pd
 from io import BytesIO
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Models.PlainTextModel import PlainTextModel
+from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
 from AstraBox.Task import Task, TaskList
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
@@ -50,6 +51,14 @@ class RaceModel(RootModel):
                 data = json_file.read()
                 self.frtc_model = FRTCModel.construct(data)
 
+    def load_spectrum_model(self, zip_root):
+        file = zip_root / "spectrum_model.json"
+        if file.exists():
+            print(f'{file.name} exists!!')
+            with file.open(mode= "r", encoding='utf-8') as json_file:
+                data = json_file.read()
+                self.spectrum_model = SpectrumModel.construct(data)
+
     def load_exp_model(self, zip_root):
         file = zip_root/"exp"/self.task.exp
         if file.exists():
@@ -70,9 +79,6 @@ class RaceModel(RootModel):
 
     def load_model_data(self):
         print('load_model_data !!!!!!!!!!')
-        self.equ_model = None
-        self.exp_model = None
-        self.frtc_model = None
         zip_root = zipfile.Path(self.race_zip_file)
         task_file = zip_root / "task.json"
         if task_file.exists():
@@ -84,6 +90,7 @@ class RaceModel(RootModel):
             print(self.task)
 
             self.load_frtc_model(zip_root)
+            self.load_spectrum_model(zip_root)
             self.load_exp_model(zip_root)
             self.load_equ_model(zip_root)
 
