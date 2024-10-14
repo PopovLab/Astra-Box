@@ -1,6 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+import numpy as np
+import pandas as pd
+
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
@@ -20,7 +23,8 @@ class SpectrumTabView(TabViewBasic):
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
 
-        self.spectrums['nteta'] =  21 #self.rt['grill parameters']['ntet']['value']
+        self.nteta =  21 #self.rt['grill parameters']['ntet']['value']
+        self.spectrums['nteta'] = self.nteta
         spectrum_kind = self.race_model.spectrum_model.spectrum.kind
        
         if self.spectrums['origin'] is None:
@@ -28,6 +32,9 @@ class SpectrumTabView(TabViewBasic):
         else:
             plot = self.make_spectrum_plot(spectrum_kind)
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+
+        txt = self.make_summary()
+        txt.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
     
@@ -75,3 +82,34 @@ class SpectrumTabView(TabViewBasic):
                 pass       
         
         return plot
+    
+
+    def make_summary(self):
+        xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
+        text_box = tk.Text(self, height = 15, width = 50)
+        lines = [f'nteta: {self.nteta}']
+        indent = ' '
+        for key, s in self.spectrums.items():
+            if s is not None:
+                p = np.sum(s["Amp"])
+                #p = np.trapz(s["Amp"], s['Ntor'])
+                r = s['trapz']
+                if type(r) == pd.Series:
+                    p2 = r.iloc[-1]
+                    size = r.size
+                    v = s['Ntor'].iloc[-1]
+                else: # numpy.ndarray
+                    p2 = r[-1]
+                    size = len(r)
+                    v = s['Ntor'][-1]
+                l = len(key)
+                lines.append(indent + f'{key}: {p} ')
+                #lines.append(indent + f'{key}: {p2} ')
+                lines.append(indent + " "*(l-4)  +'beam' + f': {p/xsgs:.4f} MW')
+                #lines.append(indent + " "*(l-4)  +'beam' + f': {p2/xsgs:.4f} MW')
+                lines.append(indent + " "*(l-5)  +'total' + f': {self.nteta*p/xsgs:.4f} MW ')
+                lines.append(indent + " "*(l-4)  +'size' + f': {size} ')
+                
+        text_box.insert(tk.END, '\n'.join(lines))
+        text_box.config(state='disabled')
+        return text_box
