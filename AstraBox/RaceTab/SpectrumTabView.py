@@ -8,6 +8,7 @@ from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
 from AstraBox.Views.SheetView import SheetView
+from AstraBox.Views.SpectrumView import OptionsPanel
 
 class SpectrumTabView(TabViewBasic):
     
@@ -31,12 +32,16 @@ class SpectrumTabView(TabViewBasic):
             plot = tk.Label(master=self, text='Нет данных')
         else:
             plot = self.make_spectrum_plot(spectrum_kind)
-        plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        plot.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+        
 
+        options_box = OptionsPanel(self, self.race_model.spectrum_model.spectrum, state='disabled')
+        options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        
         txt = self.make_summary()
         txt.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
     
     def read_spectrum(self, fname):
         spectr = self.race_model.read_dat_no_header(f'lhcd/{fname}')
@@ -105,7 +110,7 @@ class SpectrumTabView(TabViewBasic):
     def make_summary(self):
         text=  self.make_spectrum_statistic()
 
-        text_box = tk.Text(self, height = 15, width = 50)
+        text_box = tk.Text(self, height = 8, width = 50)
         text_box.insert(tk.END, text)
         text_box.config(state='disabled')
         return text_box

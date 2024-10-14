@@ -19,7 +19,7 @@ import AstraBox.Widgets as Widgets
 
 
 class OptionsPanel(tk.Frame):
-    def __init__(self, master, section: BaseSpectrum ) -> None:
+    def __init__(self, master, section: BaseSpectrum, state:str= 'normal' ) -> None:
             super().__init__(master)
             self.section = section
             count=0
@@ -29,7 +29,7 @@ class OptionsPanel(tk.Frame):
             for name, value in section:
                 print(name)
                 if name != 'kind':
-                    e = UIElement.construct(self, name, value, schema[name], self.observer)
+                    e = UIElement.construct(self, name, value, schema[name], self.observer, state)
                     e.grid(row=0, column= count, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
                     count = count + 1
 
