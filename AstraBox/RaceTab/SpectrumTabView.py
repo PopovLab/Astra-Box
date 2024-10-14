@@ -23,7 +23,10 @@ class SpectrumTabView(TabViewBasic):
         self.spectrums['nteta'] =  21 #self.rt['grill parameters']['ntet']['value']
         spectrum_kind = self.race_model.spectrum_model.spectrum.kind
        
-        plot = self.make_spectrum_plot(spectrum_kind)
+        if self.spectrums['origin'] is None:
+            plot = tk.Label(master=self, text='Нет данных')
+        else:
+            plot = self.make_spectrum_plot(spectrum_kind)
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
@@ -61,23 +64,14 @@ class SpectrumTabView(TabViewBasic):
         return summ
     
     def make_spectrum_plot(self, spectrum_kind):
-        print(spectrum_kind)
-        #if type(self.spectrum_model.spectrum_data) is dict:
-        if self.spectrums['origin'] is None:
-            #print(self.spectrum_model.spectrum_data)
-            plot = tk.Label(master=self, text='Нет данных')
-        else:
-            print('загрузил спектр')
-            #print(len(self.spectrum_model.spectrum_data['Ntor']))
-
-            match spectrum_kind:
-                case 'gaussian'|'spectrum_1D':
-                    #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
-                    #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
-                    plot = SpectrumChart(self, self.spectrums)
-                case 'scatter_spectrum'|'rotated_gaussian':
-                    plot = ScatterPlot2D3D(self, self.spectrums['origin'])
-                case 'spectrum_2D':
-                    pass       
+        match spectrum_kind:
+            case 'gaussian'|'spectrum_1D':
+                #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
+                #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
+                plot = SpectrumChart(self, self.spectrums)
+            case 'scatter_spectrum'|'rotated_gaussian':
+                plot = ScatterPlot2D3D(self, self.spectrums['origin'])
+            case 'spectrum_2D':
+                pass       
         
         return plot
