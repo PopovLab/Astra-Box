@@ -75,7 +75,7 @@ class SpectrumTabView(TabViewBasic):
             case 'gaussian'|'spectrum_1D':
                 #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
                 #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
-                plot = SpectrumChart(self, self.spectrums)
+                plot = SpectrumChart(self, self.spectrums, show_summary=False)
             case 'scatter_spectrum'|'rotated_gaussian':
                 plot = ScatterPlot2D3D(self, self.spectrums['origin'])
             case 'spectrum_2D':
@@ -87,23 +87,20 @@ class SpectrumTabView(TabViewBasic):
         xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
         d = {}
         for key, s in self.spectrums.items():
+            print('-----------')
+            print(key)
             if s is not None:
-                p = np.sum(s["Amp"])
-                r = s['trapz']
-                if type(r) == pd.Series:
-                    p2 = r.iloc[-1]
-                    size = r.size
-                    v = s['Ntor'].iloc[-1]
-                else: # numpy.ndarray
-                    p2 = r[-1]
-                    size = len(r)
-                    v = s['Ntor'][-1]
-                l = len(key)
-                col = [size, p, f'{p/xsgs:.4f} MW', f'{self.nteta*p/xsgs:.4f} MW']
+                if type(s).__name__ == 'DataFrame':
+                    print(type(s).__name__)
+                    p = np.sum(s["Amp"])
+                    r = s['Amp']
+                    col = [r.size, p, f'{p/xsgs:.4f} MW', f'{self.nteta*p/xsgs:.4f} MW']
+                else:
+                    col = [s, '-', '-', '-']
                 d[key] = pd.Series(col, index=["size", "sum", "beam", "total"])
         df = pd.DataFrame(d)
 
-        return df.to_string(max_rows = 5) + '\n'
+        return df.to_string(max_rows = 6) + '\n'
 
     def make_summary(self):
         text=  self.make_spectrum_statistic()

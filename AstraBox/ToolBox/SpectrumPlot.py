@@ -349,7 +349,7 @@ def cumtrapz(x,y):
 
 
 class SpectrumChart(ttk.Frame):
-    def __init__(self, master, spectrums: dict) -> None:
+    def __init__(self, master, spectrums: dict, show_summary:bool=True) -> None:
         super().__init__(master)  
 
         self.spectrums = spectrums
@@ -372,8 +372,9 @@ class SpectrumChart(ttk.Frame):
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)
 
-        txt = self.make_summary()
-        txt.grid(row=1, column=1, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
+        if show_summary:
+            txt = self.make_summary()
+            txt.grid(row=1, column=1, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
