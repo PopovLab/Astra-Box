@@ -14,24 +14,16 @@ class SpectrumTabView(TabViewBasic):
     def init_ui(self):
         print('create SpectrumView')
         self.spectrums = {}
-        #self.spectrums['origin'] = self.spectrum_model.spectrum_data
+
         self.spectrums['origin'] = self.read_spectrum('spectrum.dat')
         self.spectrums['full_spectrum'] = self.read_spectrum('full_spectrum.dat')        
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
-        if self.race_model.version == 'v1':
-            self.spectrum_model = self.race_model.get_spectrum()
-            self.rt = self.race_model.data['RTModel']['setting']
-            #print(self.spectrum_model.get_dest_path())
-            self.spectrums['nteta'] =  self.rt['grill parameters']['ntet']['value']
-            spectrum_type = self.spectrum_model.spectrum_type
-            summary = self.make_summary_v1()
-            summary.grid(row=0, column=0, padx=15, pady=15, sticky=tk.N + tk.S + tk.E + tk.W)
-        else: # v2
-            self.spectrums['nteta'] =  21 #self.rt['grill parameters']['ntet']['value']
-            spectrum_type = 'spectrum_1D'
+
+        self.spectrums['nteta'] =  21 #self.rt['grill parameters']['ntet']['value']
+        spectrum_kind = self.race_model.spectrum_model.spectrum.kind
        
-        plot = self.make_spectrum_plot(spectrum_type)
+        plot = self.make_spectrum_plot(spectrum_kind)
         plot.grid(row=1, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
@@ -68,7 +60,8 @@ class SpectrumTabView(TabViewBasic):
         summ = SheetView(self, values)
         return summ
     
-    def make_spectrum_plot(self, spectrum_type):
+    def make_spectrum_plot(self, spectrum_kind):
+        print(spectrum_kind)
         #if type(self.spectrum_model.spectrum_data) is dict:
         if self.spectrums['origin'] is None:
             #print(self.spectrum_model.spectrum_data)
@@ -77,13 +70,13 @@ class SpectrumTabView(TabViewBasic):
             print('загрузил спектр')
             #print(len(self.spectrum_model.spectrum_data['Ntor']))
 
-            match spectrum_type:
+            match spectrum_kind:
                 case 'gaussian'|'spectrum_1D':
                     #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
                     #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
                     plot = SpectrumChart(self, self.spectrums)
                 case 'scatter_spectrum'|'rotated_gaussian':
-                    plot = ScatterPlot2D3D(self, self.spectrum_model.spectrum_data)
+                    plot = ScatterPlot2D3D(self, self.spectrums['origin'])
                 case 'spectrum_2D':
                     pass       
         
