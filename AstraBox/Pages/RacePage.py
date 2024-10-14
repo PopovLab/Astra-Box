@@ -24,7 +24,7 @@ from AstraBox.RaceTab.RaceView import RadialDrivenCurrentView
 from AstraBox.RaceTab.RaceView import LHCDRadialDataView
 from AstraBox.RaceTab.RaceView import MaxwellView
 from AstraBox.RaceTab.RaceView import DiffusionView
-from AstraBox.RaceTab.RaceView import SpectrumView
+from AstraBox.RaceTab.SpectrumTabView import SpectrumView
 from AstraBox.RaceTab.RaceView import RTResultView
 from AstraBox.RaceTab.RaceView import DrivenCurrentView
 from AstraBox.RaceTab.RaceView import ExecTimeView

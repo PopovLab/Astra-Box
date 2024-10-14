@@ -1,3 +1,8 @@
+import tkinter as tk
+import tkinter.ttk as ttk
+
+from AstraBox.Models.RaceModel import RaceModel
+from AstraBox.RaceTab.TabViewBasic import TabViewBasic
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
 from AstraBox.Views.SheetView import SheetView
 
