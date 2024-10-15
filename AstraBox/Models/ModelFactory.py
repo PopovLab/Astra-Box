@@ -218,7 +218,7 @@ def prepare_task_zip(task:Task, zip_file):
             #zip.writestr('lhcd/ray_tracing.dat', frtc_model.export_to_text(spectrum_model.spectrum.kind, spectrum_model.spectrum.PWM))
             frtc_nml = frtc_model.export_to_nml()
             spm_nml  = spectrum_model.export_to_nml()
-            zip.writestr('lhcd/parameters.nml', frtc_nml + spm_nml)
+            zip.writestr('lhcd/parameters.nml', frtc_nml + '\n' + spm_nml)
             zip.writestr('lhcd/spectrum.dat', spectrum_model.export_to_text())
             #pack_model_to_zip(zip, frtc_model)
             #pack_model_to_zip(zip, spectrum_model)

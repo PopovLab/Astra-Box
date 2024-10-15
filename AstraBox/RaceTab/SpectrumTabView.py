@@ -77,7 +77,7 @@ class SpectrumTabView(TabViewBasic):
     
     def make_spectrum_plot(self, spectrum_kind):
         match spectrum_kind:
-            case 'gaussian'|'spectrum_1D':
+            case 'gauss_spectrum'|'spectrum_1D':
                 #plot = SpectrumPlot(self, self.spectrum_model.spectrum_data['Ntor'], self.spectrum_model.spectrum_data['Amp']  )
                 #plot = SpectrumPlot(self, spectrum_list= self.all_spectrum)
                 plot = SpectrumChart(self, self.spectrums, show_summary=False)
