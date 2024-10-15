@@ -170,9 +170,8 @@ class FRTCModel(BaseModel):
         lines += spect_line  
         return ''.join(lines)   
     
-    def export_to_nml(self, spectrum_kind:str, spectrum_PWM: bool):
+    def export_to_nml(self):
         '''"Экспорт FRTCS параметров в nml-формат'''
-        #spectrum_kind, spectrum_PWM нужно что бы знать тип спектра для файла конфигурации FRTC
         lines = []
         for sec in self.get_sections():
             lines.append(f"&{sec.name}")
@@ -183,21 +182,6 @@ class FRTCModel(BaseModel):
                 lines.append(f"{nv:<18}  ! {s.get('description')}" )
             lines.append("/")
 
-        lines.append(f"&spectrum")
-        match spectrum_kind:
-            case 'gauss_spectrum' | 'spectrum_1D':
-                if spectrum_PWM:
-                    spect_type = 0 #   0     ! spectr type 0 - 1D + spline approximation ON
-                else:
-                    spect_type = 1 #   1     ! spectr type 1 - 1D + spline approximation OFF
-            case 'rotated_gaussian':
-                spect_type = 2     #   2     ! spectr type 2 - scatter spectrum
-            case 'scatter_spectrum':
-                spect_type = 2     #  2     ! spectr type 2 - scatter spectrum
-            case 'spectrum_2D':
-                spect_type = 3    #  3     ! spectr type 3 - 2D for futureS
-        lines.append(f"spectrum_type = {spect_type}" )
-        lines.append("/")
         return '\n'.join(lines)  
 
 def save_frtc(rtp, fn):

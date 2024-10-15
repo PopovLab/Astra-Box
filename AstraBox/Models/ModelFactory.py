@@ -215,8 +215,10 @@ def prepare_task_zip(task:Task, zip_file):
         elif task.frtc is not None: # новая версия v2
             frtc_model = get('FRTCModel', task.frtc)
             spectrum_model = get('SpectrumModel', task.spectrum)
-            zip.writestr('lhcd/ray_tracing.dat', frtc_model.export_to_text(spectrum_model.spectrum.kind, spectrum_model.spectrum.PWM))
-            zip.writestr('lhcd/parameters.nml', frtc_model.export_to_nml(spectrum_model.spectrum.kind, spectrum_model.spectrum.PWM))
+            #zip.writestr('lhcd/ray_tracing.dat', frtc_model.export_to_text(spectrum_model.spectrum.kind, spectrum_model.spectrum.PWM))
+            frtc_nml = frtc_model.export_to_nml()
+            spm_nml  = spectrum_model.export_to_nml()
+            zip.writestr('lhcd/parameters.nml', frtc_nml + spm_nml)
             zip.writestr('lhcd/spectrum.dat', spectrum_model.export_to_text())
             #pack_model_to_zip(zip, frtc_model)
             #pack_model_to_zip(zip, spectrum_model)

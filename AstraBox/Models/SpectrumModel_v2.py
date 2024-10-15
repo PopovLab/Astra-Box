@@ -83,3 +83,27 @@ class SpectrumModel(BaseModel):
             case 'spectrum_2D':
                 sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]                
         return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
+    
+    def export_to_nml(self):
+        '''"Экспорт Spectrum параметров в nml-формат'''
+        #spectrum_kind, spectrum_PWM нужно что бы знать тип спектра для файла конфигурации FRTC
+        lines = []
+        lines.append(f"&spectrum")
+        match self.spectrum.kind:
+            case 'gauss_spectrum' | 'spectrum_1D':
+                if self.spectrum.PWM:
+                    spect_type = 0 #   0     ! spectr type 0 - 1D + spline approximation ON
+                else:
+                    spect_type = 1 #   1     ! spectr type 1 - 1D + spline approximation OFF
+            case 'rotated_gaussian':
+                spect_type = 2     #   2     ! spectr type 2 - scatter spectrum
+            case 'scatter_spectrum':
+                spect_type = 2     #  2     ! spectr type 2 - scatter spectrum
+            case 'spectrum_2D':
+                spect_type = 3    #  3     ! spectr type 3 - 2D for futureS
+        lines.append(f"spectrum_type = {spect_type}" )
+        lines.append(f"spectrum_PWM = {self.spectrum.PWM}" )
+        lines.append(f"spectrum_kind = {self.spectrum.kind}" )
+        lines.append(f"spectrum_axis = {self.spectrum.axis}" )
+        lines.append("/")
+        return '\n'.join(lines)  
