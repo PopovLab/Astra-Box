@@ -1,8 +1,8 @@
+import importlib
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
-import pkg_resources
 from functools import partial
 from AstraBox.Pages.FRTCPage import FRTCPage
 from AstraBox.Pages.SpectrumPage import SpectrumPage
@@ -62,6 +62,15 @@ def save_geometry(geo):
         except:
             print('file error')    
 
+import tomllib
+def get_version(pk_name):
+    try:
+        with open("pyproject.toml", "rb") as f:
+            pyproject = tomllib.load(f)
+        version = pyproject["tool"]["poetry"]["version"]
+    except Exception as e:
+        version = importlib.metadata.version(pk_name)
+    return version
 
 class App(tk.Tk):
     def __init__(self):
@@ -151,8 +160,7 @@ class App(tk.Tk):
         self.content_frame.set_content(view)
 
     def show_about(self):
-
-        my_version = pkg_resources.get_distribution('AstraBox').version
+        my_version = get_version('AstraBox')
         messagebox.showinfo("Astra Box", f"version {my_version}")
 
     def show_FolderItem(self, folder_item):
