@@ -54,26 +54,18 @@ class SpectrumTabView(TabViewBasic):
         else:
             return None
         
-    def item_str(self, k1, k2):
-        #print(self.rt)
-        item = self.rt[k1][k2]
-        return f"{item['title']}:  {item['value']}"
-        #return f"{k1}:  {k2}"
-
-    def make_summary_v1(self):
-        #summ = tk.Label(master=self, text='Место для RT model')
-        values = []
-        values.append(self.item_str('Physical parameters', 'Freq'))
-        values.append(self.item_str('Numerical parameters', 'nr'))
-        values.append(self.item_str('Numerical parameters', 'eps'))
-        values.append(self.item_str('Options', 'inew'))
-        values.append(self.item_str('grill parameters', 'Zplus'))
-        values.append(self.item_str('grill parameters', 'Zminus'))
-        values.append(self.item_str('grill parameters', 'ntet'))
-        values.append(self.item_str('grill parameters', 'nnz'))
+    def make_frtc_summary(self):
+        frtc = self.race_model.frtc_model
         
-        summ = SheetView(self, values)
-        return summ
+        text = "------- FRTC parameters ----------\n"
+        text +=  f"Freq: {frtc.physical_parameters.freq} "
+        text +=  f"nr: {frtc.numerical_parameters.nr} "
+        text +=  f"eps: {frtc.numerical_parameters.eps} \n"
+        text +=  f"Zplus: {frtc.grill_parameters.Zminus} "
+        text +=  f"Zminus: {frtc.grill_parameters.Zminus} "
+        text +=  f"ntet: {frtc.grill_parameters.ntet} "
+        text +=  f"nnz: {frtc.grill_parameters.nnz}"
+        return text
     
     def make_spectrum_plot(self, spectrum_kind):
         match spectrum_kind:
@@ -83,7 +75,6 @@ class SpectrumTabView(TabViewBasic):
                 plot = ScatterPlot2D3D(self, self.spectrums['origin'])
             case 'spectrum_2D':
                 pass       
-        
         return plot
     
     def make_spectrum_statistic(self):
@@ -110,35 +101,7 @@ class SpectrumTabView(TabViewBasic):
 
         text_box = tk.Text(self, height = 8, width = 50)
         text_box.insert(tk.END, text)
+        text_box.insert(tk.END, self.make_frtc_summary())
         text_box.config(state='disabled')
         return text_box
     
-    def _make_summary(self):
-        xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)
-        text_box = tk.Text(self, height = 15, width = 50)
-        lines = [f'nteta: {self.nteta}']
-        indent = ' '
-        for key, s in self.spectrums.items():
-            if s is not None:
-                p = np.sum(s["Amp"])
-                #p = np.trapz(s["Amp"], s['Ntor'])
-                r = s['trapz']
-                if type(r) == pd.Series:
-                    p2 = r.iloc[-1]
-                    size = r.size
-                    v = s['Ntor'].iloc[-1]
-                else: # numpy.ndarray
-                    p2 = r[-1]
-                    size = len(r)
-                    v = s['Ntor'][-1]
-                l = len(key)
-                lines.append(indent + f'{key}: {p} ')
-                #lines.append(indent + f'{key}: {p2} ')
-                lines.append(indent + " "*(l-4)  +'beam' + f': {p/xsgs:.4f} MW')
-                #lines.append(indent + " "*(l-4)  +'beam' + f': {p2/xsgs:.4f} MW')
-                lines.append(indent + " "*(l-5)  +'total' + f': {self.nteta*p/xsgs:.4f} MW ')
-                lines.append(indent + " "*(l-4)  +'size' + f': {size} ')
-                
-        text_box.insert(tk.END, '\n'.join(lines))
-        text_box.config(state='disabled')
-        return text_box
