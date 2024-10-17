@@ -25,7 +25,7 @@ class SpectrumTabView(TabViewBasic):
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
 
         self.nteta =  self.race_model.frtc_model.grill_parameters.ntet
-        self.spectrums['nteta'] = self.nteta
+        #self.spectrums['nteta'] = self.nteta
         spectrum_kind = self.race_model.spectrum_model.spectrum.kind
        
         if self.spectrums['origin'] is None:
@@ -78,7 +78,7 @@ class SpectrumTabView(TabViewBasic):
     def make_spectrum_plot(self, spectrum_kind):
         match spectrum_kind:
             case 'gauss_spectrum'|'spectrum_1D':
-                plot = SpectrumChart(self, self.spectrums, show_summary=False)
+                plot = SpectrumChart(self, self.spectrums, self.nteta, show_summary=False)
             case 'scatter_spectrum'|'rotated_gaussian':
                 plot = ScatterPlot2D3D(self, self.spectrums['origin'])
             case 'spectrum_2D':

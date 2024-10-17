@@ -349,13 +349,11 @@ def cumtrapz(x,y):
 
 
 class SpectrumChart(ttk.Frame):
-    def __init__(self, master, spectrums: dict, show_summary:bool=True) -> None:
+    def __init__(self, master, spectrums: dict, nteta:int, show_summary:bool=True) -> None:
         super().__init__(master)  
 
         self.spectrums = spectrums
-        if 'nteta' in self.spectrums:
-            self.nteta = self.spectrums['nteta']
-            del self.spectrums['nteta']
+        self.nteta = nteta
         p = self.make_check_panel()
         p.grid(row=0, column=2, sticky=tk.N)
 
