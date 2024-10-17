@@ -168,8 +168,6 @@ class RunAstraPage(ttk.Frame):
         WorkSpace.refresh_folder('RaceModel')        
 
 
-
-
     def terminate(self):
         self.terminated = True
 
