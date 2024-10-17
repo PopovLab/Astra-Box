@@ -28,7 +28,7 @@ class GaussSpectrum(BaseSpectrum):
     step:  float = Field(default= 0.5, title= 'step')
     bias:  float = Field(default= 0.0, title= 'bias')
     sigma: float = Field(default= 2.5, title= 'sigma')
-    axis:   int   = Field(default= 0, title= 'axis', description= "Coordinate system of spectrum 0 - takay, 1 - sekaya")
+    coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
     angle: float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:   bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum") 
     
@@ -65,7 +65,7 @@ class Spectrum1D(BaseSpectrum):
     kind: Literal['spectrum_1D']
     title: ClassVar[str] = 'Spectrum 1D'    
     source: str   = Field(default= '', title= 'source')
-    axis:   int   = Field(default= 0, title= 'axis', description= "Coordinate system of spectrum 0 - takay, 1 - sekaya")
+    coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
 
@@ -83,7 +83,7 @@ class ScatterSpectrum(BaseSpectrum):
     kind: Literal['scatter_spectrum']
     title: ClassVar[str] = 'Scatter Spectrum'    
     source: str   = Field(default= '', title= 'source')
-    axis:   int   = Field(default= 0, title= 'axis', description= "Coordinate system of spectrum 0 - takay, 1 - sekaya")
+    coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")   
 
@@ -128,7 +128,7 @@ class Spectrum2D(BaseSpectrum):
     kind: Literal['spectrum_2D']
     title: ClassVar[str] = 'Spectrum 2D'    
     source: str   = Field(default= '', title= 'source')
-    axis:   int   = Field(default= 0, title= 'axis', description= "Coordinate system of spectrum 0 - takay, 1 - sekaya")
+    coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
