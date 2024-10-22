@@ -22,19 +22,23 @@ class LHCDRadialPlot(ttk.Frame):
         #                             file_name= 'RadialPlotSetting.json', 
         #                             default_data= default_radial_setting(),
         #                             on_update_setting= self.on_update_setting )
-        self.fig = plt.figure(figsize=(8, 6.6))
-        self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
-        self.axs = self.fig.subplots(3, 1)  
-        #self.ax = self.fig.add_subplot(111)
-        self.make_plots()
-        self.canvas = FigureCanvasTkAgg(self.fig, self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        try:
+            self.fig = plt.figure(figsize=(8, 6.6))
+            self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
+            self.axs = self.fig.subplots(3, 1)  
+            self.make_plots()
+            self.canvas = FigureCanvasTkAgg(self.fig, self)
+            self.canvas.draw()
+            self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+            #toobar = NavigationToolbar2Tk(self.canvas, frame)
+            tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+            tb.update()
+            tb.grid(row=0, column=0, sticky=tk.N)            
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            lbl = tk.Label(self, text=ex_text)
+            lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        #toobar = NavigationToolbar2Tk(self.canvas, frame)
-        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
-        tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)
         
         #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
         btn = ImageButton.create(self, 'gear.png', self.option_windows)
@@ -91,11 +95,16 @@ class LHCDRadialPlot(ttk.Frame):
 
 
     def update(self, data):
-        self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
-        self.data = data
-        self.make_plots()
-        self.canvas.draw()
-
+        try:
+            self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
+            self.data = data
+            self.make_plots()
+            self.canvas.draw()
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            lbl = tk.Label(self, text=ex_text)
+            lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+            
     def destroy(self):
         if self.fig:
             plt.close(self.fig)
