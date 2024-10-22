@@ -27,7 +27,7 @@ from AstraBox.ToolBox.DistributionPlot import DistributionPlot
 from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 from AstraBox.ToolBox.DrivenCurrentPlot import DrivenCurrentPlot
-from AstraBox.ToolBox.LHCDRadialPlot import LHCDRadialPlot
+from AstraBox.RaceTab.LHCDRadialPlot import LHCDRadialPlot
 from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
 from AstraBox.ToolBox.ExecTimePlot import ExecTimePlot
 from AstraBox.ToolBox.RadialDCPlot import RadialDCPlot

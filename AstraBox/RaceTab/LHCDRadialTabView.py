@@ -7,7 +7,7 @@ import pandas as pd
 
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
-from AstraBox.ToolBox.LHCDRadialPlot import LHCDRadialPlot
+from AstraBox.RaceTab.LHCDRadialPlot import LHCDRadialPlot
 from AstraBox.ToolBox.SpectrumPlot import SpectrumChart, ScatterPlot2D3D
 from AstraBox.Views.SheetView import SheetView
 from AstraBox.Views.SpectrumView import OptionsPanel
@@ -19,6 +19,7 @@ class LHCDRadialDataView(TabViewBasic):
     def init_ui(self):   
         self.pos_list = self.race_model.get_file_list('POWER_POS')
         self.neg_list = self.race_model.get_file_list('POWER_NEG')
+        self.dc_list = self.race_model.get_file_list('DC')
         n = min(len(self.pos_list),len(self.neg_list))
         print(f'n= {n}')
         if n>0: 
@@ -59,6 +60,12 @@ class LHCDRadialDataView(TabViewBasic):
         file = self.neg_list[index]
         print(f'{file} {index}')
         lhcd_data['neg'] = self.race_model.read_dc_data(file)
+
+        
+        file = self.dc_list[index]
+        print(f'{file} {index}')
+        lhcd_data['cur'] = self.race_model.read_dc_data(file)
+
         return lhcd_data
     
     def update_time_var(self, var, indx, mode):

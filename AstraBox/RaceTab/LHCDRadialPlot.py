@@ -54,18 +54,41 @@ class LHCDRadialPlot(ttk.Frame):
         self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
         self.axs[0].legend(loc='upper right')
 
+        #self.axs[1].clear()
+        #self.axs[1].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pwe'], c= 'darkred', label= 'pos pwe')
+        #self.axs[1].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pwe'], c= 'blue', label= 'neg pwe')
+        #self.axs[1].legend(loc='upper right')
+
+        full_dc = self.data['cur']['Data']['pos_dc'] + self.data['cur']['Data']['neg_dc']
+
         self.axs[1].clear()
-        self.axs[1].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pwe'], c= 'darkred', label= 'pos pwe')
-        self.axs[1].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pwe'], c= 'blue', label= 'neg pwe')
-    
+        self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['pos_dc'], c= 'darkred', label= 'pos dc')
+        self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['neg_dc'], c= 'blue',    label= 'neg dc')
+        self.axs[1].plot(self.data['cur']['Data']['index'], full_dc, c= 'violet',    label= 'full dc')
         self.axs[1].legend(loc='upper right')
 
         self.axs[2].clear()
-        self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['sk'], c= 'darkred', label= 'pos sk')
-        self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['sk'], c= 'blue', label= 'neg sk')
-        self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['vk'], c= 'salmon', label= 'pos vk')
-        self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['vk'], c= 'violet', label= 'neg vk')           
+        pos_ratio = self.data['cur']['Data']['pos_dc']/self.data['pos']['Data']['pdl']
+        neg_ratio = self.data['cur']['Data']['neg_dc']/self.data['neg']['Data']['pdl']
+        
+        full_pdl = self.data['pos']['Data']['pdl'] + self.data['neg']['Data']['pdl']
+        self.axs[2].plot(self.data['cur']['Data']['pos_dc'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos dc/pdl')
+        self.axs[2].plot(self.data['cur']['Data']['neg_dc'], self.data['neg']['Data']['pdl'], c= 'blue',    label= 'neg dc/pdl')
+        self.axs[2].plot(full_dc, full_pdl, c= 'violet',    label= 'full dc/pdl')
+        #self.axs[2].plot(self.data['cur']['Data']['index'], pos_ratio, c= 'darkred', label= 'pos dc/pdl')
+        #self.axs[2].plot(self.data['cur']['Data']['index'], neg_ratio, c= 'blue',    label= 'neg dc/pdl')
+        #self.axs[2].plot(self.data['cur']['Data']['index'], full_dc/full_pdl, c= 'violet',    label= 'full dc/pdl')
         self.axs[2].legend(loc='upper right')
+
+        #self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['vk'], c= 'salmon', label= 'pos vk')
+        #self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['vk'], c= 'violet', label= 'neg vk')           
+        
+        #self.axs[2].clear()
+        #self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['sk'], c= 'darkred', label= 'pos sk')
+        #self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['sk'], c= 'blue', label= 'neg sk')
+        #self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['vk'], c= 'salmon', label= 'pos vk')
+        #self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['vk'], c= 'violet', label= 'neg vk')           
+
 
     def update(self, data):
         self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
