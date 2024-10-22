@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from AstraBox.Pages.EmptyPage import EmptyPage
+from AstraBox.Pages.ReadMePage import ReadMePage
 
 class ContentFrame(ttk.Frame):
     def __init__(self, master) -> None:
@@ -8,6 +9,7 @@ class ContentFrame(ttk.Frame):
         self.content = None
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(0, weight=1)        
+        self.show_readme()
 
     def set_content(self, content):
         #self.label.config(text = content.title)
@@ -19,3 +21,6 @@ class ContentFrame(ttk.Frame):
 
     def show_empty_view(self):
         self.set_content(EmptyPage(self))
+
+    def show_readme(self):
+        self.set_content(ReadMePage(self))        

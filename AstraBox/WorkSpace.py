@@ -14,6 +14,13 @@ def get_location_path():
     """get workspace location path"""
     return _location
 
+def get_ReadMe():
+    read_me = get_location_path().joinpath('README.md')
+    if read_me.exists():
+        with read_me.open(mode= "r", encoding='utf-8') as file:
+            return file.read()
+    return 'No README file'
+
 def temp_folder_location():
     loc = get_location_path().joinpath('tmp')
     if not loc.exists():
