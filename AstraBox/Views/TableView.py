@@ -71,7 +71,11 @@ class TableView(ttk.Frame):
             if vi.on_update is None:
                 vi.on_update = self.update_tree
             #self.tree.insert('', tk.END, text=item.name,  values=(item.name,), tags=('show'))  
-            self.tree.insert('', tk.END, text=vi.name,  values=(vi.name, vi.comment,), tags=('show'))  
+            # иногда возникает исключение, после удаления ноды, но непонятно почему
+            try:
+                self.tree.insert('', tk.END, text=vi.name,  values=(vi.name, vi.comment,), tags=('show'))  
+            except Exception as e :
+                print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")                
             
     def select_node(self, event):
         sel_id = self.tree.selection()
