@@ -22,22 +22,22 @@ class LHCDRadialPlot(ttk.Frame):
         #                             file_name= 'RadialPlotSetting.json', 
         #                             default_data= default_radial_setting(),
         #                             on_update_setting= self.on_update_setting )
-        try:
-            self.fig = plt.figure(figsize=(8, 6.6))
-            self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
-            self.axs = self.fig.subplots(3, 1)  
-            self.make_plots()
-            self.canvas = FigureCanvasTkAgg(self.fig, self)
-            self.canvas.draw()
-            self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
-            #toobar = NavigationToolbar2Tk(self.canvas, frame)
-            tb = VerticalNavigationToolbar2Tk(self.canvas, self)
-            tb.update()
-            tb.grid(row=0, column=0, sticky=tk.N)            
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            lbl = tk.Label(self, text=ex_text)
-            lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        #try:
+        self.fig = plt.figure(figsize=(8, 6.6))
+        self.fig.suptitle(f'LHCD Radial data. Time={data["cur"]["Time"]}')
+        self.axs = self.fig.subplots(3, 1)  
+        self.make_plots()
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        #toobar = NavigationToolbar2Tk(self.canvas, frame)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)            
+        #except Exception as e :
+        #    ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+        #    lbl = tk.Label(self, text=ex_text)
+        #    lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
 
         
         #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
@@ -52,10 +52,12 @@ class LHCDRadialPlot(ttk.Frame):
 
     def make_plots(self):
         self.axs[0].clear()
-        self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
-        self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
-        self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
-        self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
+        if self.data['pos']:
+            self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
+            self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
+        if self.data['neg']:            
+            self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
+            self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
         self.axs[0].legend(loc='upper right')
 
         #self.axs[1].clear()
@@ -72,13 +74,17 @@ class LHCDRadialPlot(ttk.Frame):
         self.axs[1].legend(loc='upper right')
 
         self.axs[2].clear()
-        pos_ratio = self.data['cur']['Data']['pos_dc']/self.data['pos']['Data']['pdl']
-        neg_ratio = self.data['cur']['Data']['neg_dc']/self.data['neg']['Data']['pdl']
+        #pos_ratio = self.data['cur']['Data']['pos_dc']/self.data['pos']['Data']['pdl']
+        #neg_ratio = self.data['cur']['Data']['neg_dc']/self.data['neg']['Data']['pdl']
         
-        full_pdl = self.data['pos']['Data']['pdl'] + self.data['neg']['Data']['pdl']
-        self.axs[2].plot(self.data['cur']['Data']['pos_dc'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos dc/pdl')
-        self.axs[2].plot(self.data['cur']['Data']['neg_dc'], self.data['neg']['Data']['pdl'], c= 'blue',    label= 'neg dc/pdl')
-        self.axs[2].plot(full_dc, full_pdl, c= 'violet',    label= 'full dc/pdl')
+        if self.data['pos']:
+            self.axs[2].plot(self.data['cur']['Data']['pos_dc'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos dc -pdl')
+        if self.data['neg']:
+            self.axs[2].plot(self.data['cur']['Data']['neg_dc'], self.data['neg']['Data']['pdl'], c= 'blue',    label= 'neg dc - pdl')
+ 
+        if self.data['pos'] and self.data['neg']:
+            full_pdl = self.data['pos']['Data']['pdl'] + self.data['neg']['Data']['pdl']
+            self.axs[2].plot(full_dc, full_pdl, c= 'violet',    label= 'full dc - pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], pos_ratio, c= 'darkred', label= 'pos dc/pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], neg_ratio, c= 'blue',    label= 'neg dc/pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], full_dc/full_pdl, c= 'violet',    label= 'full dc/pdl')
@@ -96,7 +102,7 @@ class LHCDRadialPlot(ttk.Frame):
 
     def update(self, data):
         try:
-            self.fig.suptitle(f'LHCD Radial data. Time={data["pos"]["Time"]}')
+            self.fig.suptitle(f'LHCD Radial data. Time={data["cur"]["Time"]}')
             self.data = data
             self.make_plots()
             self.canvas.draw()
