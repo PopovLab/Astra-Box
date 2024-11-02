@@ -10,6 +10,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 
 from AstraBox.Pages.InfoPanel import InfoPanel
 from AstraBox.Pages.TaskPage import TaskPage
+from AstraBox.RaceTab.DiffusionTabView import DiffusionTabView
 from AstraBox.Views.FRTCView import FRTCView
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
@@ -23,7 +24,6 @@ from AstraBox.RaceTab.RaceView import TrajectoryTab
 from AstraBox.RaceTab.RaceView import RadialDrivenCurrentView
 from AstraBox.RaceTab.LHCDRadialTabView import LHCDRadialDataView
 from AstraBox.RaceTab.RaceView import MaxwellView
-from AstraBox.RaceTab.RaceView import DiffusionView
 from AstraBox.RaceTab.SpectrumView import SpectrumView
 from AstraBox.RaceTab.SpectrumTabView import SpectrumTabView
 from AstraBox.RaceTab.RaceView import RTResultView
@@ -76,7 +76,7 @@ class FRTCBook(ttk.Notebook):
         maxwell_view = MaxwellView(self, model= model)
         self.add(maxwell_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
 
-        maxwell_view = DiffusionView(self, model= model)
+        maxwell_view = DiffusionTabView(self, model= model)
         self.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
 
         if hasattr(model, 'frtc_model'):
