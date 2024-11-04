@@ -15,6 +15,16 @@ from AstraBox.Models.TrajectoryModel import TrajectoryModel
 
 from AstraBox.Views.tkSliderWidget import Slider
 
+class CheckButtun(tk.Frame):
+    def __init__(self, master, title, value, command):
+        super().__init__(master)
+        self.chkvar = tk.IntVar(name= title, value= value)
+        chkbtn = tk.Checkbutton(self, text= title, variable= self.chkvar, command= command)
+        chkbtn.pack( pady=5, side=tk.LEFT)
+
+    def get(self):
+        return True if self.chkvar.get() == 1 else False
+    
 class TrajectoryPlotOptionWindows():
     def __init__(self, master, plot_options, on_update_options= None) -> None:
         self.master = master
@@ -28,23 +38,20 @@ class TrajectoryPlotOptionWindows():
         win.title("Settings")
         win.geometry("220x400")
 
-        frame = tk.Frame(win)
-        frame.pack(padx=5, pady=1, fill=tk.X)
-        self.chkvar1 = tk.IntVar(name= 'show marker', value= self.plot_options['show_marker'])
-        chkbtn = tk.Checkbutton(frame, text='show marker', variable= self.chkvar1, command= self.check_clicked )
-        chkbtn.pack( pady=5, side=tk.LEFT)
+        self.chk_btn_0 = CheckButtun(win, 'show grid', self.plot_options['show_grid'], self.check_clicked)
+        self.chk_btn_0.pack(padx=5, pady=1, fill=tk.X)
 
-        frame = tk.Frame(win)
-        frame.pack(padx=5, pady=1, fill=tk.X)
-        self.chkvar2 = tk.IntVar(name= 'show graph', value= self.plot_options['show_graph'])
-        chkbtn = tk.Checkbutton(frame, text='show graph', variable= self.chkvar2, command= self.check_clicked )
-        chkbtn.pack( pady=5, side=tk.LEFT)
+        self.chk_btn_1 = CheckButtun(win, 'show marker', self.plot_options['show_marker'], self.check_clicked)
+        self.chk_btn_1.pack(padx=5, pady=1, fill=tk.X)
 
-        frame = tk.Frame(win)
-        frame.pack(padx=5, pady=1, fill=tk.X)
-        self.chkvar3 = tk.IntVar(value= self.plot_options['show_power_density'])
-        chkbtn = tk.Checkbutton(frame, text='show power density', variable= self.chkvar3, command= self.check_clicked )
-        chkbtn.pack( pady=5, side=tk.LEFT)
+        self.chk_btn_2 = CheckButtun(win, 'show graph', self.plot_options['show_graph'], self.check_clicked)
+        self.chk_btn_2.pack(padx=5, pady=1, fill=tk.X)
+
+        self.chk_btn_3 = CheckButtun(win, 'show trajectory', self.plot_options['show_trajectory'], self.check_clicked)
+        self.chk_btn_3.pack(padx=5, pady=1, fill=tk.X)
+
+        self.chk_btn_4 = CheckButtun(win, 'show power density', self.plot_options['show_power_density'], self.check_clicked)
+        self.chk_btn_4.pack(padx=5, pady=1, fill=tk.X)
 
         frame = tk.Frame(win)
         frame.pack(padx=5, pady=1, fill=tk.X)
@@ -80,9 +87,11 @@ class TrajectoryPlotOptionWindows():
         win.wait_window()
 
     def check_clicked(self):
-        self.plot_options['show_marker'] = True if self.chkvar1.get() == 1 else False
-        self.plot_options['show_graph'] = True if self.chkvar2.get() == 1 else False
-        self.plot_options['show_power_density'] = True if self.chkvar3.get() == 1 else False
+        self.plot_options['show_grid']          = self.chk_btn_0.get() 
+        self.plot_options['show_marker']        = self.chk_btn_1.get() 
+        self.plot_options['show_graph']         = self.chk_btn_2.get() 
+        self.plot_options['show_trajectory']    = self.chk_btn_3.get()
+        self.plot_options['show_power_density'] = self.chk_btn_4.get()
         if self.on_update_options:
             self.on_update_options()
 
@@ -106,8 +115,10 @@ class TrajectoryPlotOptionWindows():
 
 def default_plot_options():
     return { 
+        'show_grid' : False,
         'show_marker' : False,
         'show_graph' : False,
+        'show_trajectory' : True,
         'show_power_density' : False,
         'term_list' : [],
         'x_axis' : 'theta',
