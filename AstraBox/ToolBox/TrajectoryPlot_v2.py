@@ -145,6 +145,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.plot_options['max_index'] =  max([len(x['traj']) for x in self.traj_model.traj_series if x['mbad'] == 0] )
         self.plot_options['cut_index'] = self.plot_options['max_index']
         self.show_graph = self.plot_options['show_graph']
+        self.show_trajectory = self.plot_options['show_trajectory']
         self.show_power_density = self.plot_options['show_power_density']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -170,13 +171,10 @@ class TrajectoryPlot_v2(ttk.Frame):
         slider2.grid(row=1, column=2, sticky=tk.N + tk.S + tk.E + tk.W) 
         slider2.setValueChageCallback(self.update_spectrum_index)
 
-
-        self.ax1 = None
-        self.ax2 = None
         self.fig = plt.figure(figsize=(6,6))
         #self.fig.title(time_stamp)
         self.init_axis()
-
+        self.draw_all()
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
 
@@ -212,25 +210,51 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.update()
 
     def init_axis(self):
+        line_1 = []
+        if self.show_trajectory:
+            line_1.append('trajectory')
+        if self.show_power_density:
+            line_1.append('power')
+        line_2 = []
         if self.show_graph:
-            self.ax1, self.ax2 = self.fig.subplots(2, 1)
-            self.ax1.set_title(self.time_stamp, fontsize=10)
-            self.ax1.axis('equal')
-            self.draw_graphics(self.ax2)
+            if len(line_1)>1:
+                line_2 = ['graph']*2
+            else:
+                line_2 = ['graph']
+        mosaic = []
+        if len(line_1)>0: mosaic.append(line_1)
+        if len(line_2)>0: mosaic.append(line_2)
+        # mosaic = [['trajectory', 'power'],
+        #               ['graph', 'graph']]
+        if len(mosaic)>0:
+            self.axd = self.fig.subplot_mosaic(mosaic)
         else:
-            self.ax1 = self.fig.subplots(1, 1)
-            self.ax1.set_title(self.time_stamp, fontsize=10)
-            self.ax1.axis('equal')
-        self.draw_poloidal_view(self.ax1)
+            self.axd ={}
+
+
+    def draw_all(self, save_lim= False):
+        if self.show_graph:
+            self.draw_graphics(self.axd['graph'])
+
+        if self.show_trajectory:
+            ax = self.axd['trajectory']
+            ax.set_title(self.time_stamp, fontsize=10)
+            ax.axis('equal')
+            self.draw_trajctory(ax, save_lim)
+
+        if self.show_power_density:
+            ax = self.axd['power']
+            ax.set_title(self.time_stamp, fontsize=10)
+            ax.axis('equal')
+            self.draw_power_density(ax)
 
 
     def clear_axis(self):
-        if self.ax1:
-            self.ax1.remove()
-            self.ax1 = None
-        if self.ax2:
-            self.ax2.remove()
-            self.ax2 = None
+        for key, ax in self.axd.items():
+            print(key)
+            if ax:
+                ax.remove()
+                print(f'remove {key}')
 
     def show_option_windows(self):
         print(self.plot_options)
@@ -238,14 +262,26 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.option_windows.show()
 
     def update_plot_options(self):
-        self.show_power_density = self.plot_options['show_power_density']
+        need_update_fig = False
         if self.show_graph != self.plot_options['show_graph']:
+            need_update_fig = True
+        if self.show_trajectory != self.plot_options['show_trajectory']:
+            need_update_fig = True
+        if self.show_power_density != self.plot_options['show_power_density']:
+            need_update_fig = True
+
+        self.show_graph = self.plot_options['show_graph']
+        self.show_trajectory = self.plot_options['show_trajectory']            
+        self.show_power_density = self.plot_options['show_power_density']
+
+        if need_update_fig:
             self.clear_axis()
-            self.show_graph = self.plot_options['show_graph']
             self.init_axis()
-        self.draw_poloidal_view(self.ax1, save_lim= True)
-        if self.show_graph:
-            self.draw_graphics(self.ax2)
+        
+        self.draw_all()
+        #self.draw_poloidal_view(self.ax1, save_lim= True)
+        #if self.show_graph:
+        #    self.draw_graphics(self.ax2)
         self.canvas.draw()
 
     def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
