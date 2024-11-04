@@ -435,7 +435,8 @@ class TrajectoryPlot_v2(ttk.Frame):
             segments, colors = self.make_color_seg(series['traj'].iloc[:cut_index])
             col = collections.LineCollection(segments, colors= colors, linewidth=0.5)
             axis.add_collection(col, autolim=True)
-
+        if self.plot_options['show_grid']:
+                axis.grid(visible= True)
         axis.autoscale_view()
                
     def draw_trajctory(self, axis, save_lim= False):
@@ -468,6 +469,8 @@ class TrajectoryPlot_v2(ttk.Frame):
                 axis.add_collection(stars, autolim=True)            
                 axis.add_collection(tri, autolim=True)  
 
+        if self.plot_options['show_grid']:
+                axis.grid(visible= True)
         if save_lim:
             axis.set_ylim(bottom, top)
             axis.set_xlim(left, right)                      
@@ -475,10 +478,8 @@ class TrajectoryPlot_v2(ttk.Frame):
             axis.autoscale_view()
 
     def update(self):
-        self.draw_poloidal_view(self.ax1, save_lim= True)
-        self.ax1.set_title(self.traj_model.time_stamp, fontsize=12)
-        if self.show_graph:
-            self.draw_graphics(self.ax2)
+        self.time_stamp = self.traj_model.time_stamp
+        self.draw_all(save_lim= True)
         self.canvas.draw()
 
 
