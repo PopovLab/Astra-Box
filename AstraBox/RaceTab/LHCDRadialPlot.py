@@ -16,28 +16,27 @@ class LHCDRadialPlot(ttk.Frame):
     def __init__(self, master, data) -> None:
         super().__init__(master)  
         self.data = data
-        
         #self.ps = PlotSettingDialog(self, 
         #                             terms= profiles.keys(), 
         #                             file_name= 'RadialPlotSetting.json', 
         #                             default_data= default_radial_setting(),
         #                             on_update_setting= self.on_update_setting )
-        #try:
-        self.fig = plt.figure(figsize=(8, 6.6))
-        self.fig.suptitle(f'LHCD Radial data. Time={data["cur"]["Time"]}')
-        self.axs = self.fig.subplots(3, 1)  
-        self.make_plots()
-        self.canvas = FigureCanvasTkAgg(self.fig, self)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
-        #toobar = NavigationToolbar2Tk(self.canvas, frame)
-        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
-        tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)            
-        #except Exception as e :
-        #    ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-        #    lbl = tk.Label(self, text=ex_text)
-        #    lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+        try:
+            self.fig = plt.figure(figsize=(8, 6.6))
+            self.fig.suptitle(f'LHCD Radial data. Time={data["cur"]["Time"]}')
+            self.axs = self.fig.subplots(3, 1)  
+            self.make_plots()
+            self.canvas = FigureCanvasTkAgg(self.fig, self)
+            self.canvas.draw()
+            self.canvas.get_tk_widget().grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+            #toobar = NavigationToolbar2Tk(self.canvas, frame)
+            tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+            tb.update()
+            tb.grid(row=0, column=0, sticky=tk.N)            
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            error_label = tk.Label(self, text=ex_text)
+            error_label.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
 
         
         #btn = ttk.Button(self, text= 'Q', width= 2, command= self.option_windows )
@@ -51,44 +50,61 @@ class LHCDRadialPlot(ttk.Frame):
         pass
 
     def make_plots(self):
-        self.axs[0].clear()
-        if self.data['pos']:
-            self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
-            self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
-        if self.data['neg']:            
-            self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
-            self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
-        self.axs[0].legend(loc='upper right')
+        try:
+            self.axs[0].clear()
+            if self.data['pos']:
+                self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos pdl')
+                self.axs[0].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pdc'], c= 'salmon', label= 'pos pdc')
+            if self.data['neg']:            
+                self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdl'], c= 'blue', label= 'neg pdl')
+                self.axs[0].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pdc'], c= 'violet', label= 'neg pdc')        
+            self.axs[0].legend(loc='upper right')
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            self.axs[0].text(0.5, 0.5, ex_text,
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            fontsize=12, color='red',
+                            transform=self.axs[0].transAxes)
 
-        #self.axs[1].clear()
-        #self.axs[1].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['pwe'], c= 'darkred', label= 'pos pwe')
-        #self.axs[1].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['pwe'], c= 'blue', label= 'neg pwe')
-        #self.axs[1].legend(loc='upper right')
+        try:            
+            full_dc = self.data['cur']['Data']['pos_dc'] + self.data['cur']['Data']['neg_dc']
 
-        full_dc = self.data['cur']['Data']['pos_dc'] + self.data['cur']['Data']['neg_dc']
+            self.axs[1].clear()
+            self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['pos_dc'], c= 'darkred', label= 'pos dc')
+            self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['neg_dc'], c= 'blue',    label= 'neg dc')
+            self.axs[1].plot(self.data['cur']['Data']['index'], full_dc, c= 'violet',    label= 'full dc')
+            self.axs[1].legend(loc='upper right')
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            self.axs[1].text(0.5, 0.5, ex_text,
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            fontsize=12, color='red',
+                            transform=self.axs[1].transAxes)        
 
-        self.axs[1].clear()
-        self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['pos_dc'], c= 'darkred', label= 'pos dc')
-        self.axs[1].plot(self.data['cur']['Data']['index'], self.data['cur']['Data']['neg_dc'], c= 'blue',    label= 'neg dc')
-        self.axs[1].plot(self.data['cur']['Data']['index'], full_dc, c= 'violet',    label= 'full dc')
-        self.axs[1].legend(loc='upper right')
+        try:
+            self.axs[2].clear()
+            if self.data['pos']:
+                self.axs[2].plot(self.data['cur']['Data']['pos_dc'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos dc -pdl')
+            if self.data['neg']:
+                self.axs[2].plot(self.data['cur']['Data']['neg_dc'], self.data['neg']['Data']['pdl'], c= 'blue',    label= 'neg dc - pdl')
+            if self.data['pos'] and self.data['neg']:
+                full_pdl = self.data['pos']['Data']['pdl'] + self.data['neg']['Data']['pdl']
+                self.axs[2].plot(full_dc, full_pdl, c= 'violet',    label= 'full dc - pdl')
+            self.axs[2].legend(loc='upper right')
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            self.axs[2].text(0.5, 0.5, ex_text,
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            fontsize=12, color='red',
+                            transform=self.axs[2].transAxes)        
 
-        self.axs[2].clear()
-        #pos_ratio = self.data['cur']['Data']['pos_dc']/self.data['pos']['Data']['pdl']
-        #neg_ratio = self.data['cur']['Data']['neg_dc']/self.data['neg']['Data']['pdl']
-        
-        if self.data['pos']:
-            self.axs[2].plot(self.data['cur']['Data']['pos_dc'], self.data['pos']['Data']['pdl'], c= 'darkred', label= 'pos dc -pdl')
-        if self.data['neg']:
-            self.axs[2].plot(self.data['cur']['Data']['neg_dc'], self.data['neg']['Data']['pdl'], c= 'blue',    label= 'neg dc - pdl')
- 
-        if self.data['pos'] and self.data['neg']:
-            full_pdl = self.data['pos']['Data']['pdl'] + self.data['neg']['Data']['pdl']
-            self.axs[2].plot(full_dc, full_pdl, c= 'violet',    label= 'full dc - pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], pos_ratio, c= 'darkred', label= 'pos dc/pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], neg_ratio, c= 'blue',    label= 'neg dc/pdl')
         #self.axs[2].plot(self.data['cur']['Data']['index'], full_dc/full_pdl, c= 'violet',    label= 'full dc/pdl')
-        self.axs[2].legend(loc='upper right')
+
 
         #self.axs[2].plot(self.data['pos']['Data']['index'], self.data['pos']['Data']['vk'], c= 'salmon', label= 'pos vk')
         #self.axs[2].plot(self.data['neg']['Data']['index'], self.data['neg']['Data']['vk'], c= 'violet', label= 'neg vk')           
@@ -101,15 +117,17 @@ class LHCDRadialPlot(ttk.Frame):
 
 
     def update(self, data):
+        print('LHCDRadialPlot.update')
         try:
             self.fig.suptitle(f'LHCD Radial data. Time={data["cur"]["Time"]}')
             self.data = data
             self.make_plots()
             self.canvas.draw()
+
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            lbl = tk.Label(self, text=ex_text)
-            lbl.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
+            error_label = tk.Label(self, text=ex_text)
+            error_label.grid(row=0, column=1, rowspan= 2, sticky=tk.N + tk.S + tk.E + tk.W)
             
     def destroy(self):
         if self.fig:
