@@ -44,6 +44,9 @@ class TrajectoryPlotOptionWindows():
         self.chk_btn_1 = CheckButtun(win, 'show marker', self.plot_options['show_marker'], self.check_clicked)
         self.chk_btn_1.pack(padx=5, pady=1, fill=tk.X)
 
+        self.chk_btn_5 = CheckButtun(win, 'show axis labels', self.plot_options['show_axis_labels'], self.check_clicked)
+        self.chk_btn_5.pack(padx=5, pady=1, fill=tk.X)
+
         self.chk_btn_2 = CheckButtun(win, 'show graph', self.plot_options['show_graph'], self.check_clicked)
         self.chk_btn_2.pack(padx=5, pady=1, fill=tk.X)
 
@@ -92,6 +95,8 @@ class TrajectoryPlotOptionWindows():
         self.plot_options['show_graph']         = self.chk_btn_2.get() 
         self.plot_options['show_trajectory']    = self.chk_btn_3.get()
         self.plot_options['show_power_density'] = self.chk_btn_4.get()
+        self.plot_options['show_axis_labels']   = self.chk_btn_5.get()
+                
         if self.on_update_options:
             self.on_update_options()
 
@@ -117,6 +122,7 @@ def default_plot_options():
     return { 
         'show_grid' : False,
         'show_marker' : False,
+        'show_axis_labels' : False,
         'show_graph' : False,
         'show_trajectory' : True,
         'show_power_density' : False,
@@ -147,6 +153,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.show_graph = self.plot_options['show_graph']
         self.show_trajectory = self.plot_options['show_trajectory']
         self.show_power_density = self.plot_options['show_power_density']
+        self.show_axis_labels = self.plot_options['show_axis_labels']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         self.colormaps = mpl.colormaps['nipy_spectral'] # plasma, tab20, gist_rainbow, rainbow
@@ -251,17 +258,15 @@ class TrajectoryPlot_v2(ttk.Frame):
 
     def clear_axis(self):
         for key, ax in self.axd.items():
-            print(key)
             if ax:
                 ax.remove()
-                print(f'remove {key}')
 
     def show_option_windows(self):
-        print(self.plot_options)
         self.option_windows = TrajectoryPlotOptionWindows(self, self.plot_options, self.update_plot_options)
         self.option_windows.show()
 
     def update_plot_options(self):
+
         need_update_fig = False
         if self.show_graph != self.plot_options['show_graph']:
             need_update_fig = True
@@ -269,19 +274,20 @@ class TrajectoryPlot_v2(ttk.Frame):
             need_update_fig = True
         if self.show_power_density != self.plot_options['show_power_density']:
             need_update_fig = True
+        if self.show_axis_labels != self.plot_options['show_axis_labels']:
+            need_update_fig = True            
 
         self.show_graph = self.plot_options['show_graph']
         self.show_trajectory = self.plot_options['show_trajectory']            
         self.show_power_density = self.plot_options['show_power_density']
+        self.show_axis_labels = self.plot_options['show_axis_labels']
 
         if need_update_fig:
+            print('nees update fig')
             self.clear_axis()
             self.init_axis()
         
         self.draw_all()
-        #self.draw_poloidal_view(self.ax1, save_lim= True)
-        #if self.show_graph:
-        #    self.draw_graphics(self.ax2)
         self.canvas.draw()
 
     def divider2(self, ray: pd.DataFrame, x_axis, y_axis):
@@ -431,12 +437,19 @@ class TrajectoryPlot_v2(ttk.Frame):
         axis.clear()
         axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         cut_index = self.plot_options['cut_index']
+
         for series in self.get_good_traj():
             segments, colors = self.make_color_seg(series['traj'].iloc[:cut_index])
             col = collections.LineCollection(segments, colors= colors, linewidth=0.5)
             axis.add_collection(col, autolim=True)
+
         if self.plot_options['show_grid']:
                 axis.grid(visible= True)
+
+        if self.plot_options['show_axis_labels']:
+            axis.set_xlabel('R [m]')
+            axis.set_ylabel('Z [m]')
+
         axis.autoscale_view()
                
     def draw_trajctory(self, axis, save_lim= False):
@@ -471,6 +484,11 @@ class TrajectoryPlot_v2(ttk.Frame):
 
         if self.plot_options['show_grid']:
                 axis.grid(visible= True)
+
+        if self.plot_options['show_axis_labels']:
+            axis.set_xlabel('R [m]')
+            axis.set_ylabel('Z [m]')
+
         if save_lim:
             axis.set_ylim(bottom, top)
             axis.set_xlim(left, right)                      

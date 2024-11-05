@@ -35,8 +35,7 @@ class TrajectoryView_v2(tk.Frame):
         self.plot.grid(row=0, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
 
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-    
+        self.rowconfigure(0, weight=1)    
 
     def save_figure(self, file_name):
         self.plot.save_figure(file_name)
