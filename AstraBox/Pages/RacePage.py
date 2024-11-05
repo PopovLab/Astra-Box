@@ -11,6 +11,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 from AstraBox.Pages.InfoPanel import InfoPanel
 from AstraBox.Pages.TaskPage import TaskPage
 from AstraBox.RaceTab.DiffusionTabView import DiffusionTabView
+from AstraBox.RaceTab.TrajectoryTabView import TrajectoryTab
 from AstraBox.Views.FRTCView import FRTCView
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.ExtraRaceView import ExtraRaceView
@@ -20,7 +21,6 @@ from AstraBox.Models.RaceModel import RaceModel
 
 from AstraBox.RaceTab.RaceView import TimeSeriesView
 from AstraBox.RaceTab.RaceView import RadialDataView
-from AstraBox.RaceTab.RaceView import TrajectoryTab
 from AstraBox.RaceTab.RaceView import RadialDrivenCurrentView
 from AstraBox.RaceTab.LHCDRadialTabView import LHCDRadialDataView
 from AstraBox.RaceTab.RaceView import MaxwellView
