@@ -465,7 +465,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         
         if self.plot_options['show_marker']:
             for dr2, dr4, clr in zip(driver2_list, driver4_list, segs_colors):
-                stars, tri = self.create_markers(dr2, dr4, clr, self.ax1.transData)
+                stars, tri = self.create_markers(dr2, dr4, clr, axis.transData)
                 axis.add_collection(stars, autolim=True)            
                 axis.add_collection(tri, autolim=True)  
 
