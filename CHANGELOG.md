@@ -1,4 +1,17 @@
-# Changelog
+# Changelog for Astra-Box
+
+## [Unreleased]
+
+### Added
+
+- 
+### Fixed
+
+-
+
+### Removed
+
+- 
 
 ## [0.2.1] - 2024-11-6
 Версия заморожена в ветке v0.2.1.
