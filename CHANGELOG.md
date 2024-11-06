@@ -9,6 +9,7 @@
 ### Fixed
 
 - починил чтение нового спектра в ScatterSpectrumView
+- поправил ширину ScatterPlot3D
 
 ### Removed
 
