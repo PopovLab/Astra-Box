@@ -1,6 +1,6 @@
 # Changelog for Astra-Box
 
-## [Unreleased]
+## [0.2.2] - Unreleased
 
 ### Added
 
