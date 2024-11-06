@@ -43,12 +43,12 @@
 
 ### Added
 
-- Danish translation (#297).
+- .
 
 ### Fixed
 
-- Italian translation (#332).
-- Indonesian translation (#336).
+- .
+
 
 ## [x.y.z] - 2022-2024
 
