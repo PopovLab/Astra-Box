@@ -43,7 +43,7 @@ class LHCDRadialDataView(TabViewBasic):
         for i, tm in enumerate(self.time_index):
             if tm>time:
                 return i
-        return -1
+        return 0
 
 
     def init_ui(self):   
