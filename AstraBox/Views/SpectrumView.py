@@ -116,9 +116,15 @@ class Spectrum1DView(tk.LabelFrame):
         self.make_plot()        
 
     def make_plot(self):
-        spectrum_data = self.model.spectrum.get_spectrum_data()
-        self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
-        self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
+        try:
+            spectrum_data = self.model.spectrum.get_spectrum_data()
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            label = ttk.Label(self, text= ex_text, width=20)
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+        else:
+            self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
+            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
 
 class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
@@ -146,22 +152,22 @@ class Spectrum2DView(tk.LabelFrame):
         self.make_plot()        
 
     def make_plot(self):
-        spectrum_data = self.model.spectrum.get_spectrum_data()
-        if spectrum_data == None:
-            label = ttk.Label(self, text="Spectrum None", width=20)
-            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-            return False
-        else:
+        try:
+            spectrum_data = self.model.spectrum.get_spectrum_data()
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-            return True
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            label = ttk.Label(self, text= ex_text, width=20)
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+
         
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
         super().__init__(master, text='Scatter Spectrum')        
-
+        
         self.model = model
-
+        self.spectrum_data = None
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
@@ -177,17 +183,20 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.make_plot(filepath)
             
 
-    def make_plot(self):
-        #head, filename = os.path.split(filepath)
+    def make_plot(self, filename= None):
+        if filename:
+            self.model.spectrum.source = filename
         return self.make_scatter_plot3D()
 
     def make_scatter_plot3D(self):
-        self.spectrum_data = self.model.spectrum.get_spectrum_data()
-            
-        if self.spectrum_data == None:
-            print('spectrum_data == None')
-            label = ttk.Label(self, text="Spectrum None", width=20)
-            label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+
+        try:
+            self.spectrum_data = self.model.spectrum.get_spectrum_data()
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            print(ex_text)
+            label = ttk.Label(self, text= ex_text, width=20)
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             return False
         else:
             self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
