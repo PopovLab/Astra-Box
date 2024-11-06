@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- 
+- починил чтение нового спектра в ScatterSpectrumView
 
 ### Removed
 
