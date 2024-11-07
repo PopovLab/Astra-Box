@@ -3,6 +3,8 @@ import tkinter.ttk as ttk
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
+sym1 = '⏵ '
+sym2 = '⏷ '
 class ListView(ttk.Frame):
     def __init__(self, master, folder= None, height= 5, command= None) -> None:
         super().__init__(master)  
@@ -13,8 +15,8 @@ class ListView(ttk.Frame):
         self.reverse_sort = False
         self.on_select_item = command
         self.visible = True
-        lab = ttk.Button(self, text= self.folder.title, command=self.change_state, style='Outline.TButton')
-        lab.grid(row=0, column=0, columnspan=2, sticky=tk.E + tk.W)
+        self.btn = ttk.Button(self, text= sym2 + self.folder.title, command=self.change_state)
+        self.btn.grid(row=0, column=0, columnspan=2, sticky=tk.E + tk.W)
         self.nodes = {}
         #self.tree = ttk.Treeview(self,  selectmode="browse", show="headings", columns=  ( "#1",  "#2"), height= height)
         self.tree = ttk.Treeview(self,  selectmode="browse", show="", columns=  ( "#1"), height= height)
@@ -43,10 +45,12 @@ class ListView(ttk.Frame):
 
     def change_state(self):
         if self.visible:
+            self.btn.configure(text= sym1 + self.folder.title)
             self.tree.grid_remove()
             self.ysb.grid_remove()
             self.rowconfigure(1, weight=0)
         else:
+            self.btn.configure(text= sym2 + self.folder.title)
             self.tree.grid(row=1, column=0,  columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W)
             self.ysb.grid(row=1, column=1,  sticky=tk.N + tk.S)
             self.rowconfigure(1, weight=1)
