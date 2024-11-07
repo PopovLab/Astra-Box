@@ -15,9 +15,9 @@ class RackFrame(ttk.Frame):
         self.on_select = None
         self.active_view = None
         self.v = tk.StringVar(self, "xxx")  # initialize
-        self.construct_ui()
+        self.compose_ui()
 
-    def construct_ui(self):
+    def compose_ui(self):
         for f in self.app.work_space.folders:
             if f.tag == 'top':
                 ListView(self, f, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
