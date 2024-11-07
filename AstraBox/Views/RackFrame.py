@@ -18,21 +18,30 @@ class RackFrame(ttk.Frame):
         self.compose_ui()
 
     def compose_ui(self):
-        for f in self.app.work_space.folders:
-            if f.tag == 'top':
-                ListView(self, f, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,5))
+        top = list([f for f in self.app.work_space.folders if f.tag == 'top'])
 
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
+        for i, f in enumerate(top):
+            ListView(self, f, command= self.on_select_item).grid(row=i, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
+
+        n = len(top)
+
+        ttk.Separator(self, orient='horizontal').grid(row=n, column=0, pady=(5,1),  sticky=tk.N + tk.S + tk.E + tk.W)
 
         ttk.Radiobutton(self, text="Run ASTRA", variable= self.v, value="imped", width=25, 
                         command= self.show_RunAstraPage,
-                        style = 'Toolbutton').pack(expand=0, fill=tk.X)
+                        style = 'Toolbutton').grid(row=n+1, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
-        ttk.Separator(self, orient='horizontal').pack(fill='x')
+        ttk.Separator(self, orient='horizontal').grid(row=n+2, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
+
         for f in self.app.work_space.folders:
             if f.tag == 'bottom':
-                TableView(self, f, height= 8, command= self.on_select_item).pack(expand=1, fill=tk.BOTH, padx=(10,0), pady=(5,10))        
+                TableView(self, f, height= 8, command= self.on_select_item).grid(row=n+3, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
+        for i in range(n+3):
+            self.rowconfigure(i, weight=0)
+
+        self.rowconfigure(n+3, weight=1)
+        self.columnconfigure(0, weight=1)
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')
