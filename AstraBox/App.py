@@ -88,6 +88,10 @@ class App(tk.Tk):
         style = ttk.Style()
         # стиль для кнопок
 
+        # Justify to the left [('Button.label', {'sticky': 'w'})]
+        style.layout("TButton", [('Button.button', {'sticky': 'nswe', 'children': [('Button.focus', {'sticky': 'nswe', 'children': [('Button.padding', {'sticky': 'nswe', 'children': [('Button.label',
+            {'sticky': 'w'})]})]})]})])
+
         style.configure('Toolbutton', 
                         foreground= 'black', 
                         backgound= 'red',
