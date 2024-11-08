@@ -36,7 +36,7 @@ class TrajectoryPlotOptionWindows():
     def show(self):
         win = tk.Toplevel(self.master)
         win.title("Settings")
-        win.geometry("220x400")
+        win.geometry("220x500")
 
         self.chk_btn_0 = CheckButtun(win, 'show grid', self.plot_options['show_grid'], self.check_clicked)
         self.chk_btn_0.pack(padx=5, pady=1, fill=tk.X)
@@ -55,6 +55,9 @@ class TrajectoryPlotOptionWindows():
 
         self.chk_btn_4 = CheckButtun(win, 'show power density', self.plot_options['show_power_density'], self.check_clicked)
         self.chk_btn_4.pack(padx=5, pady=1, fill=tk.X)
+
+        self.chk_btn_6 = CheckButtun(win, 'show power density2', self.plot_options['show_power_density2'], self.check_clicked)
+        self.chk_btn_6.pack(padx=5, pady=1, fill=tk.X)        
 
         frame = tk.Frame(win)
         frame.pack(padx=5, pady=1, fill=tk.X)
@@ -95,6 +98,7 @@ class TrajectoryPlotOptionWindows():
         self.plot_options['show_graph']         = self.chk_btn_2.get() 
         self.plot_options['show_trajectory']    = self.chk_btn_3.get()
         self.plot_options['show_power_density'] = self.chk_btn_4.get()
+        self.plot_options['show_power_density2'] = self.chk_btn_6.get()        
         self.plot_options['show_axis_labels']   = self.chk_btn_5.get()
                 
         if self.on_update_options:
@@ -126,6 +130,7 @@ def default_plot_options():
         'show_graph' : False,
         'show_trajectory' : True,
         'show_power_density' : False,
+        'show_power_density2' : False,
         'term_list' : [],
         'x_axis' : 'theta',
         'y_axis' : 'N_par',
@@ -153,6 +158,7 @@ class TrajectoryPlot_v2(ttk.Frame):
         self.show_graph = self.plot_options['show_graph']
         self.show_trajectory = self.plot_options['show_trajectory']
         self.show_power_density = self.plot_options['show_power_density']
+        self.show_power_density2 = self.plot_options['show_power_density2']
         self.show_axis_labels = self.plot_options['show_axis_labels']
         # Make a list of colors cycling through the default series.
         self.colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -222,10 +228,12 @@ class TrajectoryPlot_v2(ttk.Frame):
             line_1.append('trajectory')
         if self.show_power_density:
             line_1.append('power')
+        if self.show_power_density2:
+            line_1.append('power2')            
         line_2 = []
         if self.show_graph:
             if len(line_1)>1:
-                line_2 = ['graph']*2
+                line_2 = ['graph']*len(line_1)
             else:
                 line_2 = ['graph']
         mosaic = []
@@ -255,6 +263,11 @@ class TrajectoryPlot_v2(ttk.Frame):
             ax.axis('equal')
             self.draw_power_density(ax)
 
+        if self.show_power_density2:
+            ax = self.axd['power2']
+            ax.set_title(self.time_stamp, fontsize=10)
+            ax.axis('equal')
+            self.draw_power_density2(ax)
 
     def clear_axis(self):
         for key, ax in self.axd.items():
@@ -274,12 +287,15 @@ class TrajectoryPlot_v2(ttk.Frame):
             need_update_fig = True
         if self.show_power_density != self.plot_options['show_power_density']:
             need_update_fig = True
+        if self.show_power_density2 != self.plot_options['show_power_density2']:
+            need_update_fig = True            
         if self.show_axis_labels != self.plot_options['show_axis_labels']:
             need_update_fig = True            
 
         self.show_graph = self.plot_options['show_graph']
         self.show_trajectory = self.plot_options['show_trajectory']            
         self.show_power_density = self.plot_options['show_power_density']
+        self.show_power_density2 = self.plot_options['show_power_density2']
         self.show_axis_labels = self.plot_options['show_axis_labels']
 
         if need_update_fig:
@@ -427,6 +443,22 @@ class TrajectoryPlot_v2(ttk.Frame):
         #rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), np.ones(cut_index)))
         return segments, rgba
 
+    def make_color_seg_P_tot(self, ray: pd.DataFrame):
+        points = np.array([ray['R'], ray['Z']]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        #colors = (0.0, 0.0, 1.0, ray['power_density']/30)
+        
+        p_tot = np.array(ray['P_tot'])
+        cut_index = len(p_tot) #self.plot_options['cut_index']
+        one  = np.ones(cut_index)
+        zero = np.zeros(cut_index)
+        #b = np.subtract(one, p_tot)
+        b = one - np.array(p_tot)
+        a = np.full(cut_index, 0.2)
+        rgba = list(zip(zero, zero, b, a))
+        #rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), np.ones(cut_index)))
+        return segments, rgba
+
     def draw_poloidal_view(self, axis, save_lim= False):
         if self.show_power_density: 
             self.draw_power_density(axis)
@@ -451,7 +483,27 @@ class TrajectoryPlot_v2(ttk.Frame):
             axis.set_ylabel('Z [m]')
 
         axis.autoscale_view()
-               
+
+    def draw_power_density2(self, axis):
+        axis.clear()
+        axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+        cut_index = self.plot_options['cut_index']
+
+        for series in self.get_good_traj():
+            segments, colors = self.make_color_seg_P_tot(series['traj'].iloc[:cut_index])
+            col = collections.LineCollection(segments, colors= colors, linewidth=0.5)
+            axis.add_collection(col, autolim=True)
+
+        if self.plot_options['show_grid']:
+                axis.grid(visible= True)
+
+        if self.plot_options['show_axis_labels']:
+            axis.set_xlabel('R [m]')
+            axis.set_ylabel('Z [m]')
+
+        axis.autoscale_view()
+
+
     def draw_trajctory(self, axis, save_lim= False):
         
         bottom, top = axis.get_ylim()
