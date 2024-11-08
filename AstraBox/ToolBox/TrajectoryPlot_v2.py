@@ -452,9 +452,11 @@ class TrajectoryPlot_v2(ttk.Frame):
         cut_index = len(p_tot) #self.plot_options['cut_index']
         one  = np.ones(cut_index)
         zero = np.zeros(cut_index)
-        #b = np.subtract(one, p_tot)
-        b = one - np.array(p_tot)
-        a = np.full(cut_index, 0.2)
+        #b = one - np.array(p_tot)
+        #a = np.full(cut_index, 0.2)
+        b = one
+        a = (one - np.array(p_tot))/20
+
         rgba = list(zip(zero, zero, b, a))
         #rgba = list(zip(np.zeros(cut_index), np.zeros(cut_index), np.ones(cut_index), np.ones(cut_index)))
         return segments, rgba
