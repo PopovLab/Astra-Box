@@ -21,7 +21,7 @@ class RackFrame(ttk.Frame):
         top = list([f for f in self.app.work_space.folders if f.tag == 'top'])
 
         for i, f in enumerate(top):
-            ListView(self, f, command= self.on_select_item).grid(row=i, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
+            ListView(self, f, grid_index=i, command= self.on_select_item).grid(row=i, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
         n = len(top)
 
@@ -35,11 +35,13 @@ class RackFrame(ttk.Frame):
 
         for f in self.app.work_space.folders:
             if f.tag == 'bottom':
-                TableView(self, f, height= 8, command= self.on_select_item).grid(row=n+3, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
+                TableView(self, f, height= 8, grid_index= n+3, command= self.on_select_item).grid(row=n+3, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
-        for i in range(n+3):
-            self.rowconfigure(i, weight=0)
-
+        for i in range(n):
+            self.rowconfigure(i, weight=1)
+        self.rowconfigure(n+0, weight=0)            
+        self.rowconfigure(n+1, weight=0)
+        self.rowconfigure(n+2, weight=0)
         self.rowconfigure(n+3, weight=1)
         self.columnconfigure(0, weight=1)
 

@@ -6,11 +6,13 @@ import AstraBox.WorkSpace as WorkSpace
 sym1 = '⏵ '
 sym2 = '⏷ '
 class TableView(ttk.Frame):
-    def __init__(self, master, folder= None, height= 5, command= None) -> None:
+    def __init__(self, master, folder= None, height= 5, grid_index= -1,  command= None) -> None:
         super().__init__(master)  
 
         folder.attach(self.folder_handler)
         self.folder = folder   
+        self.grid_index = grid_index
+
         self.model_kind = folder.content_type        
         
         self.reverse_sort = True 
@@ -48,11 +50,13 @@ class TableView(ttk.Frame):
             self.tree.grid_remove()
             self.ysb.grid_remove()
             self.rowconfigure(1, weight=0)
+            self.master.rowconfigure(self.grid_index, weight=0)
         else:
             self.btn.configure(text= sym2 + self.folder.title)
             self.tree.grid(row=1, column=0,  columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W)
             self.ysb.grid(row=1, column=1,  sticky=tk.N + tk.S)
             self.rowconfigure(1, weight=1)
+            self.master.rowconfigure(self.grid_index, weight=1)
         self.visible = not self.visible
 
     def folder_handler(self, event):
