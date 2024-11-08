@@ -3,6 +3,8 @@ import tkinter.ttk as ttk
 import AstraBox.Models.ModelFactory as ModelFactory
 import AstraBox.WorkSpace as WorkSpace
 
+sym1 = '⏵ '
+sym2 = '⏷ '
 class TableView(ttk.Frame):
     def __init__(self, master, folder= None, height= 5, command= None) -> None:
         super().__init__(master)  
@@ -13,8 +15,9 @@ class TableView(ttk.Frame):
         
         self.reverse_sort = True 
         self.on_select_item = command
-        lab = ttk.Label(self, text= self.folder.title)
-        lab.grid(row=0, column=0, sticky=tk.W)
+        self.visible = True
+        self.btn = ttk.Button(self, text= sym2 + self.folder.title, command=self.change_state)
+        self.btn.grid(row=0, column=0, columnspan=2, sticky=tk.E + tk.W)
         self.nodes = {}
         self.tree = ttk.Treeview(self,  selectmode="browse", show="", columns=  ( "#1", "#2"), height= height)
 
@@ -26,18 +29,31 @@ class TableView(ttk.Frame):
     
         self.update_tree()
 
-        ysb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.ysb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         #xsb = ttk.Scrollbar(frame, orient=tk.HORIZONTAL, command=self.tree.xview)
 
-        self.tree.configure(yscroll=ysb.set)
+        self.tree.configure(yscroll=self.ysb.set)
 
         self.tree.grid(row=1, column=0,  columnspan=1, sticky=tk.N + tk.S + tk.E + tk.W)
-        ysb.grid(row=1, column=1, sticky=tk.N + tk.S)
-        #xsb.grid(row=2, column=0, sticky=tk.E + tk.W)
+        self.ysb.grid(row=1, column=1, sticky=tk.N + tk.S)
+
         self.tree.bind("<<TreeviewSelect>>", self.select_node)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)        
+
+    def change_state(self):
+        if self.visible:
+            self.btn.configure(text= sym1 + self.folder.title)
+            self.tree.grid_remove()
+            self.ysb.grid_remove()
+            self.rowconfigure(1, weight=0)
+        else:
+            self.btn.configure(text= sym2 + self.folder.title)
+            self.tree.grid(row=1, column=0,  columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W)
+            self.ysb.grid(row=1, column=1,  sticky=tk.N + tk.S)
+            self.rowconfigure(1, weight=1)
+        self.visible = not self.visible
 
     def folder_handler(self, event):
         print(f'folder {self.model_kind}')
