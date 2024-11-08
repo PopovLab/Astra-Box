@@ -11,8 +11,6 @@ class TableView(ttk.Frame):
         self.folder = folder   
         self.model_kind = folder.content_type        
         
-        #self.schema = WorkSpace.get_shema(model_kind)
-        #WorkSpace.set_binding(model_kind, self)
         self.reverse_sort = True 
         self.on_select_item = command
         lab = ttk.Label(self, text= self.folder.title)
@@ -33,13 +31,13 @@ class TableView(ttk.Frame):
 
         self.tree.configure(yscroll=ysb.set)
 
-        self.tree.grid(row=1, column=0,  columnspan=2, sticky=tk.N + tk.S + tk.E + tk.W)
-        ysb.grid(row=1, column=2, sticky=tk.N + tk.S)
+        self.tree.grid(row=1, column=0,  columnspan=1, sticky=tk.N + tk.S + tk.E + tk.W)
+        ysb.grid(row=1, column=1, sticky=tk.N + tk.S)
         #xsb.grid(row=2, column=0, sticky=tk.E + tk.W)
         self.tree.bind("<<TreeviewSelect>>", self.select_node)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)        
+        self.columnconfigure(0, weight=1)        
 
     def folder_handler(self, event):
         print(f'folder {self.model_kind}')
