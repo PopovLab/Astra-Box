@@ -90,12 +90,9 @@ class ScatterSpectrum(BaseSpectrum):
     def read_scatter(self):
         p = WorkSpace.get_spectrum_dat_file_path(self.source)
         print(p)
-        try:
-            with p.open() as file:
-                return self.read_data(file)
-        except:
-            print(f"Couldn't open {p}")
-            return None
+        with p.open() as file:
+            return self.read_data(file)
+
 
 
     def read_data(self, file):

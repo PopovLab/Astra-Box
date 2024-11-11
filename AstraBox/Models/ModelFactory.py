@@ -61,11 +61,10 @@ def get(model_kind= None, model_name= None):
     content = WorkSpace.folder_content(model_kind)
     if content is None:
         return None
-    try:
-        fi = content[model_name]
-        return load(fi)
-    except:
-        return None
+
+    fi = content[model_name]
+    return load(fi)
+
 
 def get2(model_kind= None, model_name= None):
     folder = WorkSpace.folder(model_kind)
@@ -168,7 +167,7 @@ def make_folders(zip: ZipFile):
 def prepare_task_zip(task:Task, zip_file):
     #zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
     #zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
-    errors = []
+
     with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
         zip.comment = bytes(task.title,'UTF-8')
         make_folders(zip)
@@ -188,10 +187,7 @@ def prepare_task_zip(task:Task, zip_file):
 
 
         equ_model =  get('EquModel', task.equ)
-        if equ_model is None:
-            errors.append(f"EquModel {task.equ} not exists")
-            return errors
-        
+     
         
         pack_model_to_zip(zip, equ_model)
 
@@ -228,6 +224,3 @@ def prepare_task_zip(task:Task, zip_file):
         for key, item in WorkSpace.folder_content('SbrModel').items():
             pack_model_to_zip(zip, load(item))
 
-            
-
-    return errors

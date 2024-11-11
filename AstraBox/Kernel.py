@@ -155,10 +155,11 @@ class AstraWorker(Worker):
     def copy_data(self, task: Task):
         #zip_file = self.run_model.prepare_run_data()
         zip_file= WorkSpace.get_location_path().joinpath('race_data.zip')
-        errors = ModelFactory.prepare_task_zip(task, zip_file)
-        if len(errors)>0:
-            for e in errors:
-                _logger.error(e)
+        try :
+            ModelFactory.prepare_task_zip(task, zip_file)
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            _logger.exception(ex_text)
             _logger.error('запуск не возможен из-за ошибок')
             return True
         WSL.put(zip_file, self.wsl_path)

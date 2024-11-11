@@ -245,7 +245,7 @@ def get_spectrum_dat_file_path(fn):
     if p.exists():
         return p
     else: 
-        return None
+        raise FileNotFoundError(f"{p} was not found")
 
 from typing import Type
 
