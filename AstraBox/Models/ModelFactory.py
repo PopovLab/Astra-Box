@@ -21,7 +21,7 @@ def load(folder_item: WorkSpace.FolderItem):
     model = None
     p= folder_item.path
     if not p.exists():
-        return None
+        raise FileNotFoundError(f"{p} was not found")
     
     match p.suffix:
         case '.exp':
@@ -174,23 +174,20 @@ def prepare_task_zip(task:Task, zip_file):
 
         model_dump_to_zip(zip, model= task, file_name='task.json')
 
-
+        exp_model = None
         folder = WorkSpace.folder('ExpModel')
         for name, folder_item in folder.generator(task.exp):
             exp_model = load(folder_item)
             pack_model_to_zip(zip, exp_model)
-
         #exp_model = get('ExpModel', task.exp)
-        #if exp_model is None:
-        #    errors.append(f"ExpModel {task.exp} not exists")
-        #    return errors
+        if exp_model is None:
+            raise Exception(f"ExpModel {task.exp} not exists")
 
-
-        equ_model =  get('EquModel', task.equ)
-     
-        
+        equ_model = None
+        equ_model = get('EquModel', task.equ)
         pack_model_to_zip(zip, equ_model)
-
+        if equ_model is None:
+            raise Exception(f"ExpModel {task.equ} not exists")
 
         models  = {
             'ExpModel' : exp_model.data,
