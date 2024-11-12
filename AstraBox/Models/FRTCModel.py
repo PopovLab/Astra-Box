@@ -90,6 +90,8 @@ class Options(ParametersSection):
     upl_value: float = Field(default= 0.0, title= 'Upl value', description= "Upl value")   
     fp_solver: int = Field(default= 0, title= 'fp solver', description= "0 default savelyev solver 1 next solver")   
     traj_len_seved : int = Field(default= -1, title= 'traj len saved', description= "-1 full len, 0 - not saved, >0 - saved length ")   
+    max_number_of_traj : int = Field(default= 30000, title= 'max number of traj', description= "maximum number of trajectories")
+    max_size_of_traj : int = Field(default= 3000, title= 'max length of traj', description= "maximum length of trajectories")
 
 class GrillParameters(ParametersSection):
     name: ClassVar[str] = 'grill_parameters'

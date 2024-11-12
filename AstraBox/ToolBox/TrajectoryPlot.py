@@ -14,8 +14,7 @@ class TrajectoryPlotOptionWindows():
         self.master = master
         self.plot_options = plot_options
         self.on_update_options = on_update_options
-  
- 
+
 
     def show(self):
         win = tk.Toplevel(self.master)
