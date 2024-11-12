@@ -2,17 +2,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 
-import AstraBox.Models.RootModel as RootModel
-from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
-from AstraBox.Models.RTModel import RTModel
 from AstraBox.Views.HeaderPanel import HeaderPanel
-import AstraBox.Widgets as Widgets
 from AstraBox.Views.FRTCView import FRTCView
 import AstraBox.Models.ModelFactory as ModelFactory
-import AstraBox.WorkSpace as WorkSpace
 import AstraBox.App as App
-
-
 
 class FRTCPage(ttk.Frame):
     def __init__(self, master, folder_item) -> None:

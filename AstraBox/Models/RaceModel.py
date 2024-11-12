@@ -30,6 +30,7 @@ class RaceModel(RootModel):
         self.race_zip_file = str(path)
         print(self.race_zip_file)
         self.name = path.name
+        self.stem = path.stem
         self.version = 'v1'
         self.sel_task= None
 

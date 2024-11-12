@@ -169,9 +169,10 @@ class TrajectoryTab(TabViewBasic):
             self.traj_view.select_moment(index)
 
     def make_magic(self):
+        '''create albom of poloidal views'''
         if messagebox.askokcancel("Make Magick", "Are you sure?"):
             print('Make Magick')
-            tmp= WorkSpace.temp_folder_location().joinpath(self.traj_model.race_model.name)
+            tmp= WorkSpace.temp_folder_location().joinpath(self.traj_model.race_model.stem)
             if not tmp.exists():
                 print(f"make dir {tmp}")
                 tmp.mkdir()
