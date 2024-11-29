@@ -4,8 +4,15 @@ import subprocess
 import sys
 import asyncio
 import shutil
-from ctypes import windll
+
 import subprocess
+import platform
+
+match platform.system():
+    case 'Windows':
+        from ctypes import windll
+    case 'Darwin':
+        print('Darwin')
 
 def GetConsoleOutputCP():
     'Get Console Output CP '
