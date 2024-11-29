@@ -15,6 +15,9 @@ def get_location_path():
     return _location
 
 def get_ReadMe():
+    if get_location_path() is None:
+        return 'No README file'
+    
     read_me = get_location_path().joinpath('README.md')
     if read_me.exists():
         with read_me.open(mode= "r", encoding='utf-8') as file:
