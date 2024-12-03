@@ -72,11 +72,11 @@ class FRTCBook(ttk.Notebook):
         dc_view = RadialDrivenCurrentView(self, model= model)
         self.add(dc_view, text="Radial DC", underline=0, sticky=tk.NE + tk.SW)
         
-        maxwell_view = MaxwellTabView(self, model= model)
-        self.add(maxwell_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
+        tab_view = MaxwellTabView(self, model= model)
+        self.add(tab_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
 
-        maxwell_view = DiffusionTabView(self, model= model)
-        self.add(maxwell_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
+        tab_view = DiffusionTabView(self, model= model)
+        self.add(tab_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
 
         if hasattr(model, 'frtc_model'):
             frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
