@@ -11,6 +11,7 @@ import AstraBox.Models.ModelFactory as ModelFactory
 from AstraBox.Pages.InfoPanel import InfoPanel
 from AstraBox.Pages.TaskPage import TaskPage
 from AstraBox.RaceTab.DiffusionTabView import DiffusionTabView
+from AstraBox.RaceTab.FDerivativeTabView import FDerivativeTabView
 from AstraBox.RaceTab.MaxwellTabView import MaxwellTabView
 from AstraBox.RaceTab.TrajectoryTabView import TrajectoryTab
 from AstraBox.Views.FRTCView import FRTCView
@@ -73,10 +74,13 @@ class FRTCBook(ttk.Notebook):
         self.add(dc_view, text="Radial DC", underline=0, sticky=tk.NE + tk.SW)
         
         tab_view = MaxwellTabView(self, model= model)
-        self.add(tab_view, text="Maxwell", underline=0, sticky=tk.NE + tk.SW)
+        self.add(tab_view, text="f(v)", underline=0, sticky=tk.NE + tk.SW)
+
+        tab_view = FDerivativeTabView(self, model= model)
+        self.add(tab_view, text="df(v)", underline=0, sticky=tk.NE + tk.SW)
 
         tab_view = DiffusionTabView(self, model= model)
-        self.add(tab_view, text="Diffusion", underline=0, sticky=tk.NE + tk.SW)        
+        self.add(tab_view, text="D(v)", underline=0, sticky=tk.NE + tk.SW)        
 
         if hasattr(model, 'frtc_model'):
             frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
