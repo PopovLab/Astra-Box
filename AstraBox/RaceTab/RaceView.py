@@ -1,4 +1,3 @@
-#from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
@@ -9,12 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
-import AstraBox.WorkSpace as WorkSpace
-import AstraBox.Models.ModelFactory as ModelFactory
-
-from AstraBox.Views.HeaderPanel import HeaderPanel
-from AstraBox.Views.ExtraRaceView import ExtraRaceView
-
 
 from AstraBox.Models.RaceModel import RaceModel
 
@@ -22,22 +15,15 @@ from AstraBox.ToolBox.ComboBox import ComboBox
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
 from AstraBox.ToolBox.TimeSeriesPlot import TimeSeriesPlot
 from AstraBox.ToolBox.RadialDataPlot import RadialDataPlot
-from AstraBox.ToolBox.TrajectoryPlot import TrajectoryPlot
 from AstraBox.ToolBox.DistributionPlot import DistributionPlot
-from AstraBox.ToolBox.SeriesPlot import SeriesPlot
 from AstraBox.ToolBox.RTResultPlot import RTResultPlot
 from AstraBox.ToolBox.DrivenCurrentPlot import DrivenCurrentPlot
-from AstraBox.RaceTab.LHCDRadialPlot import LHCDRadialPlot
-from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
 from AstraBox.ToolBox.ExecTimePlot import ExecTimePlot
 from AstraBox.ToolBox.RadialDCPlot import RadialDCPlot
 
-           
-
-
-
 from statistics import mean 
 from statistics import stdev
+
 class ExecTimeView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
         super().__init__(master, model)  
