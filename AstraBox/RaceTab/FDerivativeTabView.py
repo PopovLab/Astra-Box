@@ -38,7 +38,7 @@ class FDerivativeTabView(TabViewBasic):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = MaxwellPlot(self, distribution, 'Derivative of f', self.start_time)
+            self.plot = MaxwellPlot(self, distribution, 'Derivative of f', self.start_time, уscale_log = False)
             self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
