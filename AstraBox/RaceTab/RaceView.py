@@ -1,3 +1,4 @@
+#from cgitb import enable
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
