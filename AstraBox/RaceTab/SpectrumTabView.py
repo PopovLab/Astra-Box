@@ -61,7 +61,7 @@ class SpectrumTabView(TabViewBasic):
         text +=  f"Freq: {frtc.physical_parameters.freq} "
         text +=  f"nr: {frtc.numerical_parameters.nr} "
         text +=  f"eps: {frtc.numerical_parameters.eps} \n"
-        text +=  f"Zplus: {frtc.grill_parameters.Zminus} "
+        text +=  f"Zplus: {frtc.grill_parameters.Zplus} "
         text +=  f"Zminus: {frtc.grill_parameters.Zminus} "
         text +=  f"ntet: {frtc.grill_parameters.ntet} "
         text +=  f"nnz: {frtc.grill_parameters.nnz}"
