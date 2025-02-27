@@ -71,10 +71,11 @@ class ListView(ttk.Frame):
         self.tree.selection_set(())
 
     def update_tree(self):
-        for i in self.tree.get_children():
-            self.tree.delete(i)
+        items = self.tree.get_children()
+        if items:
+            self.tree.delete(*items)            
+
         self.nodes = {}
-      
 
         self.content = self.folder._content
         if self.content:
