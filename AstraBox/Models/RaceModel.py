@@ -141,28 +141,35 @@ class RaceModel(RootModel):
             zip.comment = bytes(text,'UTF-8')
              #zip.writestr('comment.txt',text)
 
-             
+    def read_csv(self, file_name, names = None):
+        try:
+            with zipfile.ZipFile(self.race_zip_file) as zip:
+                with zip.open(file_name) as file:
+                    return pd.read_csv(file, sep='\\s+', names= names)     
+        except Exception as error:
+            print(error)
+            return None #{ 'X' : [], 'Y': [] }        
 
     def read_exec_time(self, f):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, sep="\s+", names=['X', 'Y'])     
+                    return pd.read_csv(file, sep='\\s+', names=['X', 'Y'])     
         except Exception as error:
             print(error)
             return { 'X' : [], 'Y': [] }
         
     def get_exec_time(self):
         series = {}
-        series['lhcd'] = self.read_exec_time('lhcd/lhcd_time.dat')
-        series['driven current'] = self.read_exec_time('lhcd/drivencurrent_time.dat')
+        series['lhcd'] = self.read_csv('lhcd/lhcd_time.dat', ['X', 'Y'])
+        series['driven current'] = self.read_csv('lhcd/drivencurrent_time.dat', ['X', 'Y'])
         return series
 
     def read_dat(self, fn) -> pd.DataFrame:
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(fn) as file:
-                    return pd.read_csv(file, sep="\s+")           
+                    return pd.read_csv(file, sep='\\s+')           
         except Exception as error:
             print(error)
             #return f'не смог прочитать {f}'
@@ -173,7 +180,7 @@ class RaceModel(RootModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(fn) as file:
-                    return pd.read_csv(file, sep="\s+", header=None)           
+                    return pd.read_csv(file, sep='\\s+', header=None)           
         except Exception as error:
             print(error)
             #return f'не смог прочитать {f}'
@@ -184,7 +191,7 @@ class RaceModel(RootModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, sep="\s+")           
+                    return pd.read_csv(file, sep='\\s+')           
         except Exception as error:
             return str(error)
 
@@ -200,7 +207,7 @@ class RaceModel(RootModel):
         try:
             with zipfile.ZipFile(self.race_zip_file) as zip:
                 with zip.open(f) as file:
-                    return pd.read_csv(file, sep="\s+")     
+                    return pd.read_csv(file, sep='\\s+')     
         except Exception as error:
             return str(error)
      
@@ -225,7 +232,7 @@ class RaceModel(RootModel):
         res = {'Time': time_stamp}
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(fn) as file:
-                res['Data'] = pd.read_csv(file, sep="\s+")
+                res['Data'] = pd.read_csv(file, sep='\\s+')
         return res
         
 
@@ -344,7 +351,7 @@ class RaceModel(RootModel):
                         if series is None:
                             #print(buffer)
                             series = {}
-                            di= pd.read_csv(BytesIO(buffer), sep="\s+").to_dict(orient='index')
+                            di= pd.read_csv(BytesIO(buffer), sep='\\s+').to_dict(orient='index')
                             series = di[0]
                             #print(series['info'])
                             series['traj'] = None
@@ -353,7 +360,7 @@ class RaceModel(RootModel):
                                 series = None
                             buffer = bytearray()
                         else:
-                            series['traj'] = pd.read_csv(BytesIO(buffer), sep="\s+")
+                            series['traj'] = pd.read_csv(BytesIO(buffer), sep='\\s+')
                             traj_series.append(series)
                             series = None
                             buffer = bytearray()
@@ -369,7 +376,7 @@ class RaceModel(RootModel):
         print(time_stamp)
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(f) as file:
-                traj = pd.read_csv(file, sep="\s+")
+                traj = pd.read_csv(file, sep='\\s+')
                 n_traj_list = np.unique(traj['N_traj'])
                 rays = []
                 for nt in n_traj_list:
@@ -383,6 +390,6 @@ class RaceModel(RootModel):
         Icms_path = 'lhcd/out/lcms.dat'
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(Icms_path) as file:
-                lcms = pd.read_csv(file, sep="\s+")
+                lcms = pd.read_csv(file, sep='\\s+')
         return lcms.rename(columns={"R(m)": "R", "Z(m)": "Z"})
 
