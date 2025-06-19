@@ -11,8 +11,10 @@ def renorm_maxwell(maxwell, norm_vt_flag = False, energy_scale = False, diff = F
     X = maxwell['X']
     Y = maxwell['Y']
     vmax = abs(X[0])
-    #print(f'min: {X.min()} max: {X.max()} vmax: {vmax}')
-    #print(type(X))
+    print(f'min: {X.min()} max: {X.max()} vmax: {vmax}')
+    print(f'vmax={vmax}')
+    print(f'lan X={len(X)}')
+    print(f'lan Y={len(Y)}')
     if not norm_vt_flag:
         X = 2*X / vmax
     if energy_scale:

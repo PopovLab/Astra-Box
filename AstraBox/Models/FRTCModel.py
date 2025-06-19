@@ -99,6 +99,9 @@ class GrillParameters(ParametersSection):
     Zplus: float = Field(default= 11, title='Zplus', description='upper grill corner in centimeters', unit='cm')
     Zminus: float = Field(default= -11, title='Zminus', description='lower grill corner in centimeters', unit='cm')
 
+    ZGapPlus: float = Field(default= 1, title='ZGapPlus', description='upper grill gap corner in centimeters', unit='cm')
+    ZGapMinus: float = Field(default= -1, title='ZGapMinus', description='lower grill gap corner in centimeters', unit='cm')
+
     ntet: int = Field(default= 21, title='ntet', description='theta grid number')
     nnz:  int = Field(default= 51, title='nnz', description='iN_phi grid numbe')
 
