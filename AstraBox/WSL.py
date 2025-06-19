@@ -138,7 +138,7 @@ def progress(progress = 0):
     if _progress_callback:
         _progress_callback(progress)
 
-async def progress_run(cmd):
+async def progress_run_old(cmd):
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -146,9 +146,12 @@ async def progress_run(cmd):
 
     while proc.returncode == None:
         data = await proc.stdout.readline()
+        print('readline')
         data = data.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
         line = data.decode('ascii').rstrip()
         if proc.stdout.at_eof(): break
+        if proc.poll() is not None:
+            break
         progress()
         log_info(line)
 
@@ -164,6 +167,38 @@ async def progress_run(cmd):
     lines = stderr.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING).decode('cp866').split("\r\n")
     for line in lines:
         log_error(line)
+
+async def progress_run(cmd):
+    process  = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    # Create tasks to read stdout and stderr streams
+    async def read_stream(stream, prefix=''):
+        """Read lines from a stream and print them"""
+        while True:
+            data = await stream.readline()
+            if not data:
+                break
+            data = data.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
+            line = data.decode('ascii').rstrip()
+            progress()
+            if prefix == 'ERROR':
+                log_error(line)
+            else:
+                log_info(line)
+    
+    # Create tasks for stdout and stderr
+    stdout_task = asyncio.create_task(read_stream(process.stdout))
+    stderr_task = asyncio.create_task(read_stream(process.stderr, 'ERROR'))
+    
+    # Wait for both reading tasks to complete
+    await asyncio.wait([stdout_task, stderr_task])
+    
+    # Wait for the process to finish
+    return_code = await process.wait()
+    return return_code        
 
 _logger = None
 
@@ -186,7 +221,7 @@ def start_exec(wsl_work_folder, command):
     asyncio.run(progress_run(ps_cmd))
 
 
-def exec_command(wsl_work_folder, command):
+def exec_command(wsl_work_folder, command): 
     ps_cmd = f"wsl --cd {wsl_work_folder} -e bash -c '{command}'"
     print(ps_cmd)
     log_info(f'exec: {ps_cmd}')
