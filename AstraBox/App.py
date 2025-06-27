@@ -67,7 +67,7 @@ def get_version(pk_name):
     try:
         with open("pyproject.toml", "rb") as f:
             pyproject = tomllib.load(f)
-        version = pyproject["tool"]["poetry"]["version"]
+        version = pyproject["project"]["version"]
     except Exception as e:
         version = importlib.metadata.version(pk_name)
     return version
