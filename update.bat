@@ -1,1 +1,1 @@
-poetry install
+uv sync
