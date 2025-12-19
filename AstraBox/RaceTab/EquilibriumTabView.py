@@ -11,15 +11,59 @@ from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.ToolBox.MaxwellPlot import MaxwellPlot
+import numpy as np
+from numpy.polynomial import polynomial as P
+
+def polynom(coef):
+    return P.Polynomial(coef)
+
+class MagneticConfiguration():
+    def __init__(self, equilibrium) -> None:
+        self.equilibrium = equilibrium
+        self.delta = polynom(self.equilibrium['PROFILE_APPROX']['cdl']) # delta - shift as a function of "minor radius"
+        self.ell   = polynom(self.equilibrium['PROFILE_APPROX']['cly']) # ellipticity as a function of "minor radius"
+        self.gamma = polynom(self.equilibrium['PROFILE_APPROX']['cgm']) # gamma - triangularity as a function of "minor radius":
+        self.amy   = polynom(self.equilibrium['PROFILE_APPROX']['cmy']) # Polinomial approximation of the amy(r) 
+                                                     #  amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
+
+
+    def magntic_surface(self,xr):
+        #xr=1.d0
+        rm= self.equilibrium['GEOMETRY']['rm']
+        r0= self.equilibrium['GEOMETRY']['r0']
+        z0= self.equilibrium['GEOMETRY']['z0']
+        b_tor= self.equilibrium['FIELDS']['b_tor0']
+        #xdl=fdf(xr,cdl,ncoef,xdlp) #вычисление значения полинома и его производной
+        xdl= self.delta(xr)
+        #xly=fdf(xr,cly,ncoef,xlyp)
+        xly= self.ell(xr)
+        #xgm=fdf(xr,cgm,ncoef,xgmp)
+        xgm= self.gamma(xr)
+        print(f"xr={xr} xdl={xdl} xly={xly} xgm={xgm}")
+        R = []
+        Z = []
+        for i in range(0,100):
+            th= 2*np.pi*i/100
+            cotet=np.cos(th)
+            sitet=np.sin(th)
+            xx= -xdl + xr*cotet - xgm*sitet**2
+            zz= xr*xly*sitet
+            x=(r0+rm*xx)/100
+            z=(z0+rm*zz)/100
+            R.append(x)
+            Z.append(z)
+        return R, Z
 
 class PoloidalPlot(ttk.Frame):
 
     def __init__(self, master, plasma_bound, equilibrium) -> None:
         super().__init__(master)  
+        self.mag_cong = MagneticConfiguration(equilibrium)
         self.plasma_bound = plasma_bound
         self.fig = plt.figure(figsize=(6,6))
         self.axis = self.fig.subplots(1, 1)
         self.fig.suptitle(f"Poloidal view. time={equilibrium['time_stamp']}")
+        self.axis.axis('equal')
         self.axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
         self.init_axis()
         self.draw_all()
@@ -44,7 +88,10 @@ class PoloidalPlot(ttk.Frame):
         pass
              
     def draw_all(self, save_lim= False):
-        pass    
+
+        for i in range(50):
+            R, Z = self.mag_cong.magntic_surface(i/50.0)
+            self.axis.plot(R, Z)
 
 class PoloidalView(tk.Frame):
     def __init__(self, master, race_model: RaceModel, equilibrium: dict) ->None:
