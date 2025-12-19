@@ -3,9 +3,11 @@ import json
 import encodings
 import pathlib 
 import zipfile
+import io
 import numpy as np
 import pandas as pd
 from io import BytesIO
+import f90nml
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Models.PlainTextModel import PlainTextModel
 from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
@@ -294,6 +296,26 @@ class RaceModel(RootModel):
             with zip.open(f) as file:
                 return DataSeries.read_XY_series(file), time_stamp        
     
+    def get_time_stamp(self,f):
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix == '.dat' or p.suffix == '.nml':
+            return float(p.stem)
+        else:
+            return None
+
+    def read_equilibrium(self, f):
+        p = pathlib.Path(f)
+        print(p.suffix)
+        print(p.stem)
+        if p.suffix != '.nml': return
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with io.TextIOWrapper(zip.open(f), encoding="utf-8") as file:
+                return f90nml.read(file)      
+        #with open('test.nml') as nml_file:
+        #    nml = f90nml.read(nml_file)
+        #return nml
 
     def read_distribution(self, f):
         p = pathlib.Path(f)

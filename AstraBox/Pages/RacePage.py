@@ -22,6 +22,7 @@ from AstraBox.Models.RaceModel import RaceModel
 
 from AstraBox.RaceTab.RaceView import TimeSeriesView
 from AstraBox.RaceTab.RaceView import RadialDataView
+from AstraBox.RaceTab.EquilibriumTabView import EquilibriumTabView
 from AstraBox.RaceTab.RaceView import RadialDrivenCurrentView
 from AstraBox.RaceTab.LHCDRadialTabView import LHCDRadialDataView
 from AstraBox.RaceTab.SpectrumView import SpectrumView
@@ -54,6 +55,9 @@ class FRTCBook(ttk.Notebook):
 
         radial_data_view = RadialDataView(self, model= model)
         self.add(radial_data_view, text="Radial Data", underline=0, sticky=tk.NE + tk.SW)
+         
+        equilibrium_view = EquilibriumTabView(self, model= model)
+        self.add(equilibrium_view, text="Equilibrium", underline=0, sticky=tk.NE + tk.SW)
         
         if model.data_files_exists('TRAJECTROY'):
             trajectory_view = TrajectoryTab(self, model= model, folder_name= 'TRAJECTROY')

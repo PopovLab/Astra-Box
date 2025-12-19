@@ -21,7 +21,7 @@ data_folder = {
     'RT_RESULT'    : 'lhcd/rt-result/',
     'DC'           : 'lhcd/driven_current/',
     'lhcd_out'     : 'lhcd/out/',
-    'plasma'       : 'lhcd/plasma/',
+    'EQUILIBRIUM'  : 'lhcd/plasma/',
     'lhcd'         : 'lhcd/'
 }
 
