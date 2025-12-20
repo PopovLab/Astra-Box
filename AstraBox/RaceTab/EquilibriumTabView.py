@@ -27,56 +27,44 @@ class MagneticConfiguration():
                                                      #  amy=(btor/q)*rho*(drho/dr) is a function of "minor radius" r=rh(i).
 
 
-    def magntic_surface(self,xr):
-        #xr=1.d0
-        rm= self.equilibrium['GEOMETRY']['rm']
-        r0= self.equilibrium['GEOMETRY']['r0']
-        z0= self.equilibrium['GEOMETRY']['z0']
-        b_tor= self.equilibrium['FIELDS']['b_tor0']
-        #xdl=fdf(xr,cdl,ncoef,xdlp) #вычисление значения полинома и его производной
-        xdl= self.delta(xr)
+    def magntic_surface(self, xr, theta):
+        rm = self.equilibrium['GEOMETRY']['rm']
+        r0 = self.equilibrium['GEOMETRY']['r0']
+        z0 = self.equilibrium['GEOMETRY']['z0']
+        b_tor = self.equilibrium['FIELDS']['b_tor0']
+        #xdl=fdf(xr,cdl,ncoef,xdlp) 
+        xdl = self.delta(xr)
         #xly=fdf(xr,cly,ncoef,xlyp)
-        xly= self.ell(xr)
+        xly = self.ell(xr)
         #xgm=fdf(xr,cgm,ncoef,xgmp)
-        xgm= self.gamma(xr)
-        print(f"xr={xr} xdl={xdl} xly={xly} xgm={xgm}")
-        R = []
-        Z = []
-        for i in range(0,100):
-            th= 2*np.pi*i/100
-            cotet=np.cos(th)
-            sitet=np.sin(th)
-            xx= -xdl + xr*cotet - xgm*sitet**2
-            zz= xr*xly*sitet
-            x=(r0+rm*xx)/100
-            z=(z0+rm*zz)/100
-            R.append(x)
-            Z.append(z)
+        xgm = self.gamma(xr)
+
+        cotet = np.cos(theta)
+        sitet = np.sin(theta)
+        xx = -xdl + xr*cotet - xgm*sitet**2
+        zz = xr*xly*sitet
+        R = (r0 + rm*xx)/100
+        Z = (z0 + rm*zz)/100
         return R, Z
 
 class PoloidalPlot(ttk.Frame):
 
     def __init__(self, master, plasma_bound, equilibrium) -> None:
         super().__init__(master)  
-        self.mag_cong = MagneticConfiguration(equilibrium)
+        
         self.plasma_bound = plasma_bound
         self.fig = plt.figure(figsize=(6,6))
         self.axis = self.fig.subplots(1, 1)
-        self.fig.suptitle(f"Poloidal view. time={equilibrium['time_stamp']}")
-        self.axis.axis('equal')
-        self.axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
-        self.init_axis()
-        self.draw_all()
-        self.canvas = FigureCanvasTkAgg(self.fig, self)
-        self.canvas.draw()
 
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.get_tk_widget().grid(row=2, column=1,columnspan=2, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
+        self.update_equilibrium(equilibrium)
         #toobar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         #toobar.grid(row=0, column=0, sticky=tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=2, column=0, sticky=tk.N)    
-        lbl = tk.Label(master=self, text='v2')
+        lbl = tk.Label(master=self, text='v3')
         lbl.grid(row=3, column=0, sticky=tk.N) 
         #btn = ImageButton.create(self, 'gear.png', self.show_option_windows)
         #btn.grid(row=4, column=0, sticky=tk.N) 
@@ -84,14 +72,32 @@ class PoloidalPlot(ttk.Frame):
         self.columnconfigure(2, weight=1)
         self.rowconfigure(2, weight=1)
 
-    def init_axis(self):
-        pass
+    def update_equilibrium(self, equilibrium):
+        self.axis.clear()
+        self.mag_cong = MagneticConfiguration(equilibrium)
+        self.init_axis( f"Poloidal view. time={equilibrium['time_stamp']}",
+                equilibrium['GEOMETRY']['r0']/100,
+                equilibrium['GEOMETRY']['z0']/100)
+        self.draw_all()
+        self.canvas.draw()
+
+    def init_axis(self, title, x0, y0):
+        # Настройки графика
+        ax = self.axis
+        ax.set_title(title, fontsize=14)
+        ax.set_xlabel('R (cm)', fontsize=12)
+        ax.set_ylabel('Z (cm)', fontsize=12)
+        ax.grid(True, alpha=0.2)
+        ax.axhline(y=y0, color='k', alpha=0.3)
+        ax.axvline(x=x0, color='k', alpha=0.3)
+        ax.set_aspect('equal')
              
     def draw_all(self, save_lim= False):
-
-        for i in range(50):
-            R, Z = self.mag_cong.magntic_surface(i/50.0)
-            self.axis.plot(R, Z)
+        self.axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])        
+        theta = np.linspace(0, 2*np.pi, 100)
+        for i in range(1,10):
+            R, Z = self.mag_cong.magntic_surface(i/10.0, theta)
+            self.axis.plot(R, Z, linewidth=1, alpha=0.8)
 
 class PoloidalView(tk.Frame):
     def __init__(self, master, race_model: RaceModel, equilibrium: dict) ->None:
@@ -137,8 +143,8 @@ class EquilibriumTabView(TabViewBasic):
                                    length = 250 )
             self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
             
-            self.plot = PoloidalView(self, self.race_model, equilibrium)
-            self.plot.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+            self.poloidal_view = PoloidalView(self, self.race_model, equilibrium)
+            self.poloidal_view.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
             self.columnconfigure(0, weight=1)
             self.rowconfigure(2, weight=1)            
         else:
@@ -160,5 +166,6 @@ class EquilibriumTabView(TabViewBasic):
         index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
         time_stamp = self.get_time_stamp(index)
         equilibrium = self.get_equilibrium(index)
-        print(equilibrium['GEOMETRY'])
-        #self.plot.update(distribution, time_stamp)
+        equilibrium['time_stamp'] = time_stamp
+        #print(equilibrium['GEOMETRY'])
+        self.poloidal_view.plot.update_equilibrium(equilibrium)
