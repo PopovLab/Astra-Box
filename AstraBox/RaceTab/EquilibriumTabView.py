@@ -6,6 +6,7 @@ import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from AstraBox.Models.TimestampFilesManager import TimestampFilesManager
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
@@ -49,7 +50,7 @@ class MagneticConfiguration():
 
 class PoloidalPlot(ttk.Frame):
 
-    def __init__(self, master, plasma_bound, equilibrium) -> None:
+    def __init__(self, master, plasma_bound) -> None:
         super().__init__(master)  
         
         self.plasma_bound = plasma_bound
@@ -58,7 +59,7 @@ class PoloidalPlot(ttk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.get_tk_widget().grid(row=2, column=1,columnspan=2, rowspan= 3, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.update_equilibrium(equilibrium)
+        #self.update_equilibrium(equilibrium)
         #toobar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         #toobar.grid(row=0, column=0, sticky=tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
@@ -100,19 +101,26 @@ class PoloidalPlot(ttk.Frame):
             self.axis.plot(R, Z, linewidth=1, alpha=0.8)
 
 class PoloidalView(tk.Frame):
-    def __init__(self, master, race_model: RaceModel, equilibrium: dict) ->None:
+    def __init__(self, master, race_model: RaceModel, equilibrium_manager: TimestampFilesManager) ->None:
         super().__init__(master)  
         self.race_model = race_model
-        self.equilibrium = equilibrium
+        self.equilibrium_manager = equilibrium_manager
 
         plasma_bound = self.race_model.read_plasma_bound()
 
-        self.plot = PoloidalPlot(self, plasma_bound, equilibrium)
+        self.plot = PoloidalPlot(self, plasma_bound)
         self.plot.grid(row=0, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
-
+        start_time, finish_time  =  self.equilibrium_manager.get_timestamp_range()
+        self.update_time(start_time)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)    
 
+    def update_time(self, time_stamp: float):
+        equilibrium = self.equilibrium_manager.read_nml_file(time_stamp)
+        equilibrium['time_stamp'] = time_stamp
+        a= equilibrium['PROFILE_APPROX']
+        print(a['CDL'][0], a['CLY'][0], a['CGM'][0])
+        self.plot.update_equilibrium(equilibrium)
 
 class EquilibriumTabView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
@@ -120,52 +128,36 @@ class EquilibriumTabView(TabViewBasic):
 
 
     def init_ui(self): 
-        self.equilibrium_list = self.race_model.get_file_list('EQUILIBRIUM')
-        n = len(self.equilibrium_list)
-        if n>0: 
-            self.start_time  =  self.get_time_stamp(0)
-            self.finish_time  = self.get_time_stamp(n-1)
-            self.n = n
-            equilibrium = self.get_equilibrium(0)
-            print(equilibrium['GEOMETRY'])
-            equilibrium['time_stamp'] = self.start_time
-            self.time_var = tk.DoubleVar(master = self, value=self.start_time)
-            self.time_var.trace_add('write', self.update_time_var)
-
-            self.time_slider = tk.Scale(master=  self, 
-                                   variable = self.time_var,
-                                   orient = tk.HORIZONTAL,
-                                   label='Time scale',
-                                   tickinterval= (self.finish_time-self.start_time)/7,
-                                   from_= self.start_time,
-                                   to= self.finish_time, 
-                                   resolution= (self.finish_time-self.start_time)/n, 
-                                   length = 250 )
-            self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-            
-            self.poloidal_view = PoloidalView(self, self.race_model, equilibrium)
-            self.poloidal_view.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
-            self.columnconfigure(0, weight=1)
-            self.rowconfigure(2, weight=1)            
-        else:
+        equilibrium_manager = self.race_model.create_TimestampFilesManager('EQUILIBRIUM')
+        if equilibrium_manager.count_files() == 0:
             label = tk.Label(master=self, text='Нет данных')
-            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)            
+            label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)     
+            return
 
-    def get_equilibrium(self, index) -> dict:
-        file = self.equilibrium_list[index]
-        print(f'{file} {index}')
-        return self.race_model.read_equilibrium(file)
-    
-    def get_time_stamp(self, index) -> float | None:
-        file = self.equilibrium_list[index]
-        print(f'{file} {index}')
-        return self.race_model.get_time_stamp(file)
-
+        start_time, finish_time  =  equilibrium_manager.get_timestamp_range()
+        self.n = equilibrium_manager.count_files()
+        equilibrium = equilibrium_manager.read_nml_file(start_time)
+        print(equilibrium['GEOMETRY'])
+        equilibrium['time_stamp'] = start_time
+        self.time_var = tk.DoubleVar(master= self, value= start_time)
+        self.time_var.trace_add('write', self.update_time_var)
+        step = (finish_time-start_time)/self.n
+        self.time_slider = tk.Scale(master=  self, 
+                                variable = self.time_var,
+                                orient = tk.HORIZONTAL,
+                                label='Time scale',
+                                tickinterval= (finish_time-start_time)/7,
+                                from_= start_time,
+                                to= finish_time, 
+                                resolution= step, 
+                                length = 250 )
+        self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+        
+        self.poloidal_view = PoloidalView(self, self.race_model, equilibrium_manager)
+        self.poloidal_view.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(2, weight=1)            
 
     def update_time_var(self, var, indx, mode):
-        index = int((self.n-1) * (self.time_var.get()-self.start_time) / (self.finish_time-self.start_time))
-        time_stamp = self.get_time_stamp(index)
-        equilibrium = self.get_equilibrium(index)
-        equilibrium['time_stamp'] = time_stamp
-        #print(equilibrium['GEOMETRY'])
-        self.poloidal_view.plot.update_equilibrium(equilibrium)
+        self.poloidal_view.update_time(self.time_var.get())
+

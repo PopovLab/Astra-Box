@@ -2,6 +2,7 @@ import os
 import json
 import encodings
 import pathlib 
+from pathlib import Path
 import zipfile
 import io
 import numpy as np
@@ -11,6 +12,7 @@ import f90nml
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Models.PlainTextModel import PlainTextModel
 from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
+from AstraBox.Models.TimestampFilesManager import TimestampFilesManager
 from AstraBox.Task import Task, TaskList
 from AstraBox.Models.RootModel import RootModel
 import AstraBox.Models.RadialData as RadialData
@@ -26,7 +28,7 @@ def float_try(str):
 
 class RaceModel(RootModel):
 
-    def __init__(self, path = None) -> None:
+    def __init__(self, path: Path) -> None:
         super().__init__('default_name')
         self._path = path
         self.race_zip_file = str(path)
@@ -268,6 +270,10 @@ class RaceModel(RootModel):
         print(p.stem)
         if p.suffix != '.bin': return
 
+    def create_TimestampFilesManager(self, folder_name):
+        folder = self.task_suffix(Astra.data_folder[folder_name])
+        return TimestampFilesManager(self.race_zip_file, folder)
+    
     def get_file_list(self, folder_name):
         folder = self.task_suffix(Astra.data_folder[folder_name])
         length = len(folder)
