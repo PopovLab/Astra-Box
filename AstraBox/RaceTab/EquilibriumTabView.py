@@ -101,10 +101,10 @@ class PoloidalPlot(ttk.Frame):
             self.axis.plot(R, Z, linewidth=1, alpha=0.8)
 
 class PoloidalView(tk.Frame):
-    def __init__(self, master, race_model: RaceModel, equilibrium_manager: TimestampFilesManager) ->None:
+    def __init__(self, master, race_model: RaceModel, ) ->None:
         super().__init__(master)  
         self.race_model = race_model
-        self.equilibrium_manager = equilibrium_manager
+        self.equilibrium_manager = self.race_model.equilibrium_files_manager
 
         plasma_bound = self.race_model.read_plasma_bound()
 
@@ -128,7 +128,7 @@ class EquilibriumTabView(TabViewBasic):
 
 
     def init_ui(self): 
-        equilibrium_manager = self.race_model.create_TimestampFilesManager('EQUILIBRIUM')
+        equilibrium_manager = self.race_model.equilibrium_files_manager
         if equilibrium_manager.count_files() == 0:
             label = tk.Label(master=self, text='Нет данных')
             label.grid(row=0, column=1, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)     
@@ -153,7 +153,7 @@ class EquilibriumTabView(TabViewBasic):
                                 length = 250 )
         self.time_slider.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
         
-        self.poloidal_view = PoloidalView(self, self.race_model, equilibrium_manager)
+        self.poloidal_view = PoloidalView(self, self.race_model)
         self.poloidal_view.grid(row=2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)            

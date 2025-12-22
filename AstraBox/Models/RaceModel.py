@@ -37,6 +37,7 @@ class RaceModel(RootModel):
         self.stem = path.stem
         self.version = 'v1'
         self.sel_task= None
+        self._equilibrium_files_manager = None
 
     @classmethod
     def load(cls, path):
@@ -270,9 +271,13 @@ class RaceModel(RootModel):
         print(p.stem)
         if p.suffix != '.bin': return
 
-    def create_TimestampFilesManager(self, folder_name):
-        folder = self.task_suffix(Astra.data_folder[folder_name])
-        return TimestampFilesManager(self.race_zip_file, folder)
+    @property
+    def equilibrium_files_manager(self):
+        """Get the equilibrium files manager."""
+        if self._equilibrium_files_manager is None:
+            folder = self.task_suffix(Astra.data_folder['EQUILIBRIUM'])
+            self._equilibrium_files_manager= TimestampFilesManager(self.race_zip_file, folder)
+        return self._equilibrium_files_manager
     
     def get_file_list(self, folder_name):
         folder = self.task_suffix(Astra.data_folder[folder_name])
