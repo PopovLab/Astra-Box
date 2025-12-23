@@ -1,12 +1,15 @@
+import time
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
 import tkinter.messagebox as messagebox
+import matplotlib
 import pandas as pd
-from matplotlib import cm
+from matplotlib import cm, collections
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox.Models.TimestampFilesManager import TimestampFilesManager
+from AstraBox.Models.TrajectoryModel import TrajectoryModel
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
@@ -109,9 +112,14 @@ class PoloidalView(tk.Frame):
         plasma_bound = self.race_model.read_plasma_bound()
 
         self.plot = PoloidalPlot(self, plasma_bound)
-        self.plot.grid(row=0, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+        self.plot.grid(row=0, rowspan= 2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
+        btn = ttk.Button(self, text= "show pos trajectory", style = 'Toolbutton', command=self.show_pos_traj)
+        btn.grid(row=0, column=1, pady=4, padx=8)
+        btn = ttk.Button(self, text= "show neg trajectory", style = 'Toolbutton', command=self.show_neg_traj)
+        btn.grid(row=1, column=1, pady=4, padx=8)
         start_time, finish_time  =  self.equilibrium_manager.get_timestamp_range()
         self.update_time(start_time)
+
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)    
 
@@ -121,6 +129,70 @@ class PoloidalView(tk.Frame):
         a= equilibrium['PROFILE_APPROX']
         print(a['CDL'][0], a['CLY'][0], a['CGM'][0])
         self.plot.update_equilibrium(equilibrium)
+    
+    def show_pos_traj(self):    
+        print('show_traj')    
+        folder_name= 'TRAJ_POS'
+        self.traj_model = TrajectoryModel(self.race_model, folder_name)
+        print(self.traj_model.num_traj)
+        if self.traj_model.num_traj>0: 
+            self.traj_model.select_series(0)
+            self.traj_model.update_theta_interval()            
+            self.draw_trajctory(self.plot.axis)
+            self.plot.canvas.draw()
+
+    def show_neg_traj(self):    
+        print('show_traj')      
+        folder_name= 'TRAJ_NEG'     
+        start = time.perf_counter()
+        self.traj_model = TrajectoryModel(self.race_model, folder_name)
+        print(f'1. create traj_model: {(time.perf_counter() - start):.6f} сек')
+        print(self.traj_model.num_traj)
+        if self.traj_model.num_traj>0: 
+            self.traj_model.select_series(0)
+            print(f'2. select_series  {(time.perf_counter() - start):.6f} сек')
+            self.traj_model.update_theta_interval()
+            print(f'3. update_theta_interval {(time.perf_counter() - start):.6f} сек')
+            self.draw_trajctory(self.plot.axis)
+            print(f'4. draw_trajctory {(time.perf_counter() - start):.6f} сек')
+            self.plot.canvas.draw()
+
+    def get_good_traj(self):
+        return ( series for series in self.traj_model.traj_series 
+                if not series['traj'] is None )
+
+    def divider(self, ray: pd.DataFrame):
+        curve = np.column_stack([ray['R'], ray['Z']])
+        return curve
+            
+    def theta_color(self, theta):
+        if self.traj_model.max_theta>self.traj_model.min_theta:
+            t = (theta-self.traj_model.min_theta)/(self.traj_model.max_theta-self.traj_model.min_theta)
+            return self.colormaps(t)
+        else:
+            return matplotlib.colors.to_rgba('#0000F0',0.1)
+            
+    def draw_trajctory(self, axis, save_lim= False):
+        self.colormaps = matplotlib.colormaps['nipy_spectral'] # plasma, tab20, gist_rainbow, rainbow
+        #bottom, top = axis.get_ylim()
+        #left, right = axis.get_xlim()        
+
+        #axis.clear()
+        #axis.plot(self.plasma_bound['R'], self.plasma_bound['Z'])
+
+        cut_index = -1 #self.plot_options['cut_index']
+        segs = []
+        segs_colors = []
+        for series in self.get_good_traj():
+            curve = self.divider(series['traj'])
+            segs.append(curve)
+            segs_colors.append(self.theta_color(series['theta']))
+
+        col = collections.LineCollection(segs, colors=segs_colors, alpha=0.5, linewidth=0.5)
+        axis.add_collection(col, autolim=True)
+        
+
+ 
 
 class EquilibriumTabView(TabViewBasic):
     def __init__(self, master, model: RaceModel) -> None:
