@@ -7,14 +7,14 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
 from AstraBox import UIElement, WorkSpace
-from AstraBox.Models.Spectrum import BaseSpectrum, Spectrum1D
+from AstraBox.Models.Spectrum import BaseSpectrum, GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
 from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D
 from AstraBox.ToolBox.SpectrumPlot import Plot2DArray
 from AstraBox.ToolBox.SpectrumPlot import SpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot2D3D
-
+from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
 import AstraBox.Widgets as Widgets
 
 
@@ -62,7 +62,7 @@ class GaussianSpectrumView(tk.LabelFrame):
 
 
 class FileSourcePanel(tk.Frame):
-    def __init__(self, master, spectrum:Spectrum1D , on_select_source = None) -> None:
+    def __init__(self, master, spectrum:GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum , on_select_source = None) -> None:
         super().__init__(master)
         self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
         print(self.spectrum_folder)
@@ -127,14 +127,14 @@ class Spectrum1DView(tk.LabelFrame):
             self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
 
 class Spectrum2DView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
+    def __init__(self, master, model:SpectrumModel ) -> None:
         super().__init__(master, text='Spectrum 2D')        
-
+        self.spectrum_data = None
         self.model = model
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_set_file_name)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
         self.options_box = OptionsPanel(self, self.model.spectrum)
@@ -146,15 +146,15 @@ class Spectrum2DView(tk.LabelFrame):
         self.make_plot()
         self.rowconfigure(2, weight=1)        
 
-    def on_load_file(self, filename):
+    def on_set_file_name(self, filename):
         print(filename)
         self.model.spectrum.source = filename
         self.make_plot()        
 
     def make_plot(self):
         try:
-            spectrum_data = self.model.spectrum.get_spectrum_data()
-            self.spectrum_plot = Plot2DArray(self, spectrum_data)
+            self.spectrum_data = self.model.spectrum.get_spectrum_data()
+            self.spectrum_plot = Plot2DArray(self, self.spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
