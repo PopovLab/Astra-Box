@@ -125,8 +125,8 @@ class ScatterSpectrum(BaseSpectrum):
         else:
             p = WorkSpace.get_spectrum_dat_file_path(self.source)
         try:
-            spectrum_data = power_normalization(self.read_scatter(p))
-            #self.spectrum_normalization()   
+            #spectrum_data = power_normalization(self.read_scatter(p))
+            spectrum_data = self.read_scatter(p)
             if filename:  
                 self.source = filename 
         except Exception as e :

@@ -23,9 +23,6 @@ class SpectrumPage(ttk.Frame):
         self.hp = HeaderPanel(self, self.header_content)
         self.hp.grid(row=0, column=0, columnspan=5, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
 
-        self.columnconfigure(0, weight=0)        
-        self.columnconfigure(1, weight=1)   
-
         self.label = ttk.Label(self,  text='Name:')
         self.label.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)
         self.var_name = tk.StringVar(master= self, value=self.model.name)
@@ -37,7 +34,6 @@ class SpectrumPage(ttk.Frame):
         self.comment_text = tk.Text(self, height=3,  wrap="none")
         self.comment_text.grid(row=2, column=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
         self.comment_text.insert(tk.END, self.model.comment)
-
 
         match self.model.spectrum.kind:
             case 'gauss_spectrum': 
@@ -52,8 +48,11 @@ class SpectrumPage(ttk.Frame):
                 self.view = tk.Frame(self)
         
         self.view.grid(row=3, column=0,columnspan=3, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        
-                                    
+
+        self.columnconfigure(0, weight=0)        
+        self.columnconfigure(1, weight=1)         
+        self.rowconfigure(3, weight=1)    
+
     def update_model(self):
         self.model.name = self.var_name.get()
         self.model.comment = self.comment_text.get("1.0","end-1c")

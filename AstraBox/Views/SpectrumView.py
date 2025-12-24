@@ -189,60 +189,49 @@ class ScatterSpectrumView(tk.LabelFrame):
         super().__init__(master, text='Scatter Spectrum')        
         
         self.model = model
-        self.spectrum_data = None
+        spectrum_data = self.model.spectrum.get_spectrum_data()
+        self.numper_points = tk.IntVar(self, value=len(spectrum_data['Amp'])) 
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
+        level_panel = self.make_level_panel()
+        level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.N)  
+
+        if spectrum_data:
+            self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
+            self.spectrum_plot.grid(row=2, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
+
         self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
-        self.make_plot()
-
-    def on_load_file(self, filepath):
-        print(filepath)
-        self.model.spectrum.source = filepath
-        self.make_plot(filepath)
-            
-
-    def make_plot(self, filename= None):
-        if filename:
-            self.model.spectrum.source = filename
-        return self.make_scatter_plot3D()
-
-    def make_scatter_plot3D(self):
-
-        try:
-            self.spectrum_data = self.model.spectrum.get_spectrum_data()
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            print(ex_text)
-            label = ttk.Label(self, text= ex_text, width=20)
-            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-            return False
-        else:
-            self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        self.rowconfigure(2, weight=1)    
+ 
+    def on_load_file(self, filename):
+        print(filename)
+        spectrum_data = self.model.spectrum.get_spectrum_data(filename)
+        if spectrum_data:
+            self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
+            self.spectrum_plot.grid(row=2, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
             return True
+        else:
+            return False
 
-    def make_radio_selector(self):
-        frame = ttk.Frame(self, relief=tk.FLAT)
-        # border=border, borderwidth, class_, cursor, height, name, padding, relief, style, takefocus, width)
-        padx = 10
-        pady = 5
-        btn2 = ttk.Radiobutton(frame, text='3D', value='3D', width=5, 
-                                #command= self.select_View3D,
-                                style= 'Toolbutton')
-        btn2.pack(side=tk.RIGHT, padx=padx, pady=pady)
+    def make_level_panel(self):
+        panel = tk.Frame(self)
+        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
+        self.level_var = tk.DoubleVar(self, value=0.0) 
+        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Save file', command= self.save_file).pack(side=tk.LEFT, padx=6, pady=6)
+        return panel
+    
+    def update_level(self):
+        cut_level = self.level_var.get()
+        print(cut_level)
+        np = self.spectrum_plot.update_level(cut_level)
+        self.numper_points.set(np)
 
-        btn1 = ttk.Radiobutton(frame, text='2D',  value='2D', width=5, 
-                                #command= self.select_View2D,
-                                style= 'Toolbutton')
-        btn1.pack(side=tk.RIGHT, padx=padx, pady=pady)
-        return frame
-
-    def select_View2D(self):
-        self.spectrum_plot = ScatterPlot2D3D(self, self.spectrum_data)
-        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-
-    def select_View3D(self):
-        self.spectrum_plot = ScatterPlot3D(self, self.spectrum_data)
-        self.spectrum_plot.grid(row=1, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)           
+    def save_file(self):
+        cut_level = self.level_var.get()
+        print(cut_level)
+        self.spectrum_plot.save_file(cut_level)

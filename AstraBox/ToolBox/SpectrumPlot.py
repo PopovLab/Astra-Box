@@ -151,7 +151,7 @@ class ScatterPlot2D3D(ttk.Frame):
         super().__init__(master)  
         spectrum = sort_spectrum(spectr)
         self.sorted_spectrum = spectrum
-        self.numper_points = tk.IntVar(self, value=len(spectrum['Amp'])) 
+
         self.z_min, self.z_max = MinMax(spectrum['Ntor'])
         self.y_min, self.y_max = MinMax(spectrum['Npol'])        
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
@@ -180,26 +180,12 @@ class ScatterPlot2D3D(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)       
-        level_panel = self.make_level_panel()
-        level_panel.grid(row=2, column=0, columnspan=2, sticky=tk.N)           
+        
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1) 
 
-    def make_level_panel(self):
-        panel = tk.Frame(self)
-        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
-        self.level_var = tk.DoubleVar(self, value=0.0) 
-        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
-        tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
-        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Save file', command= self.save_file).pack(side=tk.LEFT, padx=6, pady=6)
-        return panel
-        
-    def save_file(self):
-        self.cut_level = self.level_var.get()
-        print(self.level_var.get())
-        fs = filter_spectrum(self.sorted_spectrum , self.cut_level)
+    def save_file(self, cut_level:float):
+        fs = filter_spectrum(self.sorted_spectrum, cut_level)
         file_object = filedialog.asksaveasfile(
             mode='w', # 'w' для записи, 'wb' для бинарного
             defaultextension=".dat", # Расширение по умолчанию
@@ -212,15 +198,13 @@ class ScatterPlot2D3D(ttk.Frame):
         else:
             print("Сохранение отменено")
 
-    def update_level(self):
-        self.cut_level = self.level_var.get()
-        print(self.level_var.get())
-        fs = filter_spectrum(self.sorted_spectrum , self.cut_level)
+    def update_level(self, cut_level:float):
+        fs = filter_spectrum(self.sorted_spectrum , cut_level)
         new_offsets = np.vstack((fs['Ntor'], fs['Npol'])).T
         self.scatter.set_offsets(new_offsets)
         self.scatter.set_array(fs['Amp'])
-        self.numper_points.set(len(fs['Ntor']))
         self.canvas.draw()
+        return len(fs['Ntor'])
 
     def destroy(self):
         print("ScatterPlot3D destroy")
@@ -258,7 +242,6 @@ class ScatterPlot3D(ttk.Frame):
   
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1) 
-
 
 
     def destroy(self):
