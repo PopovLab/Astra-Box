@@ -1,6 +1,7 @@
 from math import fsum
 import os
-import pathlib 
+import pathlib
+from tkinter import messagebox 
 import numpy as np
 from typing import Literal
 from typing_extensions import Annotated
@@ -129,11 +130,21 @@ class Spectrum2D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
-    def get_spectrum_data(self):        
-        p = WorkSpace.get_spectrum_dat_file_path(self.source)
-        spectrum_data = self.read_spcp2D(p)
-        #self.spectrum_normalization()     
-        return spectrum_data    
+    def get_spectrum_data(self, filename= None) ->dict | None:        
+        if filename:
+            p = WorkSpace.get_spectrum_dat_file_path(filename)
+        else:
+            p = WorkSpace.get_spectrum_dat_file_path(self.source)
+        try:
+            spectrum_data = self.read_spcp2D(p)
+            #self.spectrum_normalization()   
+            if filename:  
+                self.source = filename 
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
+            spectrum_data = None
+        return spectrum_data 
     
     def read_spcp2D(self, file_path):
         print(file_path)

@@ -86,9 +86,9 @@ class FileSourcePanel(tk.Frame):
         fp = Path(filename)
         if fp.is_relative_to(self.spectrum_folder):
             filename = fp.name
-        self.path_var.set(filename)
         if self.on_select_source:
-            self.on_select_source(filename)
+            if self.on_select_source(filename):
+                self.path_var.set(filename)
 
 
 class Spectrum1DView(tk.LabelFrame):
@@ -145,7 +145,7 @@ class Spectrum2DView(tk.LabelFrame):
         level_pabel= self.make_level_panel()
         level_pabel.grid(row=2, column=0, sticky=tk.W)
 
-        spectrum_data = self.load_spectrum_data()
+        spectrum_data = self.model.spectrum.get_spectrum_data()
         self.numper_points.set(spectrum_data['Nz'].size)
         if spectrum_data:
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
@@ -174,25 +174,15 @@ class Spectrum2DView(tk.LabelFrame):
     def export_to_file(self):
         self.spectrum_plot.export_to_file(self.level_var.get())
 
-    def on_set_file_name(self, filename):
-        spectrum_data = self.load_spectrum_data(filename)
+    def on_set_file_name(self, filename:str) -> bool:
+        spectrum_data = self.model.spectrum.get_spectrum_data(filename)
         if spectrum_data:
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            return True
+        else:
+            return False
 
-    def load_spectrum_data(self, filename= None) ->dict | None:
-        if filename:
-            old_filename = filename
-            self.model.spectrum.source = filename       
-        try:
-            spectrum_data = self.model.spectrum.get_spectrum_data()
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
-            if filename:
-                self.model.spectrum.source = old_filename 
-            spectrum_data = None
-        return spectrum_data
         
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
@@ -203,8 +193,6 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        radio_selector = self.make_radio_selector()
-        radio_selector.grid(row=0, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         self.columnconfigure(0, weight=1)        
         #self.rowconfigure(0, weight=1)    
         self.make_plot()
@@ -241,12 +229,12 @@ class ScatterSpectrumView(tk.LabelFrame):
         padx = 10
         pady = 5
         btn2 = ttk.Radiobutton(frame, text='3D', value='3D', width=5, 
-                                command= self.select_View3D,
+                                #command= self.select_View3D,
                                 style= 'Toolbutton')
         btn2.pack(side=tk.RIGHT, padx=padx, pady=pady)
 
         btn1 = ttk.Radiobutton(frame, text='2D',  value='2D', width=5, 
-                                command= self.select_View2D,
+                                #command= self.select_View2D,
                                 style= 'Toolbutton')
         btn1.pack(side=tk.RIGHT, padx=padx, pady=pady)
         return frame
