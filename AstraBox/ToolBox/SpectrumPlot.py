@@ -172,7 +172,7 @@ class ScatterPlot2D3D(ttk.Frame):
 
         ax_3D.set_xlabel('Ntor')
         ax_3D.set_ylabel('Npol')
-        ax_3D.set_zlabel('Px')
+        ax_3D.set_zlabel('Px') # type: ignore
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
