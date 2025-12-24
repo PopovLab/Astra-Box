@@ -154,7 +154,7 @@ class Spectrum2DView(tk.LabelFrame):
             label = ttk.Label(self, text= "Ошибка загрузки спектра", width=20)
             label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
         self.columnconfigure(0, weight=1)        
-        self.rowconfigure(2, weight=1)        
+        self.rowconfigure(3, weight=1)        
 
     def make_level_panel(self):
         panel = tk.Frame(self)
