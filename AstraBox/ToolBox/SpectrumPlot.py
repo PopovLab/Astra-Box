@@ -494,11 +494,11 @@ class SpectrumChart(ttk.Frame):
                     
                     match self.spectrum_view.get():
                         case 'spectrum':
-                            self.ax.plot(s['Ntor'], s['Amp'], marker=marker)
+                            self.ax.plot(s['Ntor'], s['Amp'], marker= marker)
                         case 'cumsum':
-                            self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), marker=marker)
+                            self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), marker= marker)
                         case 'integral':
-                            self.ax.plot(s['Ntor'], s['trapz'], marker=marker), 
+                            self.ax.plot(s['Ntor'], s['trapz'], marker= marker)
                         
         self.canvas.draw()
 
