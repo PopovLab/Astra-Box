@@ -1,6 +1,7 @@
 import os 
 from pathlib import Path
 import tkinter as tk
+from tkinter import messagebox
 import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 from matplotlib import cm
@@ -141,26 +142,40 @@ class Spectrum2DView(tk.LabelFrame):
         self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
         #btn = ttk.Button(self, text= 'Generate', command=self.generate)
         #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
-        self.columnconfigure(0, weight=1)        
+
         #self.rowconfigure(0, weight=1)    
-        self.make_plot()
+        #self.make_plot()
+        self.spectrum_data = self.load_spectrum_data()
+        if self.spectrum_data:
+            self.spectrum_plot = Plot2DArray(self, self.spectrum_data)
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        else:
+            label = ttk.Label(self, text= "Ошибка загрузки спектра", width=20)
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
+        self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)        
 
     def on_set_file_name(self, filename):
         print(filename)
-        self.model.spectrum.source = filename
-        self.make_plot()        
-
-    def make_plot(self):
-        try:
-            self.spectrum_data = self.model.spectrum.get_spectrum_data()
+        
+        self.spectrum_data = self.load_spectrum_data(filename)
+        if self.spectrum_data:
             self.spectrum_plot = Plot2DArray(self, self.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+
+    def load_spectrum_data(self, filename= None):
+        if filename:
+            old_filename = filename
+            self.model.spectrum.source = filename       
+        try:
+            spectrum_data = self.model.spectrum.get_spectrum_data()
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            label = ttk.Label(self, text= ex_text, width=20)
-            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
-
+            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
+            if filename:
+                self.model.spectrum.source = old_filename 
+            spectrum_data = None
+        return spectrum_data
         
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model=None) -> None:
