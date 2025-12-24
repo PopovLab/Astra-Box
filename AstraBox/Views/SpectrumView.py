@@ -195,7 +195,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
         level_panel = self.make_level_panel()
-        level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.N)  
+        level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.W)  
 
         if spectrum_data:
             self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
