@@ -88,13 +88,10 @@ class ScatterSpectrum(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")   
 
-    def read_scatter(self):
-        p = WorkSpace.get_spectrum_dat_file_path(self.source)
+    def read_scatter(self, p):
         print(p)
         with p.open() as file:
             return self.read_data(file)
-
-
 
     def read_data(self, file):
         print('read_data')
@@ -119,8 +116,25 @@ class ScatterSpectrum(BaseSpectrum):
         return data
     
     
-    def get_spectrum_data(self):
-        return power_normalization(self.read_scatter())
+    #def get_spectrum_data(self):
+    #    return power_normalization(self.read_scatter())
+
+    def get_spectrum_data(self, filename= None) ->dict | None:        
+        if filename:
+            p = WorkSpace.get_spectrum_dat_file_path(filename)
+        else:
+            p = WorkSpace.get_spectrum_dat_file_path(self.source)
+        try:
+            spectrum_data = power_normalization(self.read_scatter(p))
+            #self.spectrum_normalization()   
+            if filename:  
+                self.source = filename 
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
+            spectrum_data = None
+        return spectrum_data 
+
 
 class Spectrum2D(BaseSpectrum):
     kind: Literal['spectrum_2D']
