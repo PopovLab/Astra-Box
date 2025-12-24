@@ -1,7 +1,9 @@
 from enum import auto
 import os
+from pathlib import Path
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import filedialog 
 import numpy as np
 from matplotlib import cm
 import pandas as pd
@@ -119,6 +121,15 @@ class ScatterPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()   
 
+def filter_spectrum(s, level):
+    tuple_list = [(t, p, a) for t, p, a in zip(s['Ntor'], s['Npol'], s['Amp'])]
+    sort_list = list(filter(lambda x: x[2]> level, tuple_list))
+    out = {}
+    out['Ntor'] = [x[0] for x in sort_list]
+    out['Npol'] = [x[1] for x in sort_list]
+    out['Amp']  = [x[2] for x in sort_list]
+    return out
+
 def sort_spectrum(s):
     tuple_list = [(t, p, a) for t, p, a in zip(s['Ntor'], s['Npol'], s['Amp'])]
     sort_list = sorted(tuple_list, key=lambda x: x[2])
@@ -128,10 +139,13 @@ def sort_spectrum(s):
     out['Amp']  = [x[2] for x in sort_list]
     return out
 
+
 class ScatterPlot2D3D(ttk.Frame):
     def __init__(self, master, spectr) -> None:
         super().__init__(master)  
         spectrum = sort_spectrum(spectr)
+        self.sorted_spectrum = spectrum
+        self.numper_points = tk.IntVar(self, value=len(spectrum['Amp'])) 
         self.z_min, self.z_max = MinMax(spectrum['Ntor'])
         self.y_min, self.y_max = MinMax(spectrum['Npol'])        
         self.fig = plt.figure(figsize=(10, 4.3), dpi=100)        
@@ -140,7 +154,7 @@ class ScatterPlot2D3D(ttk.Frame):
         ax_2D = self.fig.add_subplot(gs[0, 0])
         cmhot = plt.get_cmap("plasma")
         area = [5] * len(spectrum['Npol'])
-        ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot, alpha=0.8) #, c=c, marker=m)
+        self.scatter= ax_2D.scatter(spectrum['Ntor'], spectrum['Npol'], s = area, c = spectrum['Amp'],  cmap=cmhot, alpha=0.8) #, c=c, marker=m)
 
         ax_2D.set_xlabel('Ntor')
         ax_2D.set_ylabel('Npol')
@@ -148,7 +162,7 @@ class ScatterPlot2D3D(ttk.Frame):
 
         ax_3D = self.fig.add_subplot(gs[0, 1], projection='3d')
         cmhot = plt.get_cmap("plasma")
-        ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Amp'],c = spectrum['Amp'], cmap=cmhot) #, c=c, marker=m)
+        self.scatter3D= ax_3D.scatter(spectrum['Ntor'], spectrum['Npol'], spectrum['Amp'],c = spectrum['Amp'], cmap=cmhot) #, c=c, marker=m)
 
         ax_3D.set_xlabel('Ntor')
         ax_3D.set_ylabel('Npol')
@@ -160,8 +174,47 @@ class ScatterPlot2D3D(ttk.Frame):
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
         tb.grid(row=0, column=0, sticky=tk.N)       
+        level_panel = self.make_level_panel()
+        level_panel.grid(row=2, column=0, columnspan=2, sticky=tk.N)           
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1) 
+
+    def make_level_panel(self):
+        panel = tk.Frame(self)
+        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
+        self.level_var = tk.DoubleVar(self, value=0.0) 
+        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Save file', command= self.save_file).pack(side=tk.LEFT, padx=6, pady=6)
+        return panel
+        
+    def save_file(self):
+        self.cut_level = self.level_var.get()
+        print(self.level_var.get())
+        fs = filter_spectrum(self.sorted_spectrum , self.cut_level)
+        file_object = filedialog.asksaveasfile(
+            mode='w', # 'w' для записи, 'wb' для бинарного
+            defaultextension=".dat", # Расширение по умолчанию
+            filetypes=[("Text files", "*.dat"), ("All files", "*.*")] # Типы файлов
+        )
+        if file_object:
+            for Ntor, Npol, Amp in zip(fs['Ntor'],fs['Npol'],fs['Amp']):
+                line = f"{Ntor:.6f} {Npol:.6f} {Amp:.6f}\n"
+                file_object.write(line)
+        else:
+            print("Сохранение отменено")
+
+    def update_level(self):
+        self.cut_level = self.level_var.get()
+        print(self.level_var.get())
+        fs = filter_spectrum(self.sorted_spectrum , self.cut_level)
+        new_offsets = np.vstack((fs['Ntor'], fs['Npol'])).T
+        self.scatter.set_offsets(new_offsets)
+        self.scatter.set_array(fs['Amp'])
+        self.numper_points.set(len(fs['Ntor']))
+        self.canvas.draw()
 
     def destroy(self):
         print("ScatterPlot3D destroy")
@@ -195,9 +248,12 @@ class ScatterPlot3D(ttk.Frame):
         self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
         tb = VerticalNavigationToolbar2Tk(self.canvas, self)
         tb.update()
-        tb.grid(row=0, column=0, sticky=tk.N)        
+        tb.grid(row=0, column=0, sticky=tk.N)      
+  
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1) 
+
+
 
     def destroy(self):
         print("ScatterPlot3D destroy")
@@ -224,7 +280,7 @@ class Plot2DArray(ttk.Frame):
         self.y_min, self.y_max = MinMax(self.spectrum['Ny'][:, 0])
         #X, Y = np.meshgrid(, self.spectrum['Npol'][:, 0])
         #axd['left'].pcolormesh(X, Y, spectrum['Amp'], vmin=0.0, vmax=0.5)
-        self.image= axd['left'].imshow(spectrum['Amp'], extent=[self.z_min, self.z_max, self.y_min, self.y_max])
+        self.image= axd['left'].imshow(spectrum['Amp'], origin='lower', extent=[self.z_min, self.z_max, self.y_min, self.y_max])
         self.v_cross, = axd['left'].plot([0, 0], [self.z_min+0.1, self.z_max-0.1])
         self.h_cross, = axd['left'].plot([self.y_min, self.y_max], [0, 0])
 
@@ -282,7 +338,7 @@ class Plot2DArray(ttk.Frame):
         ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
         tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
         tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
-
+        ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
         return panel
         
     def update_level(self):
@@ -295,6 +351,29 @@ class Plot2DArray(ttk.Frame):
         self.image.set_data(masked_data)
         #self.fig.canvas.flush_events()
         self.canvas.draw()
+
+    def export_to_file(self):
+        self.cut_level = self.level_var.get()
+        print(self.level_var.get())
+        data = self.spectrum['Amp']
+        masked_data = ma.masked_where((data <self.cut_level), data)
+        # Запись только незамаскированных значений
+        Nz_coords = self.spectrum['Nz']
+        Ny_coords = self.spectrum['Ny']
+        file_object = filedialog.asksaveasfile(
+            mode='w', # 'w' для записи, 'wb' для бинарного
+            defaultextension=".dat", # Расширение по умолчанию
+            filetypes=[("Text files", "*.dat"), ("All files", "*.*")] # Типы файлов
+        )
+        if file_object:
+            #file.write("# Nz Ny Amp")
+            for i in range(self.spectrum_shape[0]):
+                for j in range(self.spectrum_shape[1]):
+                    if not masked_data.mask[i, j]:  # Проверяем, не замаскировано ли значение
+                        line = f"{Nz_coords[i, j]:.6f} {Ny_coords[i,j]:.6f} {masked_data[i, j]:.6f}\n"
+                        file_object.write(line)
+        else:
+            print("Сохранение отменено")
 
     def destroy(self):
         print("Plot2D destroy")
