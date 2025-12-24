@@ -8,8 +8,11 @@ import numpy as np
 from matplotlib import cm
 import pandas as pd
 
+import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+matplotlib.use('TkAgg') 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+
 
 
 class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
@@ -65,8 +68,11 @@ class Plot3D(ttk.Frame):
             plt.close(self.fig)
         super().destroy()   
 
-class Navigator(NavigationToolbar2Tk):
-    on_cross = None
+class Navigator(VerticalNavigationToolbar2Tk):
+    def __init__(self, canvas, window):
+        super().__init__(canvas, window)
+        self.on_cross = None
+      
     def mouse_move(self, event):
         #self._set_cursor(event)
         if event.button == None: return
@@ -275,11 +281,8 @@ class Plot2DArray(ttk.Frame):
         #plt.style.use('_mpl-gallery-nogrid')
         self.spectrum_shape = spectrum['Nz'].shape
         print(self.spectrum_shape)
-        self.numper_points = tk.IntVar(self, value=self.spectrum_shape[0]*self.spectrum_shape[1]) 
         self.z_min, self.z_max = MinMax(self.spectrum['Nz'][0])
         self.y_min, self.y_max = MinMax(self.spectrum['Ny'][:, 0])
-        #X, Y = np.meshgrid(, self.spectrum['Npol'][:, 0])
-        #axd['left'].pcolormesh(X, Y, spectrum['Amp'], vmin=0.0, vmax=0.5)
         self.image= axd['left'].imshow(spectrum['Amp'], origin='lower', extent=[self.z_min, self.z_max, self.y_min, self.y_max])
         self.v_cross, = axd['left'].plot([0, 0], [self.z_min+0.1, self.z_max-0.1])
         self.h_cross, = axd['left'].plot([self.y_min, self.y_max], [0, 0])
@@ -292,14 +295,12 @@ class Plot2DArray(ttk.Frame):
         self.v_line, = self.v_ax.plot(X, Y)        
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=1, column=0)
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=0, sticky=tk.W)
-        toobar = Navigator(self.canvas, frame)        
+        self.canvas.get_tk_widget().grid(row=0, column=1)
+        toobar = Navigator(self.canvas, self)        
         toobar.on_cross = self.on_cross
+        toobar.grid(row=0, column=0, sticky=tk.W)
         self.on_cross(0,0)
-        level_pabel= self.make_level_panel()
-        level_pabel.grid(row=2, column=0, sticky=tk.W)
+
 
     def on_cross(self, x,y):
         #print(f"{x}, {y}")       
@@ -329,34 +330,17 @@ class Plot2DArray(ttk.Frame):
         X = self.spectrum['Nz'][row]
         Y = self.spectrum['Amp'][row]
         return X, Y
-
-    def make_level_panel(self):
-        panel = tk.Frame(self)
-        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
-        self.level_var = tk.DoubleVar(self, value=0.0) 
-        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
-        tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
-        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
-        return panel
-        
-    def update_level(self):
-        self.cut_level = self.level_var.get()
-        print(self.level_var.get())
+       
+    def update_level(self, cut_level: float):
         data = self.spectrum['Amp']
-        masked_data = ma.masked_where((data <self.cut_level), data)
-        self.numper_points.set(masked_data.count())
-        #axd['left'].imshow(masked_data, extent=[self.z_min, self.z_max, self.y_min, self.y_max])
+        masked_data = ma.masked_where((data <cut_level), data)
         self.image.set_data(masked_data)
-        #self.fig.canvas.flush_events()
         self.canvas.draw()
+        return masked_data.count()
 
-    def export_to_file(self):
-        self.cut_level = self.level_var.get()
-        print(self.level_var.get())
+    def export_to_file(self, cut_level: float):
         data = self.spectrum['Amp']
-        masked_data = ma.masked_where((data <self.cut_level), data)
+        masked_data = ma.masked_where((data <cut_level), data)
         # Запись только незамаскированных значений
         Nz_coords = self.spectrum['Nz']
         Ny_coords = self.spectrum['Ny']

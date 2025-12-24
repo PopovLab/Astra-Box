@@ -132,38 +132,55 @@ class Spectrum2DView(tk.LabelFrame):
         super().__init__(master, text='Spectrum 2D')        
         self.spectrum_data = None
         self.model = model
+        self.numper_points = tk.IntVar(self, value=0) 
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_set_file_name)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        self.options_box = OptionsPanel(self, self.model.spectrum)
-        self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        #self.options_box = OptionsPanel(self, self.model.spectrum)
+        #self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        #self.rowconfigure(0, weight=1)    
-        #self.make_plot()
-        self.spectrum_data = self.load_spectrum_data()
-        if self.spectrum_data:
-            self.spectrum_plot = Plot2DArray(self, self.spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        level_pabel= self.make_level_panel()
+        level_pabel.grid(row=2, column=0, sticky=tk.W)
+
+        spectrum_data = self.load_spectrum_data()
+        self.numper_points.set(spectrum_data['Nz'].size)
+        if spectrum_data:
+            self.spectrum_plot = Plot2DArray(self, spectrum_data)
+            self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         else:
             label = ttk.Label(self, text= "Ошибка загрузки спектра", width=20)
             label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)        
 
+    def make_level_panel(self):
+        panel = tk.Frame(self)
+        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
+        self.level_var = tk.DoubleVar(self, value=0.0) 
+        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
+        return panel
+    
+    def update_level(self):
+        np = self.spectrum_plot.update_level(self.level_var.get())
+        self.numper_points.set(np)
+
+    def export_to_file(self):
+        self.spectrum_plot.export_to_file(self.level_var.get())
+
     def on_set_file_name(self, filename):
-        print(filename)
-        
-        self.spectrum_data = self.load_spectrum_data(filename)
-        if self.spectrum_data:
-            self.spectrum_plot = Plot2DArray(self, self.spectrum_data)
+        spectrum_data = self.load_spectrum_data(filename)
+        if spectrum_data:
+            self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
 
-    def load_spectrum_data(self, filename= None):
+    def load_spectrum_data(self, filename= None) ->dict | None:
         if filename:
             old_filename = filename
             self.model.spectrum.source = filename       
