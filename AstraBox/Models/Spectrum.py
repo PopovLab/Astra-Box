@@ -145,11 +145,11 @@ class Spectrum2D(BaseSpectrum):
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
     def get_spectrum_data(self, filename= None) ->dict | None:        
-        if filename:
-            p = WorkSpace.get_spectrum_dat_file_path(filename)
-        else:
-            p = WorkSpace.get_spectrum_dat_file_path(self.source)
         try:
+            if filename:
+                p = WorkSpace.get_spectrum_dat_file_path(filename)
+            else:
+                p = WorkSpace.get_spectrum_dat_file_path(self.source)
             spectrum_data = self.read_spcp2D(p)
             #self.spectrum_normalization()   
             if filename:  

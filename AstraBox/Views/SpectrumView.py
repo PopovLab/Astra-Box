@@ -146,8 +146,8 @@ class Spectrum2DView(tk.LabelFrame):
         level_pabel.grid(row=2, column=0, sticky=tk.W)
 
         spectrum_data = self.model.spectrum.get_spectrum_data()
-        self.numper_points.set(spectrum_data['Nz'].size)
         if spectrum_data:
+            self.numper_points.set(spectrum_data['Nz'].size)
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         else:
