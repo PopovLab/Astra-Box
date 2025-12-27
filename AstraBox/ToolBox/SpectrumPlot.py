@@ -314,16 +314,17 @@ class Plot2DArray(ttk.Frame):
         Y = self.spectrum['Amp'][row]
         return X, Y
        
-    def update_level(self, cut_level: float):
+    def apply_filter(self, filter):
+        
         data = self.spectrum['Amp']
-        masked_data = ma.masked_where((data <cut_level), data)
+        masked_data = ma.masked_where((data < filter['threshold']), data)
         self.image.set_data(masked_data)
         self.canvas.draw()
         return masked_data.count()
 
-    def export_to_file(self, cut_level: float):
+    def export_to_file(self, filter):
         data = self.spectrum['Amp']
-        masked_data = ma.masked_where((data <cut_level), data)
+        masked_data = ma.masked_where((data <filter['threshold']), data)
         # Запись только незамаскированных значений
         Nz_coords = self.spectrum['Nz']
         Ny_coords = self.spectrum['Ny']

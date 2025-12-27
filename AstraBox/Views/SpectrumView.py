@@ -142,8 +142,8 @@ class Spectrum2DView(tk.LabelFrame):
         #self.options_box = OptionsPanel(self, self.model.spectrum)
         #self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        level_pabel= self.make_level_panel()
-        level_pabel.grid(row=2, column=0, sticky=tk.W)
+        filter_pabel= self.make_filter_panel()
+        filter_pabel.grid(row=2, column=0, sticky=tk.W)
 
         spectrum_data = self.model.spectrum.get_spectrum_data()
         if spectrum_data:
@@ -156,23 +156,35 @@ class Spectrum2DView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(3, weight=1)        
 
-    def make_level_panel(self):
+    def make_filter_panel(self):
         panel = tk.Frame(self)
-        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Threshold").pack(side=tk.LEFT, padx=6, pady=6)
         self.level_var = tk.DoubleVar(self, value=0.0) 
         tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Downsample").pack(side=tk.LEFT, padx=6, pady=6)
+        self.combo_var = tk.StringVar(self, value="none") # Set an initial value
+        options = ("none", "[3x3]", "[5x5]", "Option 4")
+        ttk.Combobox(panel, textvariable= self.combo_var, values= options, width=10, state="readonly" ).pack(side=tk.LEFT,padx=6, pady=6)
+        ttk.Button(panel, text='Apply filter', command= self.apply_filter).pack(side=tk.LEFT, padx=6, pady=6)
         tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
         tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
         ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
         return panel
     
-    def update_level(self):
-        np = self.spectrum_plot.update_level(self.level_var.get())
+    def apply_filter(self):
+        filter= {
+            'threshold'  : self.level_var.get(),
+            'downsample' : self.combo_var.get()
+        }
+        np = self.spectrum_plot.apply_filter(filter)
         self.numper_points.set(np)
 
     def export_to_file(self):
-        self.spectrum_plot.export_to_file(self.level_var.get())
+        filter= {
+            'threshold' : self.level_var.get(),
+            'downsample' : self.combo_var.get()
+        }
+        self.spectrum_plot.export_to_file(filter)
 
     def on_set_file_name(self, filename:str) -> bool:
         spectrum_data = self.model.spectrum.get_spectrum_data(filename)
