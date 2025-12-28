@@ -198,8 +198,8 @@ class ScatterPlot2D3D(ttk.Frame):
         else:
             print("Сохранение отменено")
 
-    def update_level(self, cut_level:float):
-        fs = filter_spectrum(self.sorted_spectrum , cut_level)
+    def apply_threshold(self, threshold:float):
+        fs = filter_spectrum(self.sorted_spectrum , threshold)
         new_offsets = np.vstack((fs['Ntor'], fs['Npol'])).T
         self.scatter.set_offsets(new_offsets)
         self.scatter.set_array(fs['Amp'])
@@ -344,12 +344,14 @@ class Plot2DArray(ttk.Frame):
         self.v_line, = self.v_ax.plot(X, Y)        
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
-        self.canvas.get_tk_widget().grid(row=0, column=1)
+        self.canvas.get_tk_widget().grid(row=0, column=1, sticky=tk.N + tk.S + tk.E + tk.W)
         toobar = Navigator(self.canvas, self)        
         toobar.on_cross = self.on_cross
         toobar.grid(row=0, column=0, sticky=tk.W)
         self.on_cross(0,0)
 
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)      
 
     def on_cross(self, x,y):
         #print(f"{x}, {y}")       

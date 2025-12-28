@@ -152,7 +152,8 @@ class Spectrum2DView(tk.LabelFrame):
             self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         else:
             label = ttk.Label(self, text= "Ошибка загрузки спектра", width=20)
-            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
+                    
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(3, weight=1)        
 
@@ -198,7 +199,7 @@ class Spectrum2DView(tk.LabelFrame):
         spectrum_data = self.model.spectrum.get_spectrum_data(filename)
         if spectrum_data:
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
-            self.spectrum_plot.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
             return True
         else:
             return False
@@ -214,7 +215,7 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        level_panel = self.make_level_panel()
+        level_panel = self.make_threshold_panel()
         level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.W)  
 
         if spectrum_data:
@@ -234,24 +235,24 @@ class ScatterSpectrumView(tk.LabelFrame):
         else:
             return False
 
-    def make_level_panel(self):
+    def make_threshold_panel(self):
         panel = tk.Frame(self)
-        tk.Label(panel, text="Cut level").pack(side=tk.LEFT, padx=6, pady=6)
-        self.level_var = tk.DoubleVar(self, value=0.0) 
-        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
-        ttk.Button(panel, text='Update Level', command= self.update_level).pack(side=tk.LEFT, padx=6, pady=6)
+        tk.Label(panel, text="Threshold").pack(side=tk.LEFT, padx=6, pady=6)
+        self.threshold_var = tk.DoubleVar(self, value=0.0) 
+        tk.Entry(panel, width=20, textvariable= self.threshold_var).pack(side=tk.LEFT, padx=6, pady=6)        
+        ttk.Button(panel, text='Apply threshold', command= self.apply_threshold).pack(side=tk.LEFT, padx=6, pady=6)
         tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
         tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
         ttk.Button(panel, text='Save file', command= self.save_file).pack(side=tk.LEFT, padx=6, pady=6)
         return panel
     
-    def update_level(self):
-        cut_level = self.level_var.get()
-        print(cut_level)
-        np = self.spectrum_plot.update_level(cut_level)
+    def apply_threshold(self):
+        threshold = self.threshold_var.get()
+        print(threshold)
+        np = self.spectrum_plot.apply_threshold(threshold)
         self.numper_points.set(np)
 
     def save_file(self):
-        cut_level = self.level_var.get()
-        print(cut_level)
-        self.spectrum_plot.save_file(cut_level)
+        threshold = self.threshold_var.get()
+        print(threshold)
+        self.spectrum_plot.save_file(threshold)
