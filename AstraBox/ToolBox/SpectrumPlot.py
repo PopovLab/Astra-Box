@@ -252,6 +252,55 @@ class ScatterPlot3D(ttk.Frame):
 
 import numpy.ma as ma
 
+def downsample_with_max_mask(data, window_size):
+    """
+    Downsampling 2D массива с сохранением всех точек с максимальным значением в окне.
+    
+    Parameters:
+    -----------
+    data : numpy.ndarray
+        2D входной массив
+    window_size : int
+        Размер окна для downsampling (окно квадратное window_size x window_size)
+    
+    Returns:
+    --------
+    mask : numpy.ndarray
+        Маска того же размера, что и входной массив, где True - точки, которые сохраняются
+    """
+    if len(data.shape) != 2:
+        raise ValueError("Input data must be 2D array")
+    
+    if window_size <= 0:
+        raise ValueError("Window size must be positive")
+    
+    print('downsample_with_max_mask', data.shape)
+    h, w = data.shape
+
+    mask = np.full_like(data, fill_value=True, dtype=bool)
+    
+    # Проходим по всем окнам
+    for i in range(0, h, window_size):
+        for j in range(0, w, window_size):
+            # Определяем границы текущего окна
+            i_end = min(i + window_size, h)
+            j_end = min(j + window_size, w)
+            
+            # Получаем текущее окно
+            window = data[i:i_end, j:j_end]
+            
+            if window.size > 0:  # Проверяем, что окно не пустое
+                # Находим максимальное значение в окне
+                max_val = np.mean(window)
+                
+                # Находим все позиции с максимальным значением
+                # Создаем локальную маску для окна
+                local_mask = (window > max_val)
+                
+                # Переносим локальную маску в общую маску
+                mask[i:i_end, j:j_end][local_mask] = False
+    
+    return mask
 
 class Plot2DArray(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
@@ -315,8 +364,15 @@ class Plot2DArray(ttk.Frame):
         return X, Y
        
     def apply_filter(self, filter):
-        
         data = self.spectrum['Amp']
+        match filter['downsample']:
+            case 'none': pass
+            case '[2x2]':
+                mask = downsample_with_max_mask(data, 2)
+                data = ma.masked_array(data, mask= mask)
+            case '[3x3]':
+                mask = downsample_with_max_mask(data, 3)
+                data = ma.masked_array(data, mask= mask)
         masked_data = ma.masked_where((data < filter['threshold']), data)
         self.image.set_data(masked_data)
         self.canvas.draw()

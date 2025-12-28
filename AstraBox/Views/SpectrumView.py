@@ -163,7 +163,7 @@ class Spectrum2DView(tk.LabelFrame):
         tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
         tk.Label(panel, text="Downsample").pack(side=tk.LEFT, padx=6, pady=6)
         self.combo_var = tk.StringVar(self, value="none") # Set an initial value
-        options = ("none", "[3x3]", "[5x5]", "Option 4")
+        options = ("none", "[2x2]", "[3x3]", "[5x5]")
         ttk.Combobox(panel, textvariable= self.combo_var, values= options, width=10, state="readonly" ).pack(side=tk.LEFT,padx=6, pady=6)
         ttk.Button(panel, text='Apply filter', command= self.apply_filter).pack(side=tk.LEFT, padx=6, pady=6)
         tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
