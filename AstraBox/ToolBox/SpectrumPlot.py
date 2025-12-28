@@ -304,17 +304,18 @@ def downsample_with_max_mask(data, window_size, factor):
     return mask
 
 def apply_filter(data, filter):
+    
     match filter['window']:
-        case 'none': pass
+        case 'none': 
+            mask = np.full_like(data, fill_value=False, dtype=bool)
         case '[2x2]':
             mask = downsample_with_max_mask(data, 2, filter['factor'])
-            data = ma.masked_array(data, mask= mask)
         case '[3x3]':
             mask = downsample_with_max_mask(data, 3, filter['factor'])
-            data = ma.masked_array(data, mask= mask)
         case '[5x5]':
             mask = downsample_with_max_mask(data, 5, filter['factor'])
-            data = ma.masked_array(data, mask= mask)                
+
+    data = ma.masked_array(data, mask= mask)
     masked_data = ma.masked_where((data < filter['threshold']), data)
     return masked_data
 
