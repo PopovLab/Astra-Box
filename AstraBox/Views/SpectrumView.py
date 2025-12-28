@@ -188,8 +188,9 @@ class Spectrum2DView(tk.LabelFrame):
 
     def export_to_file(self):
         filter= {
-            'threshold' : self.level_var.get(),
-            'downsample' : self.combo_var.get()
+            'threshold'  : self.thresh_var.get(),
+            'window' : self.window_var.get(),
+            'factor' : self.factor_var.get()
         }
         self.spectrum_plot.export_to_file(filter)
 
