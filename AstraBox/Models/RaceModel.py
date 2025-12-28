@@ -234,7 +234,7 @@ class RaceModel(RootModel):
         if p.suffix != '.dat': return
         time_stamp = float(p.stem)
         print(time_stamp) 
-        res = {'Time': time_stamp}
+        res = {'Time': time_stamp, 'Data': None}
         with zipfile.ZipFile(self.race_zip_file) as zip:
             with zip.open(fn) as file:
                 res['Data'] = pd.read_csv(file, sep='\\s+')
