@@ -252,7 +252,7 @@ class ScatterPlot3D(ttk.Frame):
 
 import numpy.ma as ma
 
-def downsample_with_max_mask(data, window_size):
+def downsample_with_max_mask(data, window_size, factor):
     """
     Downsampling 2D массива с сохранением всех точек с максимальным значением в окне.
     
@@ -291,16 +291,32 @@ def downsample_with_max_mask(data, window_size):
             
             if window.size > 0:  # Проверяем, что окно не пустое
                 # Находим максимальное значение в окне
-                max_val = np.mean(window)
-                
-                # Находим все позиции с максимальным значением
+                #level = np.mean(window)
+                max_v = np.max(window)
+                min_v = np.min(window)
+                level = factor*(max_v-min_v) + min_v
                 # Создаем локальную маску для окна
-                local_mask = (window > max_val)
+                local_mask = (window > level)
                 
                 # Переносим локальную маску в общую маску
                 mask[i:i_end, j:j_end][local_mask] = False
     
     return mask
+
+def apply_filter(data, filter):
+    match filter['window']:
+        case 'none': pass
+        case '[2x2]':
+            mask = downsample_with_max_mask(data, 2, filter['factor'])
+            data = ma.masked_array(data, mask= mask)
+        case '[3x3]':
+            mask = downsample_with_max_mask(data, 3, filter['factor'])
+            data = ma.masked_array(data, mask= mask)
+        case '[5x5]':
+            mask = downsample_with_max_mask(data, 5, filter['factor'])
+            data = ma.masked_array(data, mask= mask)                
+    masked_data = ma.masked_where((data < filter['threshold']), data)
+    return masked_data
 
 class Plot2DArray(ttk.Frame):
     def __init__(self, master, spectrum) -> None:
@@ -364,23 +380,13 @@ class Plot2DArray(ttk.Frame):
         return X, Y
        
     def apply_filter(self, filter):
-        data = self.spectrum['Amp']
-        match filter['downsample']:
-            case 'none': pass
-            case '[2x2]':
-                mask = downsample_with_max_mask(data, 2)
-                data = ma.masked_array(data, mask= mask)
-            case '[3x3]':
-                mask = downsample_with_max_mask(data, 3)
-                data = ma.masked_array(data, mask= mask)
-        masked_data = ma.masked_where((data < filter['threshold']), data)
+        masked_data = apply_filter(self.spectrum['Amp'], filter)
         self.image.set_data(masked_data)
         self.canvas.draw()
         return masked_data.count()
 
     def export_to_file(self, filter):
-        data = self.spectrum['Amp']
-        masked_data = ma.masked_where((data <filter['threshold']), data)
+        masked_data = apply_filter(self.spectrum['Amp'], filter)
         # Запись только незамаскированных значений
         Nz_coords = self.spectrum['Nz']
         Ny_coords = self.spectrum['Ny']

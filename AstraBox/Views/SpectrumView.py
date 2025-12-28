@@ -159,22 +159,29 @@ class Spectrum2DView(tk.LabelFrame):
     def make_filter_panel(self):
         panel = tk.Frame(self)
         tk.Label(panel, text="Threshold").pack(side=tk.LEFT, padx=6, pady=6)
-        self.level_var = tk.DoubleVar(self, value=0.0) 
-        tk.Entry(panel, width=20, textvariable= self.level_var).pack(side=tk.LEFT, padx=6, pady=6)        
-        tk.Label(panel, text="Downsample").pack(side=tk.LEFT, padx=6, pady=6)
-        self.combo_var = tk.StringVar(self, value="none") # Set an initial value
+        self.thresh_var = tk.DoubleVar(self, value=0.0) 
+        tk.Entry(panel, width=15, textvariable= self.thresh_var).pack(side=tk.LEFT, padx=6, pady=6)       
+
+        tk.Label(panel, text="Window").pack(side=tk.LEFT, padx=6, pady=6)
+        self.window_var = tk.StringVar(self, value="none") # Set an initial value
         options = ("none", "[2x2]", "[3x3]", "[5x5]")
-        ttk.Combobox(panel, textvariable= self.combo_var, values= options, width=10, state="readonly" ).pack(side=tk.LEFT,padx=6, pady=6)
+        ttk.Combobox(panel, textvariable= self.window_var, values= options, width=10, state="readonly" ).pack(side=tk.LEFT,padx=6, pady=6)
+
+        tk.Label(panel, text="Factor").pack(side=tk.LEFT, padx=6, pady=6)
+        self.factor_var = tk.DoubleVar(self, value=0.5) 
+        tk.Entry(panel, width=15, textvariable= self.factor_var).pack(side=tk.LEFT, padx=6, pady=6)       
+
         ttk.Button(panel, text='Apply filter', command= self.apply_filter).pack(side=tk.LEFT, padx=6, pady=6)
         tk.Label(panel, text="Number of points").pack(side=tk.LEFT, padx=6, pady=6)
-        tk.Entry(panel, width=10, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
+        tk.Entry(panel, width=5, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
         ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
         return panel
     
     def apply_filter(self):
         filter= {
-            'threshold'  : self.level_var.get(),
-            'downsample' : self.combo_var.get()
+            'threshold'  : self.thresh_var.get(),
+            'window' : self.window_var.get(),
+            'factor' : self.factor_var.get()
         }
         np = self.spectrum_plot.apply_filter(filter)
         self.numper_points.set(np)
