@@ -88,11 +88,11 @@ class Options(ParametersSection):
     ipol: int = Field(default= 1, title= 'ipol', description= "+-1, Bpol direction in right coord{drho,dteta,dfi}")    
     upl_fix:   bool  = Field(default= False, title= 'Upl fixed', description= "enable fix Upl")    
     upl_value: float = Field(default= 0.0, title= 'Upl value', description= "Upl value")   
-    fp_solver: int = Field(default= 0, title= 'fp solver', description= "0 default savelyev solver 1 next solver")   
-    traj_len_seved : int = Field(default= -1, title= 'traj len saved', description= "-1 full len, 0 - not saved, >0 - saved length ")   
-    max_number_of_traj : int = Field(default= 30000, title= 'max number of traj', description= "maximum number of trajectories")
-    max_size_of_traj : int = Field(default= 3000, title= 'max length of traj', description= "maximum length of trajectories")
-    save_interval : float = Field(default= 0.001, title= 'time interval of save', description= "time interval of saving traj and distrb")
+    fp_solver: int = Field(default= 0, title= 'FP solver', description= "0 default savelyev solver 1 next solver")   
+    traj_len_seved : int = Field(default= -1, title= 'Traj len saved', description= "-1 full len, 0 - not saved, >0 - saved length ")   
+    max_number_of_traj : int = Field(default= 30000, title= 'Max number of traj', description= "maximum number of trajectories")
+    max_size_of_traj : int = Field(default= 3000, title= 'Max length of traj', description= "maximum length of trajectories")
+    save_interval : float = Field(default= 0.001, title= 'Save interval', description= "time interval of saving traj and distrb")
 
 class GrillParameters(ParametersSection):
     name: ClassVar[str] = 'grill_parameters'
