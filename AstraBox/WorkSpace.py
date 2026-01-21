@@ -8,11 +8,15 @@ from pydantic import BaseModel, Field
 from AstraBox.Task import Task
 import zipfile
 
-_location = None
+work_space = None
+#_location = None
 
 def get_location_path():
     """get workspace location path"""
-    return _location
+    if work_space:
+        return work_space._location
+    else:
+        return None
 
 def get_ReadMe():
     if get_location_path() is None:
@@ -91,7 +95,6 @@ class Folder(BaseModel):
     location: str
     sort_direction: str=  'default'
     tag: str = 'top'
-    _root: str
     _observers = set()
 
     
@@ -101,7 +104,7 @@ class Folder(BaseModel):
 
     def detach(self, observer):
         if (observer in self._observers):
-            self.observers.remove(observer)
+            self._observers.remove(observer)
         
     def raise_event(self, event_name):
         print(event_name)
@@ -155,15 +158,22 @@ default_catalog = [
     Folder(title= 'Spectrums', content_type='SpectrumModel', location= 'spectrum', required= False),
     Folder(title= 'Race history', content_type='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
+import tkinter.messagebox as messagebox
+class WorkSpace():
+    def __init__(self, location= None) -> None:
+        self.folders: list[Folder] = []
+        self.kind: str = 'basic_transport' #frtc_v1 frts_v2
+        if location:
+            self._location = Path(location)
+            if self._location.exists():
+                self.open()
+            else:
+                self._location = None
+                messagebox.showinfo("Astra Box", f"The {location} is not exists!")
 
-class WorkSpace(BaseModel):
-    folders: list[Folder] = []
-    _location: str
-    kind: str = 'basic_transport' #frtc_v1 frts_v2
-
-
-    def open(self, path):
-        self._location = Path(path)
+    def open(self):
+        #self._location = Path(path)
+        print(self._location)
         for folder in default_catalog:
             if folder.exists(self._location):
                 folder.populate()
@@ -197,10 +207,12 @@ class WorkSpace(BaseModel):
         else:
             return []
 
-work_space = None
+
 def get_folder_content_list(content_type):
     if work_space:
         return work_space.get_folder_content_list(content_type)
+    else:
+        return []
 
 def folder(content_type):
     if work_space:
@@ -227,7 +239,7 @@ def refresh_folder(content_type):
 def get_path(content_type: str, sub_path: str= None):
     """get path of workspace folder"""
     if work_space:
-        loc = _location.joinpath(work_space.folder(content_type).location)
+        loc = work_space._location.joinpath(work_space.folder(content_type).location)
         if sub_path:
             loc = loc.joinpath(sub_path)
         if not loc.exists():
@@ -272,13 +284,16 @@ def save_model(model):
 
 def get_last_task():
     last_task = Task()
-    p = get_path('RaceModel').joinpath('last_task')
-    if p.exists():
-        print(p)
-        with p.open(mode= "r") as json_file:
-            data = json_file.read()
-            last_task = Task.load(data)
-    print(last_task)
+    last_path = get_path('RaceModel')
+    print(last_path)
+    if last_path:
+        p = get_path('RaceModel').joinpath('last_task')
+        if p.exists():
+            print(p)
+            with p.open(mode= "r") as json_file:
+                data = json_file.read()
+                last_task = Task.load(data)
+        print(last_task)
     return last_task
 
 def save_last_task(last_task):
@@ -300,13 +315,10 @@ def save_last_run(last_run):
     with p.open(mode= "w") as json_file:
         json.dump(last_run, json_file, indent=2)
 
-def open(path):
-    global _location
+def open(path = None):
+    #global _location
     global work_space
     print(f'Open {path}')
-    _location = Path(path)
-    work_space = WorkSpace()
-    work_space.open(path)
-    #work_space.print()
+    work_space = WorkSpace(path)
     return work_space
 

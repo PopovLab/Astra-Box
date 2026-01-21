@@ -110,7 +110,7 @@ class App(tk.Tk):
             self.work_space= WorkSpace.open(work_space_loc)
             History.add_new(work_space_loc)
         else:
-            self.work_space= WorkSpace.WorkSpace()
+            self.work_space=  WorkSpace.open()
             
         # first paned window
         main_panel = tk.PanedWindow(self, background='#C0DCF3')  

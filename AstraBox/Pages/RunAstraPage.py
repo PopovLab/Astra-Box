@@ -36,6 +36,7 @@ class ConfigPanel(ttk.Frame):
         self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_folder_content_list('EquModel'))
         self.equ_combo.grid(row=1, column=1,  padx=2, sticky=tk.E + tk.W)
         fcl =  WorkSpace.get_folder_content_list('RTModel')
+        print(fcl)
         if len(fcl)>0:
             self.rt_combo = ComboBox(self, 'Ray tracing:', fcl)
             self.rt_combo.grid(row=1, column=2,  padx=2, sticky= tk.E + tk.W)
