@@ -1,6 +1,14 @@
 # Changelog for Astra-Box
 
-## [0.2.4] - - Unreleased
+## [0.2.5] - Unreleased
+
+### Fixed
+
+- рефакторинг класса workspace
+- сделал обработку ошибки при отсутствии папки workaspace
+
+
+## [0.2.4] - 2026-01-22
 
 ### Added
 
