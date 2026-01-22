@@ -1,12 +1,11 @@
 import os
 import json
 import tkinter as tk
-#import pathlib
 from pathlib import Path
-from pydantic import BaseModel, Field
+import zipfile
+import tkinter.messagebox as messagebox
 
 from AstraBox.Task import Task
-import zipfile
 
 work_space = None
 #_location = None
@@ -88,16 +87,16 @@ class FolderItem():
         print(f'delete status {deleted}')
         return deleted
 
-class Folder(BaseModel):
-    title: str
-    content_type: str
-    required: bool = True
-    location: str
-    sort_direction: str=  'default'
-    tag: str = 'top'
-    _observers = set()
+class Folder():
+    def __init__(self, title: str, content_type: str, location: str, required: bool = True, sort_direction: str=  'default', tag: str = 'top') -> None:
+        self.title = title
+        self.content_type = content_type
+        self.required = required
+        self.location = location
+        self.sort_direction = sort_direction
+        self.tag = tag
+        self._observers = set()
 
-    
     def attach(self, observer):
         if (observer not in self._observers):
             self._observers.add(observer)
@@ -158,7 +157,8 @@ default_catalog = [
     Folder(title= 'Spectrums', content_type='SpectrumModel', location= 'spectrum', required= False),
     Folder(title= 'Race history', content_type='RaceModel', location= 'races', sort_direction= 'reverse', tag= 'bottom'),
 ]
-import tkinter.messagebox as messagebox
+
+
 class WorkSpace():
     def __init__(self, location= None) -> None:
         self.folders: list[Folder] = []
