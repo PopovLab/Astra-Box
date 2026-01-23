@@ -203,6 +203,8 @@ class ScatterPlot2D3D(ttk.Frame):
         new_offsets = np.vstack((fs['Ntor'], fs['Npol'])).T
         self.scatter.set_offsets(new_offsets)
         self.scatter.set_array(fs['Amp'])
+        self.scatter3D._offsets3d = (fs['Ntor'], fs['Npol'], fs['Amp']) # type: ignore
+        self.scatter3D.set_array(fs['Amp'])
         self.canvas.draw()
         return len(fs['Ntor'])
 
