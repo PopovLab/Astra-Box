@@ -6,7 +6,7 @@ import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox import UIElement, WorkSpace
 from AstraBox.Models.Spectrum import BaseSpectrum, GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot

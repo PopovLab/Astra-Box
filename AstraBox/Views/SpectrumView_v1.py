@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
 from AstraBox.ToolBox.SpectrumPlot import RotatedSpectrumPlot
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot3D

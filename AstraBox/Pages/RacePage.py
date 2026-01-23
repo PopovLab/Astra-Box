@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 import AstraBox.Models.ModelFactory as ModelFactory
 

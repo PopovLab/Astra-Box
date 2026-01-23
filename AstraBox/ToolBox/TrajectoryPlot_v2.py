@@ -8,7 +8,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib import collections, transforms
 
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 import AstraBox.ToolBox.ImageButton as ImageButton
 from AstraBox.Models.TrajectoryModel import TrajectoryModel

@@ -6,7 +6,7 @@ import AstraBox.WorkSpace as WorkSpace
 
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton

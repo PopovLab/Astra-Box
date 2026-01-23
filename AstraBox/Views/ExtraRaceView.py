@@ -6,7 +6,7 @@ import numpy as np
 
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from AstraBox.Views.HeaderPanel import HeaderPanel

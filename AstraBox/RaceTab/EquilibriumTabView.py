@@ -7,7 +7,7 @@ import matplotlib
 import pandas as pd
 from matplotlib import cm, collections
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import  FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.Models.TimestampFilesManager import TimestampFilesManager
 from AstraBox.Models.TrajectoryModel import TrajectoryModel
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk

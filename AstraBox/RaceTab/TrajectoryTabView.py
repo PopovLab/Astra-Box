@@ -6,7 +6,7 @@ import tkinter.messagebox as messagebox
 import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 from AstraBox import WorkSpace
 from AstraBox.Models.RaceModel import RaceModel

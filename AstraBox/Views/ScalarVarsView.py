@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
 from AstraBox.Models.ExpModel import Experiment
