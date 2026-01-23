@@ -48,9 +48,9 @@ class Plot3D(ttk.Frame):
         # Plot projections of the contours for each dimension.  By choosing offsets
         # that match the appropriate axes limits, the projected contours will sit on
         # the 'walls' of the graph
-        ax.contourf(X, Y, Z, zdir='z', offset=-0.1, cmap=cm.coolwarm, alpha=0.8)
-        ax.contourf(X, Y, Z, zdir='x', offset=-10, cmap=cm.coolwarm)
-        ax.contourf(X, Y, Z, zdir='y', offset=10, cmap=cm.coolwarm)
+        ax.contourf(X, Y, Z, zdir='z', offset=-0.1, cmap= cm.coolwarm, alpha=0.8)
+        ax.contourf(X, Y, Z, zdir='x', offset=-10,  cmap= cm.coolwarm)
+        ax.contourf(X, Y, Z, zdir='y', offset=10,   cmap= cm.coolwarm)
 
         ax.set(xlim=(-10, 10), ylim=(-10, 10), zlim=(-0.1, 1.5),
             xlabel='X', ylabel='Y', zlabel='Z')
@@ -233,7 +233,7 @@ class ScatterPlot3D(ttk.Frame):
 
         ax_3D.set_xlabel('Ntor')
         ax_3D.set_ylabel('Npol')
-        ax_3D.set_zlabel('Px')
+        ax_3D.set_zlabel('Px') # type: ignore
 
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.canvas.draw()
