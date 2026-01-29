@@ -162,7 +162,14 @@ class Spectrum2D(BaseSpectrum):
             spectrum_data = None
         return spectrum_data 
 
-    def read_data(self, file_path):
+    def read_data(self, file_path: pathlib.Path) ->dict:
+        """
+        read 2D GRILL files
+        
+        :param self: Self
+           
+        :param file_path: file path
+        """
         with open(file_path) as file:
             df = pd.read_csv(file, sep='\\s+')
             spectrum_shape = (df['Ny'].nunique(), df['Nz'].nunique())
