@@ -3,6 +3,7 @@ import os
 import pathlib
 from tkinter import messagebox 
 import numpy as np
+import pandas as pd
 from typing import Literal
 from typing_extensions import Annotated
 from typing import ClassVar
@@ -150,7 +151,8 @@ class Spectrum2D(BaseSpectrum):
                 p = WorkSpace.get_spectrum_dat_file_path(filename)
             else:
                 p = WorkSpace.get_spectrum_dat_file_path(self.source)
-            spectrum_data = self.read_spcp2D(p)
+            #spectrum_data = self.read_spcp2D(p)
+            spectrum_data = self.read_data(p)
             #self.spectrum_normalization()   
             if filename:  
                 self.source = filename 
@@ -159,7 +161,21 @@ class Spectrum2D(BaseSpectrum):
             messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
             spectrum_data = None
         return spectrum_data 
-    
+
+    def read_data(self, file_path):
+        with open(file_path) as file:
+            df = pd.read_csv(file, sep='\\s+')
+            spectrum_shape = (df['Ny'].nunique(), df['Nz'].nunique())
+            print(spectrum_shape)
+            spectrum2D = {}
+            for key, item in df.items():
+                #spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )
+                spectrum2D[key] = df[key].to_numpy().reshape(spectrum_shape, order="C")
+            spectrum2D['Amp'] = spectrum2D.pop('Px')
+        #print(df)
+        return spectrum2D
+
+
     def read_spcp2D(self, file_path):
         print(file_path)
         if file_path is not None and file_path.exists():
@@ -181,7 +197,7 @@ class Spectrum2D(BaseSpectrum):
                         item.append(0.0)
             Nz_v = spectrum1D['Nz'][0]
             Ny_v = spectrum1D['Ny'][0]
-            spectrum_shape = (spectrum1D['Nz'].count(Nz_v),spectrum1D['Ny'].count(Ny_v) )
+            spectrum_shape = (spectrum1D['Nz'].count(Nz_v), spectrum1D['Ny'].count(Ny_v) )
             print(spectrum_shape)
             spectrum2D = { h: [] for h in header }
             for key, item in spectrum1D.items():
