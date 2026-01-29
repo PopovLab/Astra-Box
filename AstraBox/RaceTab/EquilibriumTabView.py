@@ -113,10 +113,10 @@ class PoloidalView(tk.Frame):
 
         self.plot = PoloidalPlot(self, plasma_bound)
         self.plot.grid(row=0, rowspan= 2, column=0, sticky=tk.N + tk.S + tk.E + tk.W, pady=4, padx=8)
-        btn = ttk.Button(self, text= "show pos trajectory", style = 'Toolbutton', command=self.show_pos_traj)
-        btn.grid(row=0, column=1, pady=4, padx=8)
-        btn = ttk.Button(self, text= "show neg trajectory", style = 'Toolbutton', command=self.show_neg_traj)
-        btn.grid(row=1, column=1, pady=4, padx=8)
+        frame = tk.Frame(self)
+        ttk.Button(frame, text= "show pos trajectory", style = 'Toolbutton', command=self.show_pos_traj).pack()
+        ttk.Button(frame, text= "show neg trajectory", style = 'Toolbutton', command=self.show_neg_traj).pack()
+        frame.grid(row=0, column=1, sticky=tk.N, pady=4, padx=8)
         start_time, finish_time  =  self.equilibrium_manager.get_timestamp_range()
         self.update_time(start_time)
 
