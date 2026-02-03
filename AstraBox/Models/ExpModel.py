@@ -27,20 +27,19 @@ class Experiment:
         word = pp.Word(pp.printables)
         var_name = pp.Word(init_chars= pp.alphas, body_chars= pp.alphanums)
         tag = pp.one_of(['POINTS', 'GRIDTYPE', 'NAMEXP', 'NTIMES', 'FACTOR'])
-        vector_header = pp.OneOrMore( pp.Group(tag + word))('vector')
+        grid_header = pp.OneOrMore( pp.Group(tag + word))('grid_header')
         
         record = pp.Group(var_name("var") + pp.OneOrMore(pp.pyparsing_common.fnumber )('value')).set_results_name('scalar')
         value = pp.pyparsing_common.sci_real | pp.pyparsing_common.integer
         value_array = pp.OneOrMore(value).set_results_name('data')
         record.ignore(pp.AtLineStart('!') + pp.rest_of_line)
         #test = pp.Suppress(comments) | vector_header | record | value_array
-        test = vector_header | record | value_array
+        test = grid_header | record | value_array
 
-        scalar_vars = {}
-        vectors = []
-        new_vector = None
-        #print('-------------')
-        scalar_flag = True
+        exp_vars = {}
+        grid_vars = {}
+        grid = None
+
         for t in text:
             if t.startswith('END'):
                 break
@@ -50,42 +49,46 @@ class Experiment:
             if t.isspace():
                 #print('is space')
                 continue    
-            if scalar_flag and t.startswith(' '):
+            if t.startswith(' '):
                 #print(f'comment: {t}')
                 continue
             try:
-                print(t)
+                #print('-------------')
+                #print(t)
                 res = test.parseString(t)
                 #print(res.dump())
-                if 'scalar' in res :
-                    #print(f'{res.scalar.var} = {res.scalar.value}')
-                    if res.scalar.var in scalar_vars:
-                        scalar_vars[res.scalar.var].append(res.scalar.value.as_list())
-                    else:
-                        scalar_vars[res.scalar.var] = [res.scalar.value.as_list()]
-                else: 
-                    if 'vector' in res:
-                        #print(f' {res.vector}')
-                        new_vector = {'data' : []}
-                        for p in res.vector.as_list():
-                            new_vector[p[0]] = p[1]
-
-                        vectors.append(new_vector)
-                        scalar_flag = False
-                    if 'data' in res:
-                        new_vector['data'].append(res.data.as_list())
-                    else:
+                match res:
+                    case _ if 'scalar' in res :
+                        #print(f'{res.scalar.var} = {res.scalar.value}')
+                        if res.scalar.var in exp_vars:
+                            exp_vars[res.scalar.var].append(res.scalar.value)
+                        else:
+                            exp_vars[res.scalar.var] = [res.scalar.value]
+                    case _ if 'grid_header' in res:
+                        #print(res.dump())
+                        grid = {k: int(v) if v.isdigit() else v for k, v in res.grid_header}
+                        #print(grid)
+                        grid['data'] = []
+                        grid_vars[grid['NAMEXP']] = grid
+                    case _ if 'data' in res:
+                        #print(res.dump())
+                        if grid:
+                            grid['data'].append(res.data.as_list())
+                    case _ :
                         pass
                         #print(res.dump())
             except Exception as ex: 
                 print(t)
                 print(ex)    
     
-        for key, v in scalar_vars.items():
+        for key, v in exp_vars.items():
             if len(v) == 1:
-                if len(v[0]) == 1:
-                    scalar_vars[key] = v[0][0]            
-        return scalar_vars, vectors        
+                exp_vars[key] = v[0]   
+        for key, v in grid_vars.items():    
+            print(v['NAMEXP'])
+            for x in v['data']:
+                print(x)
+        return exp_vars, grid_vars        
 
     def print_scalars(self):
         print('scalars data:')
