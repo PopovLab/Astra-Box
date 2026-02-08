@@ -68,13 +68,21 @@ class ScalarVarsView(TabViewBasic):
 
     def init_ui(self):
         print('init ScalarVarsView')
-        exp = self.model.get_experiment()
-        sheet = self.make_sheet(exp.scalars)
+        self.exp = self.model.get_experiment()
+        scalars = {}
+        series = {}
+        for key, v in self.exp.scalars.items():
+            if type(v) == list:
+                series[key] = v
+            else:
+                scalars[key] = v
+        sheet = self.make_sheet(scalars)
         sheet.pack(pady= 5)
+        sheet2 = self.make_sheet(series, self.handle_click)
+        sheet2.pack(pady= 5)
 
-    def make_sheet(self, vars: dict):
+    def make_sheet(self, vars: dict, on_click= None, col_num = 5):
         frame = tk.Frame(self)
-        col_num = 5
         column = 0
         row = 0
         for key, v in vars.items():
@@ -88,7 +96,8 @@ class ScalarVarsView(TabViewBasic):
             e.insert(tk.END, text)
             e.value_key = key
             e.saved_bg= e['bg']
-            e.bind("<1>", self.handle_click)
+            if on_click:
+                e.bind("<1>", on_click)
             column = column + 1
             if column>= col_num:
                 row = row + 1
@@ -98,8 +107,7 @@ class ScalarVarsView(TabViewBasic):
     def handle_click(self, event):
         print(event.widget.value_key)
 
-        exp = self.model.get_experiment()
-        var = exp.scalars[event.widget.value_key]
+        var = self.exp.scalars[event.widget.value_key]
         if type(var) is not list:
             return
         
