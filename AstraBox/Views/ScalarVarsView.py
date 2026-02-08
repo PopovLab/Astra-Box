@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 
-from AstraBox.Models.ExpModel import Experiment
+from AstraBox.Models.ExpModel import ExpModel, Experiment
 
 class TabViewBasic(ttk.Frame):
     """Базовый класс для вкладок, для перехвата события видимости, что бы потом инициализировать вкладку"""
@@ -59,7 +59,7 @@ class ScalarPlot(ttk.Frame):
         super().destroy()       
 
 class ScalarVarsView(TabViewBasic):
-    def __init__(self, master, model) -> None:
+    def __init__(self, master, model: ExpModel) -> None:
         super().__init__(master, model)        
         title = f"{model.name}"
         self.visible_series = {}
@@ -69,36 +69,30 @@ class ScalarVarsView(TabViewBasic):
     def init_ui(self):
         print('init ScalarVarsView')
         exp = self.model.get_experiment()
-        sheet = self.make_sheet(exp)
+        sheet = self.make_sheet(exp.scalars)
         sheet.pack(pady= 5)
 
-    def make_sheet(self, exp: Experiment):
+    def make_sheet(self, vars: dict):
         frame = tk.Frame(self)
-        scalar_list = []
-        key_list = list(exp.scalars.keys())
-        for key, v in exp.scalars.items():
+        col_num = 5
+        column = 0
+        row = 0
+        for key, v in vars.items():
+            print(key, row, column)
             if type(v) == list:
-                scalar_list.append(f'{key:7}: list[{len(v)}]')
+                text = f'{key:7}: list[{len(v)}]'
             else:
-                scalar_list.append(f'{key:7}: {v}')
-        sl = len(scalar_list)
-        rows = []
-        for i in range(5):
-            cols = []
-            for j in range(4):
-                e = tk.Entry(frame, relief=tk.GROOVE)
-                e.grid(row=i, column=j, sticky=tk.NSEW)
-                index = i*4 + j
-                if index<sl:
-                    s =  scalar_list[index]
-                    e.insert(tk.END, s)
-                    e.value_key = key_list[index]
-                    e.saved_bg= e['bg']
-                    e.bind("<1>", self.handle_click)
-                
-                #e.insert(tk.END, '%d.%d' % (i, j))
-                cols.append(e)
-            rows.append(cols)
+                text = f'{key:7}: {v}'
+            e = tk.Entry(frame, relief=tk.GROOVE)
+            e.grid(row= row, column= column, sticky=tk.NSEW)            
+            e.insert(tk.END, text)
+            e.value_key = key
+            e.saved_bg= e['bg']
+            e.bind("<1>", self.handle_click)
+            column = column + 1
+            if column>= col_num:
+                row = row + 1
+                column = 0
         return frame
 
     def handle_click(self, event):
