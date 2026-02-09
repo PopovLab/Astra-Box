@@ -77,11 +77,18 @@ class ScalarVarsView(TabViewBasic):
             else:
                 scalars[key] = v
         sheet = self.make_sheet(scalars)
-        sheet.pack(pady= 5)
-        sheet2 = self.make_sheet(series, self.handle_click)
-        sheet2.pack(pady= 5)
+        sheet.pack(pady= 5, anchor="nw")
+        if series:
+            sheet2 = self.make_sheet(series, self.handle_click)
+            sheet2.pack(pady= 5, anchor="nw")
+            for key, v in series.items():
+                time = [t for t, _ in v]
+                value =[v for t, v in v]
+                self.visible_series[key] = {'time': time,  "values": value}  
+            self.scalar_plot = ScalarPlot(self, self.visible_series)
+            self.scalar_plot.pack(pady= 5, anchor="nw")
 
-    def make_sheet(self, vars: dict, on_click= None, col_num = 5):
+    def make_sheet(self, vars: dict, on_click= None, col_num = 7):
         frame = tk.Frame(self)
         column = 0
         row = 0
@@ -125,7 +132,8 @@ class ScalarVarsView(TabViewBasic):
             value =[v for t, v in var]
             self.visible_series[event.widget.value_key] = {'time': time,  "values": value}
         if self.scalar_plot is None:
-            self.scalar_plot = ScalarPlot(self, self.visible_series)
-            self.scalar_plot.pack(pady= 5)
+            #self.scalar_plot = ScalarPlot(self, self.visible_series)
+            #self.scalar_plot.pack(pady= 5)
+            pass
         else:
             self.scalar_plot.show_series(self.visible_series)
