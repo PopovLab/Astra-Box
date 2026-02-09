@@ -29,7 +29,7 @@ class TabViewBasic(ttk.Frame):
 class ScalarPlot(ttk.Frame):
     def __init__(self, master, time_series) -> None:
         super().__init__(master)  
-        self.fig = plt.figure(figsize=(7, 5), dpi=100)        
+        self.fig = plt.figure(figsize=(8, 4), dpi=100)        
         #self.fig.suptitle(f'Astra time series. ')
         
         
