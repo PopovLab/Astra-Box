@@ -32,7 +32,6 @@ class ScalarPlot(ttk.Frame):
         self.fig = plt.figure(figsize=(8, 4), dpi=100)        
         #self.fig.suptitle(f'Astra time series. ')
         
-        
         self.ax1 = self.fig.subplots(1, 1)
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         self.show_series(time_series)
@@ -58,11 +57,79 @@ class ScalarPlot(ttk.Frame):
             plt.close(self.fig)
         super().destroy()       
 
-class ScalarVarsView(TabViewBasic):
+class ExpGridPlot(ttk.Frame):
+    def __init__(self, master, grid) -> None:
+        super().__init__(master)  
+        self.fig = plt.figure(figsize=(8, 4), dpi=100)        
+        title = f"name={grid['NAMEXP']} gridtype={grid['GRIDTYPE']} points={grid['POINTS']}"
+        self.fig.suptitle(title)
+        
+        self.ax1 = self.fig.subplots(1, 1)
+        self.canvas = FigureCanvasTkAgg(self.fig, self)   
+        match grid['GRIDTYPE']:
+            case 19: self.show_type_19(grid)
+            case _: pass
+
+        #self.show_series(time_series)
+
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan=2)
+        tb = VerticalNavigationToolbar2Tk(self.canvas, self)
+        tb.update()
+        tb.grid(row=0, column=0, sticky=tk.N)        
+
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+    def show_type_19(self, grid):
+        """
+        Docstring for show_type_19
+        
+        :param self: Description
+        :param data: Horizontal chord
+        radial coordinate {r0, zj}
+        Type of the grid Arbitrary
+        Units [m]
+        """
+        #self.ax1.clear()
+        data = grid['data']
+        self.ax1.plot(data[2], data[3], label= 'type 19')
+        self.ax1.legend(loc='upper right')
+        self.canvas.draw()
+
+    def destroy(self):
+        print("ScalarPlot destroy")
+        if self.fig:
+            plt.close(self.fig)
+        super().destroy()     
+
+
+class ScrollableFrame(TabViewBasic):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = ttk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+class ScalarVarsView(ScrollableFrame):
     def __init__(self, master, model: ExpModel) -> None:
         super().__init__(master, model)        
         title = f"{model.name}"
         self.visible_series = {}
+        self.grid_series = {}
         self.model = model
         self.scalar_plot = None 
 
@@ -85,15 +152,23 @@ class ScalarVarsView(TabViewBasic):
                 time = [t for t, _ in v]
                 value =[v for t, v in v]
                 self.visible_series[key] = {'time': time,  "values": value}  
-            self.scalar_plot = ScalarPlot(self, self.visible_series)
+            self.scalar_plot = ScalarPlot(self.scrollable_frame, self.visible_series)
             self.scalar_plot.pack(pady= 5, anchor="nw")
+        if self.exp.grid_vars:
+            for key, grid in self.exp.grid_vars.items():
+                print(key, grid)
+                self.make_sheet(grid).pack(pady= 5, anchor="nw")
+                plot = ExpGridPlot(self.scrollable_frame, grid)
+                plot.pack(pady= 5, anchor="nw")
+
+
 
     def make_sheet(self, vars: dict, on_click= None, col_num = 7):
-        frame = tk.Frame(self)
+        frame = tk.Frame(self.scrollable_frame)
         column = 0
         row = 0
         for key, v in vars.items():
-            print(key, row, column)
+            #print(key, row, column)
             if type(v) == list:
                 text = f'{key:7}: list[{len(v)}]'
             else:
@@ -124,16 +199,11 @@ class ScalarVarsView(TabViewBasic):
         else:
             event.widget.configure(bg=event.widget.saved_bg)
 
-
         if event.widget.value_key in self.visible_series.keys():
             del self.visible_series[event.widget.value_key]
         else:
             time = [t for t, _ in var]
             value =[v for t, v in var]
             self.visible_series[event.widget.value_key] = {'time': time,  "values": value}
-        if self.scalar_plot is None:
-            #self.scalar_plot = ScalarPlot(self, self.visible_series)
-            #self.scalar_plot.pack(pady= 5)
-            pass
-        else:
+        if not self.scalar_plot is None:
             self.scalar_plot.show_series(self.visible_series)
