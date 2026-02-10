@@ -68,6 +68,8 @@ class ExpGridPlot(ttk.Frame):
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         match grid['GRIDTYPE']:
             case 1: self.show_type_1(grid)
+            case 10: self.show_type_10(grid)
+            case 13: self.show_type_13(grid)
             case 19: self.show_type_19(grid)
             case _: pass
 
@@ -84,6 +86,7 @@ class ExpGridPlot(ttk.Frame):
     def show_type_1(self, grid):
         """
         Show data witch gridtype=1
+        
         Default input mode
         :param self: Description
         :param data: Default input mode
@@ -98,6 +101,48 @@ class ExpGridPlot(ttk.Frame):
                 grid['NTIMES'] = 0
                 data = [[0]] + data
             self.ax1.plot(data[1], label= 'type 1')
+            self.ax1.legend(loc='upper right')
+            self.canvas.draw()
+
+    def show_type_10(self, grid):
+        """
+        Show data witch gridtype=10
+
+        Default input mode
+        :param self: Description
+        :param grid: grid
+        Radial coordinate: r_psi,j  [0, -1]
+        Type of the grid: Arbitrary
+        Units: [d/l]
+        """
+        #self.ax1.clear()
+        data = grid['data']
+        if data:
+            if 'NTIMES' not in grid:
+                grid['NTIMES'] = 0
+                data = [[0]] + data
+            self.ax1.plot(data[1], data[2], label= 'type 13')
+            self.ax1.legend(loc='upper right')
+            self.canvas.draw()
+
+    def show_type_13(self, grid):
+        """
+        Show data witch gridtype=13
+
+        Default input mode
+        :param self: Description
+        :param data: 
+        Radial coordinate: r_psi,j  [0, -1]
+        Type of the grid: Arbitrary
+        Units: [d/l]
+        """
+        #self.ax1.clear()
+        data = grid['data']
+        if data:
+            if 'NTIMES' not in grid:
+                grid['NTIMES'] = 0
+                data = [[0]] + data
+            self.ax1.plot(data[1], data[2], label= 'type 13')
             self.ax1.legend(loc='upper right')
             self.canvas.draw()
 
