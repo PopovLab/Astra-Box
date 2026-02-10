@@ -67,6 +67,7 @@ class ExpGridPlot(ttk.Frame):
         self.ax1 = self.fig.subplots(1, 1)
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
         match grid['GRIDTYPE']:
+            case 1: self.show_type_1(grid)
             case 19: self.show_type_19(grid)
             case _: pass
 
@@ -80,9 +81,29 @@ class ExpGridPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+    def show_type_1(self, grid):
+        """
+        Show data witch gridtype=1
+        Default input mode
+        :param self: Description
+        :param data: Default input mode
+        Radial coordinate: aj=ABC*kj
+        Type of the grid: Equidistant
+        Units: [m]
+        """
+        #self.ax1.clear()
+        data = grid['data']
+        if data:
+            if 'NTIMES' not in grid:
+                grid['NTIMES'] = 0
+                data = [[0]] + data
+            self.ax1.plot(data[1], label= 'type 1')
+            self.ax1.legend(loc='upper right')
+            self.canvas.draw()
+
     def show_type_19(self, grid):
         """
-        Docstring for show_type_19
+        Show data witch gridtype=19
         
         :param self: Description
         :param data: Horizontal chord
@@ -90,11 +111,15 @@ class ExpGridPlot(ttk.Frame):
         Type of the grid Arbitrary
         Units [m]
         """
-        #self.ax1.clear()
+
         data = grid['data']
-        self.ax1.plot(data[2], data[3], label= 'type 19')
-        self.ax1.legend(loc='upper right')
-        self.canvas.draw()
+        if data:
+            if 'NTIMES' not in grid:
+                grid['NTIMES'] = 0
+                data = [[0]] + data
+            self.ax1.plot(data[2], data[3], label= 'type 19')
+            self.ax1.legend(loc='upper right')
+            self.canvas.draw()
 
     def destroy(self):
         print("ScalarPlot destroy")
