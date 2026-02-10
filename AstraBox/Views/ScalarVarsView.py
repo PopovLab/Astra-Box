@@ -121,7 +121,18 @@ class ExpGridPlot(ttk.Frame):
             if 'NTIMES' not in grid:
                 grid['NTIMES'] = 0
                 data = [[0]] + data
-            self.ax1.plot(data[1], data[2], label= 'type 13')
+            len_x = len(data[1])
+            for k, time in enumerate(data[0]):
+                #print(k, time)
+                len_y = len(data[k+2])
+                if len_x == len_y:
+                    self.ax1.plot(data[1], data[k+2], label= f'{time}')
+                else:
+                    min_len = min(len_x, len_y)
+                    print(f"⚠️ Внимание: Списки разной длины (X: {len_x}, Y: {len_y}).")
+                    print(f"   Данные обрезаны до {min_len} элементов.")
+                    # Обрезаем оба списка до минимальной длины
+                    self.ax1.plot(data[1][:min_len], data[k+2][:min_len], label= f'{time} !')
             self.ax1.legend(loc='upper right')
             self.canvas.draw()
 
