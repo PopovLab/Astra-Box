@@ -66,12 +66,18 @@ class ExpGridPlot(ttk.Frame):
         
         self.ax1 = self.fig.subplots(1, 1)
         self.canvas = FigureCanvasTkAgg(self.fig, self)   
-        match grid['GRIDTYPE']:
-            case 1: self.show_type_1(grid)
-            case 10: self.show_type_10(grid)
-            case 13: self.show_type_13(grid)
-            case 19: self.show_type_19(grid)
-            case _: pass
+        if grid['data']:
+            match grid['GRIDTYPE']:
+                case 1: self.show_type_1(grid)
+                case 10: self.show_type_10(grid)
+                case 13: self.show_type_13(grid)
+                case 19: self.show_type_19(grid)
+                case _: pass
+        else:
+            self.ax1.text(0.5, 0.5, 'No data', 
+            horizontalalignment='center', # сокращенно ha='center'
+            verticalalignment='center',   # сокращенно va='center'
+            transform=self.ax1.transAxes)        # привязка к осям (0..1)            
 
         #self.show_series(time_series)
 
@@ -94,15 +100,13 @@ class ExpGridPlot(ttk.Frame):
         Type of the grid: Equidistant
         Units: [m]
         """
-        #self.ax1.clear()
         data = grid['data']
-        if data:
-            if 'NTIMES' not in grid:
-                grid['NTIMES'] = 0
-                data = [[0]] + data
-            self.ax1.plot(data[1], label= 'type 1')
-            self.ax1.legend(loc='upper right')
-            self.canvas.draw()
+        if 'NTIMES' not in grid:
+            grid['NTIMES'] = 0
+            data = [[0]] + data
+        self.ax1.plot(data[1], label= 'type 1')
+        self.ax1.legend(loc='upper right')
+        self.canvas.draw()
 
     def show_type_10(self, grid):
         """
@@ -117,24 +121,24 @@ class ExpGridPlot(ttk.Frame):
         """
         #self.ax1.clear()
         data = grid['data']
-        if data:
-            if 'NTIMES' not in grid:
-                grid['NTIMES'] = 0
-                data = [[0]] + data
-            len_x = len(data[1])
-            for k, time in enumerate(data[0]):
-                #print(k, time)
-                len_y = len(data[k+2])
-                if len_x == len_y:
-                    self.ax1.plot(data[1], data[k+2], label= f'{time}')
-                else:
-                    min_len = min(len_x, len_y)
-                    print(f"⚠️ Внимание: Списки разной длины (X: {len_x}, Y: {len_y}).")
-                    print(f"   Данные обрезаны до {min_len} элементов.")
-                    # Обрезаем оба списка до минимальной длины
-                    self.ax1.plot(data[1][:min_len], data[k+2][:min_len], label= f'{time} !')
-            self.ax1.legend(loc='upper right')
-            self.canvas.draw()
+        if 'NTIMES' not in grid:
+            grid['NTIMES'] = 0
+            data = [[0]] + data
+        len_x = len(data[1])
+        for k, time in enumerate(data[0]):
+            #print(k, time)
+            len_y = len(data[k+2])
+            if len_x == len_y:
+                self.ax1.plot(data[1], data[k+2], label= f'{time}')
+            else:
+                min_len = min(len_x, len_y)
+                print(f"⚠️ Внимание: Списки разной длины (X: {len_x}, Y: {len_y}).")
+                print(f"   Данные обрезаны до {min_len} элементов.")
+                # Обрезаем оба списка до минимальной длины
+                self.ax1.plot(data[1][:min_len], data[k+2][:min_len], label= f'{time} !')
+        self.ax1.legend(loc='upper right')
+
+        self.canvas.draw()
 
     def show_type_13(self, grid):
         """
@@ -149,13 +153,13 @@ class ExpGridPlot(ttk.Frame):
         """
         #self.ax1.clear()
         data = grid['data']
-        if data:
-            if 'NTIMES' not in grid:
-                grid['NTIMES'] = 0
-                data = [[0]] + data
-            self.ax1.plot(data[1], data[2], label= 'type 13')
-            self.ax1.legend(loc='upper right')
-            self.canvas.draw()
+        if 'NTIMES' not in grid:
+            grid['NTIMES'] = 0
+            data = [[0]] + data
+        self.ax1.plot(data[1], data[2], label= 'type 13')
+        self.ax1.legend(loc='upper right')
+
+        self.canvas.draw()
 
     def show_type_19(self, grid):
         """
@@ -169,13 +173,13 @@ class ExpGridPlot(ttk.Frame):
         """
 
         data = grid['data']
-        if data:
-            if 'NTIMES' not in grid:
-                grid['NTIMES'] = 0
-                data = [[0]] + data
-            self.ax1.plot(data[2], data[3], label= 'type 19')
-            self.ax1.legend(loc='upper right')
-            self.canvas.draw()
+
+        if 'NTIMES' not in grid:
+            grid['NTIMES'] = 0
+            data = [[0]] + data
+        self.ax1.plot(data[2], data[3], label= 'type 19')
+        self.ax1.legend(loc='upper right')
+        self.canvas.draw()
 
     def destroy(self):
         print("ScalarPlot destroy")
@@ -237,7 +241,7 @@ class ScalarVarsView(ScrollableFrame):
             self.scalar_plot.pack(pady= 5, anchor="nw")
         if self.exp.grid_vars:
             for key, grid in self.exp.grid_vars.items():
-                print(key, grid)
+                #print(key, grid)
                 self.make_sheet(grid).pack(pady= 5, anchor="nw")
                 plot = ExpGridPlot(self.scrollable_frame, grid)
                 plot.pack(pady= 5, anchor="nw")
