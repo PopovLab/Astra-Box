@@ -15,9 +15,7 @@ class Experiment:
         #p = Path(file_name)
         with path.open() as f:
             text = f.readlines()
-        self.scalars, self.vectors = self.parsing(text)     
-
-
+        self.scalars, self.grid_vars = self.parsing(text)     
 
     def parsing(self, text):
         comm1 = pp.AtLineStart(pp.White()) + pp.rest_of_line
@@ -84,10 +82,10 @@ class Experiment:
         for key, v in exp_vars.items():
             if len(v) == 1:
                 exp_vars[key] = v[0]   
-        for key, v in grid_vars.items():    
-            print(v['NAMEXP'])
-            for x in v['data']:
-                print(x)
+        #for key, v in grid_vars.items():    
+        #    print(v['NAMEXP'])
+        #    for x in v['data']:
+        #        print(x)
         return exp_vars, grid_vars        
 
     def print_scalars(self):
