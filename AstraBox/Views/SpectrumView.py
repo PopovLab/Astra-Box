@@ -54,7 +54,7 @@ class GaussianSpectrumView(tk.LabelFrame):
         #self.rowconfigure(0, weight=1)    
         self.generate()
         self.rowconfigure(2, weight=1)
-
+ 
     def generate(self):
         #self.options_box.update()
         s_d= self.model.spectrum.get_spectrum_data()
@@ -92,40 +92,36 @@ class FileSourcePanel(tk.Frame):
 
 
 class Spectrum1DView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
+    def __init__(self, master, model: SpectrumModel) -> None:
         super().__init__(master, text='Spectrum 1D')        
 
         self.model = model
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
-        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
+        self.control_panel = FileSourcePanel(self, self.model.spectrum, self.load_source)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
         self.options_box = OptionsPanel(self, self.model.spectrum)
         self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-        #btn = ttk.Button(self, text= 'Generate', command=self.generate)
-        #btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
+        self.load_source(self.model.spectrum.source)
+        
         self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
-        self.make_plot()
         self.rowconfigure(2, weight=1)        
 
-    def on_load_file(self, filename):
-        print(filename)
-        self.model.spectrum.source = filename
-        self.make_plot()        
-
-    def make_plot(self):
+    def load_source(self, filename: str) -> bool:
         try:
             spectrum_data = self.model.spectrum.get_spectrum_data()
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
             label = ttk.Label(self, text= ex_text, width=20)
-            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)       
+            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            return False     
         else:
             self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
-            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
+            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            return True 
 
 class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model:SpectrumModel ) -> None:
