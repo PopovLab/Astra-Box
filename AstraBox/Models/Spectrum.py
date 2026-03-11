@@ -71,14 +71,14 @@ class Spectrum1D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
 
-    def read_spcp1D(self):        
-        p = WorkSpace.get_spectrum_dat_file_path(self.source)
+    def read_spcp1D(self, filename):        
+        p = WorkSpace.get_spectrum_dat_file_path(filename)
         spectrum_data = load_spcp1D(p)
         #self.spectrum_normalization()     
         return spectrum_data
     
-    def get_spectrum_data(self):
-        return power_normalization(self.read_spcp1D())
+    def get_spectrum_data(self, filename):
+        return power_normalization(self.read_spcp1D(filename))
 
 
 class ScatterSpectrum(BaseSpectrum):

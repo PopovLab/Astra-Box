@@ -112,7 +112,7 @@ class Spectrum1DView(tk.LabelFrame):
 
     def load_source(self, filename: str) -> bool:
         try:
-            spectrum_data = self.model.spectrum.get_spectrum_data()
+            spectrum_data = self.model.spectrum.get_spectrum_data(filename)
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
             label = ttk.Label(self, text= ex_text, width=20)
