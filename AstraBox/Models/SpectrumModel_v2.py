@@ -34,16 +34,16 @@ class SpectrumModel(BaseModel):
         print(name)
         match spectrum_type:
             case 'gauss':
-                return cls(name= name, spectrum=GaussSpectrum(kind='gauss_spectrum'))
+                spectrum= GaussSpectrum()
             case 'spectrum_1D':
-                return cls(name= name, spectrum=Spectrum1D(kind='spectrum_1D'))
+                spectrum= Spectrum1D()
             case 'spectrum_2D':
-                return cls(name= name, spectrum=Spectrum2D(kind='spectrum_2D'))            
+                spectrum= Spectrum2D()    
             case 'scatter_spectrum':
-                return cls(name= name, spectrum=ScatterSpectrum(kind='scatter_spectrum'))            
+                spectrum= ScatterSpectrum()           
             case _:
                 raise ValueError(f"Unsupported spectrum type: {spectrum_type}")
-              
+        return cls(name= name, spectrum= spectrum)              
 
     def get_dump(self):
         return self.model_dump_json(indent= 2)

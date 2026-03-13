@@ -20,10 +20,10 @@ def power_normalization(spectrum_data):
     return  spectrum_data
 
 class BaseSpectrum(BaseModel):
-    kind: None
+    kind: str
 
 class GaussSpectrum(BaseSpectrum):
-    kind: Literal['gauss_spectrum']
+    kind: Literal['gauss_spectrum'] = 'gauss_spectrum'
     title: ClassVar[str] = 'Gauss Spectrum'
     x_min: float = Field(default= -40.0, title= 'x_min')
     x_max: float = Field(default=  40.0, title= 'x_max')
@@ -64,7 +64,7 @@ def load_spcp1D(p: pathlib.Path):
     return spectrum_data
     
 class Spectrum1D(BaseSpectrum):
-    kind: Literal['spectrum_1D']
+    kind: Literal['spectrum_1D'] = 'spectrum_1D'
     title: ClassVar[str] = 'Spectrum 1D'    
     source: str   = Field(default= '', title= 'source')
     coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
@@ -82,7 +82,7 @@ class Spectrum1D(BaseSpectrum):
 
 
 class ScatterSpectrum(BaseSpectrum):
-    kind: Literal['scatter_spectrum']
+    kind: Literal['scatter_spectrum'] = 'scatter_spectrum'
     title: ClassVar[str] = 'Scatter Spectrum'    
     source: str   = Field(default= '', title= 'source')
     coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
@@ -136,7 +136,7 @@ class ScatterSpectrum(BaseSpectrum):
 
 
 class Spectrum2D(BaseSpectrum):
-    kind: Literal['spectrum_2D']
+    kind: Literal['spectrum_2D'] = 'spectrum_2D'
     title: ClassVar[str] = 'Spectrum 2D'    
     source: str   = Field(default= '', title= 'source')
     coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
