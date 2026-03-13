@@ -195,14 +195,15 @@ class Spectrum2DView(tk.LabelFrame):
         spectrum_data = self.model.spectrum.get_spectrum_data(filename)
         if spectrum_data:
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
-            self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
+            self.model.spectrum.set_source(filename)   
             return True
         else:
             return False
 
         
 class ScatterSpectrumView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
+    def __init__(self, master, model:SpectrumModel) -> None:
         super().__init__(master, text='Scatter Spectrum')        
         
         self.model = model
