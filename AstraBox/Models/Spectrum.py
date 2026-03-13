@@ -8,6 +8,7 @@ from typing import Literal
 from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
+from returns.result import Success, Failure, Result
 
 import AstraBox.WorkSpace as WorkSpace
 
@@ -21,6 +22,8 @@ def power_normalization(spectrum_data):
 
 class BaseSpectrum(BaseModel):
     kind: str
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]: 
+        return Failure(' BaseSpectrum ')
 
 class GaussSpectrum(BaseSpectrum):
     kind: Literal['gauss_spectrum'] = 'gauss_spectrum'
@@ -143,7 +146,7 @@ class Spectrum2D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
-    def get_spectrum_data(self, filename= None) ->dict | None:        
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]:         
         try:
             if filename:
                 p = WorkSpace.get_spectrum_dat_file_path(filename)
@@ -156,9 +159,9 @@ class Spectrum2D(BaseSpectrum):
                 self.source = filename 
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
-            spectrum_data = None
-        return spectrum_data 
+            messagebox.showinfo(title="Ошибка чтения спектра", message= ex_text )
+            return Failure(ex_text)
+        return Success(spectrum_data)
 
     def read_data(self, file_path: pathlib.Path) ->dict:
         """

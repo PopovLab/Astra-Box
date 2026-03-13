@@ -7,6 +7,8 @@ from tkinter import filedialog as fd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from returns.result import Success, Failure, Result
+
 from AstraBox import UIElement, WorkSpace
 from AstraBox.Models.Spectrum import BaseSpectrum, GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
 from AstraBox.ToolBox.SpectrumPlot import ScatterPlot
@@ -141,13 +143,14 @@ class Spectrum2DView(tk.LabelFrame):
         filter_pabel= self.make_filter_panel()
         filter_pabel.grid(row=2, column=0, sticky=tk.W)
 
-        spectrum_data = self.model.spectrum.get_spectrum_data()
-        if spectrum_data:
+        res = self.model.spectrum.load_spectrum_data()
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
             self.numper_points.set(spectrum_data['Nz'].size)
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         else:
-            label = ttk.Label(self, text= "Ошибка загрузки спектра", width=20)
+            label = ttk.Label(self, text= res.failure(), width=20)
             label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
                     
         self.columnconfigure(0, weight=1)        
