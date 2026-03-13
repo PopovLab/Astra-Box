@@ -42,7 +42,8 @@ class SpectrumModel(BaseModel):
             case 'scatter_spectrum':
                 return cls(name= name, spectrum=ScatterSpectrum(kind='scatter_spectrum'))            
             case _:
-                return cls(name= name)
+                raise ValueError(f"Unsupported spectrum type: {spectrum_type}")
+              
 
     def get_dump(self):
         return self.model_dump_json(indent= 2)
