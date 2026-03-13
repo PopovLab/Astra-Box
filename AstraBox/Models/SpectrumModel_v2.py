@@ -8,10 +8,10 @@ from typing import Literal
 from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
+from returns.result import Success, Failure, Result
+
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.Spectrum import GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
-
-
 
 def random_name():
     return 'new_'+str(uuid.uuid4())[0:4]
@@ -51,6 +51,12 @@ class SpectrumModel(BaseModel):
     def get_dest_path(self):
         return 'lhcd/spectrum.dat'
 
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]:   
+        if self.spectrum:
+            return self.spectrum.load_spectrum_data(filename)
+        else:
+            return Failure('Spectrum is None')
+        
     def generate(self):
         match self.spectrum.kind:
             case 'gauss_spectrum':

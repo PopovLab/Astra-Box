@@ -143,7 +143,7 @@ class Spectrum2DView(tk.LabelFrame):
         filter_pabel= self.make_filter_panel()
         filter_pabel.grid(row=2, column=0, sticky=tk.W)
 
-        res = self.model.spectrum.load_spectrum_data()
+        res = self.model.load_spectrum_data()
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.numper_points.set(spectrum_data['Nz'].size)
@@ -195,8 +195,9 @@ class Spectrum2DView(tk.LabelFrame):
         self.spectrum_plot.export_to_file(filter)
 
     def on_set_file_name(self, filename:str) -> bool:
-        spectrum_data = self.model.spectrum.get_spectrum_data(filename)
-        if spectrum_data:
+        res = self.model.load_spectrum_data(filename)
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
             self.spectrum_plot.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
             self.model.spectrum.set_source(filename)   
@@ -210,27 +211,30 @@ class ScatterSpectrumView(tk.LabelFrame):
         super().__init__(master, text='Scatter Spectrum')        
         
         self.model = model
-        spectrum_data = self.model.spectrum.get_spectrum_data()
+
         self.numper_points = tk.IntVar(self, value=len(spectrum_data['Amp'])) 
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
         level_panel = self.make_threshold_panel()
         level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.W)  
-
-        if spectrum_data:
+        
+        res = self.model.load_spectrum_data()
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
             self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
             self.spectrum_plot.grid(row=2, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
 
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)    
  
-    def on_load_file(self, filename):
-        print(filename)
-        spectrum_data = self.model.spectrum.get_spectrum_data(filename)
-        if spectrum_data:
+    def on_load_file(self, filename)-> bool:
+        res = self.model.load_spectrum_data(filename)
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
             self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
             self.spectrum_plot.grid(row=2, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+            self.model.spectrum.set_source(filename)   
             return True
         else:
             return False

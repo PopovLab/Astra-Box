@@ -125,8 +125,12 @@ class ScatterSpectrum(BaseSpectrum):
     def set_source(self, filename):
         self.source = filename 
 
-    def get_spectrum_data(self, filename) ->dict | None:        
-        p = WorkSpace.get_spectrum_dat_file_path(filename)
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]:      
+            
+        if filename:
+            p = WorkSpace.get_spectrum_dat_file_path(filename)
+        else:
+            p = WorkSpace.get_spectrum_dat_file_path(self.source)
         try:
             #spectrum_data = power_normalization(self.read_scatter(p))
             spectrum_data = self.read_scatter(p)
@@ -134,8 +138,9 @@ class ScatterSpectrum(BaseSpectrum):
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
             messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
-            spectrum_data = None
-        return spectrum_data 
+            return Failure(ex_text)
+        
+        return Success(spectrum_data)
 
 
 class Spectrum2D(BaseSpectrum):
@@ -162,6 +167,7 @@ class Spectrum2D(BaseSpectrum):
             messagebox.showinfo(title="Ошибка чтения спектра", message= ex_text )
             return Failure(ex_text)
         return Success(spectrum_data)
+    
 
     def read_data(self, file_path: pathlib.Path) ->dict:
         """
