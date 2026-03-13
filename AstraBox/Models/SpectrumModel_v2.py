@@ -18,8 +18,8 @@ def random_name():
 
 class SpectrumModel(BaseModel):
     name:  str = Field(default= '123', title='name')
-    comment: str = Field(default='ccc', title='Comment')
-    spectrum: GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum= Field(default= GaussSpectrum(kind='gauss_spectrum'))
+    comment: str = Field(default='spectrum comment', title='Comment')
+    spectrum: GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum= Field(discriminator='kind')
 
     @classmethod
     def construct(cls, dump):
