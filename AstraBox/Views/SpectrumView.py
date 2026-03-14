@@ -113,17 +113,17 @@ class Spectrum1DView(tk.LabelFrame):
         self.rowconfigure(2, weight=1)        
 
     def load_source(self, filename: str) -> bool:
-        try:
-            spectrum_data = self.model.spectrum.get_spectrum_data(filename)
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+        res = self.model.load_spectrum_data(filename)
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
+            self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
+            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            return True
+        else:
             label = ttk.Label(self, text= ex_text, width=20)
             label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return False     
-        else:
-            self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
-            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
-            return True 
+
 
 class Spectrum2DView(tk.LabelFrame):
     def __init__(self, master, model:SpectrumModel ) -> None:

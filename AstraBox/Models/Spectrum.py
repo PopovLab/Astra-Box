@@ -22,6 +22,7 @@ def power_normalization(spectrum_data):
 
 class BaseSpectrum(BaseModel):
     kind: str
+    
     def load_spectrum_data(self, filename= None) -> Result[dict, str]: 
         return Failure(' BaseSpectrum ')
 
@@ -79,11 +80,17 @@ class Spectrum1D(BaseSpectrum):
         spectrum_data = load_spcp1D(p)
         #self.spectrum_normalization()     
         return spectrum_data
+ 
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]:      
+        try:
+            spectrum_data = power_normalization(self.read_spcp1D(filename))
+        except Exception as e :
+            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
+            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
+            return Failure(ex_text)
+        
+        return Success(spectrum_data)
     
-    def get_spectrum_data(self, filename):
-        return power_normalization(self.read_spcp1D(filename))
-
-
 class ScatterSpectrum(BaseSpectrum):
     kind: Literal['scatter_spectrum'] = 'scatter_spectrum'
     title: ClassVar[str] = 'Scatter Spectrum'    
