@@ -78,18 +78,23 @@ class SpectrumModel(BaseModel):
         return sp_pos, sp_neg
 
     def export_to_text(self):
-        spectrum_data = self.spectrum.get_spectrum_data()
-        print(self.spectrum.kind)
-        match self.spectrum.kind:
-            case 'gauss_spectrum'| 'spectrum_1D':
-                sp = [(x,0,p) for x, p in zip(spectrum_data['Ntor'], spectrum_data['Amp'])]
-            case 'rotated_gaussian':
-                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                                
-            case 'scatter_spectrum':
-                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                
-            case 'spectrum_2D':
-                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]                
-        return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
+        res = self.load_spectrum_data()
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
+            #spectrum_data = self.spectrum.get_spectrum_data()
+            print(self.spectrum.kind)
+            match self.spectrum.kind:
+                case 'gauss_spectrum'| 'spectrum_1D':
+                    sp = [(x,0,p) for x, p in zip(spectrum_data['Ntor'], spectrum_data['Amp'])]
+                case 'rotated_gaussian':
+                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                                
+                case 'scatter_spectrum':
+                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                
+                case 'spectrum_2D':
+                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]                
+            return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
+        else:
+            raise RuntimeError("Spectrum Data is not available")
     
     def export_to_nml(self):
         '''"Экспорт Spectrum параметров в nml-формат'''

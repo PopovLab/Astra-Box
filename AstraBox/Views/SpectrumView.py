@@ -31,7 +31,7 @@ class OptionsPanel(tk.Frame):
             UIElement.LABEL_WIDTH = None
             for name, value in section:
                 print(name)
-                if name != 'kind':
+                if name != 'kind' and name != 'source':
                     e = UIElement.construct(self, name, value, schema[name], self.observer, state)
                     e.grid(row=0, column= count, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
                     count = count + 1
@@ -41,7 +41,7 @@ class OptionsPanel(tk.Frame):
         setattr(self.section, name, value)
 
 class GaussianSpectrumView(tk.LabelFrame):
-    def __init__(self, master, model=None) -> None:
+    def __init__(self, master, model:SpectrumModel) -> None:
         super().__init__(master, text='Gaussian Spectrum')        
 
         self.model = model
@@ -53,12 +53,10 @@ class GaussianSpectrumView(tk.LabelFrame):
         btn = ttk.Button(self, text= 'Generate', command=self.generate)
         btn.grid(row=3, column=1, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
         self.columnconfigure(0, weight=1)        
-        #self.rowconfigure(0, weight=1)    
         self.generate()
         self.rowconfigure(2, weight=1)
  
     def generate(self):
-        #self.options_box.update()
         s_d= self.model.spectrum.get_spectrum_data()
         self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
         self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
@@ -107,8 +105,15 @@ class Spectrum1DView(tk.LabelFrame):
         self.options_box = OptionsPanel(self, self.model.spectrum)
         self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        self.load_source(self.model.spectrum.source)
-        
+        res = self.model.load_spectrum_data()
+        if isinstance(res, Success):
+            spectrum_data = res.unwrap()
+            self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
+            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)      
+        else:
+            label = ttk.Label(self, text= res.failure(), width=20)
+            label.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)        
 
@@ -117,11 +122,12 @@ class Spectrum1DView(tk.LabelFrame):
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
-            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)        
+            self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
+            self.model.spectrum.set_source(filename)    
             return True
         else:
-            label = ttk.Label(self, text= ex_text, width=20)
-            label.grid(row=3, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            label = ttk.Label(self, text= res.failure(), width=20)
+            label.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
             return False     
 
 
@@ -209,19 +215,17 @@ class Spectrum2DView(tk.LabelFrame):
 class ScatterSpectrumView(tk.LabelFrame):
     def __init__(self, master, model:SpectrumModel) -> None:
         super().__init__(master, text='Scatter Spectrum')        
-        
         self.model = model
 
-        self.numper_points = tk.IntVar(self, value=len(spectrum_data['Amp'])) 
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        level_panel = self.make_threshold_panel()
-        level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.W)  
-        
         res = self.model.load_spectrum_data()
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
+            self.numper_points = tk.IntVar(self, value=len(spectrum_data['Amp'])) 
+            level_panel = self.make_threshold_panel()
+            level_panel.grid(row=1, column=0, columnspan=2, sticky=tk.W)              
             self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)
             self.spectrum_plot.grid(row=2, column=0, columnspan= 2, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)             
 

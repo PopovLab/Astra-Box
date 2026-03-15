@@ -22,13 +22,18 @@ def power_normalization(spectrum_data):
 
 class BaseSpectrum(BaseModel):
     kind: str
-    
+    source: str| None  = Field(default= None, title= 'Source')
+
+    def set_source(self, filename):
+        self.source = filename 
+
     def load_spectrum_data(self, filename= None) -> Result[dict, str]: 
         return Failure(' BaseSpectrum ')
 
 class GaussSpectrum(BaseSpectrum):
     kind: Literal['gauss_spectrum'] = 'gauss_spectrum'
     title: ClassVar[str] = 'Gauss Spectrum'
+    source: str| None  = Field(default= None, title= 'Source')
     x_min: float = Field(default= -40.0, title= 'x_min')
     x_max: float = Field(default=  40.0, title= 'x_max')
     step:  float = Field(default= 0.5, title= 'step')
@@ -39,7 +44,7 @@ class GaussSpectrum(BaseSpectrum):
     PWM:   bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum") 
     
     def get_spectrum_data(self) ->dict:
-      
+    
         num = int((self.x_max - self.x_min)/self.step)
         x = np.linspace(self.x_min, self.x_max, num = num)
         bias = self.bias
@@ -60,7 +65,7 @@ def load_spcp1D(p: pathlib.Path):
             for line in lines:
                 table.append(line.split())
             for row in table:
-                for index, (p, item) in enumerate(spectrum.items()):
+                for index, (_, item) in enumerate(spectrum.items()):
                     item.append(float(row[index]))
             spectrum_data = spectrum 
     else:
@@ -70,7 +75,7 @@ def load_spcp1D(p: pathlib.Path):
 class Spectrum1D(BaseSpectrum):
     kind: Literal['spectrum_1D'] = 'spectrum_1D'
     title: ClassVar[str] = 'Spectrum 1D'    
-    source: str   = Field(default= '', title= 'source')
+    source: str  = Field(default= '', title= 'source')
     coordinate_system:   int   = Field(default= 0, title= 'Coordinate system', description= "Coordinate system of spectrum: 0 - toroidal coordinates, 1 - magnetic coordinates")
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
@@ -81,9 +86,13 @@ class Spectrum1D(BaseSpectrum):
         #self.spectrum_normalization()     
         return spectrum_data
  
-    def load_spectrum_data(self, filename= None) -> Result[dict, str]:      
+    def load_spectrum_data(self, filename= None) -> Result[dict, str]: 
+        if filename:
+            p = WorkSpace.get_spectrum_dat_file_path(filename)
+        else:
+            p = WorkSpace.get_spectrum_dat_file_path(self.source)             
         try:
-            spectrum_data = power_normalization(self.read_spcp1D(filename))
+            spectrum_data = power_normalization(load_spcp1D(p))
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
             messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
@@ -126,12 +135,6 @@ class ScatterSpectrum(BaseSpectrum):
                     item.append(0.0)
         return data
     
-    
-    #def get_spectrum_data(self):
-    #    return power_normalization(self.read_scatter())
-    def set_source(self, filename):
-        self.source = filename 
-
     def load_spectrum_data(self, filename= None) -> Result[dict, str]:      
             
         if filename:
@@ -196,41 +199,3 @@ class Spectrum2D(BaseSpectrum):
         #print(df)
         return spectrum2D
 
-
-    def read_spcp2D(self, file_path):
-        print(file_path)
-        if file_path is not None and file_path.exists():
-            file = open(file_path)
-            table = []
-            header = file.readline().split()
-            print(header)
-            spectrum1D = { h: [] for h in header }
-            lines = file.readlines()    
-            for line in lines:
-                table.append(line.split())
-            for row in table:
-                #print(row)
-                for index, (p, item) in enumerate(spectrum1D.items()):
-                    try:
-                        item.append(float(row[index]))
-                    except ValueError:
-                        print(f'error in {index}: {row}')
-                        item.append(0.0)
-            Nz_v = spectrum1D['Nz'][0]
-            Ny_v = spectrum1D['Ny'][0]
-            spectrum_shape = (spectrum1D['Nz'].count(Nz_v), spectrum1D['Ny'].count(Ny_v) )
-            print(spectrum_shape)
-            spectrum2D = { h: [] for h in header }
-            for key, item in spectrum1D.items():
-                spectrum2D[key] = np.ndarray(shape=spectrum_shape, buffer=np.array(item) )# dtype=float, order='F')
-        
-            level = 0.4
-            spectrum2D['Amp'] = spectrum2D.pop('Px')
-            arr = spectrum2D['Amp']
-            with np.nditer(arr, op_flags=['readwrite']) as it:
-                for x in it:
-                    x[...] = x if x<level else level
-            return spectrum2D   
-        else:
-            return None    
-           
