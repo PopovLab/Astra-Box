@@ -94,7 +94,7 @@ class FileSourcePanel(tk.Frame):
 class Spectrum1DView(tk.LabelFrame):
     def __init__(self, master, model: SpectrumModel) -> None:
         super().__init__(master, text='Spectrum 1D')        
-
+        self.spectrum_plot = None
         self.model = model
         self.label = ttk.Label(self,  text=f'Spectrum View')
         self.label.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
@@ -121,6 +121,8 @@ class Spectrum1DView(tk.LabelFrame):
         res = self.model.load_spectrum_data(filename)
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
+            if self.spectrum_plot:
+                self.spectrum_plot.destroy()            
             self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
             self.spectrum_plot.grid(row=2, column=0,  rowspan=3, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)     
             self.model.spectrum.set_source(filename)    
