@@ -4,9 +4,5 @@ import AstraBox.Window as Window
 import AstraBox.History as History
 
 if __name__ == '__main__':
-    
-    App.work_space_loc = History.get_last()
-    
-    while App.live:
-        App.run()
-
+    app = App.App()
+    app.mainloop()

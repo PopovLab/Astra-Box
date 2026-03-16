@@ -24,15 +24,6 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.History as History
 
-live = True
-
-work_space_loc = None
-
-def run():
-    print(work_space_loc)
-    app = App()
-    app.mainloop()
-
 def clone_model(model):
     model = ModelFactory.clone_model(model)
     WorkSpace.save_model(model)
@@ -72,22 +63,30 @@ def get_version(pk_name):
         version = importlib.metadata.version(pk_name)
     return version
 
+from tkinter import filedialog
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("ASTRA Box")
-        self.minsize(1024, 600)        
+        work_space_location = History.get_last()  
+        self.withdraw()
+        self.create_window(work_space_location)
+        
+    def create_window(self, work_space_location):
+        """Creates a new application window."""
+        window = tk.Toplevel(self)
+        window.title("ASTRA Box")
+        window.minsize(1024, 600)        
         geo = load_geometry()
         if geo:
-            self.geometry(geo)
-        
-
-        main_menu = self.create_main_menu()
-        self.config(menu= main_menu)
+            window.geometry(geo)
+        window.protocol("WM_DELETE_WINDOW", lambda: self._on_window_closed(window))
+  
+        main_menu = self.create_main_menu(window)
+        window.config(menu= main_menu)
 
         style = ttk.Style()
         # стиль для кнопок
-
         # Justify to the left [('Button.label', {'sticky': 'w'})]
         style.layout("TButton", [('Button.button', {'sticky': 'nswe', 'children': [('Button.focus', {'sticky': 'nswe', 'children': [('Button.padding', {'sticky': 'nswe', 'children': [('Button.label',
             {'sticky': 'w'})]})]})]})])
@@ -103,17 +102,15 @@ class App(tk.Tk):
                         padding=8,
                         font=('Helvetica', 12))
 
-
-        if work_space_loc:
-            self.base_folder = work_space_loc
-            self.title(f"ASTRA Box in {work_space_loc}")            
-            self.work_space= WorkSpace.open(work_space_loc)
-            History.add_new(work_space_loc)
+        if work_space_location:
+            window.title(f"ASTRA Box in {work_space_location}")            
+            self.work_space= WorkSpace.open(work_space_location)
+            History.add_new(work_space_location)
         else:
             self.work_space=  WorkSpace.open()
             
         # first paned window
-        main_panel = tk.PanedWindow(self, background='#C0DCF3')  
+        main_panel = tk.PanedWindow(window, background='#C0DCF3')  
         main_panel.pack(fill=tk.BOTH, expand=1) 
 
         # second paned window
@@ -126,26 +123,23 @@ class App(tk.Tk):
         self.content_frame = ContentFrame(main_panel)
         main_panel.add(self.content_frame)
 
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-
-    def open_work_space_dialog(self):
-        dir = tk.filedialog.askdirectory()
+    def open_work_space_dialog(self, win):
+        dir = filedialog.askdirectory()
+        self.update_idletasks()
+        print(dir)
         if len(dir)>0:
-            self.open_work_space(dir)
-        #self.v.set('xxx')
+            self.open_work_space(win, dir)
 
-    def open_work_space(self, path):
-        global work_space_loc
-        save_geometry(self.geometry())
-        work_space_loc = path
-        self.destroy()
+    def open_work_space(self, win, path):
+        save_geometry(win.geometry())
+        win.destroy()
+        self.create_window(path)
 
-    def on_closing(self):
-        global live 
+    def _on_window_closed(self, window):
+        """Window close handler"""
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            save_geometry(self.geometry())
-            live = False
+            save_geometry(window.geometry())
+            window.destroy()
             self.destroy()
             
     def open_doc(self):
@@ -201,10 +195,7 @@ class App(tk.Tk):
         model = ModelFactory.create_model('FRTCModel')
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('FRTCModel') 
-        #page = FRTCPage(self.content_frame, None, model) 
-        #self.content_frame.set_content(page)
 
-        #self.show_model(model)
 
     def create_gauss_spectrum(self):
         print('create_gauss_spectrum')
@@ -231,20 +222,15 @@ class App(tk.Tk):
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('SpectrumModel') 
 
-
-    def open_command(self, arg):
-        print('open command', arg)
-        self.open_work_space(arg)
-
-    def create_open_recent_menu(self):
+    def create_open_recent_menu(self, win):
         menu = tk.Menu(tearoff=0)
         hi = History.get_list()
         for item in reversed(hi):
-            menu.add_command(label=item, command= partial(self.open_command, item))
+            menu.add_command(label= item, command= lambda item=item:  self.open_work_space(win, item))
         return menu
 
-    def create_main_menu(self):
-        new_menu = tk.Menu(tearoff=0)
+    def create_main_menu(self, win):
+        new_menu = tk.Menu(win, tearoff=0)
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
         new_menu.add_command(label='Experiments', state='disabled')
         new_menu.add_command(label='Equlibrium', state='disabled')
@@ -255,11 +241,11 @@ class App(tk.Tk):
 
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)
-        file_menu.add_command(label="Open Workspace", command=self.open_work_space_dialog)
-        file_menu.add_cascade(label="Open Recent", menu= self.create_open_recent_menu())
+        file_menu.add_command(label="Open Workspace", command= lambda: self.open_work_space_dialog(win))
+        file_menu.add_cascade(label="Open Recent", menu= self.create_open_recent_menu(win))
         file_menu.add_command(label="Save", state='disabled')
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.on_closing)
+        file_menu.add_command(label="Exit", command= lambda: self._on_window_closed(win))
 
         main_menu = tk.Menu()
         main_menu.add_cascade(label="File", menu=file_menu)
