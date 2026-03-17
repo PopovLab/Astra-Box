@@ -63,10 +63,8 @@ class GaussianSpectrumView(tk.LabelFrame):
 
 
 class FileSourcePanel(tk.Frame):
-    def __init__(self, master, spectrum:GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum , on_select_source = None) -> None:
+    def __init__(self, master, spectrum: Spectrum1D | Spectrum2D | ScatterSpectrum, on_select_source = None) -> None:
         super().__init__(master)
-        self.spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
-        print(self.spectrum_folder)
         self.on_select_source = on_select_source
         self.path_var = tk.StringVar(master= self, value=spectrum.source)
         label = tk.Label(master=self, text='Source:')
@@ -81,10 +79,12 @@ class FileSourcePanel(tk.Frame):
             self.on_select_source(self.path_var.get())
 
     def select_file(self):
-        filename = fd.askopenfilename(initialdir= self.spectrum_folder)
+        spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
+        print(spectrum_folder)
+        filename = fd.askopenfilename(initialdir= spectrum_folder)
         if len(filename) < 1 : return
         fp = Path(filename)
-        if fp.is_relative_to(self.spectrum_folder):
+        if fp.is_relative_to(spectrum_folder):
             filename = fp.name
         if self.on_select_source:
             if self.on_select_source(filename):
