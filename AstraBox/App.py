@@ -125,7 +125,7 @@ class App(tk.Tk):
 
     def open_work_space_dialog(self, win):
         dir = filedialog.askdirectory()
-        self.update_idletasks()
+        self.update_idletasks() # An update is needed to avoid freezes.
         print(dir)
         if len(dir)>0:
             self.open_work_space(win, dir)

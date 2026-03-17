@@ -82,6 +82,7 @@ class FileSourcePanel(tk.Frame):
         spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
         print(spectrum_folder)
         filename = fd.askopenfilename(initialdir= spectrum_folder)
+        self.update() # An update is needed to avoid freezes.
         if len(filename) < 1 : return
         fp = Path(filename)
         if fp.is_relative_to(spectrum_folder):
