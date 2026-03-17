@@ -196,29 +196,9 @@ class App(tk.Tk):
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('FRTCModel') 
 
-
-    def create_gauss_spectrum(self):
+    def create_spectrum(self, spectrum_type:str):
         print('create_gauss_spectrum')
-        model = ModelFactory.create_spectrum_model('gauss')
-        WorkSpace.save_model(model)
-        WorkSpace.refresh_folder('SpectrumModel') 
-
-    def create_spectrum_1D(self):
-        print('create gcreate_spectrum_1D')
-        model = ModelFactory.create_spectrum_model('spectrum_1D')
-        WorkSpace.save_model(model)
-        WorkSpace.refresh_folder('SpectrumModel') 
-
-    def create_spectrum_2D(self):
-        print('create gcreate_spectrum_2D')
-        model = ModelFactory.create_spectrum_model('spectrum_2D')
-        WorkSpace.save_model(model)
-        WorkSpace.refresh_folder('SpectrumModel') 
-
-
-    def create_scatter_spectrum(self):
-        print('create scatter_spectrum')
-        model = ModelFactory.create_spectrum_model('scatter_spectrum')
+        model = ModelFactory.create_spectrum_model(spectrum_type)
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('SpectrumModel') 
 
@@ -234,10 +214,10 @@ class App(tk.Tk):
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
         new_menu.add_command(label='Experiments', state='disabled')
         new_menu.add_command(label='Equlibrium', state='disabled')
-        new_menu.add_command(label='gauss spectrum', command=self.create_gauss_spectrum)
-        new_menu.add_command(label='spectrum 1D', command=self.create_spectrum_1D)
-        new_menu.add_command(label='spectrum 2D', command=self.create_spectrum_2D)
-        new_menu.add_command(label='scatter spectrum', command=self.create_scatter_spectrum)
+        new_menu.add_command(label='gauss spectrum', command= lambda: self.create_spectrum('gauss'))
+        new_menu.add_command(label='spectrum 1D', command= lambda: self.create_spectrum('spectrum_1D'))
+        new_menu.add_command(label='spectrum 2D', command= lambda: self.create_spectrum('spectrum_2D'))
+        new_menu.add_command(label='scatter spectrum', command= lambda: self.create_spectrum('scatter_spectrum'))
 
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)
