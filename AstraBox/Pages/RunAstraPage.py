@@ -163,7 +163,7 @@ class RunAstraPage(ttk.Frame):
         Kernel.log_info(task)
 
         self.on_progress(0)
-
+        
         Kernel.execute(task, option)
         
         WorkSpace.refresh_folder('RaceModel')        
@@ -174,6 +174,5 @@ class RunAstraPage(ttk.Frame):
 
     def on_progress(self, pos):
         #print('RunAstraView')
-        self.master.master.update()
-        self.master.master.update_idletasks()
+        self.update()
         pass
