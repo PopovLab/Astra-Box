@@ -74,7 +74,7 @@ class Windows(tk.Toplevel):
         geo = load_geometry()
         if geo:
             self.geometry(geo)
-        self.work_space = None
+        self.work_space: WorkSpace.WorkSpace | None = None
         self.content_frame = None
         main_menu = self.create_main_menu(self)
         self.config(menu= main_menu)        
@@ -92,7 +92,7 @@ class Windows(tk.Toplevel):
         file_menu = tk.Menu(tearoff=0)
         file_menu.add_cascade(label="New", menu=new_menu)
         file_menu.add_command(label="Open Workspace", command= self.open_work_space_dialog)
-        file_menu.add_cascade(label="Open Recent", menu= self.create_open_recent_menu)
+        file_menu.add_cascade(label="Open Recent", menu= self.create_open_recent_menu())
         file_menu.add_command(label="Save", state='disabled')
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command= self.app._on_window_closed)
@@ -114,11 +114,11 @@ class Windows(tk.Toplevel):
         WorkSpace.save_model(model)
         WorkSpace.refresh_folder('SpectrumModel') 
 
-    def create_open_recent_menu(self, win):
+    def create_open_recent_menu(self):
         menu = tk.Menu(tearoff=0)
         hi = History.get_list()
         for item in reversed(hi):
-            menu.add_command(label= item, command= lambda item=item:  self.open_work_space(win, item))
+            menu.add_command(label= item, command= lambda item=item:  self.open_work_space(item))
         return menu
     
     def open_doc(self):
