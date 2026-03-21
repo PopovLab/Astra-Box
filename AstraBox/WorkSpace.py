@@ -5,6 +5,9 @@ from pathlib import Path
 import zipfile
 import tkinter.messagebox as messagebox
 
+from returns.pipeline import is_successful
+from returns.result import Failure, Result, Success
+
 from AstraBox.Task import Task
 
 work_space = None
@@ -15,11 +18,9 @@ def get_location_path():
     if work_space:
         return work_space._location
     else:
-        return None
+        return Path()
 
 def get_ReadMe():
-    if get_location_path() is None:
-        return 'No README file'    
     read_me = get_location_path().joinpath('README.md')
     if read_me.exists():
         with read_me.open(mode= "r", encoding='utf-8') as file:
@@ -206,6 +207,24 @@ class WorkSpace():
             return list(content.keys())
         else:
             return []
+        
+    @property
+    def path(self) -> Result[Path, str]:
+        """Возвращает путь как Result (успех, если директория всё ещё существует)."""
+        # Можно добавить повторную проверку, если есть риск удаления во время работы
+        if self._location.exists() and self._location.is_dir():
+            return Success(self._location)
+        return Failure("Workspace directory is no longer accessible")
+    
+    def join_path(self, parts: str) -> Result[Path, str]:
+        """Безопасно формирует путь внутри workspace."""
+        return self.path.bind(lambda base: Success(base.joinpath(parts)))
+                
+    def get_help_path(self):
+        help_path = self.join_path('doc/html/publish/index.html')
+        if is_successful(help_path):
+            return help_path.unwrap()
+        return None
 
 
 def get_folder_content_list(content_type):

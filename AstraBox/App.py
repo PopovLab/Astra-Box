@@ -74,7 +74,7 @@ class Windows(tk.Toplevel):
         geo = load_geometry()
         if geo:
             self.geometry(geo)
-        self.work_space: WorkSpace.WorkSpace | None = None
+        self.work_space: WorkSpace.WorkSpace
         self.content_frame = None
         main_menu = self.create_main_menu(self)
         self.config(menu= main_menu)        
@@ -122,10 +122,9 @@ class Windows(tk.Toplevel):
         return menu
     
     def open_doc(self):
-        wp = WorkSpace.get_location_path()
-        doc_path = wp.joinpath('doc/html/publish/index.html')
-        if doc_path.exists():
-            os.system(f'start {doc_path.as_posix()}/')            
+        help_path = self.work_space.get_help_path()
+        if help_path:
+            os.system(f'start {help_path.as_posix()}/')            
         else:
             if messagebox.askokcancel("Doc problems", "Can't find local documentation. Do you want to open it online?"):
                 url = 'https://temper8.github.io/FRTC_v2'
