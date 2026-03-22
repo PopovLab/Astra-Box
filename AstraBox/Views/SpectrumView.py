@@ -105,8 +105,9 @@ class Spectrum1DView(tk.LabelFrame):
 
         self.options_box = OptionsPanel(self, self.model.spectrum)
         self.options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
-
-        res = self.model.load_spectrum_data()
+        
+        p = self.get_work_space().get_spectrum_dat_file_path(self.model.spectrum.source)     
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.spectrum_plot = SpectrumPlot(self, spectrum_data['Ntor'], spectrum_data['Amp']  )
@@ -118,8 +119,12 @@ class Spectrum1DView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)        
 
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
+    
     def load_source(self, filename: str) -> bool:
-        res = self.model.load_spectrum_data(filename)
+        p = self.get_work_space().get_spectrum_dat_file_path(filename)     
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             if self.spectrum_plot:
@@ -151,8 +156,8 @@ class Spectrum2DView(tk.LabelFrame):
 
         filter_pabel= self.make_filter_panel()
         filter_pabel.grid(row=2, column=0, sticky=tk.W)
-
-        res = self.model.load_spectrum_data()
+        p = self.get_work_space().get_spectrum_dat_file_path(self.model.spectrum.source)   
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.numper_points.set(spectrum_data['Nz'].size)
@@ -185,7 +190,10 @@ class Spectrum2DView(tk.LabelFrame):
         tk.Entry(panel, width=5, textvariable= self.numper_points, state='readonly').pack(side=tk.LEFT, padx=6, pady=6)        
         ttk.Button(panel, text='Export to file', command= self.export_to_file).pack(side=tk.LEFT, padx=6, pady=6)
         return panel
-    
+
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
+        
     def apply_filter(self):
         filter= {
             'threshold'  : self.thresh_var.get(),
@@ -204,7 +212,8 @@ class Spectrum2DView(tk.LabelFrame):
         self.spectrum_plot.export_to_file(filter)
 
     def on_set_file_name(self, filename:str) -> bool:
-        res = self.model.load_spectrum_data(filename)
+        p = self.get_work_space().get_spectrum_dat_file_path(filename)     
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.spectrum_plot = Plot2DArray(self, spectrum_data)
@@ -223,7 +232,9 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.control_panel = FileSourcePanel(self, self.model.spectrum, self.on_load_file)
         self.control_panel.grid(row=0, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
 
-        res = self.model.load_spectrum_data()
+        p = self.get_work_space().get_spectrum_dat_file_path(self.model.spectrum.source)   
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
+
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.numper_points = tk.IntVar(self, value=len(spectrum_data['Amp'])) 
@@ -235,8 +246,12 @@ class ScatterSpectrumView(tk.LabelFrame):
         self.columnconfigure(0, weight=1)        
         self.rowconfigure(2, weight=1)    
  
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
+    
     def on_load_file(self, filename)-> bool:
-        res = self.model.load_spectrum_data(filename)
+        p = self.get_work_space().get_spectrum_dat_file_path(filename)     
+        res = p.bind(lambda base: self.model.load_spectrum_data(base))
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
             self.spectrum_plot = ScatterPlot2D3D(self, spectrum_data)

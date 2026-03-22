@@ -215,15 +215,32 @@ class WorkSpace():
             return Success(self._location)
         return Failure("Workspace directory is no longer accessible")
     
-    def join_path(self, parts: str) -> Result[Path, str]:
+    def join_path(self, *parts: str) -> Result[Path, str]:
         """Безопасно формирует путь внутри workspace."""
-        return self.path.bind(lambda base: Success(base.joinpath(parts)))
+        return self.path.bind(lambda base: Success(base.joinpath(*parts)))
                 
     def get_help_path(self):
         help_path = self.join_path('doc/html/publish/index.html')
         if is_successful(help_path):
             return help_path.unwrap()
         return None
+
+    def get_spectrum_dat_file_path(self, fn):
+        p = Path(fn)
+        if p.is_absolute():
+            if p.exists():
+                return Success(p)
+            else: 
+                return Failure(f"{p} was not found")            
+        res =  self.join_path('spectrum_data', fn)
+        if is_successful(res):
+            p = res.unwrap()
+            if p.exists():
+                return Success(p)
+            else: 
+                return Failure(f"{p} was not found")  
+        return res
+
 
 
 def get_folder_content_list(content_type):
