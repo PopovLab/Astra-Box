@@ -78,8 +78,11 @@ class FileSourcePanel(tk.Frame):
         if self.on_select_source:
             self.on_select_source(self.path_var.get())
 
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
+    
     def select_file(self):
-        spectrum_folder = WorkSpace.get_location_path() / 'spectrum_data'
+        spectrum_folder = self.get_work_space().join_path('spectrum_data').value_or("")
         print(spectrum_folder)
         filename = fd.askopenfilename(initialdir= spectrum_folder)
         self.update() # An update is needed to avoid freezes.
