@@ -9,7 +9,18 @@ from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
 from returns.result import Success, Failure, Result
+import time
+from functools import wraps
 
+def timer(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        print(f"Функция {func.__name__} выполнилась за {end - start:.6f} секунд")
+        return result
+    return wrapper
 import AstraBox.WorkSpace as WorkSpace
 
 
@@ -53,7 +64,7 @@ class GaussSpectrum(BaseSpectrum):
         spectrum_data = { 'Ntor': x.tolist(), 'Amp': y.tolist()  }     
         return power_normalization(spectrum_data)
 
-
+@timer
 def load_spcp1D(p: pathlib.Path):        
     if p:
         with p.open() as file:
@@ -80,17 +91,7 @@ class Spectrum1D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
 
-    def read_spcp1D(self, filename):        
-        p = WorkSpace.get_spectrum_dat_file_path(filename)
-        spectrum_data = load_spcp1D(p)
-        #self.spectrum_normalization()     
-        return spectrum_data
- 
-    def load_spectrum_data(self, filename= None) -> Result[dict, str]: 
-        if filename:
-            p = WorkSpace.get_spectrum_dat_file_path(filename)
-        else:
-            p = WorkSpace.get_spectrum_dat_file_path(self.source)             
+    def load_spectrum_data(self, p:pathlib.Path) -> Result[dict, str]: 
         try:
             spectrum_data = power_normalization(load_spcp1D(p))
         except Exception as e :
@@ -112,7 +113,7 @@ class ScatterSpectrum(BaseSpectrum):
         print(p)
         with p.open() as file:
             return self.read_data(file)
-
+    @timer
     def read_data(self, file):
         print('read_data')
         data = { 'Ntor': [], 'Npol': [], 'Amp':[]}
@@ -135,12 +136,7 @@ class ScatterSpectrum(BaseSpectrum):
                     item.append(0.0)
         return data
     
-    def load_spectrum_data(self, filename= None) -> Result[dict, str]:      
-            
-        if filename:
-            p = WorkSpace.get_spectrum_dat_file_path(filename)
-        else:
-            p = WorkSpace.get_spectrum_dat_file_path(self.source)
+    def load_spectrum_data(self,  p:pathlib.Path) -> Result[dict, str]:      
         try:
             #spectrum_data = power_normalization(self.read_scatter(p))
             spectrum_data = self.read_scatter(p)
@@ -161,17 +157,13 @@ class Spectrum2D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
-    def load_spectrum_data(self, filename= None) -> Result[dict, str]:         
+    def load_spectrum_data(self, p:pathlib.Path) -> Result[dict, str]:         
         try:
-            if filename:
-                p = WorkSpace.get_spectrum_dat_file_path(filename)
-            else:
-                p = WorkSpace.get_spectrum_dat_file_path(self.source)
+
             #spectrum_data = self.read_spcp2D(p)
             spectrum_data = self.read_data(p)
             #self.spectrum_normalization()   
-            if filename:  
-                self.source = filename 
+
         except Exception as e :
             ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
             messagebox.showinfo(title="Ошибка чтения спектра", message= ex_text )
