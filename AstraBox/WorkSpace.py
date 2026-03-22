@@ -169,7 +169,6 @@ class WorkSpace():
             if self._location.exists():
                 self.open()
             else:
-                self._location = None
                 messagebox.showinfo("Astra Box", f"The {location} is not exists!")
 
     def open(self):
