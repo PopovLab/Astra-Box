@@ -21,18 +21,6 @@ def get_location_path():
         return Path()
 
 
-
-
-
-def get_item_location(model_kind, model_name):
-    loc = get_location_path()
-    return Path(loc).joinpath(model_name)
-
-
-def save_dump(path:Path, dump):
-    with path.open("w" , encoding='utf-8') as file:
-            file.write(dump)
-
 class FolderItem():
     def __init__(self, folder,  path:Path) -> None:
         self.parent = folder
