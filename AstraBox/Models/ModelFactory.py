@@ -165,8 +165,6 @@ def make_folders(zip: ZipFile):
 
 
 def prepare_task_zip(task:Task, zip_file):
-    #zip_file = os.path.join(str(WorkSpace.get_location_path()), 'race_data.zip')
-    #zip_file = WorkSpace.get_location_path().joinpath('race_data.zip')
 
     with ZipFile(zip_file, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
         zip.comment = bytes(task.title,'UTF-8')
