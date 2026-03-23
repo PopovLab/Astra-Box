@@ -20,19 +20,9 @@ def get_location_path():
     else:
         return Path()
 
-def get_ReadMe():
-    read_me = get_location_path().joinpath('README.md')
-    if read_me.exists():
-        with read_me.open(mode= "r", encoding='utf-8') as file:
-            return file.read()
-    return 'No README file'
 
-def temp_folder_location():
-    loc = get_location_path().joinpath('tmp')
-    if not loc.exists():
-        print(f"make dir {loc}")
-        loc.mkdir()
-    return loc
+
+
 
 def get_item_location(model_kind, model_name):
     loc = get_location_path()
@@ -224,6 +214,19 @@ class WorkSpace():
         if is_successful(help_path):
             return help_path.unwrap()
         return None
+
+    def get_ReadMe(self):
+        res = self.join_path('README.md')
+        if is_successful(res):
+            read_me=  res.unwrap()        
+            if read_me.exists():
+                with read_me.open(mode= "r", encoding='utf-8') as file:
+                    return file.read()
+        return 'No README file'
+
+    def temp_folder_location(self, tmp_folder):
+        return self.join_path('tmp', tmp_folder)
+
 
     def get_spectrum_dat_file_path(self, fn):
         p = Path(fn)

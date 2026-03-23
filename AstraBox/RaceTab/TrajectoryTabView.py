@@ -7,6 +7,7 @@ import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from returns.pipeline import is_successful
 
 from AstraBox import WorkSpace
 from AstraBox.Models.RaceModel import RaceModel
@@ -168,21 +169,26 @@ class TrajectoryTab(TabViewBasic):
             self.index = index
             self.traj_view.select_moment(index)
 
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
+    
     def make_magic(self):
         '''create albom of poloidal views'''
         if messagebox.askokcancel("Make Magick", "Are you sure?"):
             print('Make Magick')
-            tmp= WorkSpace.temp_folder_location().joinpath(self.traj_model.race_model.stem)
-            if not tmp.exists():
-                print(f"make dir {tmp}")
-                tmp.mkdir()
-            for index in range(self.traj_model.num_traj):
-                print(f'index= {index}')
-                self.traj_view.select_moment(index)
-                p= tmp.joinpath(f'{index:04}.png')
-                print(p.as_posix())
-                self.traj_view.save_figure(p.as_posix())
-            print('magick finita')
+            res= self.get_work_space().temp_folder_location(self.traj_model.race_model.stem)
+            if is_successful(res):        
+                tmp = res.unwrap()
+                if not tmp.exists():
+                    print(f"make dir {tmp}")
+                    tmp.mkdir(parents = True)
+                for index in range(self.traj_model.num_traj):
+                    print(f'index= {index}')
+                    self.traj_view.select_moment(index)
+                    p= tmp.joinpath(f'{index:04}.png')
+                    print(p.as_posix())
+                    self.traj_view.save_figure(p.as_posix())
+                print('magick finita')
 
     def next(self):
         if self.index < self.traj_model.num_traj-1:

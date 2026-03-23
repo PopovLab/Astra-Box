@@ -158,5 +158,8 @@ class ReadMePage(ttk.Frame):
         text = SimpleMarkdownText(self, width=45, height=22,  wrap="none")
         text.pack(fill="both", expand=True)
 
-        text.insert_markdown(WorkSpace.get_ReadMe())
+        text.insert_markdown(self.get_work_space().get_ReadMe())
         text.config(state='disabled')
+
+    def get_work_space(self) :
+        return self.winfo_toplevel().work_space # type: ignore
