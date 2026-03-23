@@ -8,7 +8,7 @@ from typing import Literal
 from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
-from returns.result import Success, Failure, Result
+from returns.result import Success, Failure, Result, safe
 import time
 from functools import wraps
 
@@ -91,15 +91,10 @@ class Spectrum1D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
 
-    def load_spectrum_data(self, p:pathlib.Path) -> Result[dict, str]: 
-        try:
-            spectrum_data = power_normalization(load_spcp1D(p))
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
-            return Failure(ex_text)
-        
-        return Success(spectrum_data)
+    @safe
+    def load_spectrum_data(self, p:pathlib.Path) -> dict: 
+        spectrum_data = power_normalization(load_spcp1D(p))
+        return spectrum_data
     
 class ScatterSpectrum(BaseSpectrum):
     kind: Literal['scatter_spectrum'] = 'scatter_spectrum'
@@ -135,18 +130,11 @@ class ScatterSpectrum(BaseSpectrum):
                 except ValueError:
                     item.append(0.0)
         return data
-    
-    def load_spectrum_data(self,  p:pathlib.Path) -> Result[dict, str]:      
-        try:
-            #spectrum_data = power_normalization(self.read_scatter(p))
-            spectrum_data = self.read_scatter(p)
 
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            messagebox.showinfo(title="Ошибка чтения спектра", message=ex_text )
-            return Failure(ex_text)
-        
-        return Success(spectrum_data)
+    @safe    
+    def load_spectrum_data(self,  p:pathlib.Path) -> dict:      
+        spectrum_data = self.read_scatter(p)
+        return spectrum_data
 
 
 class Spectrum2D(BaseSpectrum):
@@ -157,18 +145,10 @@ class Spectrum2D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     #PWM:    bool  = Field(default= True, title= 'PWM', description= "pulse-width modulation")    
 
-    def load_spectrum_data(self, p:pathlib.Path) -> Result[dict, str]:         
-        try:
-
-            #spectrum_data = self.read_spcp2D(p)
-            spectrum_data = self.read_data(p)
-            #self.spectrum_normalization()   
-
-        except Exception as e :
-            ex_text= f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}"
-            messagebox.showinfo(title="Ошибка чтения спектра", message= ex_text )
-            return Failure(ex_text)
-        return Success(spectrum_data)
+    @safe
+    def load_spectrum_data(self, p:pathlib.Path) -> dict:         
+        spectrum_data = self.read_data(p)
+        return spectrum_data
     
 
     def read_data(self, file_path: pathlib.Path) ->dict:

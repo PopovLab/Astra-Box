@@ -137,8 +137,7 @@ class Spectrum1DView(tk.LabelFrame):
             self.model.spectrum.set_source(filename)    
             return True
         else:
-            label = ttk.Label(self, text= res.failure(), width=20)
-            label.grid(row=2, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+            messagebox.showinfo(title="Ошибка чтения спектра", message= res.failure() )
             return False     
 
 
@@ -224,6 +223,7 @@ class Spectrum2DView(tk.LabelFrame):
             self.model.spectrum.set_source(filename)   
             return True
         else:
+            messagebox.showinfo(title="Ошибка чтения спектра", message=  res.failure() )
             return False
 
         
@@ -262,6 +262,7 @@ class ScatterSpectrumView(tk.LabelFrame):
             self.model.spectrum.set_source(filename)   
             return True
         else:
+            messagebox.showinfo(title="Ошибка чтения спектра", message= res.failure())
             return False
 
     def make_threshold_panel(self):
