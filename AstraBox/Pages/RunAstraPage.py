@@ -103,7 +103,8 @@ class RunAstraPage(ttk.Frame):
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
-        last_task = WorkSpace.get_last_task()
+        work_space = self.winfo_toplevel().work_space # type: ignore
+        last_task = work_space.get_last_task()
 
         self.header_content =  { 
             "title": f"{last_task.name}", 
@@ -136,7 +137,8 @@ class RunAstraPage(ttk.Frame):
     def multy_run(self):
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
-            exp_list =  WorkSpace.get_folder_content('ExpModel')
+            work_space = self.winfo_toplevel().work_space # type: ignore
+            exp_list =  work_space.get_folder_content('ExpModel')
             equ = self.config_panel.equ_combo.get()
             for exp in exp_list:
                 if self.terminated: break
@@ -157,16 +159,17 @@ class RunAstraPage(ttk.Frame):
 
     def run_task(self, task, option:str):
         self.hp.update_title(task.name)
-        WorkSpace.save_last_task(task)
+        work_space = self.winfo_toplevel().work_space # type: ignore
+        work_space.save_last_task(task)
         self.log_console.set_logger(Kernel.get_logger())
         Kernel.set_progress_callback(self.on_progress)     
         Kernel.log_info(task)
 
         self.on_progress(0)
         
-        Kernel.execute(task, option)
+        Kernel.execute(work_space, task, option)
         
-        WorkSpace.refresh_folder('RaceModel')        
+        work_space.refresh_folder('RaceModel')        
 
 
     def terminate(self):

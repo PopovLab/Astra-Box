@@ -184,7 +184,46 @@ class WorkSpace():
             return list(content.keys())
         else:
             return []
+
+    def get_path(self, content_type: str, sub_path: str|None= None):
+        """get path of workspace folder"""
+        f = self.folder(content_type)
+        if f:
+            loc = self._location.joinpath(f.location)
+            if sub_path:
+                loc = loc.joinpath(sub_path)
+            if not loc.exists():
+                print(f"make dir {loc}")
+                loc.mkdir()
+            return loc
+        else:
+            return None
         
+    def refresh_folder(self, content_type):
+        print(f'refresh {content_type}')
+        f = self.folder(content_type)
+        if f:  f.refresh()
+
+    def get_last_task(self):
+        last_task = Task()
+        last_path =  self.get_path('RaceModel')
+        print(last_path)
+        if last_path:
+            p =  self.get_path('RaceModel').joinpath('last_task')
+            if p.exists():
+                print(p)
+                with p.open(mode= "r") as json_file:
+                    data = json_file.read()
+                    last_task = Task.load(data)
+            print(last_task)
+        return last_task
+
+    def save_last_task(self, last_task):
+        p = self.get_path('RaceModel')
+        if p:
+            with p.joinpath('last_task').open(mode= "w") as file:
+                file.write(last_task.dump())    
+
     @property
     def path(self) -> Result[Path, str]:
         """Возвращает путь как Result (успех, если директория всё ещё существует)."""
@@ -256,11 +295,7 @@ def folder_content(content_type):
         else:
             return None
         
-def refresh_folder(content_type):
-    print(f'refresh {content_type}')
-    if work_space:
-        f = work_space.folder(content_type)
-        if f:  f.refresh()
+
 
 def get_path(content_type: str, sub_path: str= None):
     """get path of workspace folder"""
@@ -308,24 +343,8 @@ def save_model(model):
         case _:
             print("This is an Any")
 
-def get_last_task():
-    last_task = Task()
-    last_path = get_path('RaceModel')
-    print(last_path)
-    if last_path:
-        p = get_path('RaceModel').joinpath('last_task')
-        if p.exists():
-            print(p)
-            with p.open(mode= "r") as json_file:
-                data = json_file.read()
-                last_task = Task.load(data)
-        print(last_task)
-    return last_task
 
-def save_last_task(last_task):
-    p = get_path('RaceModel').joinpath('last_task')
-    with p.open(mode= "w") as file:
-        file.write(last_task.dump())    
+
 
 
 def load_last_run():
