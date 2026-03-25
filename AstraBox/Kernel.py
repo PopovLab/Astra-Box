@@ -250,7 +250,7 @@ class AstraWorker(Worker):
 
             _logger.info('finish')
 
-            zip_path = WorkSpace.get_path('RaceModel').joinpath(f'{task.name}.zip')
+            zip_path = self.work_space.get_path('RaceModel').joinpath(f'{task.name}.zip')
             race_zip_file = str(zip_path)
             src = f'{self.astra_home}/{self.astra_user}/race_data.zip'
             WSL.get(src, race_zip_file)
