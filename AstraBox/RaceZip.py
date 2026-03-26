@@ -13,14 +13,17 @@ from AstraBox.Task import Task
 
 
 def create_race_zip(work_space: WorkSpace, task: Task):
+    print('create_race_zip')
     res = work_space.join_path('race_data.zip')
     if is_successful(res): 
         zip_file= res.unwrap()
         try :
             prepare_task_zip(work_space, task, zip_file)
         except Exception as e :
-            return Failure(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+            res = Failure(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: \n{e}")
+    print(res)
     return res
+
         
 def pack_model_to_zip(zip, model):
     if model:

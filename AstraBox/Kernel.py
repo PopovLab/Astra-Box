@@ -245,9 +245,11 @@ class AstraWorker(Worker):
             else:
 
                 astra_cmd = f'./run_astra.sh {self.astra_user} {task.exp} {task.equ} {option}'
+                print(astra_cmd)
                 WSL.start_exec(self.astra_home, astra_cmd)
+                print('--------- 1')
                 self.pack_data()
-
+            print('-----------====+++')
             _logger.info('finish')
 
             zip_path = self.work_space.get_path('RaceModel').joinpath(f'{task.name}.zip')
@@ -259,8 +261,9 @@ class AstraWorker(Worker):
                         dump = task_list.model_dump_json(indent= 2)
                         zip.writestr('task_list.json', dump)
             #self.run_model.race_zip_file = race_zip_file
-
-            _logger.info('the end')
+        else:
+            _logger.error(res)
+        _logger.info('the end')
 
 def check_astra_profile(astra_profile)-> bool:
     astra_user = astra_profile["profile"]
