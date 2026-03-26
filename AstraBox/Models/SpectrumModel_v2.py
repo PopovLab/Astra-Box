@@ -29,6 +29,11 @@ class SpectrumModel(BaseModel):
             dump = file.read()
             return cls.model_validate_json(dump)
 
+    def save(self, file_path):
+        """Saves the current model instance to a file."""
+        with file_path.open("w") as file:
+                file.write(self.model_dump_json(indent= 2))
+
     @classmethod
     def construct(cls, dump):
         try:

@@ -48,9 +48,7 @@ class FolderItem():
         if self.path.stem != model.name:
             self.path.unlink()
             self.path= self.path.with_stem(model.name)
-        self.save_dump(model.get_dump())
-        #self.name= self.path.name
-        #print(self.path.with_stem(model.name))
+        model.save(self.path)
         self.parent.refresh()
 
 
