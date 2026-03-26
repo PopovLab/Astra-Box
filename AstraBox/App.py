@@ -158,10 +158,8 @@ class Windows(tk.Toplevel):
                 model = ModelFactory.load(folder_item)
                 page = RayTracingPage(self.content_frame, folder_item, model)                  
             case 'FRTCModel':
-                #model = ModelFactory.load(folder_item)
                 page = FRTCPage(self.content_frame, folder_item)                    
             case 'SpectrumModel':
-                #model = ModelFactory.load(folder_item)
                 page = SpectrumPage(self.content_frame, folder_item)                    
             case _:
                 print('create Emptyview')
