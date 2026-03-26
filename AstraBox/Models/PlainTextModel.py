@@ -21,7 +21,7 @@ class PlainTextModel:
     @classmethod
     def from_file(cls, file_path):
         if file_path.exists():
-            print(f'{file_path.name} exists!!')
+            print(f'{file_path.name} exists!')
             with file_path.open(mode= "rb") as file:
                 data = file.read()
                 text_lines = try_decode(data)
