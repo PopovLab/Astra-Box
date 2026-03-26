@@ -31,7 +31,8 @@ class TextPage(ttk.Frame):
             self.model.name = answer
             self.model.path = self.model.path.with_stem(self.model.name)
             self.save()
-            WorkSpace.refresh_folder(self.model.model_kind)
+            work_space = self.winfo_toplevel().work_space # type: ignore
+            work_space.refresh_folder(self.model.model_kind)
 
 
     def delete(self):

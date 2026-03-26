@@ -34,6 +34,9 @@ class SpectrumModel(BaseModel):
         with file_path.open("w") as file:
                 file.write(self.model_dump_json(indent= 2))
 
+    def rename(self):
+        self.name= self.name + '_clone_' + str(uuid.uuid4())[0:4]
+        
     @classmethod
     def construct(cls, dump):
         try:

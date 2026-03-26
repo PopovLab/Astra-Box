@@ -40,10 +40,6 @@ class FolderItem():
     def remove(self)->bool:
         return self.parent.remove(self)
 
-    def save_dump(self, dump):
-        with self.path.open("w" , encoding='utf-8') as file:
-                file.write(dump)
-
     def save_model(self, model):
         if self.path.stem != model.name:
             self.path.unlink()
@@ -340,11 +336,6 @@ def get_spectrum_dat_file_path(fn):
         return p
     else: 
         raise FileNotFoundError(f"{p} was not found")
-
-
-
-
-
 
 def load_last_run():
     last_run = None

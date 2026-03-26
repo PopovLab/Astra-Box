@@ -1,5 +1,6 @@
 import pathlib 
 from typing import Literal
+import uuid
 from returns.result import safe
 from typing_extensions import Annotated
 from typing import ClassVar
@@ -199,7 +200,10 @@ class FRTCModel(BaseModel):
             lines.append("/")
 
         return '\n'.join(lines)  
-    
+
+    def rename(self):
+        self.name= self.name + '_clone_' + str(uuid.uuid4())[0:4]
+            
     def save(self, file_path):
         """Saves the current model instance to a file."""
         with file_path.open("w" ) as file:

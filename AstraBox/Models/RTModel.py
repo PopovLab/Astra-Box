@@ -1,6 +1,7 @@
 import os
 import json
 from pathlib import Path
+import uuid
 from AstraBox.Models.RootModel import RootModel
 from AstraBox.Models.SpectrumModel_v1 import SpectrumModel_v1
 
@@ -338,6 +339,9 @@ class RTModel(RootModel):
     def load(self):
         with self.path.open("r") as json_file:
             self.data = json.load(json_file)
+
+    def rename(self):
+        self.name= self.name + '_clone_' + str(uuid.uuid4())[0:4]
 
     def save_to_json(self):
         print('save_to_json:')

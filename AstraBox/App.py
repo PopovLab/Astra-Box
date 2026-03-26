@@ -24,7 +24,7 @@ import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.History as History
 
-def clone_model(model):
+def _clone_model(model):
     model = ModelFactory.clone_model(model)
     WorkSpace.save_model(model)
     print(type(model).__name__)
