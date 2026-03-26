@@ -105,14 +105,14 @@ class Windows(tk.Toplevel):
 
     def create_FRTC_configuration(self):
         model = ModelFactory.create_model('FRTCModel')
-        WorkSpace.save_model(model)
-        WorkSpace.refresh_folder('FRTCModel') 
+        self.work_space.save_model(model)
+        self.work_space.refresh_folder('FRTCModel') 
 
     def create_spectrum(self, spectrum_type:str):
         print('create_gauss_spectrum')
         model = ModelFactory.create_spectrum_model(spectrum_type)
-        WorkSpace.save_model(model)
-        WorkSpace.refresh_folder('SpectrumModel') 
+        self.work_space.save_model(model)
+        self.work_space.refresh_folder('SpectrumModel') 
 
     def create_open_recent_menu(self):
         menu = tk.Menu(tearoff=0)

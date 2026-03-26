@@ -4,6 +4,7 @@ import tkinter as tk
 from pathlib import Path
 import zipfile
 import tkinter.messagebox as messagebox
+from typing import Type
 
 from returns.pipeline import is_successful
 from returns.result import Failure, Result, Success
@@ -198,7 +199,27 @@ class WorkSpace():
             return loc
         else:
             return None
-        
+
+
+    def save_model(self, model):
+        print(type(model))
+        match type(model).__name__:
+            case 'FRTCModel':
+                print("save FRTCModel")
+                p = self.get_path('FRTCModel').joinpath(f'{model.name}.frtc')
+                print(p)
+                with p.open("w" , encoding='utf-8') as file:
+                    file.write(model.get_dump())
+
+            case 'SpectrumModel':
+                print("save SpectrumModel")
+                p = self.get_path('SpectrumModel').joinpath(f'{model.name}.spm')
+                print(p)
+                with p.open("w" , encoding='utf-8') as file:
+                    file.write(model.get_dump())            
+            case _:
+                print("This is an Any")
+
     def refresh_folder(self, content_type):
         print(f'refresh {content_type}')
         f = self.folder(content_type)
@@ -322,26 +343,6 @@ def get_spectrum_dat_file_path(fn):
     else: 
         raise FileNotFoundError(f"{p} was not found")
 
-from typing import Type
-
-def save_model(model):
-    print(type(model))
-    match type(model).__name__:
-        case 'FRTCModel':
-            print("save FRTCModel")
-            p = get_path('FRTCModel').joinpath(f'{model.name}.frtc')
-            print(p)
-            with p.open("w" , encoding='utf-8') as file:
-                file.write(model.get_dump())
-
-        case 'SpectrumModel':
-            print("save SpectrumModel")
-            p = get_path('SpectrumModel').joinpath(f'{model.name}.spm')
-            print(p)
-            with p.open("w" , encoding='utf-8') as file:
-                file.write(model.get_dump())            
-        case _:
-            print("This is an Any")
 
 
 
