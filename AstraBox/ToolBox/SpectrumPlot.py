@@ -553,8 +553,10 @@ class SpectrumChart(ttk.Frame):
 
     def make_plots(self):
         self.ax.clear()
+        spectr_not_exist = True
         for key, s in self.spectrums.items():
             if s is not None:
+                spectr_not_exist = False
                 if self.check_vars[key].get() == 1:
                     print(key)
                     #kwargs = 
@@ -567,7 +569,11 @@ class SpectrumChart(ttk.Frame):
                             self.ax.plot(s['Ntor'], np.cumsum(s['Amp']), marker= marker)
                         case 'integral':
                             self.ax.plot(s['Ntor'], s['trapz'], marker= marker)
-                        
+        if spectr_not_exist:
+            self.ax.text(0.5, 0.5, 'data not available', 
+                horizontalalignment='center', # сокращенно ha='center'
+                verticalalignment='center',   # сокращенно va='center'
+                transform=self.ax.transAxes)        # привязка к осям (0..1)    
         self.canvas.draw()
 
     def make_check_panel(self):
