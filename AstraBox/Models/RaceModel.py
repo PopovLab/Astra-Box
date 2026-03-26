@@ -74,14 +74,6 @@ class RaceModel(RootModel):
                 self.exp_model = PlainTextModel(self.task.exp)
                 self.exp_model.set_text_from_bytearray(data)
 
-    def load_equ_model(self, zip_root):
-        file = zip_root/"equ"/self.task.equ
-        if file.exists():
-            print(f'{file.name} exists!!')
-            with file.open(mode= "rb") as file:
-                data = file.read()
-                self.equ_model = PlainTextModel(self.task.equ)
-                self.equ_model.set_text_from_bytearray(data)
 
     def load_model_data(self):
         print('load_model_data !!!!!!!!!!')
@@ -97,8 +89,8 @@ class RaceModel(RootModel):
 
             self.load_frtc_model(zip_root)
             self.load_spectrum_model(zip_root)
-            self.load_exp_model(zip_root)
-            self.load_equ_model(zip_root)
+            self.exp_model = PlainTextModel.from_file(zip_root/"exp"/self.task.exp)
+            self.equ_model = PlainTextModel.from_file(zip_root/"equ"/self.task.equ)
 
             task_list_file = zip_root / "task_list.json"
             if task_list_file.exists():
