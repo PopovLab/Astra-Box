@@ -5,6 +5,7 @@ import pandas as pd
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from returns.pipeline import is_successful
 
 import AstraBox.Models.ModelFactory as ModelFactory
 
@@ -87,8 +88,9 @@ class FRTCBook(ttk.Notebook):
         self.add(tab_view, text="D(v)", underline=0, sticky=tk.NE + tk.SW)        
 
         if hasattr(model, 'frtc_model'):
-            frtc_view = FRTCView(self, model.frtc_model, state= 'disabled')
-            self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
+            if is_successful(model.frtc_model):
+                frtc_view = FRTCView(self, model.frtc_model.unwrap(), state= 'disabled')
+                self.add(frtc_view, text="FRTC Param", underline=0, sticky=tk.NE + tk.SW)      
 
         if model.version == 'v1':
             tab_view = SpectrumView(self, model= model)

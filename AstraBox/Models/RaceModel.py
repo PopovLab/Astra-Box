@@ -67,8 +67,8 @@ class RaceModel(RootModel):
             self.task = Task.load_from_file(task_file)
             print(self.task)
 
-            self.load_frtc_model(zip_root)
-            
+            #self.load_frtc_model(zip_root)
+            self.frtc_model = FRTCModel.from_file(zip_root / "frtc_model.json")
             self.spectrum_model = SpectrumModel.from_file(zip_root / "spectrum_model.json")
 
             self.exp_model = PlainTextModel.from_file(zip_root/"exp"/self.task.exp)

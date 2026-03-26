@@ -1,5 +1,6 @@
 import pathlib 
 from typing import Literal
+from returns.result import safe
 from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
@@ -132,6 +133,15 @@ class FRTCModel(BaseModel):
             self.grill_parameters
             ]
 
+
+    @classmethod
+    @safe    
+    def from_file(cls, file_path):
+        print(f'FRTCModel {file_path.name} exists!!')
+        with file_path.open(mode= "rb") as file:
+            dump = file.read()
+            return cls.model_validate_json(dump)
+        
     @classmethod
     def construct(cls, dump):
         try:

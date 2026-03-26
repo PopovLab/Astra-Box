@@ -25,7 +25,13 @@ class SpectrumTabView(TabViewBasic):
         self.spectrums['spectrum_pos'] = self.read_spectrum('spectrum_pos.dat')
         self.spectrums['spectrum_neg'] = self.read_spectrum('spectrum_neg.dat')        
 
-        self.nteta =  self.race_model.frtc_model.grill_parameters.ntet
+        if is_successful(self.race_model.spectrum_model):
+            frtc = self.race_model.frtc_model.unwrap()
+            self.nteta =  frtc.grill_parameters.ntet
+            self.frtc_summary = self.make_frtc_summary(frtc)
+        else:
+            self.nteta =  float('nan')
+            self.frtc_summary ="FRTC not avalible"
         #self.spectrums['nteta'] = self.nteta
 
         if is_successful(self.race_model.spectrum_model):
@@ -56,9 +62,7 @@ class SpectrumTabView(TabViewBasic):
         else:
             return None
         
-    def make_frtc_summary(self):
-        frtc = self.race_model.frtc_model
-        
+    def make_frtc_summary(self, frtc):
         text = "------- FRTC parameters ----------\n"
         text +=  f"Freq: {frtc.physical_parameters.freq} "
         text +=  f"nr: {frtc.numerical_parameters.nr} "
@@ -105,7 +109,7 @@ class SpectrumTabView(TabViewBasic):
 
         text_box = tk.Text(self, height = 8, width = 50)
         text_box.insert(tk.END, text)
-        text_box.insert(tk.END, self.make_frtc_summary())
+        text_box.insert(tk.END, self.frtc_summary)
         text_box.config(state='disabled')
         return text_box
     
