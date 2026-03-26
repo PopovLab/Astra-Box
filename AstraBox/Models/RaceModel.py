@@ -49,14 +49,6 @@ class RaceModel(RootModel):
     def model_kind(self):
         return 'RaceModel'   
 
-    def load_frtc_model(self, zip_root):
-        file = zip_root / "frtc_model.json"
-        if file.exists():
-            print(f'{file.name} exists!!')
-            with file.open(mode= "r", encoding='utf-8') as json_file:
-                data = json_file.read()
-                self.frtc_model = FRTCModel.construct(data)
-
     def load_model_data(self):
         print('load_model_data !!!!!!!!!!')
         zip_root = zipfile.Path(self.race_zip_file)
@@ -67,7 +59,6 @@ class RaceModel(RootModel):
             self.task = Task.load_from_file(task_file)
             print(self.task)
 
-            #self.load_frtc_model(zip_root)
             self.frtc_model = FRTCModel.from_file(zip_root / "frtc_model.json")
             self.spectrum_model = SpectrumModel.from_file(zip_root / "spectrum_model.json")
 
