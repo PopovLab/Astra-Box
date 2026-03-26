@@ -42,7 +42,7 @@ class SpectrumTabView(TabViewBasic):
         else:
             return tk.Label(master=self, text= self.race_model.spectrum_model.failure())
  
-        txt = self.make_summary()
+        txt = self.make_summary_text_box()
         txt.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -50,8 +50,8 @@ class SpectrumTabView(TabViewBasic):
     def read_spectrum(self, fname):
         res = self.race_model.read_dat_no_header(f'lhcd/{fname}')
         if is_successful(res):
-            spectr=  res.unwrap()
-            spectr=  spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
+            spectr = res.unwrap()
+            spectr = spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
             if spectr['Ntor'][0] > spectr['Ntor'].iat[-1]:
                 spectr = spectr.iloc[::-1]
             return spectr
@@ -101,9 +101,8 @@ class SpectrumTabView(TabViewBasic):
 
         return df.to_string(max_rows = 6) + '\n'
 
-    def make_summary(self):
+    def make_summary_text_box(self):
         text=  self.make_spectrum_statistic()
-
         text_box = tk.Text(self, height = 8, width = 50)
         text_box.insert(tk.END, text)
         text_box.insert(tk.END, self.frtc_summary)
