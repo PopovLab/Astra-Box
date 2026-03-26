@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 
 import numpy as np
 import pandas as pd
+from returns.pipeline import is_successful
 
 from AstraBox.Models.RaceModel import RaceModel
 from AstraBox.RaceTab.TabViewBasic import TabViewBasic
@@ -26,17 +27,18 @@ class SpectrumTabView(TabViewBasic):
 
         self.nteta =  self.race_model.frtc_model.grill_parameters.ntet
         #self.spectrums['nteta'] = self.nteta
-        spectrum_kind = self.race_model.spectrum_model.spectrum.kind
-       
-        if self.spectrums['origin'] is None:
-            plot = tk.Label(master=self, text='Нет данных')
-        else:
-            plot = self.make_spectrum_plot(spectrum_kind)
-        plot.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        
 
-        options_box = OptionsPanel(self, self.race_model.spectrum_model.spectrum, state='disabled')
-        options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W) 
+        if is_successful(self.race_model.spectrum_model):
+            spectrum_model=  self.race_model.spectrum_model.unwrap()      
+            plot = self.make_spectrum_plot(spectrum_model)
+            plot.grid(row=0, column=0, padx=5, sticky=tk.N + tk.S + tk.E + tk.W)
+            options_box = OptionsPanel(self, spectrum_model.spectrum, state='disabled')
+            options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
+        else:
+            return tk.Label(master=self, text= self.race_model.spectrum_model.failure())
+        #if self.spectrums['origin'] is None:
+        #    plot = tk.Label(master=self, text='Нет данных')
+        
         
         txt = self.make_summary()
         txt.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
@@ -67,7 +69,8 @@ class SpectrumTabView(TabViewBasic):
         text +=  f"nnz: {frtc.grill_parameters.nnz}"
         return text
     
-    def make_spectrum_plot(self, spectrum_kind):
+    def make_spectrum_plot(self, spectrum_model):
+        spectrum_kind = spectrum_model.spectrum.kind
         match spectrum_kind:
             case 'gauss_spectrum'|'spectrum_1D':
                 plot = SpectrumChart(self, self.spectrums, self.nteta, show_summary=False)
@@ -76,6 +79,7 @@ class SpectrumTabView(TabViewBasic):
             case 'spectrum_2D':
                 pass       
         return plot
+
     
     def make_spectrum_statistic(self):
         xsgs = 1e+13 # 1MW = 1e13 erg/s ( 1 mega watts)

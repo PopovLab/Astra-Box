@@ -8,7 +8,7 @@ from typing import Literal
 from typing_extensions import Annotated
 from typing import ClassVar
 from pydantic import BaseModel, Field
-from returns.result import Success, Failure, Result
+from returns.result import Success, Failure, Result, safe
 
 import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.Spectrum import GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
@@ -20,6 +20,14 @@ class SpectrumModel(BaseModel):
     name:  str = Field(default= '123', title='name')
     comment: str = Field(default='spectrum comment', title='Comment')
     spectrum: GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum= Field(discriminator='kind')
+
+    @classmethod
+    @safe    
+    def from_file(cls, file_path):
+        print(f'spectrum {file_path.name} exists!!')
+        with file_path.open(mode= "rb") as file:
+            dump = file.read()
+            return cls.model_validate_json(dump)
 
     @classmethod
     def construct(cls, dump):

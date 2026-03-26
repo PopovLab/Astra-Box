@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from datetime import datetime
 from typing import Literal
 from typing import List, Optional
@@ -29,10 +29,9 @@ class Task(BaseModel):
 
 
     @classmethod
-    def load_from_file(cls, path:str):
-        loc = pathlib.Path(path)
-        if loc.exists():
-            with open(loc) as file:
+    def load_from_file(cls, path):
+        if path.exists():
+            with path.open(mode= "rb") as file:
                 data = file.read()
             return cls.model_validate_json(data)
         else:
@@ -41,9 +40,8 @@ class Task(BaseModel):
     def dump(self):
         return self.model_dump_json(indent= 2)
     
-    def save(self, path:str):
-        loc = pathlib.Path(path)
-        with open(loc, "w" ) as file:
+    def save(self, path:Path):
+        with open(path, "w" ) as file:
             file.write(self.model_dump_json(indent= 2))    
 
 class TaskList(BaseModel):
@@ -62,7 +60,7 @@ class TaskList(BaseModel):
 if __name__ == '__main__':
     task1 = Task(exp='21', equ='22')
     print(task1)
-    task2 = Task.load_from_file('task1.tsk')
+    task2 = Task.load_from_file(Path('task1.tsk'))
     for name, value in task2:
         if not value is None:
             print(f'{name}: {value}')
