@@ -199,21 +199,18 @@ class FRTCModel(BaseModel):
             lines.append("/")
 
         return '\n'.join(lines)  
-
-def save_frtc(rtp, fn):
-    loc = pathlib.Path(fn)
-    with open(loc, "w" ) as file:
-            file.write(rtp.model_dump_json(indent= 2))
-
-     
-
+    
+    def save(self, file_path):
+        """Saves the current model instance to a file."""
+        with file_path.open("w" ) as file:
+                file.write(self.model_dump_json(indent= 2))
 
 
 if __name__ == '__main__':
     frtc = FRTCModel()
     print(frtc.prepare_dat_file())
     exit()
-    save_frtc(frtc, 'test_frtc_model.txt')
+    frtc.save_frtc(frtc, pathlib.Path('test_frtc_model.txt'))
     for sec in frtc.get_sections():
         print('-----------------------------')
         print(sec)
