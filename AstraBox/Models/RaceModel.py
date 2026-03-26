@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from io import BytesIO
 import f90nml
+from returns.result import safe
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Models.PlainTextModel import PlainTextModel
 from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
@@ -145,16 +146,12 @@ class RaceModel(RootModel):
             #return f'не смог прочитать {f}'
             return None
 
-
+    @safe
     def read_dat_no_header(self, fn) -> pd.DataFrame:
-        try:
-            with zipfile.ZipFile(self.race_zip_file) as zip:
-                with zip.open(fn) as file:
-                    return pd.read_csv(file, sep='\\s+', header=None)           
-        except Exception as error:
-            print(error)
-            #return f'не смог прочитать {f}'
-            return None
+        with zipfile.ZipFile(self.race_zip_file) as zip:
+            with zip.open(fn) as file:
+                return pd.read_csv(file, sep='\\s+', header=None)           
+
 
     def get_driven_current(self):
         f = 'lhcd/dc_result.dat'

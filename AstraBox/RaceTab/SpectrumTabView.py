@@ -32,7 +32,6 @@ class SpectrumTabView(TabViewBasic):
         else:
             self.nteta =  float('nan')
             self.frtc_summary ="FRTC not avalible"
-        #self.spectrums['nteta'] = self.nteta
 
         if is_successful(self.race_model.spectrum_model):
             spectrum_model=  self.race_model.spectrum_model.unwrap()      
@@ -42,24 +41,22 @@ class SpectrumTabView(TabViewBasic):
             options_box.grid(row=1, column=0, padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)         
         else:
             return tk.Label(master=self, text= self.race_model.spectrum_model.failure())
-        #if self.spectrums['origin'] is None:
-        #    plot = tk.Label(master=self, text='Нет данных')
-        
-        
+ 
         txt = self.make_summary()
         txt.grid(row=2, column=0, padx=4, pady=4, sticky=tk.N + tk.S + tk.E + tk.W)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
     
     def read_spectrum(self, fname):
-        spectr = self.race_model.read_dat_no_header(f'lhcd/{fname}')
-        if spectr is not None:
+        res = self.race_model.read_dat_no_header(f'lhcd/{fname}')
+        if is_successful(res):
+            spectr=  res.unwrap()
             spectr=  spectr.set_axis(['Ntor', 'Npol', 'Amp'], axis=1)
             if spectr['Ntor'][0] > spectr['Ntor'].iat[-1]:
                 spectr = spectr.iloc[::-1]
-                
             return spectr
         else:
+            print(res)
             return None
         
     def make_frtc_summary(self, frtc):
