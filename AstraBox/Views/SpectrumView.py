@@ -57,9 +57,11 @@ class GaussianSpectrumView(tk.LabelFrame):
         self.rowconfigure(2, weight=1)
  
     def generate(self):
-        s_d= self.model.spectrum.get_spectrum_data()
-        self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
-        self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
+        res = self.model.spectrum.get_spectrum_data()
+        if isinstance(res, Success):
+            s_d = res.unwrap()
+            self.spectrum_plot = SpectrumPlot(self, s_d['Ntor'], s_d['Amp']  )
+            self.spectrum_plot.grid(row=1, column=0, rowspan=12,  padx=5, pady=5,sticky=tk.N + tk.S + tk.E + tk.W)  
 
 
 class FileSourcePanel(tk.Frame):
