@@ -22,3 +22,7 @@ class EquModel():
             data=  f.read()
         return cls(file_path.stem, data)
 
+    def save_to_file(self, path):
+        #print(f'encoding {self.encoding}')
+        with path.open(mode='w') as f:
+            f.write(self.text)

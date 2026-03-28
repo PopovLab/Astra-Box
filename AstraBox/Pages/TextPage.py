@@ -8,9 +8,11 @@ import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Views.TextView import TextView
 
 class TextPage(ttk.Frame):
-    def __init__(self, master, folder_item, model) -> None:
+    def __init__(self, master, folder_item) -> None:
         super().__init__(master)        
         self.folder_item= folder_item
+        self.work_space = self.winfo_toplevel().work_space # type: ignore
+        model = self.work_space.load_model(folder_item.path)
         title = f"{model.name}"
         self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
         self.model = model
@@ -41,4 +43,5 @@ class TextPage(ttk.Frame):
             self.master.show_empty_view()
 
     def save(self):
-        self.text_view.save()      
+        self.text_view.update_model()      
+        self.model.save_to_file(self.folder_item.path)

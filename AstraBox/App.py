@@ -146,8 +146,8 @@ class Windows(tk.Toplevel):
                 model = ModelFactory.load(folder_item)
                 page = ExpPage(self.content_frame, folder_item, model)                     
             case 'EquModel':
-                model = ModelFactory.load(folder_item)
-                page = TextPage(self.content_frame, folder_item, model)     
+
+                page = TextPage(self.content_frame, folder_item)     
             case 'SbrModel':
                 model = ModelFactory.load(folder_item)
                 page = TextPage(self.content_frame, folder_item, model)                   

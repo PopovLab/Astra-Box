@@ -64,17 +64,11 @@ class FindToolBar(ttk.Frame):
 class TextView(ttk.Frame):
     def __init__(self, master, model, state:str= 'noraml') -> None:
         super().__init__(master)        
-        #self.title = 'ImpedModelView'
         title = f"{model.name}"
-        #self.header_content = { "title": title, "buttons":[('Save', self.save), ('Delete', self.delete), ('Clone', self.clone)]}
         self.model = model
-
-        #self.hp = HeaderPanel(self, self.header_content)
-        #self.hp.grid(row=0, column=0, columnspan=5, padx=0, sticky=tk.N + tk.S + tk.E + tk.W)
-
         self.text_box = ScrolledText(self, bg = "mint cream", wrap="none")
         self.text_box.grid(row=2, column=0, columnspan=5, padx=10, pady=5, sticky=tk.N + tk.S + tk.E + tk.W)
-        self.text_box.insert(tk.END, model.get_text())
+        self.text_box.insert(tk.END, model.text)
         if state=='disabled':
             self.text_box.configure(state="disabled")
 
@@ -102,7 +96,7 @@ class TextView(ttk.Frame):
             self.master.show_empty_view()
 
 
-    def save(self):
+    def update_model(self):
         input = self.text_box.get("1.0","end-1c")
-        self.model.save_text(input)
+        self.model.text= input
         #print(input)
