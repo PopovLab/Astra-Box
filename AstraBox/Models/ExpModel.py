@@ -8,8 +8,9 @@ from AstraBox.Models.RootModel import RootModel
 class Experiment:
     scalars = {}
     vectors = []
-    def __init__(self) -> None:
-        pass
+    def __init__(self, text) -> None:
+        lines = text.splitlines(keepends=True)
+        self.scalars, self.grid_vars = self.parsing(lines) 
 
     def load(self, path) -> None:
         #p = Path(file_name)
@@ -94,14 +95,11 @@ class Experiment:
             print(f'{key}: {v}')
 
 
-class ExpModel(RootModel):
+class ExpModel():
 
-    def __init__(self, name= None, path= None) -> None:
-        if name:
-            super().__init__(name)
-        if path:
-            super().__init__(path.stem)
-            self.path = path
+    def __init__(self,  name, data) -> None:
+        self.name = name
+        self.text = data
         self._setting = None
         self.changed = False
         self.experiment = None
@@ -111,14 +109,24 @@ class ExpModel(RootModel):
     def model_kind(self):
         return 'ExpModel'
 
+    @classmethod
+    def from_file(cls, file_path: Path):
+        """Создаёт модель из файла. Предполагается, что расширение соответствует классу."""
+        with file_path.open('r') as f:
+            data=  f.read()
+        return cls(file_path.name, data)
 
-    def get_dest_path(self):
-        return os.path.join('exp', self.path.name)
+    def save_to_file(self, path):
+        #print(f'encoding {self.encoding}')
+        with path.open(mode='w') as f:
+            f.write(self.text)
+
+    #def get_dest_path(self):
+    #    return os.path.join('exp', self.path.name)
     
 
     def get_experiment(self):
         if self.experiment is None:
             #fn = self.get_dest_path()
-            self.experiment = Experiment()
-            self.experiment.load(self.path)
+            self.experiment = Experiment(self.text)
         return self.experiment
