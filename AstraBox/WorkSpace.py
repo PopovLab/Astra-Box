@@ -301,8 +301,16 @@ class WorkSpace():
     def load_spectrum_data(self, spectrum_model):
         print('----  load_spectrum_data ---------')
         print(spectrum_model)
-        p = self.get_spectrum_dat_file_path(spectrum_model.spectrum.source)   
-        return p.bind(lambda base: spectrum_model.load_spectrum_data(base))
+        if spectrum_model.spectrum:
+            match spectrum_model.spectrum.kind:
+                case 'gauss_spectrum':
+                    return spectrum_model.spectrum.get_spectrum_data()
+                case _:
+                    p = self.get_spectrum_dat_file_path(spectrum_model.spectrum.source)   
+                    return p.bind(lambda base: spectrum_model.spectrum.load_spectrum_data(base))
+        else:
+            return Failure('Spectrum is None')
+
 
     
     def load_model(self, file_name:str):
