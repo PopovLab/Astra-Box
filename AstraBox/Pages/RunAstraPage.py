@@ -1,4 +1,5 @@
 import datetime
+import threading
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
@@ -166,8 +167,8 @@ class RunAstraPage(ttk.Frame):
         Kernel.log_info(task)
 
         self.on_progress(0)
-        
-        Kernel.execute(work_space, task, option)
+        thread = threading.Thread(target=lambda : Kernel.execute(work_space, task, option), daemon=True)
+        thread.start()
         
         work_space.refresh_folder('RaceModel')        
 
