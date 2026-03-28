@@ -81,9 +81,9 @@ def prepare_task_zip(work_space: WorkSpace, task: Task, zip_file):
         exp_model = None
         folder = work_space.folder('ExpModel')
         for name, folder_item in folder.generator(task.exp):
-            exp_model = ExpModel(path= folder_item.path)  
-            pack_model_to_zip(zip, exp_model)
-        #exp_model = get('ExpModel', task.exp)
+            exp_model = work_space.load_model(folder_item.path)
+            zip.writestr(f"exp/{exp_model.name}", exp_model.text)  
+
         if exp_model is None:
             raise Exception(f"ExpModel {task.exp} not exists")
 
