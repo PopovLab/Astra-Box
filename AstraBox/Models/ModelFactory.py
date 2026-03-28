@@ -16,20 +16,6 @@ from AstraBox.Task import Task
 import AstraBox.Models.SpectrumModel_v2 as SpectrumModel_v2
 import AstraBox.WorkSpace as WorkSpace
 
-def load_model(file_path: Path):
-    """Загружает модель из файла, определяя тип по расширению."""
-    if not file_path.exists():
-        raise FileNotFoundError(f"{file_path.name} was not found")
-    ext = file_path.suffix
-    models = {
-        '.exp': ExpModel,
-        '.equ': EquModel,
-        '.sbr': SbrModel,
-        '.rt': RTModel,
-    }
-    if ext not in models:
-        raise ValueError(f"Неподдерживаемое расширение: {ext}")
-    return models[file_path.suffix].from_file(file_path)
 
 def load(folder_item: WorkSpace.FolderItem):
     model = None
@@ -75,7 +61,6 @@ def get(model_kind= None, model_name= None):
     content = WorkSpace.folder_content(model_kind)
     if content is None:
         return None
-
     fi = content[model_name]
     return load(fi)
 

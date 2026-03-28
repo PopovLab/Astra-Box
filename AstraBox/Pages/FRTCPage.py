@@ -34,12 +34,15 @@ class FRTCPage(ttk.Frame):
 
     def clone_model(self):
         self.view.update_model()
-        App.clone_model(self.model)
+        work_space = self.winfo_toplevel().work_space # type: ignore
+        self.model.rename()
+        work_space.save_model(self.model)
+        print(type(self.model).__name__)
+        work_space.refresh_folder(type(self.model).__name__) 
         
     def save_model(self):
         self.view.update_model()
         self.folder_item.save_model(self.model)
-
     
     def delete_model(self):
         if self.folder_item.remove():

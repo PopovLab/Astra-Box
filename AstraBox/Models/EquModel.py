@@ -3,14 +3,11 @@ import json
 import pathlib 
 from AstraBox.Models.RootModel import RootModel
 
-class EquModel(RootModel):
+class EquModel():
 
-    def __init__(self, name= None, path= None) -> None:
-        if name:
-            super().__init__(name)
-        if path:
-            super().__init__(path.stem)
-            self.path = path
+    def __init__(self, name, data) -> None:
+        self.name = name
+        self.text = data
         self._setting = None
         self.changed = False
 
@@ -18,7 +15,10 @@ class EquModel(RootModel):
     def model_kind(self):
         return 'EquModel'   
 
+    @classmethod
+    def from_file(cls, file_path: pathlib.Path):
+        """Создаёт модель из файла. Предполагается, что расширение соответствует классу."""
+        with file_path.open('r') as f:
+            data=  f.read()
+        return cls(file_path.stem, data)
 
-
-    def get_dest_path(self):
-        return os.path.join('equ', self.path.name)        

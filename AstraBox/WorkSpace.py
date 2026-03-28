@@ -7,8 +7,13 @@ import tkinter.messagebox as messagebox
 from typing import Type
 
 from returns.pipeline import is_successful
-from returns.result import Failure, Result, Success
+from returns.result import Failure, Result, Success, safe
 
+from AstraBox.Models.EquModel import EquModel
+from AstraBox.Models.ExpModel import ExpModel
+from AstraBox.Models.FRTCModel import FRTCModel
+from AstraBox.Models.SbrModel import SbrModel
+from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
 from AstraBox.Task import Task
 
 work_space = None
@@ -121,6 +126,13 @@ class Folder():
         return removed
     
 
+_models = {
+    '.exp':  (ExpModel, 'exp'),
+    '.equ':  (EquModel, 'equ'),
+    '.sbr':  (SbrModel, 'sbr'),
+    '.frtc': (FRTCModel, 'frtc'),
+    '.spm':   (SpectrumModel, 'spectrum')
+}
 
 default_catalog = [
     Folder(title= 'Experiments', content_type='ExpModel', location= 'exp'),
@@ -285,6 +297,26 @@ class WorkSpace():
             else: 
                 return Failure(f"{p} was not found")  
         return res
+
+    def load_spectrum_data(self, spectrum_model):
+        print('----  load_spectrum_data ---------')
+        print(spectrum_model)
+        p = self.get_spectrum_dat_file_path(spectrum_model.spectrum.source)   
+        return p.bind(lambda base: spectrum_model.load_spectrum_data(base))
+
+    
+    def load_model(self, file_name:str):
+        """Загружает модель из файла, определяя тип по расширению."""
+        file_path = Path(file_name)
+        ext = file_path.suffix
+        if ext not in _models:
+            raise Exception(f"Неподдерживаемое расширение: {ext}")
+        model, loc = _models[ext]
+        if not file_path.is_absolute():
+            res =  self.join_path(loc, file_name)
+            if is_successful(res):
+                file_path = res.unwrap()
+        return model.from_file(file_path)
 
 
 

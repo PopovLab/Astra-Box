@@ -10,7 +10,6 @@ from typing import ClassVar
 from pydantic import BaseModel, Field
 from returns.result import Success, Failure, Result, safe
 
-import AstraBox.WorkSpace as WorkSpace
 from AstraBox.Models.Spectrum import GaussSpectrum, ScatterSpectrum, Spectrum1D, Spectrum2D
 
 def random_name():
@@ -22,7 +21,7 @@ class SpectrumModel(BaseModel):
     spectrum: GaussSpectrum | Spectrum1D | Spectrum2D | ScatterSpectrum= Field(discriminator='kind')
 
     @classmethod
-    @safe    
+    @safe
     def from_file(cls, file_path):
         print(f'spectrum {file_path.name} exists!!')
         with file_path.open(mode= "rb") as file:
@@ -36,7 +35,7 @@ class SpectrumModel(BaseModel):
 
     def rename(self):
         self.name= self.name + '_clone_' + str(uuid.uuid4())[0:4]
-        
+
     @classmethod
     def construct(cls, dump):
         try:
@@ -67,7 +66,8 @@ class SpectrumModel(BaseModel):
     def get_dest_path(self):
         return 'lhcd/spectrum.dat'
 
-    def load_spectrum_data(self, filename= None) -> Result[dict, str]:   
+    def load_spectrum_data(self, filename= None) -> Result[dict, Exception]:   
+        print('load_spectrum_data')
         if self.spectrum:
             return self.spectrum.load_spectrum_data(filename)
         else:
@@ -93,24 +93,35 @@ class SpectrumModel(BaseModel):
         sp_neg = list(reversed(sp_neg))
         return sp_pos, sp_neg
 
+    @safe
+    def spectrum_data_to_text(self, spectrum_data: dict) -> str:
+        print(f"spectrum type= {self.spectrum.kind}")
+        match self.spectrum.kind:
+            case 'gauss_spectrum'| 'spectrum_1D':
+                sp = [(x,0,p) for x, p in zip(spectrum_data['Ntor'], spectrum_data['Amp'])]
+            case 'rotated_gaussian':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                                
+            case 'scatter_spectrum':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                
+            case 'spectrum_2D':
+                sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]    
+        #print(sp)            
+        #print(f'export_to_text len{len(sp)}')                    
+        return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
+        
     def export_to_text(self):
-        res = self.load_spectrum_data()
+        print('SpectrumModel.export_to_text')
+        if self.spectrum:
+            #return self.spectrum.load_spectrum_data(filename)
+            res = self.spectrum.load_spectrum_data().bind(lambda base : self.spectrum_data_to_text(base))
+        print(res)
+
         if isinstance(res, Success):
             spectrum_data = res.unwrap()
-            #spectrum_data = self.spectrum.get_spectrum_data()
-            print(self.spectrum.kind)
-            match self.spectrum.kind:
-                case 'gauss_spectrum'| 'spectrum_1D':
-                    sp = [(x,0,p) for x, p in zip(spectrum_data['Ntor'], spectrum_data['Amp'])]
-                case 'rotated_gaussian':
-                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                                
-                case 'scatter_spectrum':
-                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Ntor'], spectrum_data['Npol'], spectrum_data['Amp'])]                                
-                case 'spectrum_2D':
-                    sp = [(x,y,p) for x, y, p  in zip(spectrum_data['Nz'], spectrum_data['Ny'], spectrum_data['Amp'])]                
-            return ''.join([f'{s[0]:.5f}  {s[1]:.5f}  {s[2]}\n' for s in sp])
+            test = self.spectrum_data_to_text(spectrum_data)
+
         else:
-            raise RuntimeError("Spectrum Data is not available")
+            return "Spectrum Data is not available"
     
     def export_to_nml(self):
         '''"Экспорт Spectrum параметров в nml-формат'''

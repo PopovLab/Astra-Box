@@ -21,9 +21,8 @@ def timer(func):
         print(f"Функция {func.__name__} выполнилась за {end - start:.6f} секунд")
         return result
     return wrapper
-import AstraBox.WorkSpace as WorkSpace
 
-
+@safe
 def power_normalization(spectrum_data):
     power = fsum(spectrum_data['Amp'])
     print(f'power= {power}')
@@ -54,8 +53,7 @@ class GaussSpectrum(BaseSpectrum):
     angle: float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:   bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum") 
     
-    def get_spectrum_data(self) ->dict:
-    
+    def get_spectrum_data(self) -> Result[dict, Exception]:
         num = int((self.x_max - self.x_min)/self.step)
         x = np.linspace(self.x_min, self.x_max, num = num)
         bias = self.bias
@@ -65,22 +63,22 @@ class GaussSpectrum(BaseSpectrum):
         return power_normalization(spectrum_data)
 
 @timer
-def load_spcp1D(p: pathlib.Path):        
-    if p:
-        with p.open() as file:
-            header = ['Ntor', 'Amp']
-            print(header)
-            spectrum = { h: [] for h in header }
-            lines = file.readlines()
-            table = []
-            for line in lines:
-                table.append(line.split())
-            for row in table:
-                for index, (_, item) in enumerate(spectrum.items()):
-                    item.append(float(row[index]))
-            spectrum_data = spectrum 
-    else:
-        spectrum_data = { 'Ntor': [], 'Amp': []  }
+@safe
+def load_spcp1D(p: pathlib.Path) -> dict:    
+    print("-- load_spcp1D --")    
+    print(p)
+    with p.open() as file:
+        header = ['Ntor', 'Amp']
+        print(header)
+        spectrum = { h: [] for h in header }
+        lines = file.readlines()
+        table = []
+        for line in lines:
+            table.append(line.split())
+        for row in table:
+            for index, (_, item) in enumerate(spectrum.items()):
+                item.append(float(row[index]))
+        spectrum_data = spectrum 
     return spectrum_data
     
 class Spectrum1D(BaseSpectrum):
@@ -91,9 +89,9 @@ class Spectrum1D(BaseSpectrum):
     angle:  float = Field(default= 0.0, title= 'angle', unit= 'deg', description= "Rotation on spectrum")
     PWM:    bool  = Field(default= True, title= 'PWM approx', description= "pulse-width modulation approximation of spectrum")    
 
-    @safe
-    def load_spectrum_data(self, p:pathlib.Path) -> dict: 
-        spectrum_data = power_normalization(load_spcp1D(p))
+
+    def load_spectrum_data(self, p:pathlib.Path) -> Result[dict, Exception]: 
+        spectrum_data = load_spcp1D(p).bind(lambda base: power_normalization(base))
         return spectrum_data
     
 class ScatterSpectrum(BaseSpectrum):

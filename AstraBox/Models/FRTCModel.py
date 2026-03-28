@@ -136,7 +136,7 @@ class FRTCModel(BaseModel):
 
 
     @classmethod
-    @safe    
+    @safe
     def from_file(cls, file_path):
         print(f'FRTCModel {file_path.name} exists!!')
         with file_path.open(mode= "rb") as file:
@@ -162,6 +162,7 @@ class FRTCModel(BaseModel):
     def export_to_text(self, spectrum_kind:str, spectrum_PWM: bool):
         '''"Экспорт в формат для кода FRTC'''
         #spectrum_kind, spectrum_PWM нужно что бы знать тип спектра для файла конфигурации FRTC
+
         lines = []
         for sec in self.get_sections():
             lines.append("!"*15 + " "+ sec.title + " "+ "!"*(60-len(sec.title)) + "\n")
@@ -185,6 +186,7 @@ class FRTCModel(BaseModel):
                 spect_line = '  3     ! spectr type 3 - 2D for future'
         print(spect_line)
         lines += spect_line  
+        print(f'export_to_text len{len(lines)}')
         return ''.join(lines)   
     
     def export_to_nml(self):
