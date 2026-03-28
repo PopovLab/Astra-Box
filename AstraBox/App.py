@@ -146,11 +146,10 @@ class Windows(tk.Toplevel):
                 model = ModelFactory.load(folder_item)
                 page = ExpPage(self.content_frame, folder_item, model)                     
             case 'EquModel':
-
                 page = TextPage(self.content_frame, folder_item)     
             case 'SbrModel':
-                model = ModelFactory.load(folder_item)
-                page = TextPage(self.content_frame, folder_item, model)                   
+                #model = ModelFactory.load(folder_item)
+                page = TextPage(self.content_frame, folder_item)                   
             case 'RaceModel':
                 #model = RaceModel(path= view_item.path )  
                 page = RacePage(self.content_frame, folder_item)                 

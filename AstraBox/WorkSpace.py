@@ -129,9 +129,10 @@ class Folder():
 _models = {
     '.exp':  (ExpModel, 'exp'),
     '.equ':  (EquModel, 'equ'),
-    '.sbr':  (SbrModel, 'sbr'),
+    '.f':    (SbrModel, 'sbr'),
+    '.f90':  (SbrModel, 'sbr'),
     '.frtc': (FRTCModel, 'frtc'),
-    '.spm':   (SpectrumModel, 'spectrum')
+    '.spm':  (SpectrumModel, 'spectrum')
 }
 
 default_catalog = [
