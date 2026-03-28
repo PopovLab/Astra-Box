@@ -314,7 +314,7 @@ class WorkSpace():
 
 
     
-    def load_model(self, file_name:str):
+    def load_model(self, file_name: Path|str):
         """Загружает модель из файла, определяя тип по расширению."""
         file_path = Path(file_name)
         ext = file_path.suffix

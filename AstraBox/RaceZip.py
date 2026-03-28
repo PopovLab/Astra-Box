@@ -130,9 +130,8 @@ def prepare_task_zip(work_space: WorkSpace, task: Task, zip_file):
                 else:
                     print(spectrum_text.failure())
 
-            
-                
-
         for key, item in work_space.folder_content('SbrModel').items():
-            pack_model_to_zip(zip, ModelFactory.load(item))
+            sbr_model = work_space.load_model(item.path)
+            zip.writestr(f"sbr/{sbr_model.name}", sbr_model.text) 
+            #pack_model_to_zip(zip, ModelFactory.load(item))
 

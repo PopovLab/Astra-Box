@@ -22,7 +22,7 @@ class SbrModel():
         """Создаёт модель из файла. Предполагается, что расширение соответствует классу."""
         with file_path.open('r') as f:
             data=  f.read()
-        return cls(file_path.stem, data)
+        return cls(file_path.name, data)
 
     def save_to_file(self, path):
         #print(f'encoding {self.encoding}')
