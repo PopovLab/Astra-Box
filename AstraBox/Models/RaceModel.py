@@ -10,6 +10,8 @@ import pandas as pd
 from io import BytesIO
 import f90nml
 from returns.result import safe
+from AstraBox.Models.EquModel import EquModel
+from AstraBox.Models.ExpModel import ExpModel
 from AstraBox.Models.FRTCModel import FRTCModel
 from AstraBox.Models.PlainTextModel import PlainTextModel
 from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
@@ -63,8 +65,8 @@ class RaceModel(RootModel):
             self.frtc_model = FRTCModel.from_file(zip_root / "frtc_model.json")
             self.spectrum_model = SpectrumModel.from_file(zip_root / "spectrum_model.json")
 
-            self.exp_model = PlainTextModel.from_file(zip_root/"exp"/self.task.exp)
-            self.equ_model = PlainTextModel.from_file(zip_root/"equ"/self.task.equ)
+            self.exp_model = ExpModel.from_file(zip_root/"exp"/self.task.exp)
+            self.equ_model = EquModel.from_file(zip_root/"equ"/self.task.equ)
 
             task_list_file = zip_root / "task_list.json"
             if task_list_file.exists():
