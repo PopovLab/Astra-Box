@@ -66,15 +66,16 @@ def get_version(pk_name):
 from tkinter import filedialog
 
 class Windows(tk.Toplevel):
-    def __init__(self, master) -> None:
+    def __init__(self, master, work_space: WorkSpace.WorkSpace) -> None:
         super().__init__(master)
         self.app = master
-        self.title("ASTRA Box")
+        self.work_space = work_space
+        #self.title("ASTRA Box")
+        self.title(f"ASTRA Box in {work_space.location}")
         self.minsize(1024, 600)        
         geo = load_geometry()
         if geo:
             self.geometry(geo)
-        self.work_space: WorkSpace.WorkSpace
         self.content_frame = None
         main_menu = self.create_main_menu(self)
         self.config(menu= main_menu)        
@@ -201,16 +202,16 @@ class App(tk.Tk):
       
     def create_window(self, work_space_location):
         """Creates a new application window."""
-        window = Windows(self)
-
-        window.protocol("WM_DELETE_WINDOW", lambda: self._on_window_closed(window))
 
         if work_space_location:
-            window.title(f"ASTRA Box in {work_space_location}")            
-            window.work_space= WorkSpace.open(work_space_location)
+            work_space= WorkSpace.open(work_space_location)
             History.add_new(work_space_location)
         else:
-            window.work_space=  WorkSpace.open()
+            work_space=  WorkSpace.open()
+
+        window = Windows(self, work_space)
+
+        window.protocol("WM_DELETE_WINDOW", lambda: self._on_window_closed(window))
             
         # first paned window
         main_panel = tk.PanedWindow(window, background='#C0DCF3')  

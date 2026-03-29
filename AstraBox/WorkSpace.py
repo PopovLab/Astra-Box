@@ -157,6 +157,10 @@ class WorkSpace():
             else:
                 messagebox.showinfo("Astra Box", f"The {location} is not exists!")
 
+    @property
+    def location(self) -> str:
+        return str(self._location)
+    
     def open(self):
         #self._location = Path(path)
         print(self._location)
