@@ -83,17 +83,17 @@ def isNotBlank(myString):
 
 _logger = None
 
-def get_logger():
+def get_logger(work_space):
     global _logger
-    _logger = init_logger('kernel')
+    _logger = init_logger('kernel', work_space)
     return _logger
     
-def init_logger(logger_name):
+def init_logger(logger_name, work_space):
     logger = logging.getLogger(logger_name)
     while logger.hasHandlers():
         logger.removeHandler(logger.handlers[0])
     logger.setLevel(logging.DEBUG) 
-    loc = WorkSpace.get_location_path()
+    loc = work_space.location
     log_file = os.path.join(loc, f'{logger_name}.log')
     formatter = logging.Formatter('%(asctime)s: %(message)s', datefmt='%H:%M:%S')
     file_handler = logging.FileHandler(log_file, mode='w')

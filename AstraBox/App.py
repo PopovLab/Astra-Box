@@ -204,10 +204,10 @@ class App(tk.Tk):
         """Creates a new application window."""
 
         if work_space_location:
-            work_space= WorkSpace.open(work_space_location)
+            work_space = WorkSpace.WorkSpace(work_space_location)
             History.add_new(work_space_location)
         else:
-            work_space=  WorkSpace.open()
+            work_space = WorkSpace.WorkSpace()
 
         window = Windows(self, work_space)
 

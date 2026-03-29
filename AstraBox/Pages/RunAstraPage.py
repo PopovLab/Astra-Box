@@ -24,7 +24,7 @@ from AstraBox.Task import Task
 class ConfigPanel(ttk.Frame):
     def __init__(self, master, last_task) -> None:
         super().__init__(master)        
-
+        work_space = self.winfo_toplevel().work_space # type: ignore
         frame = ttk.Frame(self)
         ttk.Label(frame, text='Title:').pack(side='left')
         self.entry = ttk.Entry(frame, width= 60 )
@@ -32,11 +32,11 @@ class ConfigPanel(ttk.Frame):
         self.entry.insert(0, last_task.title)
         frame.grid(row=0, column=0, columnspan=3, pady=4, sticky= tk.E + tk.W)  
 
-        self.exp_combo = ComboBox(self, 'Exp:', WorkSpace.get_folder_content_list('ExpModel'))
+        self.exp_combo = ComboBox(self, 'Exp:', work_space.get_folder_content_list('ExpModel'))
         self.exp_combo.grid(row=1, column=0,  padx=2, sticky= tk.E + tk.W)
-        self.equ_combo = ComboBox(self, 'Equ:', WorkSpace.get_folder_content_list('EquModel'))
+        self.equ_combo = ComboBox(self, 'Equ:', work_space.get_folder_content_list('EquModel'))
         self.equ_combo.grid(row=1, column=1,  padx=2, sticky=tk.E + tk.W)
-        fcl =  WorkSpace.get_folder_content_list('RTModel')
+        fcl =  work_space.get_folder_content_list('RTModel')
         print(fcl)
         if len(fcl)>0:
             self.rt_combo = ComboBox(self, 'Ray tracing:', fcl)
@@ -44,14 +44,14 @@ class ConfigPanel(ttk.Frame):
         else:
             self.rt_combo= None
 
-        fcl =  WorkSpace.get_folder_content_list('FRTCModel')
+        fcl =  work_space.get_folder_content_list('FRTCModel')
         if len(fcl)>0:
             self.frtc_combo = ComboBox(self, 'FRTC:', fcl)
             self.frtc_combo.grid(row=1, column=3,  padx=2, sticky= tk.E + tk.W)
         else:
             self.frtc_combo= None            
 
-        fcl =  WorkSpace.get_folder_content_list('SpectrumModel')
+        fcl =  work_space.get_folder_content_list('SpectrumModel')
         if len(fcl)>0:
             self.spm_combo = ComboBox(self, 'Spectrum:', fcl)
             self.spm_combo.grid(row=1, column=4,  padx=2, sticky= tk.E + tk.W)
@@ -162,7 +162,7 @@ class RunAstraPage(ttk.Frame):
         self.hp.update_title(task.name)
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
-        self.log_console.set_logger(Kernel.get_logger())
+        self.log_console.set_logger(Kernel.get_logger(work_space))
         Kernel.set_progress_callback(self.on_progress)     
         Kernel.log_info(task)
 

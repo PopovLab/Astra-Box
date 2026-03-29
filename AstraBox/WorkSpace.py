@@ -16,15 +16,15 @@ from AstraBox.Models.SbrModel import SbrModel
 from AstraBox.Models.SpectrumModel_v2 import SpectrumModel
 from AstraBox.Task import Task
 
-work_space = None
+#work_space = None
 #_location = None
 
-def get_location_path():
-    """get workspace location path"""
-    if work_space:
-        return work_space._location
-    else:
-        return Path()
+#def get_location_path():
+#    """get workspace location path"""
+#    if work_space:
+#        return work_space._location
+#    else:
+#        return Path()
 
 
 class FolderItem():
@@ -331,74 +331,15 @@ class WorkSpace():
                 file_path = res.unwrap()
         return model.from_file(file_path)
 
+      
 
 
-def get_folder_content_list(content_type):
-    if work_space:
-        return work_space.get_folder_content_list(content_type)
-    else:
-        return []
-
-def folder(content_type):
-    if work_space:
-        folder= work_space.folder(content_type)
-        if folder is not None:
-            return folder
-        else:
-            return None
-
-def folder_content(content_type):
-    if work_space:
-        folder= work_space.folder(content_type)
-        if folder is not None:
-            return folder._content
-        else:
-            return None
-        
 
 
-def get_path(content_type: str, sub_path: str= None):
-    """get path of workspace folder"""
-    if work_space:
-        loc = work_space._location.joinpath(work_space.folder(content_type).location)
-        if sub_path:
-            loc = loc.joinpath(sub_path)
-        if not loc.exists():
-            print(f"make dir {loc}")
-            loc.mkdir()
-        return loc
-    else:
-        return _location
-
-
-def get_spectrum_dat_file_path(fn):
-    """"""
-    if len(fn) < 1 : return None
-    p = Path(fn)
-    if not p.is_absolute():
-        p =  get_location_path() / 'spectrum_data' / p
-    if p.exists():
-        return p
-    else: 
-        raise FileNotFoundError(f"{p} was not found")
-
-def load_last_run():
-    last_run = None
-    p = get_path('RaceModel', 'last_run')
-    if p.exists():
-        with p.open(mode= "r") as json_file:
-            last_run = json.load(json_file)
-    return last_run
-
-def save_last_run(last_run):
-    p = get_path('RaceModel', 'last_run')
-    with p.open(mode= "w") as json_file:
-        json.dump(last_run, json_file, indent=2)
-
-def open(path = None):
-    #global _location
-    global work_space
-    print(f'Open {path}')
-    work_space = WorkSpace(path)
-    return work_space
+#def open(path = None):
+#    #global _location
+#    global work_space
+#    print(f'Open {path}')
+#    work_space = WorkSpace(path)
+#    return work_space
 
