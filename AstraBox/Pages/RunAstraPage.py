@@ -101,6 +101,7 @@ class ConfigPanel(ttk.Frame):
         return task
 
 class RunAstraPage(ttk.Frame):
+    _instance = None
     terminated = False
     def __init__(self, master) -> None:
         super().__init__(master)        
@@ -134,7 +135,18 @@ class RunAstraPage(ttk.Frame):
         runframe.grid(row=3, column=0, sticky=tk.N + tk.S + tk.E + tk.W)
         self.rowconfigure(3, weight=1)
         self.columnconfigure(0, weight=1)        
-        
+
+    @staticmethod
+    def get_instance(parent):
+        """Статический метод для получения единственного экземпляра"""
+        if RunAstraPage._instance is None or not RunAstraPage._instance.winfo_exists():
+            if parent is None:
+                raise ValueError("Для создания экземпляра RunAstraPage необходимо передать 'parent'")
+
+            RunAstraPage._instance = RunAstraPage(parent)
+            
+        return RunAstraPage._instance
+            
     def multy_run(self):
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')

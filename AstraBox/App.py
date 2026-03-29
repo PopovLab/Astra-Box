@@ -136,7 +136,7 @@ class Windows(tk.Toplevel):
 
     def show_RunAstraPage(self):
         print('show RunAstraPage')
-        page = RunAstraPage(self.content_frame)  
+        page = RunAstraPage.get_instance(self.content_frame)  
         self.content_frame.show_page(page)
 
     def show_about(self):
