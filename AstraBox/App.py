@@ -80,6 +80,20 @@ class Windows(tk.Toplevel):
         main_menu = self.create_main_menu(self)
         self.config(menu= main_menu)        
 
+        # first paned window
+        main_panel = tk.PanedWindow(self, background='#C0DCF3')  
+        main_panel.pack(fill=tk.BOTH, expand=1) 
+
+        # second paned window
+        left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
+        main_panel.add(left_panel)  
+
+        rack_frame = RackFrame.construct(left_panel, self)
+        left_panel.add(rack_frame)
+
+        self.content_frame = ContentFrame(main_panel)
+        main_panel.add(self.content_frame)
+
     def create_main_menu(self, win):
         new_menu = tk.Menu(win, tearoff=0)
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
@@ -213,19 +227,7 @@ class App(tk.Tk):
 
         window.protocol("WM_DELETE_WINDOW", lambda: self._on_window_closed(window))
             
-        # first paned window
-        main_panel = tk.PanedWindow(window, background='#C0DCF3')  
-        main_panel.pack(fill=tk.BOTH, expand=1) 
-
-        # second paned window
-        left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
-        main_panel.add(left_panel)  
-
-        rack_frame = RackFrame.construct(left_panel, window)
-        left_panel.add(rack_frame)
-
-        window.content_frame = ContentFrame(main_panel)
-        main_panel.add(window.content_frame)
+ 
 
 
 
