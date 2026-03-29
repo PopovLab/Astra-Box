@@ -3,7 +3,6 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
-from functools import partial
 from AstraBox.Pages.FRTCPage import FRTCPage
 from AstraBox.Pages.SpectrumPage import SpectrumPage
 from AstraBox.Views.FRTCView import FRTCView
@@ -12,23 +11,13 @@ from AstraBox.Views.ContentFrame import ContentFrame
 
 from AstraBox.Pages.EmptyPage import EmptyPage
 from AstraBox.Pages.RayTracingPage import RayTracingPage
-from AstraBox.Views.TextView import TextView
 from AstraBox.Pages.ExpPage import ExpPage
 from AstraBox.Pages.TextPage import TextPage
 from AstraBox.Pages.RacePage import RacePage
 from AstraBox.Pages.RunAstraPage import RunAstraPage
-from AstraBox.Models.RaceModel import RaceModel
-
 import AstraBox.Models.ModelFactory as ModelFactory
-import AstraBox.Config as Config
 import AstraBox.WorkSpace as WorkSpace
 import AstraBox.History as History
-
-def _clone_model(model):
-    model = ModelFactory.clone_model(model)
-    WorkSpace.save_model(model)
-    print(type(model).__name__)
-    WorkSpace.refresh_folder(type(model).__name__) 
 
 geo_file = "data/geo.ini"
 
@@ -226,10 +215,6 @@ class App(tk.Tk):
         window = Windows(self, work_space)
 
         window.protocol("WM_DELETE_WINDOW", lambda: self._on_window_closed(window))
-            
- 
-
-
 
     def _on_window_closed(self, window):
         """Window close handler"""
