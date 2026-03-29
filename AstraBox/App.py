@@ -65,7 +65,6 @@ class Windows(tk.Toplevel):
         geo = load_geometry()
         if geo:
             self.geometry(geo)
-        self.content_frame = None
         main_menu = self.create_main_menu(self)
         self.config(menu= main_menu)        
 
@@ -83,6 +82,7 @@ class Windows(tk.Toplevel):
         self.content_frame = ContentFrame(main_panel)
         main_panel.add(self.content_frame)
 
+ 
     def create_main_menu(self, win):
         new_menu = tk.Menu(win, tearoff=0)
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
@@ -135,9 +135,9 @@ class Windows(tk.Toplevel):
                 os.startfile(url)
 
     def show_RunAstraPage(self):
-        print('show_calc_view')
-        view = RunAstraPage(self.content_frame)  
-        self.content_frame.set_content(view)
+        print('show RunAstraPage')
+        page = RunAstraPage(self.content_frame)  
+        self.content_frame.show_page(page)
 
     def show_about(self):
         my_version = get_version('AstraBox')
@@ -164,7 +164,7 @@ class Windows(tk.Toplevel):
             case _:
                 print('create Emptyview')
                 page = EmptyPage(self.content_frame)  
-        self.content_frame.set_content(page)
+        self.content_frame.show_page(page)
 
     def open_work_space_dialog(self):
         dir = filedialog.askdirectory()
