@@ -4,6 +4,9 @@ import threading
 from queue import Queue
 from loguru import logger
 
+from AstraBox.Task import Task
+from AstraBox.WorkSpace import WorkSpace
+
 class Kernel:
     """Каждое ядро имеет свой логгер, очередь сообщений и файловый лог."""
 
@@ -70,20 +73,18 @@ class Kernel:
             case {"steps": int(s), "delay": float(d)}:
                 self.log.info(f"Цикл на {s} шагов с паузой {d} сек.")
                 #print(f"Цикл на {s} шагов с паузой {d} сек.")
-                self._run_test(**kwargs)
+                self._run_test(s, d)
 
-            # Случай 2: Передан только режим "fast" (steps может быть любым или отсутствовать)
-            case {"mode": "fast", **rest}:
-                steps = rest.get("steps", 5) # берем steps из оставшихся параметров
-                print(f"Быстрый запуск на {steps} шагов")
+            case {"work_space": WorkSpace() as w, "task": Task() as t, "options": str(o)}:
+                self.log.info(f"ASTRA run")
+                self._run_astra(w, t, o)
 
-            # Случай 3: Любой словарь, где есть ключ 'error'
-            case {"error": message}:
-                print(f"Ошибка в параметрах: {message}")
-
-            # Случай по умолчанию (если ничего не подошло)
             case _:
                 print("Неизвестная конфигурация параметров")
+                print(kwargs)
+                self.log.error("Неизвестная конфигурация параметров")
+                self.is_running = False
+
                 
 
     def _run_test(self, steps: int, delay: float) -> None:
@@ -100,3 +101,18 @@ class Kernel:
             self.is_running = False
             self.message_queue.put("__DONE__\n")  # маркер завершения
 
+    def _run_astra(self, work_space:WorkSpace, task:Task , options:str) -> None:
+        steps = 10 
+        delay = 0.5
+        try:
+            self.log.info("Вычисления начаты")
+            for step in range(1, steps + 1):
+                time.sleep(delay)
+                progress = int(step / steps * 100)
+                self.log.info(f"Шаг {step}/{steps} ({progress}%) завершён.")
+            self.log.info("Вычисления успешно завершены")
+        except Exception as e:
+            self.log.exception("Ошибка в потоке вычислений")
+        finally:
+            self.is_running = False
+            self.message_queue.put("__DONE__\n")  # маркер завершения

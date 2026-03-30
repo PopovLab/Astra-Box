@@ -172,7 +172,7 @@ class RunAstraPage(ttk.Frame):
         task= self.config_panel.get_task()
         self.run_task(task, 'no_pause')
 
-    def run_task(self, task, option:str):
+    def run_task(self, task, options:str):
         self.hp.update_title(task.name)
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
@@ -182,7 +182,8 @@ class RunAstraPage(ttk.Frame):
         
         self.process_msg_queues()
         try:
-            self.kernel.start(steps= 20, delay= 0.5)
+            #self.kernel.start(steps= 20, delay= 0.5)
+            self.kernel.start(work_space= work_space, task= task, options= options)
         except RuntimeError as e:
             messagebox.showerror("Error", str(e))            
         #self.log_console.set_logger(Kernel.get_logger(work_space))
