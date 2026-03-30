@@ -10,7 +10,7 @@ class Kernel:
     _next_id = 1
     _lock = threading.Lock()
 
-    def __init__(self, work_space, task, option):
+    def __init__(self):
         with Kernel._lock:
             self.kernel_id = Kernel._next_id
             Kernel._next_id += 1
@@ -52,14 +52,14 @@ class Kernel:
         """Функция-приёмник: кладёт сообщение в очередь."""
         self.message_queue.put(message)
 
-    def start(self, steps: int = 20, delay: float = 0.5) -> None:
+    def start(self, **kwargs) -> None:
         if self.is_running:
             raise RuntimeError(f"Kernel {self.kernel_id} уже выполняет вычисления")
 
         self.is_running = True
         self._thread = threading.Thread(
             target=self._run,
-            args=(steps, delay),
+            kwargs= kwargs,
             daemon=True
         )
         self._thread.start()

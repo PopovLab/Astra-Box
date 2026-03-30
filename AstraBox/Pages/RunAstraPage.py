@@ -177,10 +177,12 @@ class RunAstraPage(ttk.Frame):
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
 
-        self.kernel = Kernel(work_space, task, option)
+        #self.kernel = Kernel(work_space, task, option)
+        self.kernel = Kernel()
+        
         self.process_msg_queues()
         try:
-            self.kernel.start()
+            self.kernel.start(steps= 20, delay= 0.5)
         except RuntimeError as e:
             messagebox.showerror("Error", str(e))            
         #self.log_console.set_logger(Kernel.get_logger(work_space))
