@@ -116,5 +116,6 @@ class Kernel:
         self.astra_home = astra_profile["home"]
 
         self.wsl_path = f'{self.astra_home}/{self.astra_user}'
-        self.log.info(f'start {task.name}')
+        self.log.info(f'start task {task.name}')
+        
         self.log.info("Вычисления успешно завершены")
