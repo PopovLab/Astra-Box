@@ -159,10 +159,13 @@ class WSLRunner():
         clear_cmd = f'rm -f {astra_user}/sbr/' + '*.f90'
         self.exec(astra_home, clear_cmd)   
 
-
-
     def put_file(self, local_src, wsl_dst):
         self.log.info(f'copy : {local_src}')
         self.log.info(f'to: {wsl_dst}')
         win_wsl_dst = win_wsl_path(wsl_dst)
         copy_file_to_folder(local_src, win_wsl_dst)        
+
+    def start_exec(self, wsl_work_folder, command):
+        ps_cmd = f'start wsl --cd {wsl_work_folder} {command}'
+        self.log.info(f'exec: {command}')
+        asyncio.run(progress_run(ps_cmd, self.log))

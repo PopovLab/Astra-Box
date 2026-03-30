@@ -6,7 +6,7 @@ from loguru import logger
 from returns.pipeline import is_successful
 
 from AstraBox import Config, RaceZip
-from AstraBox.Task import Task
+from AstraBox.Task import Task, TaskList
 from AstraBox.WorkSpace import WorkSpace
 from core import wsl
 
@@ -126,6 +126,27 @@ class Kernel:
             zip_file= res.unwrap()     
             runner.put_file(zip_file, self.wsl_path)
             runner.exec(self.wsl_path, f'unzip -o race_data.zip')   
+
+            task_list = None
+            
+            if task.exp == '*.*':
+                task_list = TaskList(main_task= task)
+                #for sub_task in self.sub_task_generaton(task):
+                #    astra_cmd = f'./run_astra.sh {astra_user} {sub_task.exp} {sub_task.equ} {option}'
+                #    print(sub_task)
+                #    WSL.start_exec(self.astra_home, astra_cmd)
+                #    self.pack_task_results(sub_task)
+                #    self.mk_work_folders()
+                #    task_list.tasks.append(sub_task)
+            else:
+
+                astra_cmd = f'./run_astra.sh {astra_user} {task.exp} {task.equ} {options}'
+                print(astra_cmd)
+                runner.start_exec(astra_home, astra_cmd)
+ 
+                #self.pack_data()
+
+            self.log.info('finish')
         else:
             self.log.error(res)
         self.log.info("Вычисления успешно завершены")
