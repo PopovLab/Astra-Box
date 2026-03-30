@@ -124,8 +124,8 @@ class Kernel:
         res = RaceZip.create_race_zip(work_space, task)
         if is_successful(res): 
             zip_file= res.unwrap()     
-            #WSL.put(zip_file, self.wsl_path)
-            #WSL.exec(self.wsl_path, f'unzip -o race_data.zip')   
+            runner.put_file(zip_file, self.wsl_path)
+            runner.exec(self.wsl_path, f'unzip -o race_data.zip')   
         else:
             self.log.error(res)
         self.log.info("Вычисления успешно завершены")

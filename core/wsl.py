@@ -1,4 +1,6 @@
 import asyncio
+import platform
+import shutil
 
 from AstraBox import Astra
 
@@ -10,10 +12,51 @@ UNIX_LINE_ENDING = b'\n'
 # Unix ➡ Windows
 # content = content.replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
 
+match platform.system():
+    case 'Windows':
+        from ctypes import windll
+    case 'Darwin':
+        print('Darwin')
+        
+def GetConsoleOutputCP():
+    'Get Console Output CP '
+    cp= windll.kernel32.GetConsoleOutputCP()
+    return f"CP{cp}"
+
+__CP = None
+
+def get_CP():
+    global __CP
+    if __CP is None:
+        __CP = GetConsoleOutputCP()
+    return __CP
 
 def create_runner(log):
     return WSLRunner(log)
 
+def win_wsl_path(wsl_path):
+    cmd = f'wsl wslpath -w {wsl_path}'
+    return asyncio.run(run(cmd))
+
+async def run(cmd):
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+
+    print(f'[{cmd!r} exited with {proc.returncode}]')
+    if stdout:
+        print(f'[stdout]\n{stdout.decode()}')
+    if stderr:
+        print(f'[stderr]\n{stderr.decode()}')
+
+    if proc.returncode == 0:
+        return stdout.removesuffix(UNIX_LINE_ENDING).decode(get_CP())
+    else:
+        return None
+    
 async def progress_run(cmd, log):
     process  = await asyncio.create_subprocess_shell(
         cmd,
@@ -44,6 +87,24 @@ async def progress_run(cmd, log):
     # Wait for the process to finish
     return_code = await process.wait()
     return return_code 
+
+def copy_file_to_folder(src, dst):
+    try:
+        res = shutil.copy(src, dst)
+        print(res)
+        print(f" copy {src} to {dst}")
+ 
+    except shutil.SameFileError:
+        print("Source and destination represents the same file.")
+ 
+    except IsADirectoryError:
+        print("Destination is a directory.")
+ 
+    except PermissionError:
+        print("Permission denied.")
+ 
+    except:
+        print(f"Error occurred while copying file: {src} to {dst}")
 
 class WSLRunner():
     def __init__(self, log) -> None:
@@ -97,3 +158,11 @@ class WSLRunner():
         self.exec(astra_home, clear_cmd)
         clear_cmd = f'rm -f {astra_user}/sbr/' + '*.f90'
         self.exec(astra_home, clear_cmd)   
+
+
+
+    def put_file(self, local_src, wsl_dst):
+        self.log.info(f'copy : {local_src}')
+        self.log.info(f'to: {wsl_dst}')
+        win_wsl_dst = win_wsl_path(wsl_dst)
+        copy_file_to_folder(local_src, win_wsl_dst)        
