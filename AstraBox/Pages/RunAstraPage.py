@@ -1,4 +1,5 @@
 import datetime
+import queue
 import threading
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -10,7 +11,7 @@ import tkinter.messagebox as messagebox
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
-import AstraBox.Kernel as Kernel
+#import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
 import AstraBox.Config as Config
@@ -20,6 +21,7 @@ from AstraBox.ToolBox.ComboBox import ComboBox
 import AstraBox.ToolBox.ImageButton as ImageButton
 
 from AstraBox.Task import Task
+from core.kernel import Kernel
 
 class ConfigPanel(ttk.Frame):
     def __init__(self, master, last_task) -> None:
@@ -174,15 +176,38 @@ class RunAstraPage(ttk.Frame):
         self.hp.update_title(task.name)
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
-        self.log_console.set_logger(Kernel.get_logger(work_space))
-        Kernel.set_progress_callback(self.on_progress)     
-        Kernel.log_info(task)
 
-        self.on_progress(0)
-        thread = threading.Thread(target=lambda : Kernel.execute(work_space, task, option), daemon=True)
-        thread.start()
-        
+        self.kernel = Kernel(work_space, task, option)
+        self.process_msg_queues()
+        try:
+            self.kernel.start()
+        except RuntimeError as e:
+            messagebox.showerror("Error", str(e))            
+        #self.log_console.set_logger(Kernel.get_logger(work_space))
+        #Kernel.set_progress_callback(self.on_progress)     
+        #Kernel.log_info(task)
+
+        #self.on_progress(0)
+        #thread = threading.Thread(target=lambda : Kernel.execute(work_space, task, option), daemon=True)
+        #thread.start()
+        #Kernel.execute(work_space, task, option)
         work_space.refresh_folder('RaceModel')        
+
+    def process_msg_queues(self):
+        try:
+            while True:
+                msg = self.kernel.message_queue.get_nowait()
+                if msg == "__DONE__\n":
+                    #self.kernels.remove(kernel)
+                    #self.log_text.insert(tk.END, f"[Kernel {kernel.kernel_id}] --- ЗАВЕРШЕНО ---\n")
+                    pass
+                else:
+                    print(f"[Kernel {self.kernel.kernel_id}] {msg}")
+                    #self.log_text.insert(tk.END, f"[Kernel {kernel.kernel_id}] {msg}")
+                #self.log_text.see(tk.END)
+        except queue.Empty:
+            pass
+        self.after(100, self.process_msg_queues)
 
 
     def terminate(self):

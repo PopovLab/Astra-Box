@@ -1,0 +1,77 @@
+# kernel.py
+import time
+import threading
+from queue import Queue
+from loguru import logger
+
+class Kernel:
+    """Каждое ядро имеет свой логгер, очередь сообщений и файловый лог."""
+
+    _next_id = 1
+    _lock = threading.Lock()
+
+    def __init__(self, work_space, task, option):
+        with Kernel._lock:
+            self.kernel_id = Kernel._next_id
+            Kernel._next_id += 1
+
+        self.message_queue = Queue()
+        self.is_running = False
+        self._thread = None
+
+        # Создаём локальный логгер с привязкой к kernel_id
+        self.log = logger.bind(kernel_id=self.kernel_id)
+
+        # Настраиваем обработчики: файл + очередь
+        self._setup_handlers()
+
+    def _setup_handlers(self):
+        """Добавляем обработчики loguru для этого ядра."""
+        # 1. Файловый обработчик (пишет в kernel_X.log)
+        self.log.add(
+            f"kernel_{self.kernel_id}.log",
+            rotation="1 MB",
+            retention="3 days",
+            encoding="utf-8",
+            level="INFO",
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+        )
+
+        # 2. Обработчик для отправки сообщений в очередь GUI
+        #    Используем filter, чтобы обрабатывались только сообщения этого ядра
+        self.log.add(
+            self._queue_sink,
+            level="INFO",
+            format="{message}",
+            filter=lambda record: record["extra"].get("kernel_id") == self.kernel_id
+        )
+
+    def _queue_sink(self, message):
+        """Функция-приёмник: кладёт сообщение в очередь."""
+        self.message_queue.put(str(message) + "\n")
+
+    def start(self, steps: int = 20, delay: float = 0.5) -> None:
+        if self.is_running:
+            raise RuntimeError(f"Kernel {self.kernel_id} уже выполняет вычисления")
+
+        self.is_running = True
+        self._thread = threading.Thread(
+            target=self._run,
+            args=(steps, delay),
+            daemon=True
+        )
+        self._thread.start()
+
+    def _run(self, steps: int, delay: float) -> None:
+        try:
+            self.log.info("Вычисления начаты")
+            for step in range(1, steps + 1):
+                time.sleep(delay)
+                progress = int(step / steps * 100)
+                self.log.info(f"Шаг {step}/{steps} ({progress}%) завершён.")
+            self.log.info("Вычисления успешно завершены")
+        except Exception as e:
+            self.log.exception("Ошибка в потоке вычислений")
+        finally:
+            self.is_running = False
+            self.message_queue.put("__DONE__\n")  # маркер завершения
