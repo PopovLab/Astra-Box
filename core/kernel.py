@@ -64,9 +64,31 @@ class Kernel:
         )
         self._thread.start()
 
-    def _run(self, steps: int, delay: float) -> None:
+    def _run(self, **kwargs) -> None:
+
+        match kwargs:
+            case {"steps": int(s), "delay": float(d)}:
+                self.log.info(f"Цикл на {s} шагов с паузой {d} сек.")
+                #print(f"Цикл на {s} шагов с паузой {d} сек.")
+                self._run_test(**kwargs)
+
+            # Случай 2: Передан только режим "fast" (steps может быть любым или отсутствовать)
+            case {"mode": "fast", **rest}:
+                steps = rest.get("steps", 5) # берем steps из оставшихся параметров
+                print(f"Быстрый запуск на {steps} шагов")
+
+            # Случай 3: Любой словарь, где есть ключ 'error'
+            case {"error": message}:
+                print(f"Ошибка в параметрах: {message}")
+
+            # Случай по умолчанию (если ничего не подошло)
+            case _:
+                print("Неизвестная конфигурация параметров")
+                
+
+    def _run_test(self, steps: int, delay: float) -> None:
         try:
-            self.log.info("<green>Вычисления начаты</green>")
+            self.log.info("Вычисления начаты")
             for step in range(1, steps + 1):
                 time.sleep(delay)
                 progress = int(step / steps * 100)
@@ -77,3 +99,4 @@ class Kernel:
         finally:
             self.is_running = False
             self.message_queue.put("__DONE__\n")  # маркер завершения
+
