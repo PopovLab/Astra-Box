@@ -34,7 +34,8 @@ class Kernel:
             retention="3 days",
             encoding="utf-8",
             level="INFO",
-            format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+            colorize=False
         )
 
         # 2. Обработчик для отправки сообщений в очередь GUI
@@ -42,13 +43,14 @@ class Kernel:
         self.log.add(
             self._queue_sink,
             level="INFO",
-            format="{message}",
-            filter=lambda record: record["extra"].get("kernel_id") == self.kernel_id
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level} | <level>{message}</level>",
+            filter=lambda record: record["extra"].get("kernel_id") == self.kernel_id,
+            colorize=False
         )
 
     def _queue_sink(self, message):
         """Функция-приёмник: кладёт сообщение в очередь."""
-        self.message_queue.put(str(message) + "\n")
+        self.message_queue.put(message)
 
     def start(self, steps: int = 20, delay: float = 0.5) -> None:
         if self.is_running:
@@ -64,7 +66,7 @@ class Kernel:
 
     def _run(self, steps: int, delay: float) -> None:
         try:
-            self.log.info("Вычисления начаты")
+            self.log.info("<green>Вычисления начаты</green>")
             for step in range(1, steps + 1):
                 time.sleep(delay)
                 progress = int(step / steps * 100)
