@@ -2,6 +2,7 @@
 import time
 import threading
 from queue import Queue
+from zipfile import ZIP_DEFLATED, ZipFile
 from loguru import logger
 from returns.pipeline import is_successful
 
@@ -148,6 +149,15 @@ class Kernel:
                 runner.exec(wsl_path, f'zip -r race_data.zip dat')
                 runner.exec(wsl_path, f'zip -r race_data.zip lhcd')
 
+            zip_path = work_space.get_path('RaceModel').joinpath(f'{task.name}.zip')
+            race_zip_file = str(zip_path)
+            src = f'{astra_home}/{astra_user}/race_data.zip'
+            runner.get_file(src, race_zip_file)
+            if task_list: 
+                    with ZipFile(race_zip_file, 'a', compression= ZIP_DEFLATED, compresslevel = 2) as zip:
+                        dump = task_list.model_dump_json(indent= 2)
+                        zip.writestr('task_list.json', dump)
+            #self.run_model.race_zip_file = race_zip_file
             self.log.info('finish')
         else:
             self.log.error(res)
