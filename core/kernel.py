@@ -4,6 +4,7 @@ import threading
 from queue import Queue
 from loguru import logger
 
+from AstraBox import Config
 from AstraBox.Task import Task
 from AstraBox.WorkSpace import WorkSpace
 from core import wsl
@@ -105,4 +106,15 @@ class Kernel:
         #worker = AstraWorker(work_space, task, options)
         #worker.execute(runner)
         #self.log.info(f"Шаг {5}/{15} ({50}%) завершён.")
+
+        astra_profile = Config.get_astra_profile(task.astra_profile)
+        print(astra_profile)
+        if not runner.check_astra_profile(astra_profile):
+            self.log.error('ASTRA is not available')
+            return
+        self.astra_user = astra_profile["profile"]
+        self.astra_home = astra_profile["home"]
+
+        self.wsl_path = f'{self.astra_home}/{self.astra_user}'
+        self.log.info(f'start {task.name}')
         self.log.info("Вычисления успешно завершены")
