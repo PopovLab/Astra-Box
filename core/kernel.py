@@ -116,7 +116,7 @@ class Kernel:
         astra_user = astra_profile["profile"]
         astra_home = astra_profile["home"]
 
-        self.wsl_path = f'{astra_home}/{astra_user}'
+        wsl_path = f'{astra_home}/{astra_user}'
         self.log.info(f'start task {task.name}')
         
         runner.clear_work_folders(astra_home, astra_user)
@@ -124,8 +124,8 @@ class Kernel:
         res = RaceZip.create_race_zip(work_space, task)
         if is_successful(res): 
             zip_file= res.unwrap()     
-            runner.put_file(zip_file, self.wsl_path)
-            runner.exec(self.wsl_path, f'unzip -o race_data.zip')   
+            runner.put_file(zip_file, wsl_path)
+            runner.exec(wsl_path, f'unzip -o race_data.zip')   
 
             task_list = None
             
@@ -144,7 +144,9 @@ class Kernel:
                 print(astra_cmd)
                 runner.start_exec(astra_home, astra_cmd)
  
-                #self.pack_data()
+                self.log.info('----- pack data -------')
+                runner.exec(wsl_path, f'zip -r race_data.zip dat')
+                runner.exec(wsl_path, f'zip -r race_data.zip lhcd')
 
             self.log.info('finish')
         else:
