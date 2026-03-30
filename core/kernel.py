@@ -3,8 +3,9 @@ import time
 import threading
 from queue import Queue
 from loguru import logger
+from returns.pipeline import is_successful
 
-from AstraBox import Config
+from AstraBox import Config, RaceZip
 from AstraBox.Task import Task
 from AstraBox.WorkSpace import WorkSpace
 from core import wsl
@@ -112,10 +113,19 @@ class Kernel:
         if not runner.check_astra_profile(astra_profile):
             self.log.error('ASTRA is not available')
             return
-        self.astra_user = astra_profile["profile"]
-        self.astra_home = astra_profile["home"]
+        astra_user = astra_profile["profile"]
+        astra_home = astra_profile["home"]
 
-        self.wsl_path = f'{self.astra_home}/{self.astra_user}'
+        self.wsl_path = f'{astra_home}/{astra_user}'
         self.log.info(f'start task {task.name}')
         
+        runner.clear_work_folders(astra_home, astra_user)
+        
+        res = RaceZip.create_race_zip(work_space, task)
+        if is_successful(res): 
+            zip_file= res.unwrap()     
+            #WSL.put(zip_file, self.wsl_path)
+            #WSL.exec(self.wsl_path, f'unzip -o race_data.zip')   
+        else:
+            self.log.error(res)
         self.log.info("Вычисления успешно завершены")
