@@ -6,6 +6,7 @@ from loguru import logger
 
 from AstraBox.Task import Task
 from AstraBox.WorkSpace import WorkSpace
+from core import wsl
 
 class Kernel:
     """Каждое ядро имеет свой логгер, очередь сообщений и файловый лог."""
@@ -68,51 +69,40 @@ class Kernel:
         self._thread.start()
 
     def _run(self, **kwargs) -> None:
+        try:
+            match kwargs:
+                case {"steps": int(s), "delay": float(d)}:
+                    self.log.info(f"Цикл на {s} шагов с паузой {d} сек.")
+                    self._run_test(s, d)
 
-        match kwargs:
-            case {"steps": int(s), "delay": float(d)}:
-                self.log.info(f"Цикл на {s} шагов с паузой {d} сек.")
-                #print(f"Цикл на {s} шагов с паузой {d} сек.")
-                self._run_test(s, d)
+                case {"work_space": WorkSpace() as w, "task": Task() as t, "options": str(o)}:
+                    self._run_astra(w, t, o)
 
-            case {"work_space": WorkSpace() as w, "task": Task() as t, "options": str(o)}:
-                self.log.info(f"ASTRA run")
-                self._run_astra(w, t, o)
-
-            case _:
-                print("Неизвестная конфигурация параметров")
-                print(kwargs)
-                self.log.error("Неизвестная конфигурация параметров")
-                self.is_running = False
-
+                case _:
+                    print("Неизвестная конфигурация параметров")
+                    print(kwargs)
+                    self.log.error("Неизвестная конфигурация параметров")
+        except Exception as e:
+            self.log.exception("Ошибка в потоке вычислений")
+        finally:
+            self.is_running = False
+            self.message_queue.put("__DONE__\n")  # маркер завершения
                 
 
     def _run_test(self, steps: int, delay: float) -> None:
-        try:
-            self.log.info("Вычисления начаты")
-            for step in range(1, steps + 1):
-                time.sleep(delay)
-                progress = int(step / steps * 100)
-                self.log.info(f"Шаг {step}/{steps} ({progress}%) завершён.")
-            self.log.info("Вычисления успешно завершены")
-        except Exception as e:
-            self.log.exception("Ошибка в потоке вычислений")
-        finally:
-            self.is_running = False
-            self.message_queue.put("__DONE__\n")  # маркер завершения
+        self.log.info("Вычисления начаты")
+        for step in range(1, steps + 1):
+            time.sleep(delay)
+            progress = int(step / steps * 100)
+            self.log.info(f"Шаг {step}/{steps} ({progress}%) завершён.")
+        self.log.info("Вычисления успешно завершены")
+
 
     def _run_astra(self, work_space:WorkSpace, task:Task , options:str) -> None:
-        steps = 10 
-        delay = 0.5
-        try:
-            self.log.info("Вычисления начаты")
-            for step in range(1, steps + 1):
-                time.sleep(delay)
-                progress = int(step / steps * 100)
-                self.log.info(f"Шаг {step}/{steps} ({progress}%) завершён.")
-            self.log.info("Вычисления успешно завершены")
-        except Exception as e:
-            self.log.exception("Ошибка в потоке вычислений")
-        finally:
-            self.is_running = False
-            self.message_queue.put("__DONE__\n")  # маркер завершения
+
+        self.log.info("try start ASTRA")
+        runner = wsl.create_runner(self.log)
+        #worker = AstraWorker(work_space, task, options)
+        #worker.execute(runner)
+        #self.log.info(f"Шаг {5}/{15} ({50}%) завершён.")
+        self.log.info("Вычисления успешно завершены")
