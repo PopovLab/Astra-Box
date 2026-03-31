@@ -177,7 +177,6 @@ class RunAstraPage(ttk.Frame):
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
 
-        #self.kernel = Kernel(work_space, task, option)
         self.kernel = Kernel()
         
         self.process_msg_queues()
@@ -186,15 +185,10 @@ class RunAstraPage(ttk.Frame):
             self.kernel.start(work_space= work_space, task= task, options= options)
         except RuntimeError as e:
             messagebox.showerror("Error", str(e))            
-        #self.log_console.set_logger(Kernel.get_logger(work_space))
-        #Kernel.set_progress_callback(self.on_progress)     
-        #Kernel.log_info(task)
 
-        #self.on_progress(0)
-        #thread = threading.Thread(target=lambda : Kernel.execute(work_space, task, option), daemon=True)
-        #thread.start()
-        #Kernel.execute(work_space, task, option)
-        work_space.refresh_folder('RaceModel')        
+    def work_done(self):
+        work_space = self.winfo_toplevel().work_space # type: ignore
+        work_space.refresh_folder('RaceModel') 
 
     def process_msg_queues(self):
         try:
@@ -204,7 +198,7 @@ class RunAstraPage(ttk.Frame):
                     #self.kernels.remove(kernel)
                     #self.log_console.insert_colored_text(f"[Kernel {self.kernel.kernel_id}] --- ЗАВЕРШЕНО ---\n")
                     self.log_console.insert_text(f"--- ЗАВЕРШЕНО ---\n")
-                    pass
+                    self.work_done()
                 else:
                     #print(f"[Kernel {self.kernel.kernel_id}] {msg}")
                     #self.log_console.insert_colored_text(f"[Kernel {self.kernel.kernel_id}] {msg}")
