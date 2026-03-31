@@ -23,6 +23,9 @@ class App(tk.Tk):
                         padding= 9,  #{'padx': 5, 'pady': 10},
                         font=('Helvetica', 12))
         
+        style.map('AstraRun.TRadiobutton',
+          background=[('active', "#00070A"), ('selected', "#0C0E0D")])
+
         style.configure('Toolbutton', 
                         foreground= 'black', 
                         backgound= 'red',
