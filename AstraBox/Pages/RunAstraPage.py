@@ -213,9 +213,9 @@ class RunAstraPage(ttk.Frame):
 
 
     def terminate(self):
-        self.terminated = True
+        if hasattr(self, 'kernel') and self.kernel.is_running:
+            #if messagebox.askokcancel("Run", "Do you want to terminate?"):
+            if messagebox.askokcancel("Terminate", "Прерывание не работает, ждите в следующих версиях"):
+                print(f'terminate kernel {self.kernel.kernel_id}')
+                #self.kernel.stop()
 
-    def on_progress(self, pos):
-        #print('RunAstraView')
-        self.update()
-        pass
