@@ -2,7 +2,7 @@
 import time
 import threading
 from queue import Queue
-from zipfile import ZIP_DEFLATED, ZipFile
+import zipfile
 from loguru import logger
 from returns.pipeline import is_successful
 
@@ -35,8 +35,9 @@ class Kernel:
     def _setup_handlers(self):
         """Добавляем обработчики loguru для этого ядра."""
         # 1. Файловый обработчик (пишет в kernel_X.log)
+        self.log_file = f"kernel_{self.kernel_id}.log"
         self.log.add(
-            f"kernel_{self.kernel_id}.log",
+            self.log_file,
             rotation="1 MB",
             retention="3 days",
             encoding="utf-8",
@@ -150,12 +151,13 @@ class Kernel:
             race_zip_file = str(zip_path)
             src = f'{astra_home}/{astra_user}/race_data.zip'
             runner.get_file(src, race_zip_file)
-            if task_list: 
-                    with ZipFile(race_zip_file, 'a', compression= ZIP_DEFLATED, compresslevel = 2) as zip:
-                        dump = task_list.model_dump_json(indent= 2)
-                        zip.writestr('task_list.json', dump)
-            #self.run_model.race_zip_file = race_zip_file
             self.log.info('finish')
+            with zipfile.ZipFile(race_zip_file, 'a', compression= zipfile.ZIP_DEFLATED, compresslevel = 2) as zip:
+                if task_list: 
+                    dump = task_list.model_dump_json(indent= 2)
+                    zip.writestr('task_list.json', dump)
+                zip.write(self.log_file, arcname= "kernel.log")
+
         else:
             self.log.error(res)
-        self.log.info("Вычисления успешно завершены")
+        self.log.info("Вычисления завершены")
