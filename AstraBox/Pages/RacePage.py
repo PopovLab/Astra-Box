@@ -41,12 +41,12 @@ class FRTCBook(ttk.Notebook):
     def __init__(self, master, model) -> None:
         super().__init__(master)        
 
+        summary_view = SummaryView(self, model= model)
+        self.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
+
         log_view = LogConsole(self)
         log_view.load_text(model.zip_root/'kernel.log')
         self.add(log_view, text="Log", underline=0, sticky=tk.NE + tk.SW)
-
-        summary_view = SummaryView(self, model= model)
-        self.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
 
         if hasattr(model, 'exp_model'):
             view = TextView(self, model.exp_model, state= 'disabled')
