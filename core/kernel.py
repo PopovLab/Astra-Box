@@ -143,7 +143,7 @@ class Kernel:
                 print(astra_cmd)
                 runner.start_exec(astra_home, astra_cmd)
  
-                self.log.info('----- pack data -------')
+                self.log.info('----- pack results data -------')
                 runner.exec(wsl_path, f'zip -r race_data.zip dat')
                 runner.exec(wsl_path, f'zip -r race_data.zip lhcd')
 
@@ -157,7 +157,6 @@ class Kernel:
                     dump = task_list.model_dump_json(indent= 2)
                     zip.writestr('task_list.json', dump)
                 zip.write(self.log_file, arcname= "kernel.log")
-
         else:
             self.log.error(res)
         self.log.info("Вычисления завершены")

@@ -49,8 +49,8 @@ class RaceModel(RootModel):
         return rm
     
     @property
-    def model_kind(self):
-        return 'RaceModel'   
+    def zip_root(self) -> zipfile.Path:
+        return zipfile.Path(self.race_zip_file)  
 
     def load_model_data(self):
         print('load_model_data !!!!!!!!!!')

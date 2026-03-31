@@ -1,5 +1,6 @@
 #from asyncio.windows_events import NULL
 
+import pathlib
 import queue
 import logging
 import tkinter as tk
@@ -46,15 +47,14 @@ class LogConsole(ScrolledText):
         self.delete("1.0", tk.END)
         self.configure(state='disabled')        
 
-    def load_text(self, filename):
-        if os.path.exists(filename):
-            with open(filename, 'r') as f:
-                self.configure(state='normal')
-                self.insert(tk.END, f.read())
-                self.configure(state='disabled')              
-                self.yview(tk.END)
-        else:
-            self.clear_text()
+    def load_text(self, file_path:pathlib.Path):
+        try:
+            with file_path.open('r') as f:
+                log_text = f.read()
+        except:
+            log_text = f'There is no file "{file_path.name}" in the archive.'
+        finally:
+            self.insert_text(log_text)
         
     def insert_text(self, message):
         self.configure(state='normal')
