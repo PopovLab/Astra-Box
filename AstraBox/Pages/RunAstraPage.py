@@ -148,12 +148,14 @@ class RunAstraPage(ttk.Frame):
             RunAstraPage._instance = RunAstraPage(parent)
             
         return RunAstraPage._instance
+    
     def kernel_is_running(self) ->bool:
         if hasattr(self, 'kernel') and self.kernel.is_running:
             messagebox.showerror("Error", f"Kernel {self.kernel.kernel_id} is running")
             return True
         else:
             return False
+        
     def multy_run(self):
         if self.kernel_is_running(): return
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
