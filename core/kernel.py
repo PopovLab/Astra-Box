@@ -105,9 +105,6 @@ class Kernel:
 
         self.log.info("try start ASTRA")
         runner = wsl.create_runner(self.log)
-        #worker = AstraWorker(work_space, task, options)
-        #worker.execute(runner)
-        #self.log.info(f"Шаг {5}/{15} ({50}%) завершён.")
 
         astra_profile = Config.get_astra_profile(task.astra_profile)
         print(astra_profile)
