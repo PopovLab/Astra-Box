@@ -184,9 +184,8 @@ class RunAstraPage(ttk.Frame):
         self.hp.update_title(task.name)
         work_space = self.winfo_toplevel().work_space # type: ignore
         work_space.save_last_task(task)
-
+        self.log_console.clear_text()
         self.kernel = Kernel()
-        
         self.process_msg_queues()
         try:
             #self.kernel.start(steps= 20, delay= 0.5)
