@@ -81,6 +81,7 @@ class Windows(tk.Toplevel):
 
         self.content_frame = ContentFrame(main_panel)
         main_panel.add(self.content_frame)
+        self.content_frame.show_readme()
 
     def save_geometry(self):
         save_geometry(self.geometry())
