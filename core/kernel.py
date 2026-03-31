@@ -35,7 +35,7 @@ class Kernel:
     def _setup_handlers(self):
         """Добавляем обработчики loguru для этого ядра."""
         # 1. Файловый обработчик (пишет в kernel_X.log)
-        self.log_file = f"kernel_{self.kernel_id}.log"
+        self.log_file = f"logs/kernel_{self.kernel_id}.log"
         self.log.add(
             self.log_file,
             encoding="utf-8",
