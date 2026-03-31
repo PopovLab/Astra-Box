@@ -25,7 +25,7 @@ class Kernel:
         self.message_queue = Queue()
         self.is_running = False
         self._thread = None
-
+        self._stop_flag = threading.Event()
         # Создаём локальный логгер с привязкой к kernel_id
         self.log = logger.bind(kernel_id=self.kernel_id)
 
@@ -64,12 +64,27 @@ class Kernel:
             raise RuntimeError(f"Kernel {self.kernel_id} уже выполняет вычисления")
 
         self.is_running = True
+        self._stop_flag.clear()
         self._thread = threading.Thread(
             target=self._run,
             kwargs= kwargs,
             daemon=True
         )
         self._thread.start()
+
+    def stop(self) -> None:
+        """Останавливает выполнение вычислений, если они запущены."""
+        if not self.is_running:
+            return
+        self._stop_flag.set()
+        self.log.info("Получен сигнал остановки вычислений")
+        # Ждём завершения потока с таймаутом (опционально)
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=2.0)
+            if self._thread.is_alive():
+                self.log.warning("Поток вычислений не завершился вовремя")
+        self.is_running = False       
+        self.message_queue.put("__DONE__\n")  # маркер завершения 
 
     def _run(self, **kwargs) -> None:
         try:
