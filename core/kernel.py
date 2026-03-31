@@ -38,12 +38,11 @@ class Kernel:
         self.log_file = f"kernel_{self.kernel_id}.log"
         self.log.add(
             self.log_file,
-            rotation="1 MB",
-            retention="3 days",
             encoding="utf-8",
             level="INFO",
             format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
-            colorize=False
+            colorize=False,
+            mode="w" 
         )
 
         # 2. Обработчик для отправки сообщений в очередь GUI
