@@ -1,6 +1,7 @@
 import importlib
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 
 from AstraBox import History
 from AstraBox.Pages.FRTCPage import FRTCPage
