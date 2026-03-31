@@ -195,16 +195,10 @@ class RunAstraPage(ttk.Frame):
             while True:
                 msg = self.kernel.message_queue.get_nowait()
                 if msg == "__DONE__\n":
-                    #self.kernels.remove(kernel)
-                    #self.log_console.insert_colored_text(f"[Kernel {self.kernel.kernel_id}] --- ЗАВЕРШЕНО ---\n")
                     self.log_console.insert_text(f"--- ЗАВЕРШЕНО ---\n")
                     self.work_done()
                 else:
-                    #print(f"[Kernel {self.kernel.kernel_id}] {msg}")
-                    #self.log_console.insert_colored_text(f"[Kernel {self.kernel.kernel_id}] {msg}")
                     self.log_console.insert_text(msg)
-                    #self.log_text.insert(tk.END, f"[Kernel {kernel.kernel_id}] {msg}")
-                #self.log_text.see(tk.END)
         except queue.Empty:
             pass
         self.after(100, self.process_msg_queues)
