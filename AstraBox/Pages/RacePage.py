@@ -31,6 +31,7 @@ from AstraBox.RaceTab.SpectrumTabView import SpectrumTabView
 from AstraBox.RaceTab.RaceView import RTResultView
 from AstraBox.RaceTab.RaceView import DrivenCurrentView
 from AstraBox.RaceTab.RaceView import ExecTimeView
+from AstraBox.Views.LogConsole import LogConsole
 from AstraBox.Views.SummaryView import SummaryView
 from AstraBox.Views.TaskListView import TaskListView
 from AstraBox.Views.TextView import TextView
@@ -42,6 +43,10 @@ class FRTCBook(ttk.Notebook):
 
         summary_view = SummaryView(self, model= model)
         self.add(summary_view, text="Summary", underline=0, sticky=tk.NE + tk.SW)
+
+        log_view = LogConsole(self)
+        log_view.load_text(model.zip_root/'kernel.log')
+        self.add(log_view, text="Log", underline=0, sticky=tk.NE + tk.SW)
 
         if hasattr(model, 'exp_model'):
             view = TextView(self, model.exp_model, state= 'disabled')

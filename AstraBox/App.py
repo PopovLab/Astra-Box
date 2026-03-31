@@ -17,11 +17,24 @@ class App(tk.Tk):
         style.layout("TButton", [('Button.button', {'sticky': 'nswe', 'children': [('Button.focus', {'sticky': 'nswe', 'children': [('Button.padding', {'sticky': 'nswe', 'children': [('Button.label',
             {'sticky': 'w'})]})]})]})])
 
+        style.configure('AstraRun.Toolbutton', 
+                        background='black', 
+                        foreground='red',
+                        padding= 9,  #{'padx': 5, 'pady': 10},
+                        font=('Helvetica', 12))
+        
+        style.map('AstraRun.Toolbutton',
+          background=[('pressed', '#c0c0c0'),
+                       ('active', '#e0e0e0'),
+                       ('focus', "#15e938"),
+                       ('selected', "#0C0E0D")])
+
         style.configure('Toolbutton', 
                         foreground= 'black', 
                         backgound= 'red',
                         padding= 9,  #{'padx': 5, 'pady': 10},
                         font=('Helvetica', 12))
+        
         style.configure("Header.TLabel",
                         foreground='navy',
                         backgound = 'red',

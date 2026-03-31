@@ -1,4 +1,5 @@
 import datetime
+import queue
 import threading
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -10,7 +11,7 @@ import tkinter.messagebox as messagebox
 
 from AstraBox.Views.HeaderPanel import HeaderPanel
 from AstraBox.Views.LogConsole import LogConsole
-import AstraBox.Kernel as Kernel
+#import AstraBox.Kernel as Kernel
 import AstraBox.Models.AstraProfiles
 from AstraBox.Widgets import StringBox
 import AstraBox.Config as Config
@@ -20,6 +21,7 @@ from AstraBox.ToolBox.ComboBox import ComboBox
 import AstraBox.ToolBox.ImageButton as ImageButton
 
 from AstraBox.Task import Task
+from core.kernel import Kernel
 
 class ConfigPanel(ttk.Frame):
     def __init__(self, master, last_task) -> None:
@@ -146,8 +148,16 @@ class RunAstraPage(ttk.Frame):
             RunAstraPage._instance = RunAstraPage(parent)
             
         return RunAstraPage._instance
-            
+    
+    def kernel_is_running(self) ->bool:
+        if hasattr(self, 'kernel') and self.kernel.is_running:
+            messagebox.showerror("Error", f"Kernel {self.kernel.kernel_id} is running")
+            return True
+        else:
+            return False
+        
     def multy_run(self):
+        if self.kernel_is_running(): return
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
             work_space = self.winfo_toplevel().work_space # type: ignore
@@ -161,34 +171,59 @@ class RunAstraPage(ttk.Frame):
                 #self.batch_run()
 
     def run_with_pause(self):
+        if self.kernel_is_running(): return
         exp = self.config_panel.exp_combo.get()
         task= self.config_panel.get_task()
         self.run_task(task, 'pause')
 
     def run(self):
+        if self.kernel_is_running(): return
         exp = self.config_panel.exp_combo.get()
         task= self.config_panel.get_task()
         self.run_task(task, 'no_pause')
 
-    def run_task(self, task, option:str):
+    def run_task(self, task, options:str):
         self.hp.update_title(task.name)
-        work_space = self.winfo_toplevel().work_space # type: ignore
+        main_windows = self.winfo_toplevel()
+        work_space = main_windows.work_space # type: ignore
         work_space.save_last_task(task)
-        self.log_console.set_logger(Kernel.get_logger(work_space))
-        Kernel.set_progress_callback(self.on_progress)     
-        Kernel.log_info(task)
+        self.log_console.clear_text()
+        self.kernel = Kernel()
+        self.process_msg_queues()
+        try:
+            #self.kernel.start(steps= 20, delay= 0.5)
+            self.kernel.start(work_space= work_space, task= task, options= options)
+            main_windows.switch_asta_button_style() # type: ignore
+        except RuntimeError as e:
+            messagebox.showerror("Error", str(e))            
 
-        self.on_progress(0)
-        thread = threading.Thread(target=lambda : Kernel.execute(work_space, task, option), daemon=True)
-        thread.start()
-        
-        work_space.refresh_folder('RaceModel')        
+    def work_done(self):
+        main_windows = self.winfo_toplevel()
+        main_windows.switch_asta_button_style() # type: ignore
+        work_space = main_windows.work_space # type: ignore
+        work_space.refresh_folder('RaceModel') 
+
+    def process_msg_queues(self):
+        try:
+            while True:
+                msg = self.kernel.message_queue.get_nowait()
+                if msg == "__DONE__\n":
+                    self.log_console.insert_text(f"--- ЗАВЕРШЕНО ---\n")
+                    self.work_done()
+                else:
+                    self.log_console.insert_text(msg)
+        except queue.Empty:
+            pass
+        self.after(100, self.process_msg_queues)
 
 
     def terminate(self):
-        self.terminated = True
+        if hasattr(self, 'kernel') and self.kernel.is_running:
+            #if messagebox.askokcancel("Run", "Do you want to terminate?"):
+            if messagebox.askokcancel("Terminate", "Прерывание не работает, ждите в следующих версиях"):
+                print(f'terminate kernel {self.kernel.kernel_id}')
+                #self.kernel.stop()
+        else:
+            main_windows = self.winfo_toplevel()
+            main_windows.switch_asta_button_style() # type: ignore
 
-    def on_progress(self, pos):
-        #print('RunAstraView')
-        self.update()
-        pass

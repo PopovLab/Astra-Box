@@ -1,6 +1,7 @@
 import importlib
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 
 from AstraBox import History
 from AstraBox.Pages.FRTCPage import FRTCPage
@@ -75,15 +76,19 @@ class Windows(tk.Toplevel):
         left_panel = tk.PanedWindow(main_panel, orient=tk.VERTICAL)  
         main_panel.add(left_panel)  
 
-        rack_frame = RackFrame.construct(left_panel, self)
-        left_panel.add(rack_frame)
+        self.rack_frame = RackFrame.construct(left_panel, self)
+        left_panel.add(self.rack_frame)
 
         self.content_frame = ContentFrame(main_panel)
         main_panel.add(self.content_frame)
+        self.content_frame.show_readme()
 
     def save_geometry(self):
         save_geometry(self.geometry())
- 
+    
+    def switch_asta_button_style(self):
+        self.rack_frame.switch_asta_button_style()
+        
     def create_main_menu(self, win):
         new_menu = tk.Menu(win, tearoff=0)
         new_menu.add_command(label='FRTC Configurations', command=self.create_FRTC_configuration)
