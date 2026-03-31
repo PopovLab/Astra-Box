@@ -184,7 +184,8 @@ class RunAstraPage(ttk.Frame):
 
     def run_task(self, task, options:str):
         self.hp.update_title(task.name)
-        work_space = self.winfo_toplevel().work_space # type: ignore
+        main_windows = self.winfo_toplevel()
+        work_space = main_windows.work_space # type: ignore
         work_space.save_last_task(task)
         self.log_console.clear_text()
         self.kernel = Kernel()
@@ -192,11 +193,14 @@ class RunAstraPage(ttk.Frame):
         try:
             #self.kernel.start(steps= 20, delay= 0.5)
             self.kernel.start(work_space= work_space, task= task, options= options)
+            main_windows.switch_asta_button_style() # type: ignore
         except RuntimeError as e:
             messagebox.showerror("Error", str(e))            
 
     def work_done(self):
-        work_space = self.winfo_toplevel().work_space # type: ignore
+        main_windows = self.winfo_toplevel()
+        main_windows.switch_asta_button_style() # type: ignore
+        work_space = main_windows.work_space # type: ignore
         work_space.refresh_folder('RaceModel') 
 
     def process_msg_queues(self):

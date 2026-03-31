@@ -27,9 +27,10 @@ class RackFrame(ttk.Frame):
 
         ttk.Separator(self, orient='horizontal').grid(row=n, column=0, pady=(5,1),  sticky=tk.N + tk.S + tk.E + tk.W)
 
-        ttk.Radiobutton(self, text="Run ASTRA", variable= self.v, value="imped", width=25, 
+        self.astra_btn = ttk.Radiobutton(self, text="Run ASTRA", variable= self.v, value="imped", width=25, 
                         command= self.show_RunAstraPage,
-                        style = 'Toolbutton').grid(row=n+1, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
+                        style = 'Toolbutton')
+        self.astra_btn.grid(row=n+1, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
         ttk.Separator(self, orient='horizontal').grid(row=n+2, column=0,  sticky=tk.N + tk.S + tk.E + tk.W)
 
@@ -44,6 +45,12 @@ class RackFrame(ttk.Frame):
         self.rowconfigure(n+2, weight=0)
         self.rowconfigure(n+3, weight=1)
         self.columnconfigure(0, weight=1)
+
+    def switch_asta_button_style(self):
+        # Проверяем текущий стиль и меняем на противоположный
+        current_style = self.astra_btn.cget('style')
+        new_style = 'AstraRun.Toolbutton' if current_style == 'Toolbutton' else 'Toolbutton'
+        self.astra_btn.configure(style= new_style)
 
     def on_select_item(self, sender, action):
         self.v.set('xxx')
