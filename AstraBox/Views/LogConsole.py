@@ -47,10 +47,9 @@ class LogConsole(ScrolledText):
         self.delete("1.0", tk.END)
         self.configure(state='disabled')        
 
-    def load_text(self, file_path:pathlib.Path):
+    def load_text(self, file_path: pathlib.Path):
         try:
-            with file_path.open('r') as f:
-                log_text = f.read()
+            log_text = file_path.read_text(encoding='utf-8')
         except:
             log_text = f'There is no file "{file_path.name}" in the archive.'
         finally:
