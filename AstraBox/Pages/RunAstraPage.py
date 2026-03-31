@@ -148,8 +148,14 @@ class RunAstraPage(ttk.Frame):
             RunAstraPage._instance = RunAstraPage(parent)
             
         return RunAstraPage._instance
-            
+    def kernel_is_running(self) ->bool:
+        if hasattr(self, 'kernel') and self.kernel.is_running:
+            messagebox.showerror("Error", f"Kernel {self.kernel.kernel_id} is running")
+            return True
+        else:
+            return False
     def multy_run(self):
+        if self.kernel_is_running(): return
         if messagebox.askokcancel("Run", "Do you want to Multy Run?"):
             print('run multy run')
             work_space = self.winfo_toplevel().work_space # type: ignore
@@ -163,11 +169,13 @@ class RunAstraPage(ttk.Frame):
                 #self.batch_run()
 
     def run_with_pause(self):
+        if self.kernel_is_running(): return
         exp = self.config_panel.exp_combo.get()
         task= self.config_panel.get_task()
         self.run_task(task, 'pause')
 
     def run(self):
+        if self.kernel_is_running(): return
         exp = self.config_panel.exp_combo.get()
         task= self.config_panel.get_task()
         self.run_task(task, 'no_pause')
