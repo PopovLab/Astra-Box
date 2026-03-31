@@ -223,4 +223,7 @@ class RunAstraPage(ttk.Frame):
             if messagebox.askokcancel("Terminate", "Прерывание не работает, ждите в следующих версиях"):
                 print(f'terminate kernel {self.kernel.kernel_id}')
                 #self.kernel.stop()
+        else:
+            main_windows = self.winfo_toplevel()
+            main_windows.switch_asta_button_style() # type: ignore
 
