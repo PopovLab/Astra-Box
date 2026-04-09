@@ -2,6 +2,8 @@ import json
 import tkinter as tk
 import tkinter
 import tkinter.ttk as ttk
+
+from returns.pipeline import is_successful
 import AstraBox.WorkSpace as WorkSpace
 
 from matplotlib import cm
@@ -40,8 +42,14 @@ class RadialDataPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
+    @property
+    def setting_path(self):
+        return self.winfo_toplevel().work_space.join_path('RadialPlot.setting') 
+    
     def init_setting(self):
-        self.setting = PlotSetting.load('RadialPlot.setting')
+        res = self.setting_path 
+        if is_successful(res):
+            self.setting = PlotSetting.load(res.unwrap())
         if self.setting is None:
             self.setting = PlotSetting(
             title= 'Radial Data',
@@ -62,14 +70,17 @@ class RadialDataPlot(ttk.Frame):
 
 
     def option_windows(self):
-        self.ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
-        self.ps.show()
+        if self.setting:
+            self.ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
+            self.ps.show()
 
 
     def on_update_setting(self):
         print('on_update_setting')
-        #print(self.setting)
-        self.setting.save('RadialPlot.setting')
+        res = self.setting_path 
+        if is_successful(res):
+            if self.setting:
+                self.setting.save(res.unwrap())
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
