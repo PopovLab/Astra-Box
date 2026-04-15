@@ -346,18 +346,16 @@ class RaceModel(RootModel):
                     buffer += item
                     if len(item)<3:
                         if series is None:
-                            #print(buffer)
                             series = {}
                             di= pd.read_csv(BytesIO(buffer), sep='\\s+').to_dict(orient='index')
                             series = di[0]
-                            #print(series['info'])
                             series['traj'] = None
                             if series['mbad'] == 1:
                                 traj_series.append(series)
                                 series = None
                             buffer = bytearray()
                         else:
-                            series['traj'] = pd.read_csv(BytesIO(buffer), sep='\\s+')
+                            series['traj'] = pd.read_csv(BytesIO(buffer), sep='\\s+', index_col=False)
                             traj_series.append(series)
                             series = None
                             buffer = bytearray()

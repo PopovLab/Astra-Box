@@ -55,13 +55,12 @@ class TrajectoryModel:
     def read_trajectory_series(self, fn):
         ts= self.race_model.read_trajectory_series(fn)
         for series in ts:
-            if not series['traj'] is None:
+            if series['traj'] is not None:
                 traj = series['traj']
                 traj['length'] = np.sqrt(np.square(traj['R'].diff()) + np.square(traj['Z'].diff()))
                 #traj['length'][0] = 1.0
                 traj['delta_power'] = traj['P_tot'].diff()
                 traj['power_density'] = traj['delta_power']/traj['length']
-                #print(traj.head)
         return ts
 
     def select_series(self, index):

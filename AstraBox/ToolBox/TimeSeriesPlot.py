@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from returns.pipeline import is_successful
 from AstraBox.ToolBox.VerticalNavigationToolbar import VerticalNavigationToolbar2Tk
 from AstraBox.Dialogs.PlotSettingDialog import PlotSettingDialog
 import AstraBox.ToolBox.ImageButton as ImageButton
@@ -34,9 +35,14 @@ class TimeSeriesPlot(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
-
+    @property
+    def setting_path(self):
+        return self.winfo_toplevel().work_space.join_path('TimeSeriesPlot.setting') 
+    
     def init_setting(self):
-        self.setting  = PlotSetting.load('TimeSeriesPlot.setting')
+        res = self.setting_path 
+        if is_successful(res):
+            self.setting  = PlotSetting.load(res.unwrap())
         if self.setting is None:
             self.setting = PlotSetting(
             title= 'Time Series',
@@ -54,13 +60,17 @@ class TimeSeriesPlot(ttk.Frame):
 
 
     def show_option_windows(self):
-        ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
-        ps.show()
+        if self.setting:
+            ps = PlotSettingDialog(self, self.setting, on_update_setting= self.on_update_setting )
+            ps.show()
 
 
     def on_update_setting(self):
         print('on_update_setting')
-        self.setting.save('TimeSeriesPlot.setting')
+        res = self.setting_path 
+        if is_successful(res): 
+            if self.setting:       
+                self.setting.save(res.unwrap())
         for ax in self.axs.flat:
             ax.remove()
         self.make_all_charts()
