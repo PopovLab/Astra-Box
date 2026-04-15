@@ -142,7 +142,7 @@ class SpectrumModel(BaseModel):
                 spect_type = 3    #  3     ! spectr type 3 - 2D for futureS
         lines.append(f"spectrum_type = {spect_type}" )
         lines.append(f"spectrum_PWM = {self.spectrum.PWM}" )
-        lines.append(f"spectrum_kind = {self.spectrum.kind}" )
+        #lines.append(f"spectrum_kind = {self.spectrum.kind}" )
         lines.append(f"spectrum_coordinate_system = {self.spectrum.coordinate_system}" )
         lines.append("/")
         return '\n'.join(lines)  
